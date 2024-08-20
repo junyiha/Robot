@@ -1,0 +1,39 @@
+<RCC>
+    <qresource prefix="/img">
+        <file>images/bg_blueCursor.jpg</file>
+        <file>images/icon_greenLight.png</file>
+        <file>images/icon_redLight.png</file>
+        <file>images/icon_yellowLight.png</file>
+        <file>images/icon_connect.png</file>
+        <file>images/icon_disconnect.png</file>
+        <file>images/icon_exit.png</file>
+        <file>images/icon_armConnected.png</file>
+        <file>images/icon_armDisconnected.png</file>
+        <file>images/icon_cameraConnected.png</file>
+        <file>images/icon_cameraDisonnected.png</file>
+        <file>images/icon_ioConnected.png</file>
+        <file>images/icon_ioDisconnected.png</file>
+        <file>images/icon_monitor.png</file>
+        <file>images/bg_board.jpg</file>
+        <file>images/icon_whiteLight.png</file>
+        <file>images/icon_distCeil.png</file>
+        <file>images/icon_distFloor.png</file>
+        <file>images/icon_coordinate.png</file>
+        <file>images/icon_enable.png</file>
+        <file>images/icon_disabled.png</file>
+        <file>images/icon_disable.png</file>
+        <file>images/icon_enabled.png</file>
+        <file>images/icon_home.png</file>
+        <file>images/icon_pause.png</file>
+        <file>images/icon_emerStop.png</file>
+        <file>images/icon_cleanError.png</file>
+        <file>images/icon_moveBwd.png</file>
+        <file>images/icon_moveFwd.png</file>
+        <file>images/icon_moveFwd_pressed.png</file>
+        <file>images/icon_moveBwd-pressed.png</file>
+        <file>images/icon_moveRel_pressed.png</file>
+        <file>images/icon_moveRel.png</file>
+        <file>images/icon_gotoStation.png</file>
+        <file>images/icon_gotoStation_pressed.png</file>
+    </qresource>
+</RCC>
