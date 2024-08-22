@@ -74,8 +74,18 @@ public:
 
     VisionControls();
     ~VisionControls();
-
+    /**
+     * @brief 启动指定类型的检测任务
+     * 
+     * @param type 检测类型
+     */
     void enableDetection(DetectType type);
+    /**
+     * @brief 获取检测结果
+     * 
+     * @param type 检测类型
+     * @param stm 检测结果
+     */
     void getDetectResult(DetectType type,stMeasureData* stm);
     void parser_result(stMeasureData* stm);
 };

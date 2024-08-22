@@ -58,13 +58,14 @@ public:
 
     /**
      *@brief 获取机器人连接状态
+     *@return true 已连接，false 未连接
      */
     bool getRobotConnectSta();
 
     /**
-     *
+     *@brief 获取IO板连接状态
      * @param index IO板索引
-     * @return 是否连接
+     * @return true 已连接，false 未连接
      */
     bool getIOConnectSta(const uint index);
 
@@ -84,21 +85,23 @@ public:
      */
     QVector<double> getLasersDistance();
     /**
-     * @brief getJointGroupStatus
-     * @return 轴状态变量
+     * @brief getJointGroupStatus 读所有轴组数据
+     * @return 轴组状态向量
      */
     QVector<st_ReadAxis> getJointGroupStatus();
 
     /**
     * @brief 轴组关节运动
-    * @param pos:  目标位置
-    * @param vel:  设定速度
+    * @param index: LINK索引
+    * @param pos:   目标位置
+    * @param vel:   设定速度
     * @return
     */
     void setLinkJointMoveAbs(uint index, double pos[],double vel[]);
 
     /**
     * @brief 轴组关节速度
+    * @param index: LINK索引
     * @param pos:  目标位置
     * @param vel:  设定速度
     * @return
@@ -107,18 +110,25 @@ public:
 
     /**
     * @brief 获取link轴组关节状态
+    * @param index: LINK索引
     * @return QVector<st_ReadAxis> 轴组状态向量
     */
     QVector<st_ReadAxis> getLinkJointStatus(uint index);
 
     /**
     * @brief 获取link状态
+    * @param index: LINK索引
     * @return QVector<st_ReadAxis> 轴组状态向量
     */
     StatusofLink getLinkStatus(uint index);
 
-
-    void getManual(stManualCmd &m_Manual);//xxxxxxxxx未定义
+    /**
+     * @brief 获取遥控器指令
+     * 
+     * @param m_Manual: 遥控器指令数据
+     */
+    void getManual(stManualCmd &m_Manual);
+    //xxxxxxxxx未定义
 
     //*************机器人控制相关接口信号*************
 
@@ -294,6 +304,11 @@ public:
     bool getCommState_IOA(){return m_cTools.m_cIOA.getCommState();}
     bool getCommState_IOB(){return m_cTools.m_cIOB.getCommState();}
 
+    /**
+     * @brief 激光控制
+     * 
+     * @param swit 开关量
+     */
     void setCrossLaser(bool swit);
 
     /**
