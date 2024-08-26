@@ -18,6 +18,8 @@ set(BaseDIR D:/)
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /C4828")
 set(QRC_SOURCE_FILE res.qrc)
 
+add_definitions(-DSTATE_MACHINE_TEST=1)
+
 # ffmpeg
 file(COPY ${BaseDIR}/packages/ffmpeg/bin/avcodec-59.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug)
 file(COPY ${BaseDIR}/packages/ffmpeg/bin/avformat-59.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug)
@@ -128,6 +130,8 @@ add_executable(PDRobot-master main.cpp
         Task/Measure.h
         Task/Task.cpp
         Task/Task.h
+        Task/StateMachine.h
+        Task/StateMachine.cpp
         Task/TaskParameter.h
         GVL.h
         vision/VisionControls.cpp

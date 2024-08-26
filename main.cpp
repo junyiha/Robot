@@ -52,7 +52,22 @@ void vision_demo(){
 
 }
 
+#ifdef STATE_MACHINE_TEST
+#include "Task/StateMachine.h"
+int main(int argc, char *argv[])
+{
+    auto pdTaskPtr = std::make_shared<TASK::PDTask>();
+    TASK::StateMachine stateMachine(pdTaskPtr);
+    while (true)
+    {
+        std::clog << "one loop\n";
+        stateMachine.stateTransition();
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+    }
 
+    return 0;
+}
+#else
 #include<Eigen/Eigen>
 int main(int argc, char *argv[])
 {
@@ -68,4 +83,4 @@ int main(int argc, char *argv[])
     return a.exec();
 
 }
-
+#endif
