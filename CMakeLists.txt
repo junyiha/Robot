@@ -95,98 +95,21 @@ find_package(Qt5 COMPONENTS
 #  add resources
 qt5_add_resources(${QRC_SOURCE_FILE})
 
-add_executable(PDRobot-master main.cpp
-        com/ComInterface.cpp
-        com/ComInterface.h
-        com/IOCom.cpp
-        com/IOCom.h
-        com/Manual.cpp
-        com/Manual.h
-        com/RobotCom.cpp
-        com/RobotCom.h
-        com/SerialCom.cpp
-        com/SerialCom.h
-        com/TcpCom.cpp
-        com/TcpCom.h
-        com/TcpCom_IO.cpp
-        com/TcpCom_IO.h
-        com/Tools.cpp
-        com/Tools.h
-        robot/Axis.h
-        robot/DataStruct.h
-        robot/ErrCode.h
-        robot/GeneralRobot.h
-        robot/Link.h
-        robot/LinkObject.h
-        robot/Parameter.h
-        robot/robot.cpp
-        robot/robot.h
-        robot/RobotKinectModel.cpp
-        robot/RobotKinectModel.h
-        robot/RobotModuleServices.h
-        robot/Transformation.cpp
-        robot/Transformation.h
-        Task/Measure.cpp
-        Task/Measure.h
-        Task/Task.cpp
-        Task/Task.h
-        Task/StateMachine.h
-        Task/StateMachine.cpp
-        Task/TaskParameter.h
-        GVL.h
-        vision/VisionControls.cpp
-        vision/VisionControls.h
-        vision/CameraDisplay.cpp
-        vision/CameraDisplay.h
-        vision/Camera.cpp
-        vision/Camera.h
-        vision/CameraControls.cpp
-        vision/CameraControls.h
-        vision/FFmpegCamera.cpp
-        vision/FFmpegCamera.h
-        vision/Gocator.cpp
-        vision/Gocator.h
-        vision/GocatorControls.cpp
-        vision/GocatorControls.h
-        vision/HoleHandler.cpp
-        vision/HoleHandler.h
-        vision/HoleHelper.cpp
-        vision/HoleHelper.h
-        vision/LidarHandler.cpp
-        vision/LidarHandler.h
-        vision/LidarHelper.cpp
-        vision/LidarHelper.h
-        vision/LineHandler.cpp
-        vision/LineHandler.h
-        vision/LineHelper.cpp
-        vision/LineHelper.h
-        vision/mlsd.cpp
-        vision/mlsd.h
-        vision/myequeue.h
-        vision/utils.cpp
-        vision/utils.h
-        vision/ShareData.h
-        vision/CameraManager.cpp
-        vision/CameraManager.h
-        vision/HKCameraControls.cpp
-        vision/HKCameraControls.h
-        vision/MvCamera.cpp
-        vision/MvCamera.h
-        vision/Parameters.h
-        ${QRC_SOURCE_FILE}
-        vision/LineDetector.cpp
-        vision/LineDetector.h
-        vision/VisionInterface.cpp
-        vision/VisionInterface.h
-        vision/LineDetectorRunner.cpp
-        vision/LineDetectorRunner.h
-        mainwindow.cpp
-        mainwindow.h
-        #        vision/VisionTask.cpp
-#        vision/VisionTask.h
-#        vision/CameraShow.cpp
-#        vision/CameraShow.h
-)
+aux_source_directory(${CMAKE_SOURCE_DIR}/ src)
+aux_source_directory(${CMAKE_SOURCE_DIR}/com src)
+aux_source_directory(${CMAKE_SOURCE_DIR}/robot src)
+aux_source_directory(${CMAKE_SOURCE_DIR}/Task src)
+aux_source_directory(${CMAKE_SOURCE_DIR}/vision src)
+
+add_executable(${PROJECT_NAME} ${src})
+
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/
+                                                  ${CMAKE_SOURCE_DIR}/com
+                                                  ${CMAKE_SOURCE_DIR}/robot
+                                                  ${CMAKE_SOURCE_DIR}/Task
+                                                  ${CMAKE_SOURCE_DIR}/vision
+) 
+
 target_link_libraries(PDRobot-master
         Qt5::Core
         Qt5::Gui
