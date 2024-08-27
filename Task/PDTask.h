@@ -1,6 +1,6 @@
 /**
  * @file PDTask.h
- * @author your name (you@domain.com)
+ * @author zhangjunyi (you@domain.com)
  * @brief 
  * @version 0.1
  * @date 2024-08-26
@@ -25,7 +25,53 @@ public:
     PDTask();
     ~PDTask();
 
+    /**
+     * @brief 调平
+     * 
+     * @return true 
+     * @return false 
+     */
     bool Parallel();
+
+    /**
+     * @brief 检测平整度
+     * 
+     * @return true 
+     * @return false 
+     */
+    bool CheckFlatness();
+
+    /**
+     * @brief 定位
+     * 
+     * @return true 
+     * @return false 
+     */
+    bool Positioning();
+
+    /**
+     * @brief 检测边线
+     * 
+     * @return true 
+     * @return false 
+     */
+    bool CheckLine();
+
+    /**
+     * @brief 吸合
+     * 
+     * @return true 
+     * @return false 
+     */
+    bool MagentOn();
+
+    /**
+     * @brief 自动碰钉
+     * 
+     * @return true 
+     * @return false 
+     */
+    bool AutoDoWeld();
 };
 
 }  // namespace TASK

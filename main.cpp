@@ -58,12 +58,85 @@ int main(int argc, char *argv[])
 {
     auto pdTaskPtr = std::make_shared<TASK::PDTask>();
     TASK::StateMachine stateMachine(pdTaskPtr);
+
+    stateMachine.updateTopAndSubState(TASK::ETopState::eParallel, TASK::ESubState::eReadyToParallel);
+    stateMachine.updateExecutionCommand(TASK::EExecutionCommand::eParallel);
+
+    bool quit_flag{false};
+
+    auto loopFunc = [](TASK::StateMachine &stateMachine, bool &quit_flag){
+        while (true)
+        {
+            if (quit_flag)
+            {
+                std::clog << "quiting...\n";
+                break;
+            }
+            stateMachine.stateTransition();
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+        }
+    };
+    std::thread loopThread(loopFunc, std::ref(stateMachine), std::ref(quit_flag));
+
+    auto getStateFunc = [](TASK::StateMachine &stateMachine, bool &quit_flag){
+        while (true)
+        {
+            if (quit_flag)
+            {
+                std::clog << "get state thread quiting...\n";
+                break;
+            }
+            std::clog << "state: " << stateMachine.getCurrentStateString() << "\n"
+                      << "command: " << stateMachine.getCurrentExecutionCommandString() << "\n\n";
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+        }
+    };
+    std::thread getStateThread(getStateFunc, std::ref(stateMachine), std::ref(quit_flag));
+
+    char input;
     while (true)
     {
-        std::clog << "one loop\n";
-        stateMachine.stateTransition();
-        std::this_thread::sleep_for(std::chrono::seconds(1));
+        if (quit_flag)
+            break;
+
+        std::clog << "input manual command:\n";
+        std::cin >> input;
+        std::clog << "input command: " << input << "\n";
+        switch (input)
+        {
+            case 'p':
+            {
+                stateMachine.updateExecutionCommand(TASK::EExecutionCommand::ePositioning);
+                break;
+            }
+            case 'm':
+            {
+                stateMachine.updateExecutionCommand(TASK::EExecutionCommand::eMagentOn);
+                break;
+            }
+            case 'w':
+            {
+                stateMachine.updateExecutionCommand(TASK::EExecutionCommand::eAutoWeld);
+                break;
+            }
+            case 'n':
+            {
+                stateMachine.updateExecutionCommand(TASK::EExecutionCommand::eNULL);
+                break;
+            }
+            case 'q':
+            {
+                quit_flag = true;
+                break;
+            }
+        }
     }
+
+    if (loopThread.joinable())
+        loopThread.join();
+
+    if (getStateThread.joinable())
+        getStateThread.join();
 
     return 0;
 }
