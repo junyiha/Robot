@@ -48,7 +48,7 @@ enum class ESubState
     
     eReadyToDoWeld,     // 待碰钉
     eDoingWeld,         // 碰钉中
-    eTerminationWeld,   // 碰钉终止
+    eStopWeld,   // 碰钉停止
 
     eQuiting,           // 退出中
     ePause              // 暂停
@@ -120,11 +120,18 @@ private:
     void quitStateTransition();
 
 
+private:
     /**
      * @brief 手动指令
      * 
      */
     void readyExecutionCommand();
+
+    /**
+     * @brief 未就绪状态下执行的手动指令
+     * 
+     */
+    void notReadyExecutionCommand();
 
     /**
      * @brief 调平--待调平状态下，可执行指令
@@ -184,7 +191,7 @@ private:
      * @brief 碰钉--停止状态下，可执行指令
      * 
      */
-    void terminationWeldExecutionCommand();
+    void stopWeldExecutionCommand();
 
     /**
      * @brief 退出--退出中状态下，可执行指令
@@ -197,6 +204,13 @@ private:
      * 
      */
     void pauseExecutionCommand();
+
+private:
+    /**
+     * @brief 终止指令。停止运行，状态跳转至: 手动
+     * 
+     */
+    void terminateCommand();
 
 public:
     /**
@@ -212,7 +226,7 @@ public:
      * 
      * @param executionCommand 
      */
-    void updateExecutionCommand(EExecutionCommand executionCommand);
+    void updateExecutionCommand(EExecutionCommand executionCommand = EExecutionCommand::eNULL);
 
     /**
      * @brief 获取当前状态字符串，格式: 第一层状态--第二层状态
@@ -258,7 +272,7 @@ private:
         {ESubState::eReadyToPositioning, "待定位"},
         {ESubState::eReadyToDoWeld, "待碰钉"},
         {ESubState::eDoingWeld, "碰钉中"},
-        {ESubState::eTerminationWeld, "碰钉终止"},
+        {ESubState::eStopWeld, "碰钉停止"},
         {ESubState::eQuiting, "退出中"},
         {ESubState::ePause, "暂停"}
     };

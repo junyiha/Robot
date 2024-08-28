@@ -11,11 +11,8 @@ set(BaseDIR D:/)
 #set(CMAKE_PREFIX_PATH "D:/soft/qt5.14/5.14.0/msvc2017_64")
 #set(BaseDIR E:/znzz/codes/qt/PDRootV1)
 
-# �������о��棨���Ƽ���
  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W0")
 
-# ���߽����ض�����
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /C4828")
 set(QRC_SOURCE_FILE res.qrc)
 
 add_definitions(-DSTATE_MACHINE_TEST=1)
@@ -72,14 +69,6 @@ link_directories(${BaseDIR}/packages/OnnxRuntime/Microsoft.ML.OnnxRuntime.1.7.0/
 
 # eigen3
 include_directories(${BaseDIR}/packages/eigen3.4.0)
-
-
-#find_package(Qt5 COMPONENTS Core Widgets Xml REQUIRED)
-##set(Resources_RCC ${CMAKE_CURRENT_BINARY_DIR}/Resources.rcc)
-#qt5_add_resources(${Resources_RCC} res.qrc)
-
-#add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
-#add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 
 add_compile_options("$<$<C_COMPILER_ID:MSVC>:/source-charset:utf-8>")
 add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/source-charset:utf-8>")

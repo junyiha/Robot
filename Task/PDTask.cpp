@@ -22,12 +22,17 @@ bool PDTask::Parallel()
     return true;
 }
 
-bool PDTask::CheckFlatness()
+EDetectionInParallelResult PDTask::CheckFlatness()
 {
     std::clog << "执行 检测平整度 指令...\n";
     std::this_thread::sleep_for(std::chrono::seconds(3));
     std::clog << "检测平整度指令执行成功！！！\n激光传感器偏差小于阈值，板壁距离满足调整要求，未检测到壁面\n";
 
+    return EDetectionInParallelResult::eDeviationIsLessThanThreshold;
+}
+
+bool PDTask::CheckLaser()
+{
     return true;
 }
 
@@ -40,13 +45,13 @@ bool PDTask::Positioning()
     return true;
 }
 
-bool PDTask::CheckLine()
+EDetectionInPositioningResult PDTask::CheckLine()
 {
     std::clog << "执行 检测边线 指令...\n";
     std::this_thread::sleep_for(std::chrono::seconds(3));
     std::clog << "检测边线指令执行成功！！！\n边线偏差小于阈值，末端调整数据合法\n";
 
-    return true;
+    return EDetectionInPositioningResult::eDeviationIsLessThanThreshold;
 }
 
 bool PDTask::MagentOn()

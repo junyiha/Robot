@@ -109,9 +109,24 @@ int main(int argc, char *argv[])
         log->info("input command: {}\n", input);
         switch (input)
         {
+            case 'n':
+            {
+                stateMachine.updateExecutionCommand(TASK::EExecutionCommand::eNULL);
+                break;
+            }
             case 'P':
             {
                 stateMachine.updateExecutionCommand(TASK::EExecutionCommand::eParallel);
+                break;
+            }
+            case 't':
+            {
+                stateMachine.updateExecutionCommand(TASK::EExecutionCommand::eTerminate);
+                break;
+            }
+            case 'u':
+            {
+                stateMachine.updateExecutionCommand(TASK::EExecutionCommand::ePause);
                 break;
             }
             case 'p':
@@ -124,14 +139,24 @@ int main(int argc, char *argv[])
                 stateMachine.updateExecutionCommand(TASK::EExecutionCommand::eMagentOn);
                 break;
             }
+            case 'Q':
+            {
+                stateMachine.updateExecutionCommand(TASK::EExecutionCommand::eQuit);
+                break;
+            }
             case 'w':
             {
                 stateMachine.updateExecutionCommand(TASK::EExecutionCommand::eAutoWeld);
                 break;
             }
-            case 'n':
+            case 'M':
             {
-                stateMachine.updateExecutionCommand(TASK::EExecutionCommand::eNULL);
+                stateMachine.updateExecutionCommand(TASK::EExecutionCommand::eMagentOff);
+                break;
+            }
+            case 's':
+            {
+                stateMachine.updateExecutionCommand(TASK::EExecutionCommand::eStopWeld);
                 break;
             }
             case 'q':

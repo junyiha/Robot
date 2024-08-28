@@ -19,6 +19,21 @@
 namespace TASK
 {
 
+enum class EDetectionInParallelResult
+{
+    eDeviationIsLessThanThreshold = 0,     // 激光传感器偏差小于阈值
+    eDistanceMeetsRequirement,             // 板壁距离满足调整要求
+    eNoWallDetected                        // 未检测到壁面
+};
+
+enum class EDetectionInPositioningResult
+{
+    eDeviationIsLessThanThreshold = 0,     // 边线偏差小于阈值
+    eEndAdjustmentDataIsValid,             // 末端调整数据合法
+    eDataIsInvalid,                         // 数据非法
+
+};
+
 class PDTask
 {
 public:
@@ -39,7 +54,15 @@ public:
      * @return true 
      * @return false 
      */
-    bool CheckFlatness();
+    EDetectionInParallelResult CheckFlatness();
+
+    /**
+     * @brief 读取激光反馈数据
+     * 
+     * @return true 
+     * @return false 
+     */
+    bool CheckLaser();
 
     /**
      * @brief 定位
@@ -55,7 +78,7 @@ public:
      * @return true 
      * @return false 
      */
-    bool CheckLine();
+    EDetectionInPositioningResult CheckLine();
 
     /**
      * @brief 吸合
