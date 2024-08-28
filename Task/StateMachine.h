@@ -48,7 +48,7 @@ enum class ESubState
     
     eReadyToDoWeld,     // 待碰钉
     eDoingWeld,         // 碰钉中
-    eStopWeld,   // 碰钉停止
+    eStopWeld,          // 碰钉停止
 
     eQuiting,           // 退出中
     ePause              // 暂停
@@ -205,7 +205,6 @@ private:
      */
     void pauseExecutionCommand();
 
-private:
     /**
      * @brief 终止指令。停止运行，状态跳转至: 手动
      * 

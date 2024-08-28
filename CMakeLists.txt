@@ -11,11 +11,11 @@ set(BaseDIR D:/)
 #set(CMAKE_PREFIX_PATH "D:/soft/qt5.14/5.14.0/msvc2017_64")
 #set(BaseDIR E:/znzz/codes/qt/PDRootV1)
 
- set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W0")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W0")
 
 set(QRC_SOURCE_FILE res.qrc)
 
-add_definitions(-DSTATE_MACHINE_TEST=1)
+# add_definitions(-DSTATE_MACHINE_TEST=1)
 
 # ffmpeg
 file(COPY ${BaseDIR}/packages/ffmpeg/bin/avcodec-59.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug)

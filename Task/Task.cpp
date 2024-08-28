@@ -40,6 +40,8 @@ void CTask::run()
 
         SemiAutoProgrcess();
 
+        stateTransition();
+
 //        if(m_Manual.Auto)
 //        {
 //            SemiAutoProgrcess();
