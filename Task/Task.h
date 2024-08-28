@@ -59,6 +59,23 @@ enum class EExecutionCommand
     eStopWeld           // 停止碰钉
 };
 
+enum class EDetectionInParallelResult
+{
+    eDeviationIsLessThanThreshold = 0,     // 激光传感器偏差小于阈值
+    eDistanceMeetsRequirement,             // 板壁距离满足调整要求
+    eNoWallDetected                        // 未检测到壁面
+};
+
+enum class EDetectionInPositioningResult
+{
+    eDeviationIsLessThanThreshold = 0,     // 边线偏差小于阈值
+    eEndAdjustmentDataIsValid,             // 末端调整数据合法
+    eDataIsInvalid,                         // 数据非法
+
+};
+
+/////////////////////////////////////////////////////////////////
+
 enum AutoProcessStage
 {
     eEnd= 0,
@@ -82,6 +99,9 @@ enum ECommadforTask
     eStop = 4
 
 };
+
+const double PARRALLE_DISTANCE = 5.0; //调平允许偏差
+const double LINE_DEVIATION_THRESHOLD = 1.0;//边线调整允许偏差
 
  //碰钉动作序列，及动作周期数(50ms)，根据实际工艺调整；eWeld_Up eWeld_Down绑定了接触器，必须保留
 const QVector<E_WeldAction> ActionList ={eGrind_MovorOff, eGrind_OnorDown, eGrind_Up, eGrind_OnorDown, eGrind_MovorOff, eWeld_MovorDwon, eWeld_Fix, eWeld_Up, eWeld_On, eWeld_Down, eInitAction};
@@ -233,6 +253,30 @@ protected:
         }
     }
 
+///////////////////////////////////////////--0827新增函数--//////////////////////////////////////////////////////
+private:
+    /**
+     * @brief 调平检测函数，根据激光测距数据判断是否具备调平条件或完成调平
+     * @param laserDistance[4] 激光测距数据
+     * @return  -1:不具备调平条件， 0,可执行调平， 1:完成调平
+    */
+    int CheckParallelState(QVector<double>  laserDistance);
+    EDetectionInParallelResult CheckParallelStateDecorator(QVector<double>  laserDistance);
+
+    /**
+     * @brief 定位检测函数，根据相机返回数据，判断是否具备定位条件或完成定位
+     * @param /   内部调用传感器参数m_stMeasuredata
+     * @return  -1:不具备定位条件， 0,可执行定位， 1:完成定位
+     */
+    int CheckPositionState();
+    EDetectionInPositioningResult CheckPositionStateDecorator();
+
+    /**
+     * @brief 终止函数，停止自动过程，切换到手动模式
+     */
+    void TaskTerminate();
+
+///////////////////////////////////////////--状态机部分--//////////////////////////////////////////////////////
 private:
     /**
      * @brief 状态转换函数

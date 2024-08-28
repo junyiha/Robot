@@ -841,4 +841,142 @@ void CTask::closeThread() {
 }
 
 
+//修改827
+int CTask::CheckParallelState(QVector<double> laserDistance)
+{
+    //检查输入数据
+    if(laserDistance.size() < 4) {
+        log->error("激光数据数量输入有误");
+        return -1;
+    }
+    for(int i=0;i<4;++i) {
+        if(laserDistance[i] < 300) {
+            log->error("{}激光数据有误,或壁面距离太远",i);
+            return -1;
+        }
+    }
 
+    //计算激光距离最大偏差
+    double maxDistance = 1000;
+    double minDistance = 0;
+    for(int i=0;i<4;++i) {
+        maxDistance = maxDistance>laserDistance[i]?maxDistance:laserDistance[i];
+        minDistance = minDistance<laserDistance[i]?minDistance:laserDistance[i];
+    }
+    if(maxDistance - minDistance>50 && minDistance/maxDistance < 0.5)
+    {
+        log->error("激光距离最大偏差大于50mm");
+        return -1;
+    }
+    //判断是否完成调平
+    if(maxDistance - minDistance< PARRALLE_DISTANCE)  //最大偏差小于阈值
+    {
+        log->info("激光距离最大偏差小于PARRALLE_DISTANCE，完成调平");
+        return 1;
+    }else
+    {
+        return 0;
+    }
+}
+
+EDetectionInParallelResult CTask::CheckParallelStateDecorator(QVector<double> laserDistance)
+{
+    EDetectionInParallelResult result;
+    int res = CheckParallelState(laserDistance);
+    switch (res)
+    {
+        case -1:
+        {
+            result = EDetectionInParallelResult::eNoWallDetected;
+            break;
+        }
+        case 0:
+        {
+            result = EDetectionInParallelResult::eDistanceMeetsRequirement;
+            break;
+        }
+        case 1:
+        {
+            result = EDetectionInParallelResult::eDeviationIsLessThanThreshold;
+            break;
+        }
+    }
+
+    return result;
+}
+
+/**
+----------*0*--------------------*1*------------------
+------------------------------------------------------
+---*5*---------------------------------*2*------------
+------------------------------------------------------
+----------*4*---------------------*3*-----------------
+------------------------------------------------------
+ */
+int CTask::CheckPositionState()
+{
+    //视觉检测结果有效性检测
+    if(m_stMeasuredata.m_bLineDistance[0]||m_stMeasuredata.m_bLineDistance[4]  == false
+    || m_stMeasuredata.m_bLineDistance[1]||m_stMeasuredata.m_bLineDistance[3]  == false
+    || m_stMeasuredata.m_bLineDistance[2]||m_stMeasuredata.m_bLineDistance[5] == false)
+    {
+        log->error("检测到的边线数据不满足调整需求");
+        return -1;
+    }
+
+    double Ref_Distance = 15;
+
+    //边线偏差是否小于阈值
+    double line_dis_1 = m_stMeasuredata.m_bLineDistance[0]*m_stMeasuredata.m_bLineDistance[0]+ m_stMeasuredata.m_bLineDistance[4]*m_stMeasuredata.m_bLineDistance[4] - Ref_Distance;
+    double line_dis_2 = m_stMeasuredata.m_bLineDistance[1]*m_stMeasuredata.m_bLineDistance[1]+ m_stMeasuredata.m_bLineDistance[3]*m_stMeasuredata.m_bLineDistance[3]- Ref_Distance;
+    double line_dis_3 = m_stMeasuredata.m_bLineDistance[2]*m_stMeasuredata.m_bLineDistance[2]+ m_stMeasuredata.m_bLineDistance[5]*m_stMeasuredata.m_bLineDistance[5] - Ref_Distance;
+
+    if(fabs(line_dis_1) < LINE_DEVIATION_THRESHOLD
+    && fabs(line_dis_2) < LINE_DEVIATION_THRESHOLD
+    && fabs(line_dis_3) < LINE_DEVIATION_THRESHOLD)
+    {
+        log->info("完成调平，边线距离为：{},{},{},{},{},{}",m_stMeasuredata.m_LineDistance[0],m_stMeasuredata.m_LineDistance[1],m_stMeasuredata.m_LineDistance[2],m_stMeasuredata.m_LineDistance[3],m_stMeasuredata.m_LineDistance[4],m_stMeasuredata.m_LineDistance[5]);
+        return 1;
+    }
+    else
+    {
+        log->error("边线距离不满足碰钉要求，边线距离为：{},{},{},{},{},{}",m_stMeasuredata.m_LineDistance[0],m_stMeasuredata.m_LineDistance[1],m_stMeasuredata.m_LineDistance[2],m_stMeasuredata.m_LineDistance[3],m_stMeasuredata.m_LineDistance[4],m_stMeasuredata.m_LineDistance[5]);
+        return 0;
+    }
+}
+
+EDetectionInPositioningResult CTask::CheckPositionStateDecorator()
+{
+    EDetectionInPositioningResult result;
+    int res = CheckPositionState();
+
+    switch (res)
+    {
+        case -1:
+        {
+            result = EDetectionInPositioningResult::eDataIsInvalid;
+            break;
+        }
+        case 0:
+        {
+            result = EDetectionInPositioningResult::eEndAdjustmentDataIsValid;
+            break;            
+        }
+        case 1:
+        {
+            result = EDetectionInPositioningResult::eDeviationIsLessThanThreshold;
+            break;
+        }
+    }
+
+    return result;
+}
+
+void CTask::TaskTerminate()
+{
+    // 停止机器人运动
+    m_Robot->setLinkHalt();
+
+    // 磁铁脱开
+    m_Comm->SetMagentAction(0,eMag_Off);
+}

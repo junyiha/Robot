@@ -246,20 +246,21 @@ void CTask::detectionInParallelExecutionCommand()
         case EExecutionCommand::eNULL:
         {
             log->info("调用函数，根据激光数值判断壁面状态");
-            auto detectionResult = m_pdTaskPtr->CheckFlatness();
+            QVector<double>  laserDistance;
+            auto detectionResult = CheckParallelStateDecorator(laserDistance);
             switch (detectionResult)
             {
-                case TASK::EDetectionInParallelResult::eDeviationIsLessThanThreshold:
+                case EDetectionInParallelResult::eDeviationIsLessThanThreshold:
                 {
                     updateTopAndSubState(ETopState::ePositioning, ESubState::eReadyToPositioning);
                     break;
                 }
-                case TASK::EDetectionInParallelResult::eDistanceMeetsRequirement:
+                case EDetectionInParallelResult::eDistanceMeetsRequirement:
                 {
                     updateTopAndSubState(ETopState::eParallel, ESubState::eMotion);
                     break;
                 }
-                case TASK::EDetectionInParallelResult::eNoWallDetected:
+                case EDetectionInParallelResult::eNoWallDetected:
                 {
                     updateTopAndSubState(ETopState::eManual, ESubState::eReady);
                     break;
@@ -361,20 +362,20 @@ void CTask::detectionInPositioningExecutionCommand()
         case EExecutionCommand::eNULL:
         {
             log->info("调用函数，计算边线偏差，根据偏差判断是否完成调整，继续调整，停止调整");
-            auto detectResult = m_pdTaskPtr->CheckLine();
+            auto detectResult = CheckPositionStateDecorator();
             switch (detectResult)
             {
-                case TASK::EDetectionInPositioningResult::eDeviationIsLessThanThreshold:
+                case EDetectionInPositioningResult::eDeviationIsLessThanThreshold:
                 {
                     updateTopAndSubState(ETopState::eReadToMagentOn, ESubState::eNULL);
                     break;
                 }
-                case TASK::EDetectionInPositioningResult::eEndAdjustmentDataIsValid:
+                case EDetectionInPositioningResult::eEndAdjustmentDataIsValid:
                 {
                     updateTopAndSubState(ETopState::ePositioning, ESubState::eMotion);
                     break;
                 }
-                case TASK::EDetectionInPositioningResult::eDataIsInvalid:
+                case EDetectionInPositioningResult::eDataIsInvalid:
                 {
                     updateTopAndSubState(ETopState::eManual, ESubState::eReady);
                     break;
@@ -617,6 +618,9 @@ void CTask::pauseExecutionCommand()
 void CTask::terminateCommand()
 {
     log->warn("停止运行，并进行状态跳转\n");
+    
+    TaskTerminate();
+
     updateTopAndSubState(ETopState::eManual, ESubState::eReady);
 }
 
