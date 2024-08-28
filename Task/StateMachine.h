@@ -18,6 +18,7 @@
 #include <functional>
 #include <map>
 
+#include "spdlog/spdlog.h"
 #include "PDTask.h"
 
 namespace TASK
@@ -35,6 +36,7 @@ enum class ETopState
 
 enum class ESubState
 {
+    eNULL = 0,          // 空状态
     eNotReady = 0,      // 未就绪
     eReady,             // 就绪
     eMotion,            // 运动
@@ -55,6 +57,7 @@ enum class ESubState
 enum class EExecutionCommand
 {
     eNULL = 0,          // 空指令
+    eManual = 0,        // 手动指令
     eParallel,          // 调平
     eTerminate,         // 终止
     ePause,             // 暂停
@@ -116,6 +119,12 @@ private:
      */
     void quitStateTransition();
 
+
+    /**
+     * @brief 手动指令
+     * 
+     */
+    void readyExecutionCommand();
 
     /**
      * @brief 调平--待调平状态下，可执行指令
@@ -221,12 +230,13 @@ public:
 
 private:
     ETopState m_etopState{ETopState::eManual};
-    ESubState m_esubState{ESubState::eNotReady};
+    ESubState m_esubState{ESubState::eReady};
     EExecutionCommand m_eexecutionCommand{EExecutionCommand::eNULL};
 
 private:
     std::mutex m_mutex;
     std::shared_ptr<PDTask> m_pdTaskPtr;
+    std::shared_ptr<spdlog::logger> log;
 
     std::map<ETopState, std::string> TopStateStringMap 
     {
@@ -239,6 +249,7 @@ private:
     };
     std::map<ESubState, std::string> SubStateStringMap
     {
+        {ESubState::eNULL, "空状态"},
         {ESubState::eNotReady, "未就绪"},
         {ESubState::eReady, "就绪"},
         {ESubState::eMotion, "运动"},
@@ -254,6 +265,7 @@ private:
     std::map<EExecutionCommand, std::string> ExecutionCommandStringMap
     {
         {EExecutionCommand::eNULL, "空指令"},
+        {EExecutionCommand::eManual, "手动指令"},
         {EExecutionCommand::eParallel, "调平"},
         {EExecutionCommand::eTerminate, "终止"},
         {EExecutionCommand::ePause, "暂停"},

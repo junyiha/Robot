@@ -9,6 +9,10 @@
 #include <QThread>
 #include <QTextCodec>
 #include <clocale>
+
+
+#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE//必须定义这个宏,才能输出文件名和行号
+
 void initLog()
 {
     //创建控制台日志记录器
@@ -56,20 +60,21 @@ void vision_demo(){
 #include "Task/StateMachine.h"
 int main(int argc, char *argv[])
 {
+    initLog();
+    auto log = spdlog::get("logger");
+
     auto pdTaskPtr = std::make_shared<TASK::PDTask>();
     TASK::StateMachine stateMachine(pdTaskPtr);
-
-    stateMachine.updateTopAndSubState(TASK::ETopState::eParallel, TASK::ESubState::eReadyToParallel);
-    stateMachine.updateExecutionCommand(TASK::EExecutionCommand::eParallel);
 
     bool quit_flag{false};
 
     auto loopFunc = [](TASK::StateMachine &stateMachine, bool &quit_flag){
+        auto log = spdlog::get("logger");
         while (true)
         {
             if (quit_flag)
             {
-                std::clog << "quiting...\n";
+                log->info("quiting...\n");
                 break;
             }
             stateMachine.stateTransition();
@@ -79,15 +84,15 @@ int main(int argc, char *argv[])
     std::thread loopThread(loopFunc, std::ref(stateMachine), std::ref(quit_flag));
 
     auto getStateFunc = [](TASK::StateMachine &stateMachine, bool &quit_flag){
+        auto log = spdlog::get("logger");
         while (true)
         {
             if (quit_flag)
             {
-                std::clog << "get state thread quiting...\n";
+                log->info("get state thread quiting...\n");
                 break;
             }
-            std::clog << "state: " << stateMachine.getCurrentStateString() << "\n"
-                      << "command: " << stateMachine.getCurrentExecutionCommandString() << "\n\n";
+            log->info("state: {},command: {}\n\n", stateMachine.getCurrentStateString(), stateMachine.getCurrentExecutionCommandString());
             std::this_thread::sleep_for(std::chrono::seconds(1));
         }
     };
@@ -99,11 +104,16 @@ int main(int argc, char *argv[])
         if (quit_flag)
             break;
 
-        std::clog << "input manual command:\n";
+        log->info("input manual command:\n");
         std::cin >> input;
-        std::clog << "input command: " << input << "\n";
+        log->info("input command: {}\n", input);
         switch (input)
         {
+            case 'P':
+            {
+                stateMachine.updateExecutionCommand(TASK::EExecutionCommand::eParallel);
+                break;
+            }
             case 'p':
             {
                 stateMachine.updateExecutionCommand(TASK::EExecutionCommand::ePositioning);

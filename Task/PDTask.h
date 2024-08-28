@@ -72,6 +72,15 @@ public:
      * @return false 
      */
     bool AutoDoWeld();
+
+
+    /**
+     * @brief 检查自动碰钉任务是否完成
+     * 
+     * @return true 
+     * @return false 
+     */
+    bool CheckAutoDoWeld();
 };
 
 }  // namespace TASK

@@ -61,6 +61,13 @@ bool PDTask::MagentOn()
 bool PDTask::AutoDoWeld()
 {
     std::clog << "执行 自动碰钉 指令...\n";
+
+    return true;
+}
+
+bool PDTask::CheckAutoDoWeld()
+{
+    std::clog << "正在执行 自动碰钉 指令...\n";
     std::this_thread::sleep_for(std::chrono::seconds(3));
     std::clog << "自动碰钉指令执行成功！！！\n";
 

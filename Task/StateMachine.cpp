@@ -4,7 +4,8 @@ namespace TASK
     
 StateMachine::StateMachine(std::shared_ptr<PDTask> pdTaskPtr) : m_pdTaskPtr(pdTaskPtr)
 {
-
+    log = spdlog::get("logger");
+    log->info("State Machine construction!\n");
 }
 
 StateMachine::~StateMachine()
@@ -46,6 +47,10 @@ void StateMachine::stateTransition()
             quitStateTransition();
             break;
         }
+        default:
+        {
+            log->warn("第一层状态数据不正确!!!");
+        }
     }
 }
 
@@ -55,11 +60,17 @@ void StateMachine::manualStateTransition()
     {
         case ESubState::eNotReady:
         {
+            // 所有手动操作指令
             break;
         }
         case ESubState::eReady:
         {
+            readyExecutionCommand();
             break;
+        }
+        default:
+        {
+            log->warn("第二层状态不合法!!!");
         }
     }
 }
@@ -83,6 +94,10 @@ void StateMachine::parallelStateTransition()
             motionInParallelExecutionCommand();
             break;
         }
+        default:
+        {
+            log->warn("第二层状态不合法!!!");
+        }
     }
 }
 
@@ -104,6 +119,10 @@ void StateMachine::positioningStateTransition()
         {
             motionInPositioningExecutionCommand();
             break;
+        }
+        default:
+        {
+            log->warn("第二层状态不合法!!!");
         }
     }
 }
@@ -132,6 +151,10 @@ void StateMachine::doWeldStateTransition()
             terminationWeldExecutionCommand();
             break;
         }
+        default:
+        {
+            log->warn("第二层状态不合法!!!");
+        }
     }
 }
 
@@ -149,6 +172,33 @@ void StateMachine::quitStateTransition()
             pauseExecutionCommand();
             break;
         }
+        default:
+        {
+            log->warn("第二层状态不合法!!!");
+        }
+    }
+}
+
+void StateMachine::readyExecutionCommand()
+{
+    switch (m_eexecutionCommand)
+    {
+        case EExecutionCommand::eManual:
+        {
+            // 所有手动操作指令
+
+            break;
+        }
+        case EExecutionCommand::eParallel:
+        {
+            updateTopAndSubState(ETopState::eParallel, ESubState::eDetection);
+            updateExecutionCommand(EExecutionCommand::eNULL);
+            break;
+        }
+        default:
+        {
+            log->warn("{} {}: 执行指令不合法!指令: {}",__FILE__, __LINE__, ExecutionCommandStringMap.find(m_eexecutionCommand)->second);
+        }
     }
 }
 
@@ -161,6 +211,7 @@ void StateMachine::readyToParallelExecutionCommand()
             if (m_pdTaskPtr->Parallel())
             {
                 updateTopAndSubState(ETopState::eParallel, ESubState::eDetection);
+                updateExecutionCommand(EExecutionCommand::eNULL);
                 break;
             }
             else 
@@ -175,6 +226,10 @@ void StateMachine::readyToParallelExecutionCommand()
         case EExecutionCommand::ePause:
         {
             break;
+        }
+        default:
+        {
+            log->warn("{} {}: 执行指令不合法!指令: {}",__FILE__, __LINE__, ExecutionCommandStringMap.find(m_eexecutionCommand)->second);
         }
     }
 }
@@ -204,7 +259,7 @@ void StateMachine::detectionInParallelExecutionCommand()
         }
         default:
         {
-
+            log->warn("{} {}: 执行指令不合法!指令: {}",__FILE__, __LINE__, ExecutionCommandStringMap.find(m_eexecutionCommand)->second);
         }
     }    
 }
@@ -225,7 +280,8 @@ void StateMachine::detectionInPositioningExecutionCommand()
         {
             if (m_pdTaskPtr->CheckLine())
             {
-                updateTopAndSubState(ETopState::eReadToMagentOn, ESubState::eReadyToPositioning);
+                updateTopAndSubState(ETopState::eReadToMagentOn, ESubState::eNULL);
+                updateExecutionCommand(EExecutionCommand::eNULL);
             }
             else 
             {
@@ -234,7 +290,7 @@ void StateMachine::detectionInPositioningExecutionCommand()
         }
         default:
         {
-
+            log->warn("{} {}: 执行指令不合法!指令: {}",__FILE__, __LINE__, ExecutionCommandStringMap.find(m_eexecutionCommand)->second);
         }
     }        
 }
@@ -251,6 +307,10 @@ void StateMachine::motionInParallelExecutionCommand()
         {
             break;
         }
+        default:
+        {
+            log->warn("{} {}: 执行指令不合法!指令: {}",__FILE__, __LINE__, ExecutionCommandStringMap.find(m_eexecutionCommand)->second);
+        }
     }
 }
 
@@ -266,6 +326,10 @@ void StateMachine::motionInPositioningExecutionCommand()
         {
             break;
         }
+        default:
+        {
+            log->warn("{} {}: 执行指令不合法!指令: {}",__FILE__, __LINE__, ExecutionCommandStringMap.find(m_eexecutionCommand)->second);
+        }
     }
 }
 
@@ -278,6 +342,7 @@ void StateMachine::readyToPositioningExecutionCommand()
             if (m_pdTaskPtr->Positioning())
             {
                 updateTopAndSubState(ETopState::ePositioning, ESubState::eDetection);
+                updateExecutionCommand(EExecutionCommand::eNULL);
             }
             else 
             {
@@ -292,6 +357,10 @@ void StateMachine::readyToPositioningExecutionCommand()
         case EExecutionCommand::ePause:
         {
             break;
+        }
+        default:
+        {
+            log->warn("{} {}: 执行指令不合法!指令: {}",__FILE__, __LINE__, ExecutionCommandStringMap.find(m_eexecutionCommand)->second);
         }
     }
 }
@@ -317,6 +386,7 @@ void StateMachine::readyToMagentOnExecutionCommand()
             if (m_pdTaskPtr->MagentOn())
             {
                 updateTopAndSubState(ETopState::eDoWeld, ESubState::eReadyToDoWeld);
+                updateExecutionCommand(EExecutionCommand::eNULL);
             }
             else 
             {
@@ -332,6 +402,10 @@ void StateMachine::readyToMagentOnExecutionCommand()
         {
             break;
         }
+        default:
+        {
+            log->warn("{} {}: 执行指令不合法!指令: {}",__FILE__, __LINE__, ExecutionCommandStringMap.find(m_eexecutionCommand)->second);
+        }
     }
 }
 
@@ -344,6 +418,7 @@ void StateMachine::readyToWeldExecutionCommand()
             if (m_pdTaskPtr->AutoDoWeld())
             {
                 updateTopAndSubState(ETopState::eDoWeld, ESubState::eDoingWeld);
+                updateExecutionCommand(EExecutionCommand::eNULL);
             }
             else 
             {
@@ -358,6 +433,10 @@ void StateMachine::readyToWeldExecutionCommand()
         case EExecutionCommand::eTerminate:
         {
             break;
+        }
+        default:
+        {
+            log->warn("{} {}: 执行指令不合法!指令: {}",__FILE__, __LINE__, ExecutionCommandStringMap.find(m_eexecutionCommand)->second);
         }
     }
 }
@@ -380,11 +459,20 @@ void StateMachine::doingWeldExecutionCommand()
         }
         case EExecutionCommand::eNULL:
         {
-            updateTopAndSubState(ETopState::eQuit, ESubState::eQuiting);
+            if (m_pdTaskPtr->CheckAutoDoWeld())
+            {
+                updateTopAndSubState(ETopState::eQuit, ESubState::eQuiting);
+                updateExecutionCommand(EExecutionCommand::eNULL);
+            }
+            else 
+            {
+                std::bad_exception();
+            }
+            break;
         }
         default:
         {
-
+            log->warn("{} {}: 执行指令不合法!指令: {}",__FILE__, __LINE__, ExecutionCommandStringMap.find(m_eexecutionCommand)->second);
         }
     } 
 }
@@ -400,6 +488,10 @@ void StateMachine::terminationWeldExecutionCommand()
         case EExecutionCommand::eTerminate:
         {
             break;
+        }
+        default:
+        {
+            log->warn("{} {}: 执行指令不合法!指令: {}",__FILE__, __LINE__, ExecutionCommandStringMap.find(m_eexecutionCommand)->second);
         }
     }
 }
@@ -422,7 +514,7 @@ void StateMachine::quitingExecutionCommand()
         }
         default:
         {
-            
+            log->warn("{} {}: 执行指令不合法!指令: {}",__FILE__, __LINE__, ExecutionCommandStringMap.find(m_eexecutionCommand)->second);
         }
     }
 }
@@ -438,6 +530,10 @@ void StateMachine::pauseExecutionCommand()
         case EExecutionCommand::eTerminate:
         {
             break;
+        }
+        default:
+        {
+            log->warn("{} {}: 执行指令不合法!指令: {}",__FILE__, __LINE__, ExecutionCommandStringMap.find(m_eexecutionCommand)->second);
         }
     }
 }
