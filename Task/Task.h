@@ -164,6 +164,9 @@ protected:
     QMutex          mutex_read;
     QMutex          mutex_write;
 
+    stManualOperator m_ManualOperator;
+    stManualOperator m_preManualOperator;
+
     /**
     * @brief 运行函数
     */

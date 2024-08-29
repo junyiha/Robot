@@ -363,7 +363,116 @@ void CTask::SemiAutoProgrcess()
 
 void CTask::Manual()
 {
+    if (m_ManualOperator.StopCommand)
+    {
+        m_Robot->setRobotStop();			
+        return;
+    }
 
+    if (m_ManualOperator.HaltCommand)
+    {
+        m_Robot->setRobotStop();			
+        return;
+    }
+
+    uint STEER_LEFT_INDEX, STEER_RIGHT_INDEX;
+    uint WHEEL_LEFT_INDEX, WHEEL_RIGHT_INDEX;
+
+    if (std::fabs(m_ManualOperator.VechDirect - m_preManualOperator.VechDirect) < 1)
+    {
+        m_Robot->setJointMoveAbs(STEER_LEFT_INDEX, m_Manual.MoveDirection,10);//速度需改为参数			
+        m_Robot->setJointMoveAbs(STEER_RIGHT_INDEX,m_Manual.MoveDirection,10);//速度需改为参数			
+    }
+
+    double vel_left,vel_right ;			
+    if(m_JointGroupStatus.AxisGroup[STEER_LEFT_INDEX].eState == eAxis_STANDSTILL &&			
+            m_JointGroupStatus.AxisGroup[STEER_RIGHT_INDEX].eState == eAxis_STANDSTILL)//左右舵轮均不动			
+    {		
+        if (m_ManualOperator.bVechFlag || m_ManualOperator.bRotateFlag)
+        {
+            //计算轮速			
+            if(fabs(m_ManualOperator.VechDirect)>M_PI/6)//舵轮角度大于45°时禁止差速转向			
+            {			
+                m_ManualOperator.VechDirect = 0;			
+            }			
+            vel_left = m_ManualOperator.VechVel- m_ManualOperator.RotateVel; //正转为逆时针			
+            vel_right = m_ManualOperator.VechVel+ m_ManualOperator.RotateVel;			
+            
+            m_Robot->setJointMoveVel(WHEEL_LEFT_INDEX,vel_left);			
+            m_Robot->setJointMoveVel(WHEEL_RIGHT_INDEX,vel_left);	
+        }
+    }
+
+    if (m_ManualOperator.bLinkMoveFlag && m_ManualOperator.Ready != 0)
+    {
+        m_Robot->setRobotStop();			
+    }
+    else if (m_ManualOperator.Ready == 1)
+    {
+        // 移动到举升位置
+    }
+    else if (m_ManualOperator.Ready == 2)
+    {
+        // 移动到放钉位置
+    }
+    else if (m_ManualOperator.bLinkMoveFlag)
+    {
+        if (m_ManualOperator.bEndMove != m_preManualOperator.bEndMove)
+        {
+            m_Robot->setRobotStop();			
+        }
+        else 
+        {
+            if (m_ManualOperator.bEndMove)
+            {
+                // 末端运动
+            }
+            else 
+            {
+                // 单轴运动
+            }
+        }
+    }
+
+    switch (m_ManualOperator.TaskIndex)
+    {
+        case stManualOperator::Parallel:
+        {
+            break;
+        }
+        case stManualOperator::Positioning:
+        {
+            break;
+        }
+        case stManualOperator::DoWeld:
+        {
+            break;
+        }
+        case stManualOperator::MagentOn:
+        {
+            break;
+        }
+        case stManualOperator::MagentOff:
+        {
+            break;
+        }
+        case stManualOperator::Quit:
+        {
+            break;
+        }
+        case stManualOperator::Pause:
+        {
+            break;
+        }
+        case stManualOperator::Terminate:
+        {
+            break;
+        }
+        default:
+        {
+            // 非法任务指令
+        }
+    }
 }
 
 bool CTask::doWeldAction(qint8 execute)

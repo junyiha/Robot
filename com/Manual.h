@@ -6,6 +6,8 @@
 #include "SerialCom.h"
 #include <QTimer>
 
+#include "ManualProtocol.h"
+
 typedef struct DataofManual
 {
     qint8 MoveVel;
