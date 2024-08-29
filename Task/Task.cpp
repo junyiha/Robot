@@ -87,10 +87,10 @@ void CTask::SemiAutoProgrcess()
     static double tar_pos[6] = {0};
     double tool_tar = 0;
 
-    double Postion_Home[7]    =    {10,0,0,-90.04,-0.52,0,1210}; //碰钉准备位置
-    double Postion_Prepare[7]    = {800,0,0,-90.04,0.12,0.27,1300}; //碰钉准备位置
-    QVector<double> Postion_Home_qv = {10,0,0,-90.04,-0.52,0,1210}; //碰钉准备位置
-    QVector<double> Postion_Prepare_qv = {800,0,0,-90.04,0.12,0.27,1300}; //碰钉准备位置
+    // double Postion_Home[10]    =    {10,0,0,-90.04,-0.52,0,1210, 0, 0, 0}; //碰钉准备位置
+    // double Postion_Prepare[10]    = {800,0,0,-90.04,0.12,0.27,1300, 0, 0, 0}; //碰钉准备位置
+    // QVector<double> Postion_Home_qv = {10,0,0,-90.04,-0.52,0,1210, 0, 0, 0}; //碰钉准备位置
+    // QVector<double> Postion_Prepare_qv = {800,0,0,-90.04,0.12,0.27,1300,0, 0, 0}; //碰钉准备位置
 
 //    double Postion_Home[7]    =    {650,-7,-54,-1.11,0.09,-0.05,1210}; //碰钉准备位置
 //    double Postion_Prepare[7]    = {816,-7,-54,-1.11,0.09,-0.05,1300}; //碰钉准备位置
@@ -597,234 +597,6 @@ stMeasureData CTask::getStMeasureData()
     return re;
 }
 
-//bool CTask::DoAction(int stage)
-//{
-//    static bool enabledetect = false;
-//    static bool isdetected = false;
-//    qDebug()<<"=============== enabledetect ==============  "<<enabledetect;
-//    qDebug()<<"=============== isdetected ================   "<<isdetected;
-//    stMeasureData stMeasuredata;
-
-//    if(ActionIndex.load() == -1 || ActionIndex.load() == -2){//如果中途暂停，暂停时enabledetect以及isdetected的值如果没重置的话，有可能下次执行其他步骤的时候，程序会跳过发送检测请求以及结果校验部分。
-//        enabledetect = false;
-//        isdetected = false;
-//        m_Robot->setLinkHalt();
-//        ActionIndex.store(-2);
-//        for (auto& matrix : m_TargetDeviation) {
-//            matrix.setZero();
-//        }
-//        return false;
-//    }
-
-//    //--------------------------------发送检测请求--------------------------------
-//    if(enabledetect == false)
-//    {
-//        switch(stage){
-//        case -2:{
-//            ActionIndex.store(-10);
-//            m_Robot->setLinkHalt();
-//            return false;
-//        }
-//        case -1:{
-//            qDebug()<<"";
-//            ActionIndex.store(-10);
-//            m_Robot->setLinkStop();
-//            return false;
-//        }
-//        //  【0】 调平，调板间隙
-//        case 0:{
-//            qDebug()<< "stage 0 is beginning";
-//            this->m_Comm->getLasersStatus(&stMeasuredata);//点激光结果获取
-//            this->m_vision->getDetectResult(LIDAR, &stMeasuredata);// 雷达结果获取
-//            qDebug()<< "stage 0 has been finished";
-//        };break;
-
-//        //  【1】 对圆孔
-//        case 1:{
-//            qDebug()<< "stage 1 is beginning";
-//            this->m_Comm->getLasersStatus(&stMeasuredata);//点激光结果获取
-//            this->m_vision->getDetectResult(HOLE, &stMeasuredata);// 圆孔结果获取
-//            qDebug()<< "stage 1 has been finished";
-//        };break;
-
-//        //  【2】 进孔
-//        case 2:{
-//            qDebug()<< "stage 2 is beginning";
-//            this->m_Comm->getLasersStatus(&stMeasuredata);//点激光结果获取
-//            QVector<st_ReadAxis> stJointstatus = m_Comm->getLinkJointStatus(0); //link轴组数据
-//            QVector<st_ReadAxis> stJointPitch = m_Comm->getLinkJointStatus(1);//腰部俯仰数据
-//            stJointstatus.append(stJointPitch.back());
-//            stMeasuredata.m_JointStatusTool = stJointstatus[TOOL_INDEX].Position;
-//            qDebug()<< "stage 2 has been finished";
-//        };break;
-
-//        //  【3】 对边
-//        case 3:{
-//            qDebug()<< "stage 3 is beginning";
-//            this->m_Comm->getLasersStatus(&stMeasuredata);//点激光结果获取
-//            this->m_vision->getDetectResult(LINE,&stMeasuredata);// 边线结果获取
-//            qDebug()<< "stage 3 has been finished";
-//        };break;
-
-//        //  【4】 贴合壁面
-//        case 4:{
-//            qDebug()<< "stage 4 is beginning";
-//            this->m_Comm->getLasersStatus(&stMeasuredata);//点激光结果获取
-//            QVector<st_ReadAxis> stJointstatus = m_Comm->getLinkJointStatus(0); //link轴组数据
-//            QVector<st_ReadAxis> stJointPitch = m_Comm->getLinkJointStatus(1);//腰部俯仰数据
-//            stJointstatus.append(stJointPitch.back());
-//            stMeasuredata.m_JointStatusTool = stJointstatus[TOOL_INDEX].Position;
-//            qDebug()<< "stage 4 has been finished";
-//        };break;
-
-//        //  【5】 对边
-//        case 5:{
-//            qDebug()<< "stage 5 is beginning";
-//            this->m_Comm->getLasersStatus(&stMeasuredata);//点激光结果获取
-//            this->m_vision->getDetectResult(LINE,&stMeasuredata);// 边线结果获取
-//            qDebug()<< "stage 5 has been finished";
-//        };break;
-
-//        default:{
-//            qDebug()<<"检测请求错误";
-//        };break;
-
-//        }
-
-//        qDebug()<< "【begin】CMeasure::calPoseDeviation(stMeasuredata);//计算机器人调整量";
-
-//        m_TargetDeviation = CMeasure::calPoseDeviation(stMeasuredata);//计算机器人调整量
-//        m_Robot->update_PoseDev(m_TargetDeviation[stage]);//更新目标位姿数据
-//        qDebug()<< "【end】CMeasure::calPoseDeviation(stMeasuredata);//计算机器人调整量";
-
-//        this->mutex_write.lock();
-//        this->m_stMeasuredata = stMeasuredata;
-//        this->mutex_write.unlock();
-
-//        enabledetect = true;
-//        return false;
-//    }
-
-//    //--------------------------------判断依据视觉结果计算出的调整量是否可以信任--------------------------------
-//    qDebug()<<"PrintTargetPos(6,m_TargetDeviation)";
-//    this->PrintTargetPos(6,m_TargetDeviation);
-
-//    if(isdetected == false){
-//        switch(stage){
-//        //  【0】 调平，调板间隙
-//        case 0:{
-//            if(m_TargetDeviation[6](1,0)==1)isdetected = true;
-//            else isdetected = false;
-//        };break;
-
-//        //  【1】 对圆孔
-//        case 1:{
-//            if(m_TargetDeviation[6](1,1)==1)isdetected = true;
-//            else isdetected = false;
-//        };break;
-
-//        //  【2】 进孔 Z方向平动 50
-//        case 2:{
-//            if(m_TargetDeviation[6](1,2)==1)isdetected = true;
-//            else isdetected = false;
-
-//        };break;
-
-//        //  【3】 对边
-//        case 3:{
-//            if(m_TargetDeviation[6](1,3)==1)isdetected = true;
-//            else isdetected = false;
-//        };break;
-
-//        //  【4】 贴合壁面  Z方向平动 30
-//        case 4:{
-//            if(m_TargetDeviation[6](2,0)==1)isdetected = true;
-//            else isdetected = false;
-
-//        };break;
-
-//        //  【5】 对边
-//        case 5:{
-//            if(m_TargetDeviation[6](2,1)==1)isdetected = true;
-//            else isdetected = false;
-//        };break;
-
-//        default:{
-//            qDebug()<<"有视觉结果返回值 但无有效调整量";
-//        };break;
-//        }
-//    }
-//    if(isdetected == false){
-//         enabledetect = false;
-//         return false;
-//    }
-//    else{
-//    }
-
-//    //--------------------------------根据检测结果移动机器人--------------------------------
-//    if(stage == 0 || stage == 1 || stage == 3 || stage == 5){
-//        qDebug()<<QString("【Type1】DoAction( %1)").arg(stage);
-//        m_Robot->setLinkMoveAbs(stage,END_VEL_LIMIT);
-//    }
-//    else if(stage == 2){
-//        qDebug()<<QString("【Type2】DoAction( %1)").arg(stage);
-//        m_Robot->setJointMoveAbs(TOOL_INDEX,stMeasuredata.m_JointStatusTool + m_TargetDeviation[stage](2,3),3);
-//    }
-//    else if(stage == 4){
-//        qDebug()<<QString("【Type3】DoAction( %1)").arg(stage);
-//        m_Robot->setJointMoveAbs(TOOL_INDEX,stMeasuredata.m_JointStatusTool + m_TargetDeviation[stage](2,3),3);
-//    }else{
-//        ActionIndex.store(-2);
-//        m_Robot->setLinkHalt();
-//    }
-
-//    //--------------------------------检测机器人运动是否完成--------------------------------
-//    bool finishFlag = false;
-
-//    if(stage == 0 || stage == 1 || stage == 3 || stage == 5){
-//        if(m_LinkStatus.eLinkActState == eLINK_STANDSTILL
-//                &&m_LinkStatus.stLinkActKin.bDone == true){
-//            finishFlag = true;
-//        }
-//    }else if(stage == 2 || stage == 4){
-//        QVector<st_ReadAxis> stJointstatus = m_Comm->getLinkJointStatus(0); //link轴组数据
-//        QVector<st_ReadAxis> stJointPitch = m_Comm->getLinkJointStatus(1);//腰部俯仰数据
-//        stJointstatus.append(stJointPitch.back());
-
-//        if(stage == 2){
-//            if(fabs(stJointstatus[TOOL_INDEX].Position - (stMeasuredata.m_JointStatusTool + m_TargetDeviation[stage](2,3))) < 0.05 ){
-//                finishFlag = true;
-//            }else{
-//                qDebug()<<"*****************  【 stage  "<<stage<<" is not finished 】*****************";
-//            }
-//        }
-//        else if(stage == 4){
-//            if(fabs(stJointstatus[TOOL_INDEX].Position - (stMeasuredata.m_JointStatusTool + m_TargetDeviation[stage](2,3))) < 0.05){
-//                finishFlag = true;
-//            }else{
-//                    qDebug()<<"*****************  【 stage  "<<stage<<" is not finished 】*****************";
-//            }
-//        }else{
-//             enabledetect = false;
-//             isdetected = false;
-//             ActionIndex.store(-2);
-//             m_Robot->setLinkHalt();
-//        }
-//    }
-
-//    //运动到位标志符检测
-//    if(finishFlag == true){
-//         qDebug()<<"----finishFlag---- : "<<  stage;
-//         enabledetect = false;
-//         isdetected = false;
-//         ActionIndex.store(-2);
-//         m_Robot->setLinkHalt();
-//         qDebug()<<" ----------------------doaction finished---------------------------";
-//         return true;
-//    }
-//    return false;
-//}
-
 void CTask::PrintTargetPos(uint index,QVector<Eigen::Matrix4d> m_TargetDeviation)
 {
     qDebug()<<"----------------------PrintTargetPos : [ "+QString::number(index)+" ]---------------------------";
@@ -904,21 +676,20 @@ EDetectionInParallelResult CTask::CheckParallelStateDecorator(QVector<double> la
 
     return result;
 }
-
 /**
-----------*0*--------------------*1*------------------
+----------*0*--------------------*2*------------------
 ------------------------------------------------------
----*5*---------------------------------*2*------------
+---*4*---------------------------------*5*------------
 ------------------------------------------------------
-----------*4*---------------------*3*-----------------
+----------*1*---------------------*3*-----------------
 ------------------------------------------------------
  */
 int CTask::CheckPositionState()
 {
     //视觉检测结果有效性检测
-    if(m_stMeasuredata.m_bLineDistance[0]||m_stMeasuredata.m_bLineDistance[4]  == false
-    || m_stMeasuredata.m_bLineDistance[1]||m_stMeasuredata.m_bLineDistance[3]  == false
-    || m_stMeasuredata.m_bLineDistance[2]||m_stMeasuredata.m_bLineDistance[5] == false)
+    if(m_stMeasuredata.m_bLineDistance[0]||m_stMeasuredata.m_bLineDistance[1]  == false
+    || m_stMeasuredata.m_bLineDistance[2]||m_stMeasuredata.m_bLineDistance[3]  == false
+    || m_stMeasuredata.m_bLineDistance[4]||m_stMeasuredata.m_bLineDistance[5] == false)
     {
         log->error("检测到的边线数据不满足调整需求");
         return -1;
@@ -927,9 +698,17 @@ int CTask::CheckPositionState()
     double Ref_Distance = 15;
 
     //边线偏差是否小于阈值
-    double line_dis_1 = m_stMeasuredata.m_bLineDistance[0]*m_stMeasuredata.m_bLineDistance[0]+ m_stMeasuredata.m_bLineDistance[4]*m_stMeasuredata.m_bLineDistance[4] - Ref_Distance;
-    double line_dis_2 = m_stMeasuredata.m_bLineDistance[1]*m_stMeasuredata.m_bLineDistance[1]+ m_stMeasuredata.m_bLineDistance[3]*m_stMeasuredata.m_bLineDistance[3]- Ref_Distance;
-    double line_dis_3 = m_stMeasuredata.m_bLineDistance[2]*m_stMeasuredata.m_bLineDistance[2]+ m_stMeasuredata.m_bLineDistance[5]*m_stMeasuredata.m_bLineDistance[5] - Ref_Distance;
+    double line_dis_1 = (m_stMeasuredata.m_bLineDistance[0] * m_stMeasuredata.m_bLineDistance[0] - 
+                         m_stMeasuredata.m_bLineDistance[1] * m_stMeasuredata.m_bLineDistance[1]) / 
+                         (static_cast<int>(m_stMeasuredata.m_bLineDistance[0]) + static_cast<int>(m_stMeasuredata.m_bLineDistance[1]));
+
+    double line_dis_2 = (m_stMeasuredata.m_bLineDistance[2] * m_stMeasuredata.m_bLineDistance[2] - 
+                         m_stMeasuredata.m_bLineDistance[3]*m_stMeasuredata.m_bLineDistance[3]) / 
+                         (static_cast<int>(m_stMeasuredata.m_bLineDistance[2]) + static_cast<int>(m_stMeasuredata.m_bLineDistance[3]));
+
+    double line_dis_3 = (m_stMeasuredata.m_bLineDistance[4] * m_stMeasuredata.m_bLineDistance[4] - 
+                         m_stMeasuredata.m_bLineDistance[5] * m_stMeasuredata.m_bLineDistance[5]) / 
+                         (static_cast<int>(m_stMeasuredata.m_bLineDistance[4]) + static_cast<int>(m_stMeasuredata.m_bLineDistance[5]));
 
     if(fabs(line_dis_1) < LINE_DEVIATION_THRESHOLD
     && fabs(line_dis_2) < LINE_DEVIATION_THRESHOLD
@@ -943,6 +722,7 @@ int CTask::CheckPositionState()
         log->error("边线距离不满足碰钉要求，边线距离为：{},{},{},{},{},{}",m_stMeasuredata.m_LineDistance[0],m_stMeasuredata.m_LineDistance[1],m_stMeasuredata.m_LineDistance[2],m_stMeasuredata.m_LineDistance[3],m_stMeasuredata.m_LineDistance[4],m_stMeasuredata.m_LineDistance[5]);
         return 0;
     }
+
 }
 
 EDetectionInPositioningResult CTask::CheckPositionStateDecorator()
