@@ -82,6 +82,38 @@ int CManual::RecvDataRefactor()
     m_InputData.RobotMove[5] = static_cast<qint8>(readbuff[9]);
     m_InputData.MoveDirection = static_cast<quint8>(readbuff[10]);
 
+    ////////////////////////////////--新协议--//////////////////////////////////////////////
+    m_manualOperator.TaskIndex = static_cast<quint8>(readbuff[7]);
+    m_manualOperator.bEndMove = static_cast<int>(static_cast<quint8>(readbuff[8]) & 0b0000'0011) == 0 ? true : false;
+    m_manualOperator.Ready = static_cast<int>(static_cast<quint8>(readbuff[8]) & 0b0000'1100);
+    qint16 temp_val;
+    temp_val = SpliceByte(static_cast<quint8>(readbuff[23]), static_cast<quint8>(readbuff[24]));
+    m_manualOperator.VechVel =  temp_val / 100.0;
+    m_manualOperator.bVechFlag = temp_val == 0 ? false : true;
+    
+    temp_val = SpliceByte(static_cast<quint8>(readbuff[25]), static_cast<quint8>(readbuff[26]));
+    m_manualOperator.RotateVel = temp_val / 100.0;
+    m_manualOperator.bRotateFlag = temp_val == 0 ? false : true;
+
+    temp_val = SpliceByte(static_cast<quint8>(readbuff[9]), static_cast<quint8>(readbuff[10]));
+    m_manualOperator.VechDirect = temp_val / 100.0;
+
+    qint16 temp_val_x = SpliceByte(static_cast<quint8>(readbuff[11]), static_cast<quint8>(readbuff[12]));
+    m_manualOperator.LinkMove.at(0) = temp_val_x / 100.0;
+    qint16 temp_val_y = SpliceByte(static_cast<quint8>(readbuff[13]), static_cast<quint8>(readbuff[14]));
+    m_manualOperator.LinkMove.at(1) = temp_val_y / 100.0;
+    qint16 temp_val_z = SpliceByte(static_cast<quint8>(readbuff[15]), static_cast<quint8>(readbuff[16]));
+    m_manualOperator.LinkMove.at(2) = temp_val_z / 100.0;
+
+    qint16 temp_val_rx = SpliceByte(static_cast<quint8>(readbuff[17]), static_cast<quint8>(readbuff[18]));
+    m_manualOperator.LinkMove.at(3) = temp_val_rx / 100.0;
+    qint16 temp_val_ry = SpliceByte(static_cast<quint8>(readbuff[19]), static_cast<quint8>(readbuff[20]));
+    m_manualOperator.LinkMove.at(4) = temp_val_ry / 100.0;
+    qint16 temp_val_rz = SpliceByte(static_cast<quint8>(readbuff[21]), static_cast<quint8>(readbuff[22]));
+    m_manualOperator.LinkMove.at(5) = temp_val_rz / 100.0;    
+
+    ///////////////////////////////////////////////////////////////////////////////////////
+
     //readbuff[11]未定义，跳过
     m_InputData.EndMove = readbuff[12]&0b01000000; //0x40 readbuff[12]&0b00100000
     m_InputData.Auto    = readbuff[12]&0b00100000; //0x20 0b10000000
@@ -120,4 +152,14 @@ void CManual::ReadDataTest()
     qint8 AISsize = static_cast<qint8>(data[4]);
     qint8 HardwareCode = static_cast<qint8>(data[5]);
 
+    qint8 DOData = static_cast<qint8>(data[6]); // 0x01: 电源, 0x02: 预留, 0x04: 预留, 0x08: 运行
+    quint8 key1 = 0b00000011;
+    quint8 key1 = 0b00001100;
+
+
+}
+
+qint16 CManual::SpliceByte(qint8 high_byte, qint8 low_byte)
+{
+    return (static_cast<qint16>(high_byte) << 8) | low_byte;
 }

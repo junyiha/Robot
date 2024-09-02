@@ -98,6 +98,9 @@ protected:
 
 ////////////////////////////--重构版本--//////////////////////////////////////////////
 
+private:
+    stManualOperator m_manualOperator;
+
 public:
     int RecvDataRefactor();
 
