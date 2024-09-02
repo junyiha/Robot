@@ -8,10 +8,6 @@
 /* Parameter for Robot 
 */
 
-//link1 9个电机    link2 1个腰俯仰电机   link3 4个轮子电机
-#define LINK_FREEDOM1_NUM   7
-#define LINK_FREEDOM2_NUM   4
-#define LINK_FREEDOM3_NUM   0
 const long MAX_FREEDOM_LINK = 20;			//Link 最大自由度
 const long MAX_FREEDOM_ROBOT = 30;			//robot最大自由度
 const long LOST_COMM_THRESHOLD = 200;		//通讯超时周期数
@@ -21,8 +17,9 @@ const double MAX = 10000000000;
 const double MIN = 10000000000;
 //------------------------------------------------------------------------------//
 //LINK自由度配置
+//link0 robot--10个电机    link1 地盘--4个电机
 //------------------------------------------------------------------------------//
-const long LINK_FREEDOM[6] = { LINK_FREEDOM1_NUM, LINK_FREEDOM2_NUM, LINK_FREEDOM3_NUM, 0, 0, 0};
+const long LINK_FREEDOM[6] = { 10, 6, 0, 0, 0, 0};
 
 //------------------------------------------------------------------------------//
 //轴限位

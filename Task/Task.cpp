@@ -385,8 +385,8 @@ void CTask::Manual()
     }
 
     double vel_left,vel_right ;			
-    if(m_JointGroupStatus.AxisGroup[STEER_LEFT_INDEX].eState == eAxis_STANDSTILL &&			
-            m_JointGroupStatus.AxisGroup[STEER_RIGHT_INDEX].eState == eAxis_STANDSTILL)//左右舵轮均不动			
+    if(m_JointGroupStatus[STEER_LEFT_INDEX].eState == eAxis_STANDSTILL &&			
+            m_JointGroupStatus[STEER_RIGHT_INDEX].eState == eAxis_STANDSTILL)//左右舵轮均不动			
     {		
         if (m_ManualOperator.bVechFlag || m_ManualOperator.bRotateFlag)
         {
@@ -410,10 +410,12 @@ void CTask::Manual()
     else if (m_ManualOperator.Ready == 1)
     {
         // 移动到举升位置
+        m_Robot->setLinkMoveAbs(Postion_Home,END_VEL_LIMIT);
     }
     else if (m_ManualOperator.Ready == 2)
     {
         // 移动到放钉位置
+        m_Robot->setLinkMoveAbs(Postion_Prepare,END_VEL_LIMIT);
     }
     else if (m_ManualOperator.bLinkMoveFlag)
     {
@@ -423,13 +425,29 @@ void CTask::Manual()
         }
         else 
         {
+            double jointvel[20];			
+            double endvel[6] ={0,0,0,0,0,0};		
             if (m_ManualOperator.bEndMove)
             {
                 // 末端运动
+                for(int i= 0;i<6;i++)			
+                {			
+                    endvel[i] = m_Manual.RobotMove[i]*END_VEL_LIMIT[i];			
+                }			
+                m_Robot->setLinkMoveVel(endvel);			
             }
             else 
             {
                 // 单轴运动
+                //轴索引待定			
+            
+                jointvel[0] = m_Manual.RobotMove[0]*JOINT_VEL_LIMIT[0];			
+                jointvel[1] = m_Manual.RobotMove[1]*JOINT_VEL_LIMIT[1];			
+                jointvel[2] = m_Manual.RobotMove[2]*JOINT_VEL_LIMIT[2];			
+                jointvel[3] = m_Manual.RobotMove[3]*JOINT_VEL_LIMIT[3];			
+                jointvel[4] = m_Manual.RobotMove[4]*JOINT_VEL_LIMIT[4];			
+                jointvel[5] = m_Manual.RobotMove[5]*JOINT_VEL_LIMIT[5];			
+                m_Robot->setJointGroupMoveVel(jointvel);		
             }
         }
     }
@@ -438,34 +456,42 @@ void CTask::Manual()
     {
         case stManualOperator::Parallel:
         {
+            updateExecutionCommand(EExecutionCommand::eParallel);
             break;
         }
         case stManualOperator::Positioning:
         {
+            updateExecutionCommand(EExecutionCommand::ePositioning);
             break;
         }
         case stManualOperator::DoWeld:
         {
+            updateExecutionCommand(EExecutionCommand::eAutoWeld);
             break;
         }
         case stManualOperator::MagentOn:
         {
+            updateExecutionCommand(EExecutionCommand::eMagentOn);
             break;
         }
         case stManualOperator::MagentOff:
         {
+            updateExecutionCommand(EExecutionCommand::eMagentOff);
             break;
         }
         case stManualOperator::Quit:
         {
+            updateExecutionCommand(EExecutionCommand::eQuit);
             break;
         }
         case stManualOperator::Pause:
         {
+            updateExecutionCommand(EExecutionCommand::ePause);
             break;
         }
         case stManualOperator::Terminate:
         {
+            updateExecutionCommand(EExecutionCommand::eTerminate);
             break;
         }
         default:
