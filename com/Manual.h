@@ -5,6 +5,13 @@
 #include <QMutex>
 #include "SerialCom.h"
 #include <QTimer>
+
+#include "qmath.h"
+#include <iostream>
+#include <algorithm>
+#include <QDebug>
+#include <QObject>
+
 #include "ManualProtocol.h"
 
 typedef struct DataofManual
@@ -89,6 +96,15 @@ protected:
      */
     void slotStopLoop();
 
+////////////////////////////--重构版本--//////////////////////////////////////////////
+
+public:
+    int RecvDataRefactor();
+
+private:
+    void ReadDataTest();
+    
+//////////////////////////////////////////////////////////////////////////////
 };
 
 #endif // CMANUAL_H

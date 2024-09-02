@@ -63,7 +63,7 @@ const double LINK_5_JOINT_LIMIT_NEG[MAX_FREEDOM_LINK] = { -MIN,-MIN,-MIN,-MIN,-M
 //------------------------------------------------------------------------------//
 //最大速度
 //------------------------------------------------------------------------------//
-const double LINK_0_JOINT_MAX_VEL[MAX_FREEDOM_LINK] = { 10, 10, 10, 5, 2, 2, 10, 0, 0, MAX,MAX, MAX, MAX, MAX, MAX, MAX, MAX, MAX, MAX, MAX };
+const double LINK_0_JOINT_MAX_VEL[MAX_FREEDOM_LINK] = { 7, 20, 20, 10, 3, 30, 27, 5, 10, 6,MAX, MAX, MAX, MAX, MAX, MAX, MAX, MAX, MAX, MAX };
 //const double LINK_0_JOINT_MAX_VEL[MAX_FREEDOM_LINK] = { 40, 40, 10, 4, 10, 24, 5, 2, 2, MAX,MAX, MAX, MAX, MAX, MAX, MAX, MAX, MAX, MAX, MAX };
 const double LINK_1_JOINT_MAX_VEL[MAX_FREEDOM_LINK] = { 2, MAX, MAX, MAX, MAX, MAX, MAX, MAX, MAX, MAX,MAX, MAX, MAX, MAX, MAX, MAX, MAX, MAX, MAX, MAX };
 const double LINK_2_JOINT_MAX_VEL[MAX_FREEDOM_LINK] = { 100, 30, 100, 30, MAX, MAX, MAX, MAX, MAX, MAX,MAX, MAX, MAX, MAX, MAX, MAX, MAX, MAX, MAX, MAX };

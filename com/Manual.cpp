@@ -1,11 +1,4 @@
 ﻿#include "Manual.h"
-#include "qmath.h"
-#include <iostream>
-#include <algorithm>
-#include <QDebug>
-#include <QObject>
-
-
 
 
 CManual::CManual()
