@@ -779,3 +779,70 @@ std::string CTask::getCurrentExecutionCommandString()
 
     return it->second;
 }
+
+void CTask::TranslateNumberToCMD()
+{
+    switch (ActionIndex.loadRelaxed())
+    {
+        case 0: // 调平
+        {
+            updateExecutionCommand(EExecutionCommand::eParallel);
+            break;
+        }
+        case 1: // 对齐边线
+        {
+            updateExecutionCommand(EExecutionCommand::eSideline);
+            break;
+        }
+        case 2: // 吸合
+        {
+            updateExecutionCommand(EExecutionCommand::eMagentOn);
+            break;
+        }
+        case 3: // 碰钉
+        {
+            updateExecutionCommand(EExecutionCommand::eAutoWeld);
+            break;
+        }
+        case 4: // 脱开
+        {
+            updateExecutionCommand(EExecutionCommand::eMagentOff);
+            break;
+        }
+        case 5: // 退出
+        {
+            updateExecutionCommand(EExecutionCommand::eQuit);
+            break;
+        }
+        case 6: // 暂停
+        {
+            updateExecutionCommand(EExecutionCommand::ePause);
+            break;
+        }
+        case 7: // 终止
+        {
+            updateExecutionCommand(EExecutionCommand::eTerminate);
+            break;
+        }
+        case 8: // 举升
+        {
+            updateExecutionCommand(EExecutionCommand::eLift);
+            break;
+        }
+        case 9: // 放钉
+        {
+            updateExecutionCommand(EExecutionCommand::eAddNail);
+            break;
+        }
+        case 10: // 停止
+        {
+            updateExecutionCommand(EExecutionCommand::eStop);
+            break;
+        }
+        case 11: // 急停
+        {
+            updateExecutionCommand(EExecutionCommand::eCrashStop);
+            break;
+        }
+    }
+}

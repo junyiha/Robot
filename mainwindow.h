@@ -182,6 +182,22 @@ public:
       {"btn_moveRel_end5", 67}
     };
 
+    // 工作作业按钮名称-索引值
+    std::map<std::string, unsigned int> m_jobBtnIndex = {
+      {"btn_leveling_",      0},          // 调平
+      {"btn_sideline_",      1},          // 对齐边线
+      {"btn_magnet_open_",   2},          // 吸合
+      {"btn_auto_knock_",    3},          // 碰钉
+      {"btn_magnet_close_",  4},          // 脱开
+      {"btn_magnet_exit_",   5},          // 退出
+      {"btn_magnet_pause_",  6},          // 暂停
+      {"btn_knock_suspend_", 7},          // 终止
+      {"btn_lift_",          8},          // 举升
+      {"btn_add_nail",       9},          // 放钉
+      {"btn_magnet_stop_",  10},          // 停止
+      {"btn_magent_crash_stop_", 11}      // 急停
+    };
+
 
 
 
@@ -194,7 +210,7 @@ private:
 
     const unsigned int larserNum=4;
     const unsigned int cameraNum=6;
-    const unsigned int jointNum=7;
+    const unsigned int jointNum=10;
     const unsigned int freeJointNum=6;
 
     void updateCameraData();//更新相机数据
@@ -203,6 +219,7 @@ private:
     void updateAxisStatus();//更新单轴连接状态
     void updateConnectSta();//更新硬件连接状态
     void setButtonIndex();  // 记录当前触发按钮索引
+    void setActionIndex();  // 记录当前触发动作索引(工作流程记录)
     void closeEvent(QCloseEvent *event);
     bool lineStatus = false; // 是否处于直线检测状态
 
@@ -234,6 +251,8 @@ private slots:
     void on_btn_magent_crash_stop_clicked();
     void on_btn_SetTools_clicked();
     void on_btn_SetMagent_clicked();
+    void slots_on_btn_magnet_exit_clicked();
+    void slots_on_btn_add_nail_clicked();
     //3.0 update the UI
     void slotUpdateUIAll();
 

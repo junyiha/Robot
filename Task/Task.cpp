@@ -40,6 +40,7 @@ void CTask::run()
 
         SemiAutoProgrcess();
 
+        TranslateNumberToCMD();
         stateTransition();
 
 //        if(m_Manual.Auto)

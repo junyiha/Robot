@@ -45,7 +45,7 @@ enum class ESubState
 enum class EExecutionCommand
 {
     eNULL = 0,          // 空指令
-    eManual = 0,        // 手动指令
+    eManual,            // 手动指令
     eParallel,          // 调平
     eTerminate,         // 终止
     ePause,             // 暂停
@@ -54,7 +54,12 @@ enum class EExecutionCommand
     eQuit,              // 退出
     eAutoWeld,          // 自动碰钉
     eMagentOff,         // 脱开
-    eStopWeld           // 停止碰钉
+    eStopWeld,          // 停止碰钉
+    eSideline,          // 对齐边线
+    eLift,              // 举升
+    eAddNail,           // 放钉
+    eStop,              // 停止
+    eCrashStop,         // 急停
 };
 
 enum class EDetectionInParallelResult
@@ -255,6 +260,24 @@ protected:
         }
     }
 
+///////////////////////////////////////////--前端界面按钮映射表--//////////////////////////////////////////////////////
+
+    // 工作作业按钮名称-索引值
+    std::map<std::string, unsigned int> m_jobBtnIndex = {
+      {"btn_leveling_",      0},          // 调平
+      {"btn_sideline_",      1},          // 对齐边线
+      {"btn_magnet_open_",   2},          // 吸合
+      {"btn_auto_knock_",    3},          // 碰钉
+      {"btn_magnet_close_",  4},          // 脱开
+      {"btn_magnet_exit_",   5},          // 退出
+      {"btn_magnet_pause_",  6},          // 暂停
+      {"btn_knock_suspend_", 7},          // 终止
+      {"btn_lift_",          8},          // 举升
+      {"btn_add_nail",       9},          // 放钉
+      {"btn_magnet_stop_",  10},          // 停止
+      {"btn_magent_crash_stop_", 11}      // 急停
+    };
+
 ///////////////////////////////////////////--0827新增函数--//////////////////////////////////////////////////////
 private:
     /**
@@ -443,6 +466,12 @@ public:
      * @return std::string 
      */
     std::string getCurrentExecutionCommandString();
+
+    /**
+     * @brief 将外界指令转换为内部指令
+     * 
+     */
+    void TranslateNumberToCMD();
 
 private:
     ETopState m_etopState{ETopState::eManual};

@@ -8,7 +8,6 @@ VisionInterface::VisionInterface() {
 
 
     this->camera_controls = new CameraManager();  // 相机管理类
-    sleep(3);
     this->line_helper = new LineDetector();       // 边线检测功能类
     this->sharedDataLine = new SharedData();      // 共享数据类
 

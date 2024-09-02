@@ -109,7 +109,7 @@ void MainWindow::connectSlotFunctions() {// 按钮时间绑定
     // 2.0 流程操作栏按钮槽函数绑定
 //    connect(ui->btn_camera_open, &QPushButton::clicked, this, &MainWindow::on_btn_openCamera_clicked, Qt::UniqueConnection); // 打开摄像头
 //    connect(ui->btn_camera_close, &QPushButton::clicked, this, &MainWindow::on_btn_closeCamera_clicked, Qt::UniqueConnection);
-    connect(ui->btn_location_, &QPushButton::clicked, this, &MainWindow::on_btn_location_clicked, Qt::UniqueConnection);
+//    connect(ui->btn_location_, &QPushButton::clicked, this, &MainWindow::on_btn_location_clicked, Qt::UniqueConnection);
     connect(ui->btn_lift_, &QPushButton::clicked, this, &MainWindow::on_btn_lift_clicked, Qt::UniqueConnection);
     connect(ui->btn_leveling_, &QPushButton::clicked, this, &MainWindow::on_btn_leveling_clicked, Qt::UniqueConnection);
     connect(ui->btn_sideline_, &QPushButton::clicked, this, &MainWindow::on_btn_sideline_clicked, Qt::UniqueConnection);
@@ -120,9 +120,11 @@ void MainWindow::connectSlotFunctions() {// 按钮时间绑定
     connect(ui->btn_knock_suspend_, &QPushButton::clicked, this, &MainWindow::on_btn_knock_suspend_clicked, Qt::UniqueConnection);
     connect(ui->btn_magnet_stop_, &QPushButton::clicked, this, &MainWindow::on_btn_magnet_stop_clicked, Qt::UniqueConnection);
     connect(ui->btn_magent_crash_stop_, &QPushButton::clicked, this, &MainWindow::on_btn_magent_crash_stop_clicked, Qt::UniqueConnection);
+    connect(ui->btn_magnet_exit, &QPushButton::clicked, this, &MainWindow::slots_on_btn_magnet_exit_clicked, Qt::UniqueConnection);
+    connect(ui->btn_add_nail, &QPushButton::clicked, this, &MainWindow::slots_on_btn_add_nail_clicked, Qt::UniqueConnection);
 
     //用于调试。临时加的btn_lift_2
-    connect(ui->btn_lift_2, &QPushButton::clicked, this, &MainWindow::on_btn_lift_2clicked, Qt::UniqueConnection);
+//    connect(ui->btn_lift_2, &QPushButton::clicked, this, &MainWindow::on_btn_lift_2clicked, Qt::UniqueConnection);
     // 3.0 机械臂功能按钮槽函数绑定
     for(unsigned int i = 0; i < jointNum; i++){
         // 单轴
@@ -268,8 +270,8 @@ void MainWindow::on_btn_location_clicked() {
 void MainWindow::on_btn_lift_clicked() {
     // 举升
     setButtonIndex();
-    m_Task->ActionIndex.storeRelaxed(12);
-    this->logger->info("末端举升");
+    setActionIndex();
+    this->logger->info("准备,末端举升");
 
 }
 
@@ -284,66 +286,65 @@ void MainWindow::on_btn_lift_2clicked() {
 void MainWindow::on_btn_leveling_clicked() {
     // 调平
     setButtonIndex();
-    m_Task->ActionIndex.storeRelaxed(15);
-    this->logger->info("末端调平");
+    setActionIndex();
+    this->logger->info("启动调平");
 }
 
 void MainWindow::on_btn_sideline_clicked() {
    // 对齐边线
     setButtonIndex();
-    m_Task->ActionIndex.storeRelaxed(20);
-    this->logger->info("btn 对齐边线");
+    setActionIndex();
+    this->logger->info(" 启动对齐边线");
 }
 
 void MainWindow::on_btn_magnet_open_clicked() {
     // 开启磁铁
     setButtonIndex();
-    m_Task->ActionIndex.storeRelaxed(30);
+    setActionIndex();
     m_Task->m_bMagnetOn = true;
-    this->logger->info("按钮：磁铁吸合");
+    this->logger->info("磁铁吸合");
 }
 
 void MainWindow::on_btn_auto_knock_clicked() {
    // 自动碰钉
     setButtonIndex();
-    m_Task->ActionIndex.storeRelaxed(40);
-    this->logger->info("按钮：自动碰钉");
+    setActionIndex();
+    this->logger->info("碰钉");
 }
 
 void MainWindow::on_btn_magnet_close_clicked() {
     // 关闭磁铁
     setButtonIndex();
-    m_Task->ActionIndex.storeRelaxed(32);
+    setActionIndex();
     m_Task->m_bMagnetOn = false;
-    this->logger->info("按钮：磁铁脱开");
+    this->logger->info("磁铁脱开");
 }
 
 void MainWindow::on_btn_magnet_pause_clicked() {
    // 碰钉暂停
     setButtonIndex();
-    m_Task->ActionIndex.storeRelaxed(42);
-    this->logger->info("按钮：碰钉暂停 ");
+    setActionIndex();
+    this->logger->info("碰钉暂停 ");
 }
 
 void MainWindow::on_btn_knock_suspend_clicked() {
    // 碰钉终止
     setButtonIndex();
-    this->logger->info("按钮：碰钉终止 1");
-    m_Task->ActionIndex.storeRelaxed(44);
-    this->logger->info("按钮：碰钉中止 2");
+    setActionIndex();
+    this->logger->info("按钮：碰钉中止");
 }
 
 void MainWindow::on_btn_magnet_stop_clicked() {
    // 停止
     setButtonIndex();
-    m_Task->ActionIndex.storeRelaxed(3);
+    setActionIndex();
     this->logger->info("停止");
 }
 
 void MainWindow::on_btn_magent_crash_stop_clicked() {
    // 急停
     setButtonIndex();
-    m_Task->ActionIndex.storeRelaxed(1);
+    setActionIndex();
     this->logger->info("急停");
 }
 
@@ -627,7 +628,8 @@ void MainWindow::btn_moveFwd_shaft_pressed() {
 
     if(index>=0 && index<jointNum)
     {
-        m_Robot->setJointMoveVel(index,0.1 * axisVelLimit[index][1]);
+//        m_Robot->setJointMoveVel(index,0.1 * axisVelLimit[index][1]);
+        m_Robot->setJointMoveVel(index,0.5 * LINK_0_JOINT_MAX_VEL[index]);
     }
 
 }
@@ -708,7 +710,8 @@ void MainWindow::btn_moveBwd_shaft_pressed() {
 
     if(index>=0 && index< JointNum)
     {
-        m_Robot->setJointMoveVel(index,-0.1* axisVelLimit[index][1]);
+//        m_Robot->setJointMoveVel(index,-0.1* axisVelLimit[index][1]);
+        m_Robot->setJointMoveVel(index,-0.5* LINK_0_JOINT_MAX_VEL[index]);
     }
 
 }
@@ -1029,6 +1032,9 @@ void MainWindow::setButtonIndex() {
     QString objectName;
     if (button) {
         objectName = button->objectName();
+    }else{
+        this->logger->error("Button is null!");
+        return ;
     }
     //设置原子变量index
     if(this->m_btnIndex.find(objectName.toStdString()) != this->m_btnIndex.end()){
@@ -1037,4 +1043,36 @@ void MainWindow::setButtonIndex() {
     }else{
         this->logger->error("Button index not found in predefined index map!");
     }
+}
+
+void MainWindow::setActionIndex() {
+    QPushButton *button = qobject_cast<QPushButton*>(sender());
+    QString objectName;
+    if (button) {
+        objectName = button->objectName();
+    }else{
+        this->logger->error("Button is null!");
+        return ;
+    }
+    //设置原子变量index
+    if(this->m_jobBtnIndex.find(objectName.toStdString()) != this->m_jobBtnIndex.end()){
+        m_Task->ActionIndex.storeRelaxed(this->m_jobBtnIndex[objectName.toStdString()]);
+        this->logger->info("The object name of the clicked button is:{}",objectName.toStdString());
+    }else{
+        this->logger->error("Button index not found in predefined index map!");
+    }
+}
+
+void MainWindow::slots_on_btn_magnet_exit_clicked() {
+    setButtonIndex();
+    setActionIndex();
+    this->logger->info("退出");
+
+}
+
+void MainWindow::slots_on_btn_add_nail_clicked() {
+    setButtonIndex();
+    setActionIndex();
+    this->logger->info("放钉");
+
 }
