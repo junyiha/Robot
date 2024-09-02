@@ -48,8 +48,6 @@ CameraManager::CameraManager() {
             {"cam_6",  null_dev}
     };
 
-
-
     this->camera_info = {
 //            {"cam_1",  "192.168.1.118"},
 //            {"cam_2",  "192.168.1.115"},
@@ -73,7 +71,8 @@ CameraManager::CameraManager() {
         this->cameraList[camera_info.first] = new HKCameraControls(camera_info.second, camera_info.first.data());
 //        this->cameraList[camera_info.first]->start();
     }
-
+    // 开启线程, 打开所有相机
+    this->openCameraAll();
 
 }
 
@@ -97,18 +96,7 @@ cv::Mat CameraManager::getImage(std::string camera_name) {
 }
 
 void CameraManager::openCameraAll() {
-//    this->logger->info("open all camera");
-
-    for (auto &camera : this->cameraList) {
-        this->cameraList[camera.first]->openCamera();
-        if(!this->cameraList[camera.first]->open_status){
-            this->logger->info("open camera {} failed", camera.first);
-            continue ;
-        }else{
-            this->logger->info("open camera {} successed", camera.first);
-        }
-        this->cameraList[camera.first]->start();
-    }
+    this->start();
 }
 
 CameraManager::~CameraManager() {
@@ -182,6 +170,54 @@ void CameraManager::closeAllCameraThread() {
         }
     }
 }
+
+void CameraManager::run() {
+
+    // 开启线程, 打开所有相机
+    for (auto &camera : this->cameraList) {
+        this->cameraList[camera.first]->openCamera();
+        if(!this->cameraList[camera.first]->open_status){
+            this->logger->info("open camera {} failed", camera.first);
+            continue ;
+        }else{
+            this->cameraList[camera.first]->start();
+            this->logger->info("open camera {} successed", camera.first);
+        }
+
+    }
+}
+
+std::vector<bool> CameraManager::checkCameraIsAccessible() {
+    std::vector<bool> isAccessible;
+    for(const auto &camera : this->cameraList){
+        size_t index = camera.first.find("_");
+        int number = camera.first[index+1]-'0';
+        bool is_Acc = camera.second->cameraIsAccessible();
+        isAccessible[number-1] = is_Acc;
+    }
+    return isAccessible;
+}
+
+std::vector<bool> CameraManager::getCameraOpenedInfo() {
+    std::vector<bool> isOpened(this->cameraList.size());
+    for(const auto &camera : this->cameraList){
+        size_t index = camera.first.find("_");
+        int number = camera.first[index+1]-'0';
+        isOpened[number-1] = camera.second->open_status;
+    }
+    return isOpened;
+}
+
+bool CameraManager::camerasIsOpened() {
+    std::vector<bool> res = this->getCameraOpenedInfo();
+    for(int i=0; i<res.size(); i++){
+        if(!res[i]){
+            return false;
+        }
+    }
+    return true;
+}
+
 
 
 

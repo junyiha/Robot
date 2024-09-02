@@ -11,10 +11,12 @@
 #include<QDebug>
 #include <QMutex>
 #include "MvCamera.h"
+#include <QThread>
+#include <vector>
 
 
 /*****************************Multi Camera Manager  *****************************************/
-class CameraManager {
+class CameraManager:public QThread {
 public:
 
     std::map<std::string, std::string> camera_info;
@@ -26,13 +28,15 @@ public:
     MV_CC_DEVICE_INFO_LIST  m_stDevList = {0};
 
 
+
     const char* ethIp = "192.168.1.10";
     std::shared_ptr<spdlog::logger> logger;
 
     CameraManager();
     ~CameraManager();
-
     QMutex dataMutex;
+
+    void run() override;
 
 
 
@@ -43,6 +47,10 @@ public:
     cv::Mat getImage(std::string camera_name); // 获取单个相机图像
     void getImageAll(); // 获取所有相机图像
     void getDeviceList(); // 获取设备列表
+    std::vector<bool> checkCameraIsAccessible(); // 检查相机是否可以访问
+    std::vector<bool> getCameraOpenedInfo(); // 检查相机是否打开
+    bool camerasIsOpened();
+
 
     std::map<std::string, cv::Mat> getCameraImages(); // 获取所有相机图像
 

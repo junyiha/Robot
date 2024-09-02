@@ -10,6 +10,14 @@
 //平滑边缘，去除锯齿
 cv::Mat padding_hollow(cv::Mat mask, int ksize = 10);
 
+std::vector<std::vector<float>> get_line_by_lsd(cv::Mat bin_img);  // LSD直线检测)
+
+void sort_lines(std::vector<std::vector<float>> &lines, bool ascending = true );   //  针对直线进行排序, 默认情况下，自上到下
+
+std::vector<std::vector<float>> linesAggregation(std::vector<std::vector<float>> lines);  // 近距离直线聚合
+
+bool check_is_border_line(cv::Mat img, cv::Vec4f line, float threshold = 0.6);  // 判断直线是否为边界线
+
 // 计算两点之间的距离
 double calculatePointsDistance(const cv::Point2f A, const cv::Point2f B);
 

@@ -32,6 +32,7 @@
 
 //--------------任务部分--------------//
 #include "Task/Task.h"
+#include <QAtomicInt>
 
 //--------------可视化----------------//
 #include "vision/CameraDisplay.h"
@@ -43,6 +44,7 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/sinks/rotating_file_sink.h>
 #include "GVL.h"
+
 
 
 
@@ -93,6 +95,96 @@ public:
     bool getLineStatus();
     void setLineStatus(bool lineStatus);
     QMutex m_mutex;
+    QAtomicInt      buttionIndex; // 按钮索引原子变量记录
+
+
+
+
+    // 操作按钮索引配置
+    std::map<std::string, unsigned int> m_btnIndex = {
+        //作业操作模块
+      {"btn_location_",     0},   // 位置准备
+      {"btn_lift_",         1},   // 举升
+      {"btn_leveling_",     2},   //调平
+      {"btn_lift_2",        3},   //举升对边
+      {"btn_sideline_",     4},   //对齐边线
+      {"btn_magnet_open_",  5},   //开启磁铁
+      {"btn_auto_knock_",   6},   //自动碰钉
+      {"btn_magnet_close_", 7},  //关闭磁铁
+      {"btn_magnet_pause_", 8},  //碰钉暂停
+      {"btn_knock_suspend_", 9}, // 碰钉终止
+      {"btn_magnet_stop_", 10},  // 停止
+      {"btn_magent_crash_stop_", 11},  // 急停
+      // 顶部操作模块
+      {"btn_enable_", 12}, // 上使能
+      {"btn_disable_", 13}, // 下使能
+      {"btn_cleanError_", 14}, // 清除错误
+      {"btn_errorStop_", 15}, // 紧急停止
+      {"btn_exit", 16}, // 退出
+
+      // 单轴操作
+      {"btn_moveFwd_shaft0", 17},
+      {"btn_moveFwd_shaft1", 18},
+      {"btn_moveFwd_shaft2", 19},
+      {"btn_moveFwd_shaft3", 20},
+      {"btn_moveFwd_shaft4", 21},
+      {"btn_moveFwd_shaft5", 22},
+      {"btn_moveFwd_shaft6", 23},
+      {"btn_moveFwd_shaft7", 24},
+      {"btn_moveFwd_shaft8", 25},
+      {"btn_moveFwd_shaft9", 26},
+      {"btn_moveFwd_shaft10", 27},
+
+      {"btn_moveBwd_shaft0", 28},
+      {"btn_moveBwd_shaft1", 29},
+      {"btn_moveBwd_shaft2", 30},
+      {"btn_moveBwd_shaft3", 31},
+      {"btn_moveBwd_shaft4", 32},
+      {"btn_moveBwd_shaft5", 33},
+      {"btn_moveBwd_shaft6", 34},
+      {"btn_moveBwd_shaft7", 35},
+      {"btn_moveBwd_shaft8", 36},
+      {"btn_moveBwd_shaft9", 37},
+      {"btn_moveBwd_shaft10", 38},
+
+      {"btn_moveRel_shaft0", 39},
+      {"btn_moveRel_shaft1", 40},
+      {"btn_moveRel_shaft2", 41},
+      {"btn_moveRel_shaft3", 42},
+      {"btn_moveRel_shaft4", 43},
+      {"btn_moveRel_shaft5", 44},
+      {"btn_moveRel_shaft6", 45},
+      {"btn_moveRel_shaft7", 46},
+      {"btn_moveRel_shaft8", 47},
+      {"btn_moveRel_shaft9", 48},
+      {"btn_moveRel_shaft10", 49},
+
+      // 末端操作
+      {"btn_moveFwd_end0", 50},
+      {"btn_moveFwd_end1", 51},
+      {"btn_moveFwd_end2", 52},
+      {"btn_moveFwd_end3", 53},
+      {"btn_moveFwd_end4", 54},
+      {"btn_moveFwd_end5", 55},
+
+      {"btn_moveBwd_end0", 56},
+      {"btn_moveBwd_end1", 57},
+      {"btn_moveBwd_end2", 58},
+      {"btn_moveBwd_end3", 59},
+      {"btn_moveBwd_end4", 60},
+      {"btn_moveBwd_end5", 61},
+
+      {"btn_moveRel_end0", 62},
+      {"btn_moveRel_end1", 63},
+      {"btn_moveRel_end2", 64},
+      {"btn_moveRel_end3", 65},
+      {"btn_moveRel_end4", 66},
+      {"btn_moveRel_end5", 67}
+    };
+
+
+
+
 
 private:
     Ui::MainWindow *ui;
@@ -110,6 +202,7 @@ private:
     void updateActionSta();//更新任务流程的状态
     void updateAxisStatus();//更新单轴连接状态
     void updateConnectSta();//更新硬件连接状态
+    void setButtonIndex();  // 记录当前触发按钮索引
     void closeEvent(QCloseEvent *event);
     bool lineStatus = false; // 是否处于直线检测状态
 
@@ -174,6 +267,7 @@ private slots:
 
     void initUiWiget();
 
+    void updataDeviceConnectState();
 };
 
 

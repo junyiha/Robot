@@ -5,7 +5,6 @@
 #include <QMutex>
 #include "SerialCom.h"
 #include <QTimer>
-
 #include "ManualProtocol.h"
 
 typedef struct DataofManual
@@ -62,6 +61,9 @@ public:
      * @param cmd
      */
     void getManualCmd(stManualCmd& cmd);
+
+    bool getConnectState();
+    bool isConnected = false;
 
 
 protected:

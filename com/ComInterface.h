@@ -31,13 +31,12 @@ public:
     explicit ComInterface(QObject *parent = nullptr);
     ~ComInterface();
     void closeThread();
-
+    CManual     m_cManual;
 
 protected:
     //设备成员
     RobotCom	m_cRobot;
     CTools		m_cTools;
-    CManual     m_cManual;
 
     std::shared_ptr<spdlog::logger> log;
 

@@ -15,6 +15,11 @@ LineResult LineDetector::getLineDistance(cv::Mat img) {
         return res;
     }
 
+    //1. 灰度图像转RGB图像
+    if(img.channels() == 1){
+        cv::cvtColor(img, img, cv::COLOR_GRAY2RGB);
+    }
+
     float origin_h = img.rows;
     float origin_w = img.cols;
     float h_ratio = origin_h / this->resize_h;
@@ -23,10 +28,12 @@ LineResult LineDetector::getLineDistance(cv::Mat img) {
     //1.0 图像预处理
     cv::Mat img_gray, bin_img, img_512;
     cv::resize(img, img_512, cv::Size(this->resize_w,this->resize_h));
+    cv::cvtColor(img_512, img_gray, cv::COLOR_RGB2GRAY);
+    cv::threshold(img_gray, bin_img, 0, 255, cv::THRESH_BINARY|cv::THRESH_OTSU);
     res.imgDrawed = img_512;
 
     // mlsd  算法检测所有可能的线段
-    std::vector<MLine> all_lines = getAllPossibleLines(img_512);
+    std::vector<MLine> all_lines =  getAllPossibleLines(img_512);
 
     // 2.0 获取参考线
     MLine referenceLine = getReferenceLine(img_512, all_lines);
@@ -41,7 +48,7 @@ LineResult LineDetector::getLineDistance(cv::Mat img) {
     }
 
     // 3.0 获取墨水线
-    MLine inkLine = getInkLine(img_512, all_lines, referenceLine);
+    MLine inkLine = getInkLine(bin_img, all_lines, referenceLine);
     if(inkLine.x1!=inkLine.x2){
         res.inkResult = inkLine;
         res.inkLineStatus = true;
@@ -61,7 +68,7 @@ MLine LineDetector::getInkLine(cv::Mat img, std::vector<MLine> lines,  MLine ref
      for(const auto &line:lines) {
          cv::Vec4f line_ = {line.x1, line.y1, line.x2, line.y2};
          if(line.y1>refLine.y1){ continue;}  // 墨迹线通常在板线之上
-         if (check_is_ink_line(img, line_)) {
+         if (!check_is_border_line(img, line_)) {
              std::vector<cv::Point2f> points;
              points.push_back(cv::Point2f(line.x1, line.y1));
              points.push_back(cv::Point2f(line.x2, line.y2));
@@ -104,7 +111,7 @@ MLine LineDetector::getReferenceLineLSD(cv::Mat img, cv::Mat bin_img){
         // 如何判别检测的线属于板线的范畴？
         // 长度大小、外观纹理、位置特点
 
-        bool isBoundary = check_is_boundary(bin_img, line);
+        bool isBoundary = check_is_border_line(bin_img, line);
         if ((distance > this->resize_w*0.1) && isBoundary) { //满足直线的长度要求，且直线上下区域像素相似度低
             points.push_back(cv::Point2f(line[0], line[1]));
             points.push_back(cv::Point2f(line[2], line[3]));
@@ -145,7 +152,7 @@ MLine LineDetector::getReferenceLine(cv::Mat img, std::vector<MLine> lines) {
     for (auto &line : lines) {
         cv::Vec4f line_ = { line.x1,line.y1, line.x2,line.y2 };
         if(abs(line.x1 - line.x2)<50){ continue;}  // 参考线太短，不参与计算
-        if(!check_is_ink_line(img, line_)){
+        if(check_is_border_line(bin_img, line_)){
             std::vector<cv::Point2f> points;
             points.push_back( cv::Point2f(line.x1, line.y1));
             points.push_back( cv::Point2f(line.x2, line.y2));
@@ -175,28 +182,29 @@ MLine LineDetector::getReferenceLine(cv::Mat img, std::vector<MLine> lines) {
 
 std::vector<MLine> LineDetector::getAllPossibleLines(cv::Mat img) {
 
-    // 检测所有的线条
-    std::vector<std::vector<float>>  lines = this->mlsd.detect(img);
-    std::vector<std::vector<float>>  lines_fited;
-    std::vector<MLine> lineRes;
-
-    for (auto &line : lines) {
-        std::vector<cv::Point2f> points;
-        points.push_back( cv::Point2f(line[0], line[1]));
-        points.push_back( cv::Point2f(line[2], line[3]));
-
-        // 过滤掉长度及方向不符合要求的线段
-        float distance = calculatePointsDistance( cv::Point2f(line[0], line[1]), cv::Point2f(line[2], line[3]));
-        if(distance<this->min_len_seg){ continue;}
-
-        //  边线分布位置特点过滤
-        if (line[1] < this->min_pos_valid || line[3] > max_pos_valid) { continue;}
-
-        //  过滤掉方向为竖直方向的直线
-        MLine lineS = {line[0], line[1], line[2], line[3], 0.0};
-        lineRes.push_back(lineS);
+    // MLSD算法检测所有可能的线段
+    std::vector<MLine> line_res;
+    std::vector<std::vector<float>>  lines_mlsd = this->mlsd.detect(img);
+    cv::Mat line_mask = cv::Mat::zeros(img.size(), CV_8UC1);
+    for(auto item: lines_mlsd){
+        cv::line(line_mask, cv::Point(item[0], item[1]), cv::Point(item[2], item[3]), cv::Scalar(255), 1);
     }
-    return lineRes;
+    std::vector<std::vector<float>> lines = get_line_by_lsd(line_mask);
+    sort_lines(lines);
+    std::vector<std::vector<float>> lines_new = linesAggregation(lines);
+
+    //对检测出的直线进一步过滤
+    for (auto &line : lines_new) {
+        // 1.0 边线分布位置特点过滤
+        if (line[1] < this->min_pos_valid || line[3] > max_pos_valid) { continue;}
+        // 2.0 过滤掉竖直为竖直方向的直线
+        if(line[1]<0 | line[3]<0|line[1]>img.cols|line[3]>img.cols){
+            continue;
+        }
+        MLine line_true = {line[0],line[1],line[2],line[3],line[4]};
+        line_res.push_back(line_true);
+    }
+    return line_res;
 }
 
 LineDetector::LineDetector() {
@@ -210,7 +218,7 @@ LineDetector::LineDetector() {
     this->max_dist_lines = 200;
     // 角度范围
     this->max_angle_degrees = 10;
-    this->min_len_seg = static_cast<unsigned>(512 * 0.1);
+    this->min_len_seg = static_cast<unsigned>(512 * 0.15);
 }
 
 LineDetector::~LineDetector() {

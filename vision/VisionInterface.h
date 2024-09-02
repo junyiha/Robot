@@ -60,35 +60,11 @@ public:
     VisionInterface();
     ~VisionInterface() override;
     void run() override;
-    /**
-     * @brief 获取检测结果
-     * 
-     * @param type 检测目标类型
-     * @param stm 检测结果
-     */
+
     void getDetectResult(DetectType type,stMeasureData* stm);
-    /**
-     * @brief 获取边线检测结果
-     * 
-     * @return std::map<std::string, LineDetectRes> 检测结果
-     */
     std::map<std::string, LineDetectRes> VisionInterface::getLineRes();
-    /**
-     * @brief 解析检测数据
-     * 
-     * @param stm 检测数据
-     */
     void parser_result(stMeasureData* stm);
-    /**
-     * @brief 获取解析好的检测结果，提供于其他线程使用
-     * 
-     * @return VisionResult 
-     */
     VisionResult getVisResult();
-    /**
-     * @brief 结束检测线程
-     * 
-     */
     void closeThread();
 
 };

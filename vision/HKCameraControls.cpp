@@ -204,6 +204,9 @@ void HKCameraControls::run(){
                     continue;
                 }
                 cv:: Mat srcImage = Convert2Mat(&stImageInfo.stFrameInfo, pData);  // 将数据转换为Mat格式
+                if(srcImage.channels() == 1){
+                    cv::cvtColor(srcImage, srcImage, cv::COLOR_GRAY2RGB);
+                }
 //                std::string img_path = "E:/temp/";
 //                img_path += this->stHkDev.camName;
                 // 图像入对列
@@ -669,6 +672,10 @@ void HKCameraControls::closeThread() {
     this->isRunning = false;
     QThread::wait();
 
+}
+
+bool HKCameraControls::cameraIsAccessible() {
+    return  this->pstMvCamera->IsDeviceAccessible(&this->stHkDev.stDevInfo, 3);
 }
 
 

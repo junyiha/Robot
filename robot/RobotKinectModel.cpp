@@ -6,11 +6,17 @@ CRobotKinectModel::CRobotKinectModel(std::vector<CTransformation> Input_DH_List,
     m_SerialLink = Input_DH_List;
     m_ToolLink   = Tool_DH;
     Valid_Index.clear();
+    m_CylinderLen = 1200;
     log = spdlog::get("logger");
 }
 
 void CRobotKinectModel::setJointPos(std:: vector<std::pair<double, bool>> Joint_Value)
 {
+
+    //修改827
+    //推缸行程转为旋转角度
+    Joint_Value[5].first =Joint2Fkine(Joint_Value[5].first);
+    m_CylinderLen = Joint_Value[CYLINDER_INDEX].first;
 
     if (Joint_Value.size() != m_SerialLink.size())
     {
@@ -56,6 +62,12 @@ Eigen::VectorXd CRobotKinectModel::getJointVel_nolimit(Eigen::VectorXd Tar_Speed
         Full_Joint_Speed[Valid_Index[i]] = Joint_Speed[i];
         //qDebug()<<"Full_Joint_Speed"<<Valid_Index[i]<<":"<<Joint_Speed[i];
     }
+
+    //修改827
+    //推缸关节速度
+    double theta = Joint2Fkine(m_SerialLink[5].getJointPos());
+    Full_Joint_Speed[5] = Joint2InvKine(m_SerialLink[5].getJointPos(),m_CylinderLen);
+
 
     return Full_Joint_Speed;
 }
@@ -108,11 +120,12 @@ Eigen::VectorXd CRobotKinectModel::getJointVel(Eigen::VectorXd Tar_Speed,bool Re
         }
     }
 
+    //修改827
     //设置各轴速度为0;(有冗余轴的情况下重新计算)
     if(lock == true)
     {
         log->warn("轴达到限位或被锁定，无有效解");
-        return Eigen::VectorXd::Zero(6);
+        return Eigen::VectorXd::Zero( m_SerialLink.size());
     }else
     {
         return speed;
@@ -309,4 +322,23 @@ Eigen::VectorXd CRobotKinectModel::getTarSpeed(Eigen::VectorXd tarEndPos)
 
     return getTarSpeed(tar_rt);
 
+}
+//修改827
+double CRobotKinectModel::Joint2Fkine(double D2)
+{
+    double a1 = atan(330.0/400.0);
+    double a3 = atan(850.0/250.0);
+    double R3 = 886;
+    double R4 = 518.5;
+    double Theta = (a1 + a3 - acos(( D2 * D2 - R3 * R3 - R4 * R4)/(2 * R3 * R4)));
+    std::cout<<"Theta: "<<Theta<<std::endl<<std::endl;
+    return Theta;
+}
+//修改827
+double CRobotKinectModel::Joint2InvKine(double Theta2Dot,double D2)
+{
+    //Theta2Dot → D2Dot
+    double S = sqrt(1 - (D2*D2/918782-4215353/3675128)*(D2*D2/918782-4215353/3675128));
+    double D2Dot = 459391 * S * Theta2Dot / D2;
+    return D2Dot;
 }

@@ -102,6 +102,19 @@ private:
     */
     void calJacobian();
 
+    /**
+    * @brief 推缸行程转为关节角度
+    * @param D2 推杆长度
+    */
+    double Joint2Fkine(double D2);
+
+    /**
+    * @brief 推缸行程转为关节角度
+    * @param D2 推杆长度
+    * @param Theta2Dot 转动角度
+    */
+    double Joint2InvKine(double Theta2Dot,double D2);
+
 
 
     std::vector<CTransformation> m_SerialLink;
@@ -112,6 +125,7 @@ private:
     Eigen::MatrixXd         JacobianMat;			//雅克比矩阵
     Eigen::MatrixXd         JacobianMatInv;         //雅克比逆矩阵(广义逆)
     std::vector<int>        Valid_Index;            //未锁定轴索引
+    double                  m_CylinderLen;
 
     std::shared_ptr<spdlog::logger> log;
 

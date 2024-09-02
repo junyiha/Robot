@@ -10,6 +10,7 @@ MainWindow::MainWindow(QWidget *parent)
     //1.0 初始化化日志
     initLog();
 
+
     //2.0 UI界面初始化
     initUiForm();
 
@@ -106,8 +107,8 @@ void MainWindow::connectSlotFunctions() {// 按钮时间绑定
     connect(ui->btn_userMode_, &QPushButton::clicked, this, &MainWindow::on_btn_userMode_clicked, Qt::UniqueConnection);// 用户模式
 
     // 2.0 流程操作栏按钮槽函数绑定
-    connect(ui->btn_camera_open, &QPushButton::clicked, this, &MainWindow::on_btn_openCamera_clicked, Qt::UniqueConnection); // 打开摄像头
-    connect(ui->btn_camera_close, &QPushButton::clicked, this, &MainWindow::on_btn_closeCamera_clicked, Qt::UniqueConnection);
+//    connect(ui->btn_camera_open, &QPushButton::clicked, this, &MainWindow::on_btn_openCamera_clicked, Qt::UniqueConnection); // 打开摄像头
+//    connect(ui->btn_camera_close, &QPushButton::clicked, this, &MainWindow::on_btn_closeCamera_clicked, Qt::UniqueConnection);
     connect(ui->btn_location_, &QPushButton::clicked, this, &MainWindow::on_btn_location_clicked, Qt::UniqueConnection);
     connect(ui->btn_lift_, &QPushButton::clicked, this, &MainWindow::on_btn_lift_clicked, Qt::UniqueConnection);
     connect(ui->btn_leveling_, &QPushButton::clicked, this, &MainWindow::on_btn_leveling_clicked, Qt::UniqueConnection);
@@ -185,6 +186,7 @@ void MainWindow::initLog()
 //上使能函数
 void MainWindow::on_btn_enable_clicked()
 {
+    setButtonIndex();
     //这里使用link层且只有link[0]一个索引
     if(m_Com->getCommState_Robot() == true)
     {
@@ -201,6 +203,7 @@ void MainWindow::on_btn_enable_clicked()
 //下使能函数
 void MainWindow::on_btn_disable_clicked()
 {
+    setButtonIndex();
     if(m_Com->getCommState_Robot() == true)
     {
         m_Robot->setLinkEnable(false);
@@ -216,12 +219,14 @@ void MainWindow::on_btn_disable_clicked()
 // 清除错误
 void MainWindow::on_btn_setRobotReset_clicked()
 {
+    setButtonIndex();
     m_Robot->setRobotReset();
     this->logger->info("清除错误");
 }
 //紧急停止
 void MainWindow::on_btn_setLinkHalt_clicked()
 {
+    setButtonIndex();
     m_Task->ActionIndex.storeRelaxed(1);
     m_Robot->setLinkHalt();
     this->logger->info("紧急停止");
@@ -239,8 +244,8 @@ void MainWindow::on_btn_openCamera_clicked() {
     }
 
     this->logger->info("执行相机打开操作");
-    ui->btn_camera_open->setEnabled(false);
-    ui->btn_camera_close->setEnabled(true);
+//    ui->btn_camera_open->setEnabled(false);
+//    ui->btn_camera_close->setEnabled(true);
 }
 
 void MainWindow::on_btn_closeCamera_clicked() {
@@ -249,24 +254,27 @@ void MainWindow::on_btn_closeCamera_clicked() {
         this->m_VisionInterface->line_handler->is_running = false;
     }
     this->logger->info("执行相机关闭操作");
-    ui->btn_camera_open->setEnabled(true);
-    ui->btn_camera_close->setEnabled(false);
+//    ui->btn_camera_open->setEnabled(true);
+//    ui->btn_camera_close->setEnabled(false);
 }
 
 void MainWindow::on_btn_location_clicked() {
       // 准备位置
+    setButtonIndex();
     m_Task->ActionIndex.storeRelaxed(10);
     this->logger->info("进入准备位置...");
 }
 
 void MainWindow::on_btn_lift_clicked() {
     // 举升
+    setButtonIndex();
     m_Task->ActionIndex.storeRelaxed(12);
     this->logger->info("末端举升");
 
 }
 
 void MainWindow::on_btn_lift_2clicked() {
+    setButtonIndex();
     // 举升
     m_Task->ActionIndex.storeRelaxed(16);
     this->logger->info("lift up to 15mm");
@@ -275,18 +283,21 @@ void MainWindow::on_btn_lift_2clicked() {
 
 void MainWindow::on_btn_leveling_clicked() {
     // 调平
+    setButtonIndex();
     m_Task->ActionIndex.storeRelaxed(15);
     this->logger->info("末端调平");
 }
 
 void MainWindow::on_btn_sideline_clicked() {
    // 对齐边线
+    setButtonIndex();
     m_Task->ActionIndex.storeRelaxed(20);
     this->logger->info("btn 对齐边线");
 }
 
 void MainWindow::on_btn_magnet_open_clicked() {
     // 开启磁铁
+    setButtonIndex();
     m_Task->ActionIndex.storeRelaxed(30);
     m_Task->m_bMagnetOn = true;
     this->logger->info("按钮：磁铁吸合");
@@ -294,12 +305,14 @@ void MainWindow::on_btn_magnet_open_clicked() {
 
 void MainWindow::on_btn_auto_knock_clicked() {
    // 自动碰钉
+    setButtonIndex();
     m_Task->ActionIndex.storeRelaxed(40);
     this->logger->info("按钮：自动碰钉");
 }
 
 void MainWindow::on_btn_magnet_close_clicked() {
     // 关闭磁铁
+    setButtonIndex();
     m_Task->ActionIndex.storeRelaxed(32);
     m_Task->m_bMagnetOn = false;
     this->logger->info("按钮：磁铁脱开");
@@ -307,12 +320,14 @@ void MainWindow::on_btn_magnet_close_clicked() {
 
 void MainWindow::on_btn_magnet_pause_clicked() {
    // 碰钉暂停
+    setButtonIndex();
     m_Task->ActionIndex.storeRelaxed(42);
     this->logger->info("按钮：碰钉暂停 ");
 }
 
 void MainWindow::on_btn_knock_suspend_clicked() {
    // 碰钉终止
+    setButtonIndex();
     this->logger->info("按钮：碰钉终止 1");
     m_Task->ActionIndex.storeRelaxed(44);
     this->logger->info("按钮：碰钉中止 2");
@@ -320,12 +335,14 @@ void MainWindow::on_btn_knock_suspend_clicked() {
 
 void MainWindow::on_btn_magnet_stop_clicked() {
    // 停止
+    setButtonIndex();
     m_Task->ActionIndex.storeRelaxed(3);
     this->logger->info("停止");
 }
 
 void MainWindow::on_btn_magent_crash_stop_clicked() {
-  // 急停
+   // 急停
+    setButtonIndex();
     m_Task->ActionIndex.storeRelaxed(1);
     this->logger->info("急停");
 }
@@ -350,6 +367,54 @@ void MainWindow::slotUpdateUIAll() {
     //6.0 更新设备连接状态
     updateConnectSta();
 
+    // 7.0 更新硬件设备连接状态，并通过指示灯显示
+    updataDeviceConnectState();
+
+
+}
+
+void MainWindow::updataDeviceConnectState() {
+    // 相机连接状态显示
+    std::vector<bool> camera_open_sta = m_VisionInterface->camera_controls->getCameraOpenedInfo();
+    for(int i=0; i<camera_open_sta.size(); i++){
+        if(camera_open_sta[i]){
+            findChild<QLabel *>("label_camera_state" + QString::number(i + 1))->setStyleSheet(
+                    "image: url(:/img/images/icon_greenLight.png);");
+        }else{
+            findChild<QLabel *>("label_camera_state" + QString::number(i + 1))->setStyleSheet(
+                    "image: url(:/img/images/icon_redLight.png);");
+        }
+    }
+    // 更新io板和机器人连接状态显示
+    bool io_A_sta = m_Com->getCommState_IOA();
+    bool io_B_sta = m_Com->getCommState_IOB();
+    bool robot_sta = m_Com->getCommState_Robot();
+
+    if(io_A_sta){
+        ui->label_io_A->setStyleSheet("image: url(:/img/images/icon_greenLight.png);");
+    }else{
+        ui->label_io_A->setStyleSheet("image: url(:/img/images/icon_redLight.png);");
+    }
+
+    if(io_B_sta){
+        ui->label_io_B->setStyleSheet("image: url(:/img/images/icon_greenLight.png);");
+    }else{
+        ui->label_io_B->setStyleSheet("image: url(:/img/images/icon_redLight.png);");
+    }
+
+    if(robot_sta){
+        ui->label_robot_state->setStyleSheet("image: url(:/img/images/icon_greenLight.png);");
+    }else{
+        ui->label_robot_state->setStyleSheet("image: url(:/img/images/icon_redLight.png);");
+    }
+
+    // 更新遥控器连接状态
+//    bool manual_sta =  m_Com->m_cManual.getConnectState();
+//    if(manual_sta){
+//        ui->label_controller_state->setStyleSheet("image: url(:/img/images/icon_greenLight.png);");
+//    }else{
+//        ui->label_controller_state->setStyleSheet("image: url(:/img/images/icon_redLight.png);");
+//    }
 }
 
 void MainWindow::updateAxisStatus() {
@@ -370,20 +435,28 @@ void MainWindow::updateAxisStatus() {
 
                 switch (stJointstatus[i].eState) {
                     case eAxis_ERRORSTOP:
-                        findChild<QLabel *>("label_sta_shaft" + QString::number(i))->setStyleSheet(
-                                "background-color: red; color: black;");
+                        findChild<QLabel *>("label_device_state" + QString::number(i))->setStyleSheet(
+                                "image: url(:/img/images/icon_redLight.png);"
+                                "border:1px solid black;"
+                                );
                         break;
                     case eAxis_UNDEFINED:
-                        findChild<QLabel *>("label_sta_shaft" + QString::number(i))->setStyleSheet(
-                                "background-color: blue; color: black;");
+                        findChild<QLabel *>("label_device_state" + QString::number(i))->setStyleSheet(
+                                "image: url(:/img/images/icon_greenLight.png);"
+                                "border:1px solid black;"
+                                );
                         break;
                     case eAxis_DISABLED:
-                        findChild<QLabel *>("label_sta_shaft" + QString::number(i))->setStyleSheet(
-                                "background-color: yellow; color: black;");
+                        findChild<QLabel *>("label_device_state" + QString::number(i))->setStyleSheet(
+                                "image: url(:/img/images/icon_yellowLight.png);"
+                                "border:1px solid black;"
+                                );
                         break;
                     default:
-                        findChild<QLabel *>("label_sta_shaft" + QString::number(i))->setStyleSheet(
-                                "background-color: green; color: black;");
+                        findChild<QLabel *>("label_device_state" + QString::number(i))->setStyleSheet(
+                                "image: url(:/img/images/icon_greenLight.png);"
+                                "border:1px solid black;"
+                                );
                         break;
                 }
             }
@@ -404,12 +477,11 @@ void MainWindow::updateAxisStatus() {
     }
 }
 
-
 void MainWindow::updateLineDetectResults() {
 
-    bool isEnable = ui->btn_camera_open->isEnabled();
+    bool isEnable = m_VisionInterface->camera_controls->camerasIsOpened();
     if(isEnable){
-//        this->logger->info("相机未开启");
+//        this->logger->info("相机未全部开启成功,请检查相机连接！");
         return;
     }
     unsigned pageIndex = ui->stackedWidget_view->currentIndex();
@@ -428,6 +500,7 @@ void MainWindow::updateLineDetectResults() {
         if(visResult.status){
             for(int i = 0; i < cameraNum; i++){
                 float dist = visResult.stData.m_LineDistance[i];
+                dist = std::isinf(dist) ? 0 : dist;
                 findChild<QLabel*>(prefix + QString::number(i))->setText("Dist " + QString::number(i + 1) + ":" + QString::number(dist));
             }
         }
@@ -459,10 +532,11 @@ void MainWindow::updateLaserData() {
 
 void MainWindow::updateCameraData() {
 
-    bool isEnable = ui->btn_camera_open->isEnabled();
-    if(isEnable){
-//        this->logger->info("相机未开启");
-        return;
+    // 获取相机是否开启
+    bool isEnable = m_VisionInterface->camera_controls->camerasIsOpened();
+    if(!isEnable){
+       this->logger->info("相机未全部开启,请检查相机连接！");
+       return ;
     }
 
     unsigned pageIndex = ui->stackedWidget_view->currentIndex();
@@ -850,7 +924,7 @@ void MainWindow::updateActionSta() {
         }
     }
 
-    ui->btn_camera_close->setText(QString::number(action_index));//临时显示action_index
+//    ui->btn_camera_close->setText(QString::number(action_index));//临时显示action_index
 
     if(old_action_index != action_index){
         old_action_index = action_index;
@@ -881,11 +955,11 @@ void MainWindow::updateConnectSta() {
 }
 
 void MainWindow::on_btn_line_detect_clicked() {
-    bool isEnable = ui->btn_camera_open->isEnabled();
-    if(isEnable){
-        this->logger->info("相机未开启");
-        return;
-    }
+//    bool isEnable = ui->btn_camera_open->isEnabled();
+//    if(isEnable){
+//        this->logger->info("相机未开启");
+//        return;
+//    }
     unsigned pageIndex = ui->stackedWidget_view->currentIndex();
     if(pageIndex!=1){
         return ;
@@ -947,4 +1021,20 @@ void MainWindow::setLineStatus(bool lineStatus) {
     this->m_mutex.lock();
     MainWindow::lineStatus = lineStatus;
     this->m_mutex.unlock();
+}
+
+void MainWindow::setButtonIndex() {
+
+    QPushButton *button = qobject_cast<QPushButton*>(sender());
+    QString objectName;
+    if (button) {
+        objectName = button->objectName();
+    }
+    //设置原子变量index
+    if(this->m_btnIndex.find(objectName.toStdString()) != this->m_btnIndex.end()){
+        m_Task->ButtonIndex.storeRelaxed(this->m_btnIndex[objectName.toStdString()]);
+        this->logger->info("The object name of the clicked button is:{}",objectName.toStdString());
+    }else{
+        this->logger->error("Button index not found in predefined index map!");
+    }
 }

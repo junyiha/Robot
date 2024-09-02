@@ -8,7 +8,6 @@ VisionInterface::VisionInterface() {
 
 
     this->camera_controls = new CameraManager();  // 相机管理类
-    sleep(1);
     this->line_helper = new LineDetector();       // 边线检测功能类
     this->sharedDataLine = new SharedData();      // 共享数据类
 
@@ -88,6 +87,7 @@ void VisionInterface::parser_result(stMeasureData *stm) {
 
 VisionResult VisionInterface::getVisResult(){
     VisionResult vis_result;
+    memset(&vis_result,0,sizeof(vis_result));
     this->mutex.lock();
     vis_result = this->vis_result_;
     this->mutex.unlock();

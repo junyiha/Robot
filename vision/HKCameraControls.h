@@ -41,6 +41,7 @@ public:
     cv::Mat getFrame();
     // start image acquisition
     void start_image_acquisition(std::string mode);
+    bool cameraIsAccessible();
 
     // initialize camera config
     void initializationCameraConfig();

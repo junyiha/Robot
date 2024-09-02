@@ -104,7 +104,6 @@ void CameraControls::get_camera_data(){
         while(true){
             if(cam.second->myQueue.size()>0){
                 temp_res = cam.second->myQueue.back();
-
                 break;
             }
             if(nums>50){break;}

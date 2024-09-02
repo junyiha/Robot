@@ -23,6 +23,44 @@ cv::Mat padding_hollow(cv::Mat mask, int ksize ) {
 
 }
 
+std::vector<std::vector<float>> get_line_by_lsd(cv::Mat bin_img) {
+
+    //基于LSD算法获取线检测点
+    cv::Ptr<cv::LineSegmentDetector> detector = createLineSegmentDetector(cv::LSD_REFINE_STD);
+    std::vector<cv::Vec4f> lines;
+    std::vector<std::vector<float>> line_res;
+    detector->detect(bin_img, lines);
+
+
+
+    for (size_t i = 0; i < lines.size(); i++) {
+        cv::Vec4f line = {
+                round(lines[i][0]),
+                round(lines[i][1]),
+                round(lines[i][2]),
+                round(lines[i][3])
+        };
+        double dist = calculatePointsDistance(cv::Point2f(line[0], line[1]), cv::Point2f(line[2], line[3]));
+
+
+        // 过滤掉距离过小的线段
+        if (dist <512*0.15) { continue;}   // 不过滤小线段的话，会导致预测的结果存在偏差，因为小线段拟合的直线可能不准确
+
+        //直线拟合
+        std::vector<cv::Point2f> points = {
+                cv::Point2f(line[0], line[1]),
+                cv::Point2f(line[2], line[3])
+        };
+
+        vector<float> line_fited = fiting_line(points);
+        if(line_fited.size()>0){
+            line_res.push_back(line_fited);
+        }
+    }
+
+    return line_res;
+}
+
 
 
 double calculateDistanceBetweenParallelLines(double slope, double intercept1, double intercept2) {
@@ -69,6 +107,75 @@ vector<float> fiting_line(vector<cv::Point2f> points) {
     res.push_back(k);
     return res;
 }
+
+void sort_lines(std::vector<std::vector<float>> &lines, bool ascending) {
+    if(lines.empty()){
+        return ;
+    }
+    std::sort(lines.begin(), lines.end(), [ascending](const vector<float> &a, const vector<float> &b){
+        if(ascending){
+            float min_a_y  = std::min(a[1], a[3]);
+            float min_b_y  = std::min(b[1], b[3]);
+            return min_a_y < min_b_y;
+        }else{
+            // 当需要按降序比较时，比较两条线段在y轴上的最大值
+            float max_a_y = std::max(a[1], a[3]);
+            float max_b_y = std::max(b[1], b[3]);
+            return max_a_y > max_b_y;
+        }
+    });
+}
+
+bool lineIsOverlapping( std::vector<float> a, std::vector<float> b, double tolerance = 30) {
+    // 这里使用简单的逻辑来判断线段是否重合
+    // 你可以根据需要添加更复杂的逻辑，比如检查线段是否足够接近
+    return (std::abs(a[0] - b[0]) < tolerance && std::abs(a[1] - b[1]) < tolerance &&
+            std::abs(a[2] - b[2]) < tolerance && std::abs(a[3] - b[3]) < tolerance);
+}
+
+
+std::vector<std::vector<float>> linesAggregation(std::vector<std::vector<float>> lines){
+    // 合并重合的直线
+
+    int num_lines = lines.size();
+    std::vector<bool> isVisited(num_lines);
+    std::fill_n(isVisited.begin(), num_lines, false);
+    std::vector<std::vector<float>> lineRes;
+
+    for (int i = 0; i < num_lines; i++) {
+        if(isVisited[i]){
+            continue;
+        }else{
+            isVisited[i] = true;
+        }
+        int index = -1;
+        for(int j = i+1; j < num_lines; j++){
+            if(isVisited[j]){
+                continue;
+            }
+            if(lineIsOverlapping(lines[i], lines[j], 30)){ // 30为阈值，表示两个线段重合的阈值
+                isVisited[j] = true;
+                index = j;
+            }
+        }
+
+        if(index != -1){
+            std::vector<float> line = {
+                    (lines[i][0] + lines[index][0]) / 2,
+                    (lines[i][1] + lines[index][1]) / 2,
+                    (lines[i][2] + lines[index][2]) / 2,
+                    (lines[i][3] + lines[index][3]) / 2,
+                    (lines[i][4] + lines[index][4]) / 2
+            };
+
+            lineRes.push_back(line);
+        }else{
+            lineRes.push_back(lines[i]);
+        }
+    }
+    return lineRes;
+}
+
 
 double calculateDistance(const vector<float> A, const vector<float> B) {
 	/**
@@ -263,6 +370,56 @@ double calculateHistogramSimilarity(const cv::Mat& img1, const cv::Mat& img2) {
     return similarity;
 }
 
+bool check_is_border_line(cv::Mat img, cv::Vec4f line, float thr) {
+    bool flag = false;
+    int offset = 30; // 获取上下点的四邻域，并计算相似度；
+
+    // 获取直线坐标
+    int x1 = line[0];
+    int y1 = line[1];
+    int x2 = line[2];
+    int y2 = line[3];
+
+    // 获取中间坐标
+    int base_x = min(x1, x2) + abs(x1 - x2) / 2;
+    int base_y = min(y1, y2) + abs(y1 - y2) / 2;
+
+    int  base_up_y = base_y - offset;
+    int base_down_y  = base_y + offset;
+
+    if(base_up_y < 0 || (base_down_y>img.rows-1)){
+        return false;  // 超出边界
+    }
+
+    cv::Rect roi_img_1(base_x, base_up_y, offset-10,offset-10);
+    cv::Rect roi_img_2(base_x, base_y+10, offset-10,offset-10);
+
+    cv::Mat img_cropped_1 = img(roi_img_1);
+    cv::Mat img_cropped_2 = img(roi_img_2);
+
+    img_cropped_1.convertTo(img_cropped_1, CV_32F);
+    img_cropped_2.convertTo(img_cropped_2, CV_32F);
+
+    cv::Mat matDifference;
+    cv::subtract(img_cropped_1, img_cropped_2, matDifference);
+    cv::Scalar meanScalar = cv::mean(matDifference);
+    double similarty = abs(static_cast<double>(meanScalar[0]))/255.0;
+
+//    double similarty = calculateHistogramSimilarity(img_cropped_1, img_cropped_2);
+
+//    similarty = (similarty+1)/2;
+//    std::cout << "similarty: " << similarty << std::endl;
+//    cv::circle(img, cv::Point(base_x, base_y), 5, cv::Scalar(255, 0, 0), -1);
+//    cv::line(img, cv::Point(x1, y1), cv::Point(x2, y2), cv::Scalar(0, 255,255),2);
+//    cv::rectangle(img, roi_img_1, cv::Scalar(0, 0, 255), 2);
+//    cv::rectangle(img, roi_img_2, cv::Scalar(0, 0, 255), 2);
+//    cv::imshow("img", img);
+//    cv::waitKey(0);
+    if(similarty > 0.6){
+        flag = true;
+    }
+    return flag;
+}
 
 bool check_is_ink_line(cv::Mat img, cv::Vec4f line) {
     bool flag = false;

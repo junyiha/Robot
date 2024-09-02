@@ -113,11 +113,7 @@ public:
     explicit CTask(ComInterface* comm,CRobot* robot, VisionInterface* vision, QObject *parent = nullptr);
 
     QAtomicInt      ActionIndex;//半自动、按钮测试用
-    /**
-     * @brief 获取传感器状态数据
-     * 
-     * @return stMeasureData 传感器状态数据
-     */
+    QAtomicInt      ButtonIndex; //当前点击按钮索引
     stMeasureData getStMeasureData();//传感器状态值 接口
     /**
      * @brief 结束任务线程

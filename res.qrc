@@ -35,5 +35,7 @@
         <file>images/icon_moveRel.png</file>
         <file>images/icon_gotoStation.png</file>
         <file>images/icon_gotoStation_pressed.png</file>
+        <file>images/icon_layout.png</file>
+
     </qresource>
 </RCC>

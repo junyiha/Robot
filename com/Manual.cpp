@@ -247,9 +247,25 @@ void CManual::Input2Cmd()
 void CManual::slotStartLoop()
 {
     m_cManualRecvTimer->start();
+    this->isConnected = true;
 }
 
 void CManual::slotStopLoop()
 {
     m_cManualRecvTimer->stop();
+    this->isConnected = false;
+}
+
+bool CManual::getConnectState() { // 判断遥控器连接情况
+    // 正常连接情况: 1）串口可打开；2）可正确获取串口配置信息；3）已经触发startLoop()槽函数；
+
+    bool flag = false;
+    DCB p;
+    bool ret = isOpen(); // 判断串口是否打开
+    if(ret){
+        if(GetCommState(hCom, &p)&isConnected){
+            flag = true;
+        }
+    }
+    return flag;
 }

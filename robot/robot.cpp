@@ -4,38 +4,48 @@
 CRobot::CRobot(ComInterface* comm,QObject *parent)
     : QThread{parent}
 {
+    //修改827
     m_Index = 0; //link索引
-    m_Freedom = 6;
+    m_Freedom = 9;
     m_ToolFreedom = 1;
+
+
     //运动学参数
-    //机械臂参数，不用修改
-    double L5 = 986; //5轴到地面距离
-    double L6 = 290; //5,6轴距离
+    double D4 = 930; //腰俯仰轴线到地面距离（d1 =0时）
+    double D7 = 1060; //俯仰均为0且伸缩为0时，俯仰轴线到Z轴的距离
+    double L5 = 400; //两个俯仰轴的距离
+    double L6 = 250;// 大臂俯仰轴到筒轴线距离
 
-    //活动参数，实时刷新
-    double dy = 0;		//平移Y
-    double dx = 0;		//平移X
-    double dz = 0;		//平移Z
-    double Theta4 = 0;	//腰  [可360旋转]
-    double Theta5 = 0;	//基础俯仰 (角度不要为0)  运动角度在 [90±20]
-    double Theta6 =0;	//大俯仰 (角度不要为0)    运动角度在 [0±60]
 
-    double Lt = 800;	//待测量 末端工具
+    //关节位置参数
+    double d1 = 0;
+    double d2 = 0;
+    double d3 = 0;
+    double th4 = 0;
+    double th5 = 0;
+    double th6 = 0;
+    double d7  = 0;
+    double th8 = 0;
+    double th9 = 0;
+    double dt = 0;
 
-    std::vector<CTransformation> DH_List = { 	//DH 参数  α  A  θ  D   Lock(若为false 则该关节锁定不动) 所有角度均为弧度制！
-        CTransformation(  0 * M_PI / 180,	0,	        -90 * M_PI / 180,	dz,		Prismatic), //0升降z
-        CTransformation(-90 * M_PI / 180,	0,	        -90 * M_PI / 180,   dx,		Prismatic), //1前后平移
-        CTransformation(-90 * M_PI / 180,	0,	         90 * M_PI / 180,	dy,		Prismatic), //2左右平移
-        CTransformation( 90 * M_PI / 180,	0,	(90+Theta4-180) * M_PI / 180,	L5,		Revolute ), //3腰旋转
-        CTransformation( 90 * M_PI / 180,   0,	(90+Theta5) * M_PI / 180,	0,	    Revolute ), //4腰俯仰（-15--+15）
-        CTransformation(-90 * M_PI / 180,  L6,	(-90+Theta6) * M_PI / 180,	0,		Revolute ), //5推杠俯仰 (角度不要为0)
+    std::vector<CTransformation> DH_List = {
+            //DH 参数          α                    A                        θ             D    轴类型) 所有角度均为弧度制！
+        CTransformation(  0 * M_PI / 180,	  0,	        -90 * M_PI / 180,	  d1,		Prismatic), //1升降z
+        CTransformation(-90 * M_PI / 180,	  0,	        -90 * M_PI / 180,   d2,		Prismatic), //2前后平移
+        CTransformation( 90 * M_PI / 180,	  0,	         90 * M_PI / 180,	  d3,		Prismatic), //3左右平移
+        CTransformation( 90 * M_PI / 180,	  0,	        th4 * M_PI / 180,	  D4,		Revolute ), //4腰旋转
+        CTransformation( 90 * M_PI / 180,   0,	        th5 * M_PI / 180,	   0,	    Revolute ), //5腰俯仰（-15--+15）
+        CTransformation(  0 * M_PI / 180,  L5,	        th6 * M_PI / 180,	   0,		Revolute ), //6臂俯仰 (角度不要为0)
+        CTransformation( 90 * M_PI / 180,  L6,	          0 * M_PI / 180,	  d7,		Prismatic), //7伸缩 (角度不要为0)
+        CTransformation(  0 * M_PI / 180,   0,	        th8 * M_PI / 180,	   0,		Revolute ), //8回转 (角度不要为0)
+        CTransformation(-90 * M_PI / 180,   0,	        th9 * M_PI / 180,	   0,		Revolute ), //9腕 (角度不要为0)
     };
 
+
     //    DH_Parameter Tool_Mat = DH_Parameter(90 * M_PI / 180, 0, 90 * M_PI / 180, L6, Prismatic);//竖板旋转用，工具坐标系旋转90
-    CTransformation Tool_Mat = CTransformation(-90 * M_PI / 180, 0,   90 * M_PI / 180, Lt, Prismatic);       //装横板用，末端工具（可伸缩，但是默认不动，不需要刷新）
+    CTransformation Tool_Mat = CTransformation(90* M_PI / 180, 0,  0 * M_PI / 180, dt, Prismatic);       //装横板用，末端工具（可伸缩，但是默认不动，不需要刷新）
     m_LinkModel =new CRobotKinectModel(DH_List,Tool_Mat);
-
-
 
 
     m_Comm = comm;
@@ -64,20 +74,27 @@ CRobot::CRobot(ComInterface* comm,QObject *parent)
 
     log = spdlog::get("logger");
 
-
-    for(int i = 0;i<3;i++)
+    //设置关节限制参数
+    for(int i = 0;i<m_Freedom;i++)
     {
-        m_JointVelLimt[i] = LINK_0_JOINT_MAX_VEL[i];
-        m_JointPosLimt[i] = LINK_0_JOINT_LIMIT_POS[i];
-        m_JointNegLimt[i] = LINK_0_JOINT_LIMIT_NEG[i];
-
-        m_JointVelLimt[i+3] = LINK_0_JOINT_MAX_VEL[3]/57.2957795;
-        m_JointPosLimt[i+3] = LINK_0_JOINT_LIMIT_POS[3]/57.2957795;
-        m_JointNegLimt[i+3] = LINK_0_JOINT_LIMIT_NEG[3]/57.2957795;
-
+        if(DH_List[i].Get_Type() == Prismatic)
+        {
+            m_JointVelLimt[i] = LINK_0_JOINT_MAX_VEL[i];
+            m_JointPosLimt[i] = LINK_0_JOINT_LIMIT_POS[i];
+            m_JointNegLimt[i] = LINK_0_JOINT_LIMIT_NEG[i];
+        }
+        else
+        {
+            m_JointVelLimt[i] = LINK_0_JOINT_MAX_VEL[3]/57.2957795;
+            m_JointPosLimt[i] = LINK_0_JOINT_LIMIT_POS[3]/57.2957795;
+            m_JointNegLimt[i] = LINK_0_JOINT_LIMIT_NEG[3]/57.2957795;
+        }
     }
-
-
+    //工具关节限制参数
+    m_JointVelLimt[m_Freedom] = LINK_0_JOINT_MAX_VEL[3];
+    m_JointPosLimt[m_Freedom] = LINK_0_JOINT_LIMIT_POS[3];
+    m_JointNegLimt[m_Freedom] = LINK_0_JOINT_LIMIT_NEG[3];
+    //修改827 end
 }
 
 CRobot::~CRobot()
@@ -134,18 +151,22 @@ void CRobot::UpdateStatus()
     stLinkStatus sta = m_Comm->getLinkStatus(m_Index);//link状态数据
 
     //获取末端工具尺寸
-    double len = m_JointGroupStatus[6].Position;
+    //修改827
+    double len = m_JointGroupStatus[m_Freedom].Position;
 
     //单位换算degree => rad
-    m_JointGroupStatus[3].Position = m_JointGroupStatus[3].Position/57.3;
-    m_JointGroupStatus[4].Position = m_JointGroupStatus[4].Position/57.3;
-    m_JointGroupStatus[5].Position = m_JointGroupStatus[5].Position/57.3;
+    m_JointGroupStatus[3].Position *= 1.0/57.3;
+    m_JointGroupStatus[4].Position *= 1.0/57.3;
+    m_JointGroupStatus[5].Position *= 1.0/57.3;
+    m_JointGroupStatus[7].Position *= 1.0/57.3;
+    m_JointGroupStatus[8].Position *= 1.0/57.3;
 
 
+    //修改827
     //更新运动模型数据
-    if(m_JointGroupStatus.size() != m_Freedom+1) //机器人6轴+工具轴
+    if(m_JointGroupStatus.size() != m_Freedom+1) //机器人轴+工具轴
     {
-        //qDebug()<<"ERROR: Statedata of axis is unmatch!";
+        log->error(" Statedata of axis is unmatch!");
         return;
     }
 
@@ -155,10 +176,11 @@ void CRobot::UpdateStatus()
         m_ActJoints[i] = m_JointGroupStatus[i].Position;
         vJointValue.push_back(std::make_pair(m_ActJoints[i], true));
     }
-    m_ActJoints[6] = m_JointGroupStatus[6].Position;
+    m_ActJoints[m_Freedom] = m_JointGroupStatus[m_Freedom].Position;
 
     m_LinkModel->setToolPos(len, 0);//根据工装实际安装位置确定角度。弧度
     m_LinkModel->setJointPos(vJointValue);
+    //修改827 end
 
     //更新link状态数据
     m_LinkSta.eLinkActState = sta.eLinkActState;
@@ -200,8 +222,6 @@ void CRobot::StateMachine()
        log->info(("m_LinkSta.eLinkActState has changed  [" + GetEnumName_LinkState(pre_eLinkActState)+ "]------------>[" + GetEnumName_LinkState(m_LinkSta.eLinkActState)+"]").c_str());
     }
     pre_eLinkActState = m_LinkSta.eLinkActState;
-
-
 
     switch(m_LinkSta.eLinkActState)
     {

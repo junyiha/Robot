@@ -28,7 +28,7 @@ const double JOINT_VEL_MOVE = 3;      //单位degree
 const double POSITION_RESOLUTION = 0.5;    //单位mm
 const double ROTATE_RESOLUTION  = 0.02/57.3;      //单位rad
 
-const double END_VEL_LIMIT[6] = {10,10,10,0.3,0.3,0.3}; //关节末端运动限速
+const double END_VEL_LIMIT[6] = {3,3,3,0.3,0.3,0.3}; //关节末端运动限速
 //                                   0底升 1前后  2左右  3腰转 4大臂  5腕部  6末端
 const double JOINT_VEL_LIMIT[20] = {8,2,2,2,1,1,8,0,0,0,0,0,0,0,0,0,0,0,0,0};
 

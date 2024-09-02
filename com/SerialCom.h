@@ -61,10 +61,9 @@ protected:
       * @return 读取的数据字节数，失败返回0
       */
     DWORD read(uint8_t* buffer, DWORD wCount = 32);
-
+    HANDLE hCom;
 
 private:
-    HANDLE hCom;
     bool synchronizeflag;  //synchronizable：0为异步，1为同步
 };
 

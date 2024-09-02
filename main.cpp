@@ -1,6 +1,6 @@
 ﻿#include "mainwindow.h"
 #include <QApplication>
-#include <string>
+#include<string>
 #include "vision/VisionInterface.h"
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/basic_file_sink.h>
@@ -9,10 +9,6 @@
 #include <QThread>
 #include <QTextCodec>
 #include <clocale>
-
-
-#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE//必须定义这个宏,才能输出文件名和行号
-
 void initLog()
 {
     //创建控制台日志记录器
@@ -45,137 +41,41 @@ void vision_demo(){
     vision.start();
 
     VisionResult res = vision.getVisResult();
-
     if(res.status){
         for(int i=0;i<5;++i){
             std::cout<<"cam:"<<i<<" :dist:"<<res.stData.m_LineDistance[i]<<std::endl;
         }
     }
-
     QThread::sleep(1000*30);
 
 }
 
-#ifdef STATE_MACHINE_TEST
-#include "Task/StateMachine.h"
-int main(int argc, char *argv[])
-{
-    initLog();
-    auto log = spdlog::get("logger");
+void line_detect_demo(){
 
-    auto pdTaskPtr = std::make_shared<TASK::PDTask>();
-    TASK::StateMachine stateMachine(pdTaskPtr);
+    std::string path = "F:\\cache PDRobot_碰钉积累数据\\cache\\cam_4_2024-07-22-16-14-57.png";
+    cv::Mat img = cv::imread(path);
+    LineDetector line_tool;
+    auto start = std::chrono::high_resolution_clock::now();
+    LineResult res = line_tool.getLineDistance(img);
+    auto end = std::chrono::high_resolution_clock::now();
 
-    bool quit_flag{false};
+    // 计算并输出运行时间
+    std::chrono::duration<double> elapsed_seconds = end - start;
+    std::cout << "程序运行时间: " << elapsed_seconds.count() << " 秒" << std::endl;
 
-    auto loopFunc = [](TASK::StateMachine &stateMachine, bool &quit_flag){
-        auto log = spdlog::get("logger");
-        while (true)
-        {
-            if (quit_flag)
-            {
-                log->info("quiting...\n");
-                break;
-            }
-            stateMachine.stateTransition();
-            std::this_thread::sleep_for(std::chrono::seconds(1));
-        }
-    };
-    std::thread loopThread(loopFunc, std::ref(stateMachine), std::ref(quit_flag));
-
-    auto getStateFunc = [](TASK::StateMachine &stateMachine, bool &quit_flag){
-        auto log = spdlog::get("logger");
-        while (true)
-        {
-            if (quit_flag)
-            {
-                log->info("get state thread quiting...\n");
-                break;
-            }
-            log->info("state: {},command: {}\n\n", stateMachine.getCurrentStateString(), stateMachine.getCurrentExecutionCommandString());
-            std::this_thread::sleep_for(std::chrono::seconds(1));
-        }
-    };
-    std::thread getStateThread(getStateFunc, std::ref(stateMachine), std::ref(quit_flag));
-
-    char input;
-    while (true)
-    {
-        if (quit_flag)
-            break;
-
-        log->info("input manual command:\n");
-        std::cin >> input;
-        log->info("input command: {}\n", input);
-        switch (input)
-        {
-            case 'n':
-            {
-                stateMachine.updateExecutionCommand(TASK::EExecutionCommand::eNULL);
-                break;
-            }
-            case 'P':
-            {
-                stateMachine.updateExecutionCommand(TASK::EExecutionCommand::eParallel);
-                break;
-            }
-            case 't':
-            {
-                stateMachine.updateExecutionCommand(TASK::EExecutionCommand::eTerminate);
-                break;
-            }
-            case 'u':
-            {
-                stateMachine.updateExecutionCommand(TASK::EExecutionCommand::ePause);
-                break;
-            }
-            case 'p':
-            {
-                stateMachine.updateExecutionCommand(TASK::EExecutionCommand::ePositioning);
-                break;
-            }
-            case 'm':
-            {
-                stateMachine.updateExecutionCommand(TASK::EExecutionCommand::eMagentOn);
-                break;
-            }
-            case 'Q':
-            {
-                stateMachine.updateExecutionCommand(TASK::EExecutionCommand::eQuit);
-                break;
-            }
-            case 'w':
-            {
-                stateMachine.updateExecutionCommand(TASK::EExecutionCommand::eAutoWeld);
-                break;
-            }
-            case 'M':
-            {
-                stateMachine.updateExecutionCommand(TASK::EExecutionCommand::eMagentOff);
-                break;
-            }
-            case 's':
-            {
-                stateMachine.updateExecutionCommand(TASK::EExecutionCommand::eStopWeld);
-                break;
-            }
-            case 'q':
-            {
-                quit_flag = true;
-                break;
-            }
-        }
+    if(res.status){
+        cv::imshow("img", res.imgDrawed);
+        cv::waitKey(0);
+    }else{
+        cv::imshow("img", res.imgDrawed);
+        cv::waitKey(0);
+        std::cout<<res.errorInfo<<std::endl;
     }
 
-    if (loopThread.joinable())
-        loopThread.join();
 
-    if (getStateThread.joinable())
-        getStateThread.join();
-
-    return 0;
 }
-#else
+
+
 #include<Eigen/Eigen>
 int main(int argc, char *argv[])
 {
@@ -189,6 +89,9 @@ int main(int argc, char *argv[])
 
     QMessageBox::information(nullptr, "Info", "请确保机器人底部升降电机位于初始位置");
     return a.exec();
+//    line_detect_demo();
+//    return 0;
+
 
 }
-#endif
+
