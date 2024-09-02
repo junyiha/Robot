@@ -24,10 +24,28 @@ const long LINK_FREEDOM[6] = { 10, 6, 0, 0, 0, 0};
 //------------------------------------------------------------------------------//
 //轴限位
 //------------------------------------------------------------------------------//
-                                                        //升降      前后      左右        腰旋转    腰俯仰      臂俯仰        筒伸缩       筒旋转       腕俯仰     末端升降
-                                                        // 0        1         2           3        4           5           6           7           8           9
-const double LINK_0_JOINT_LIMIT_POS[MAX_FREEDOM_LINK] = { 300, 100,  145 , 170,  15,   60,     1550,       30 ,       90,           1100, MAX, MAX, MAX, MAX, MAX, MAX, MAX, MAX, MAX, MAX };
-const double LINK_0_JOINT_LIMIT_NEG[MAX_FREEDOM_LINK] = { 0  , -100, -145, -170 ,-15,  0,      1200 ,       -30,       -90,             800,-MIN,-MIN,-MIN,-MIN,-MIN,-MIN,-MIN,-MIN,-MIN,-MIN };
+const double LINK_0_JOINT_LIMIT_POS[MAX_FREEDOM_LINK] = { 250,      // 0 升降 
+                                                          110,      // 1 前后 
+                                                          110,      // 2 左右 
+                                                          95,       // 3 腰旋转 
+                                                          105,      // 4 腰俯仰 
+                                                          1100,     // 5 臂俯仰 
+                                                          1700,     // 6 筒伸缩 
+                                                          30,       // 7 筒旋转 
+                                                          60,       // 8 腕俯仰 
+                                                          1490,     // 9 末端升降 
+                                                          MAX,MAX,MAX,MAX,MAX,MAX,MAX,MAX,MAX,MAX };
+const double LINK_0_JOINT_LIMIT_NEG[MAX_FREEDOM_LINK] = { 0,        // 0 升降 
+                                                          -110,     // 1 前后 
+                                                          -110,     // 2 左右 
+                                                          -95,      // 3 腰旋转 
+                                                          75,       // 4 腰俯仰 
+                                                          790,      // 5 臂俯仰 
+                                                          1070,     // 6 筒伸缩 
+                                                          -30,      // 7 筒旋转 
+                                                          -100,     // 8 腕俯仰 
+                                                          1190,     // 9 末端升降 
+                                                          -MIN,-MIN,-MIN,-MIN,-MIN,-MIN,-MIN,-MIN,-MIN,-MIN };
 
 //const double LINK_0_JOINT_LIMIT_POS[MAX_FREEDOM_LINK] = {  64,  144,  257,184, 14, 1147, 480, 150, 99,  250, MAX, MAX, MAX, MAX, MAX, MAX, MAX, MAX, MAX, MAX };
 //const double LINK_0_JOINT_LIMIT_NEG[MAX_FREEDOM_LINK] = { -64, -144,   3, -4, -14, 834,   4, -150, -47,   3,-MIN,-MIN,-MIN,-MIN,-MIN,-MIN,-MIN,-MIN,-MIN,-MIN };
