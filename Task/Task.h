@@ -55,11 +55,11 @@ enum class EExecutionCommand
     eAutoWeld,          // 自动碰钉
     eMagentOff,         // 脱开
     eStopWeld,          // 停止碰钉
-    eSideline,          // 对齐边线
-    eLift,              // 举升
-    eAddNail,           // 放钉
-    eStop,              // 停止
-    eCrashStop,         // 急停
+    eSideline,          // 对齐边线 == 定位(ePositioning)
+    eLift,              // 举升 (手动指令中的)
+    eAddNail,           // 放钉 (手动指令中的)
+    eStop,              // 停止 (手动指令中的)
+    eCrashStop,         // 急停 (手动指令中的)
 };
 
 enum class EDetectionInParallelResult
@@ -144,6 +144,9 @@ protected:
     stManualCmd    m_Manual;       //遥控器指令
     stManualCmd    m_preManual;    //上一帧遥控器指令
 
+    stManualOperator m_manualOperator;
+    stManualOperator m_preManualOperator;
+
     stMeasureData m_stMeasuredata; //传感器状态反馈
     stMeasureData _stMeasuredata;  //传感器状态反馈
 
@@ -164,9 +167,6 @@ protected:
     QMutex          mutex_cmd;
     QMutex          mutex_read;
     QMutex          mutex_write;
-
-    stManualOperator m_ManualOperator;
-    stManualOperator m_preManualOperator;
 
     /**
     * @brief 运行函数

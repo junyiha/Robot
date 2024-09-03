@@ -127,6 +127,7 @@ public:
      * @param m_Manual: 遥控器指令数据
      */
     void getManual(stManualCmd &m_Manual);
+    void getManual(stManualOperator &m_Manual);
     //xxxxxxxxx未定义
 
     //*************机器人控制相关接口信号*************

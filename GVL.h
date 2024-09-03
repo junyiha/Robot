@@ -33,10 +33,10 @@ const double END_VEL_LIMIT[6] = {3,3,3,0.3,0.3,0.3}; //关节末端运动限速
 const double JOINT_VEL_LIMIT[20] = {8,2,2,2,1,1,8,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
 const unsigned int CYLINDER_INDEX = 5; //推杆关节轴号索引
-const unsigned int STEER_LEFT_INDEX = 11; //左舵轮索引
-const unsigned int STEER_RIGHT_INDEX = 13; //右舵轮索引
-const unsigned int WHEEL_LEFT_INDEX = 12; //左行走轮索引
-const unsigned int WHEEL_RIGHT_INDEX = 14; //右行走轮索引
+const unsigned int STEER_LEFT_INDEX = 10; //左舵轮索引
+const unsigned int STEER_RIGHT_INDEX = 12; //右舵轮索引
+const unsigned int WHEEL_LEFT_INDEX = 11; //左行走轮索引
+const unsigned int WHEEL_RIGHT_INDEX = 13; //右行走轮索引
 const unsigned int TOOL_INDEX = 4; //
 const unsigned int PITCH_JOINT_INDEX = 4;//俯仰轴运动学模型索引
 

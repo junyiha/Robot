@@ -38,9 +38,9 @@ void CTask::run()
 
         updateCmdandStatus();
 
-        SemiAutoProgrcess();
+        // SemiAutoProgrcess();
 
-        TranslateNumberToCMD();
+        // TranslateNumberToCMD();
         stateTransition();
 
 //        if(m_Manual.Auto)
@@ -51,6 +51,7 @@ void CTask::run()
 //            Manual();
 //            m_preManual = m_Manual;
 //        }
+        m_preManualOperator = m_manualOperator;
         Sleep(50);
     }
 
@@ -59,9 +60,66 @@ void CTask::run()
 
 void CTask::updateCmdandStatus()
 {
+    // 更新机器人状态
     m_LinkStatus = m_Robot->getLinkSta();
     m_JointGroupStatus = m_Robot->getJointGroupSta();
-    m_Comm->getManual(m_Manual);
+
+
+    // 更新指令，遥控器+界面
+    m_Comm->getManual(m_manualOperator);
+
+    //根据界面指令修改遥控器指令
+    m_manualOperator.Ready = 0;
+    m_manualOperator.TaskIndex = 0;
+    switch(ActionIndex.loadRelaxed())
+    {
+        case 0:
+            m_manualOperator.TaskIndex = 0;
+            break;
+        case 1:
+            m_manualOperator.TaskIndex = 1;
+            break;
+        case 2:
+            m_manualOperator.TaskIndex = 4;
+            break;
+        case 3:
+            m_manualOperator.TaskIndex = 16;
+            break;
+        case 4:
+            m_manualOperator.TaskIndex = 64;
+            break;
+        case 5:
+            m_manualOperator.TaskIndex = 2;
+            break;
+        case 6:
+            m_manualOperator.TaskIndex = 8;
+            break;
+        case 7: //暂停
+            m_manualOperator.TaskIndex = 32;
+            break;
+        case 8: //终止
+            m_manualOperator.TaskIndex = 128;
+            break;
+
+        case 9: //举升
+            m_manualOperator.Ready = 1;
+            break;
+        case 10://放钉
+            m_manualOperator.Ready = 2;
+        case 11://停止
+            m_manualOperator.HaltCommand = true;
+            break;
+        case 12://急停
+            m_manualOperator.TaskIndex = 128;
+            m_manualOperator.StopCommand = true;
+            break;
+        default:
+            m_manualOperator.TaskIndex = 0;
+            m_manualOperator.Ready = 0;
+            break;
+    }
+    ActionIndex.storeRelaxed(0);
+
 
     this->mutex_read.lock();
     _stMeasuredata = m_stMeasuredata;
@@ -364,22 +422,19 @@ void CTask::SemiAutoProgrcess()
 
 void CTask::Manual()
 {
-    if (m_ManualOperator.StopCommand)
+    if (m_manualOperator.StopCommand)
     {
-        m_Robot->setRobotStop();			
+        m_Robot->setLinkStop();	
         return;
     }
 
-    if (m_ManualOperator.HaltCommand)
+    if (m_manualOperator.HaltCommand)
     {
-        m_Robot->setRobotStop();			
+        m_Robot->setLinkHalt();			
         return;
     }
 
-    uint STEER_LEFT_INDEX, STEER_RIGHT_INDEX;
-    uint WHEEL_LEFT_INDEX, WHEEL_RIGHT_INDEX;
-
-    if (std::fabs(m_ManualOperator.VechDirect - m_preManualOperator.VechDirect) < 1)
+    if (std::fabs(m_manualOperator.VechDirect - m_preManualOperator.VechDirect) < 1)
     {
         m_Robot->setJointMoveAbs(STEER_LEFT_INDEX, m_Manual.MoveDirection,10);//速度需改为参数			
         m_Robot->setJointMoveAbs(STEER_RIGHT_INDEX,m_Manual.MoveDirection,10);//速度需改为参数			
@@ -389,46 +444,47 @@ void CTask::Manual()
     if(m_JointGroupStatus[STEER_LEFT_INDEX].eState == eAxis_STANDSTILL &&			
             m_JointGroupStatus[STEER_RIGHT_INDEX].eState == eAxis_STANDSTILL)//左右舵轮均不动			
     {		
-        if (m_ManualOperator.bVechFlag || m_ManualOperator.bRotateFlag)
+        if (m_manualOperator.bVechFlag || m_manualOperator.bRotateFlag)
         {
             //计算轮速			
-            if(fabs(m_ManualOperator.VechDirect)>M_PI/6)//舵轮角度大于45°时禁止差速转向			
+            if(fabs(m_manualOperator.VechDirect)>M_PI/6)//舵轮角度大于45°时禁止差速转向			
             {			
-                m_ManualOperator.VechDirect = 0;			
+                m_manualOperator.VechDirect = 0;			
             }			
-            vel_left = m_ManualOperator.VechVel- m_ManualOperator.RotateVel; //正转为逆时针			
-            vel_right = m_ManualOperator.VechVel+ m_ManualOperator.RotateVel;			
+            // 速度待修改 2024.09.03
+            vel_left = m_manualOperator.VechVel * 100 - m_manualOperator.RotateVel * 30; //正转为逆时针			
+            vel_right = m_manualOperator.VechVel * 100 + m_manualOperator.RotateVel * 30;			
             
-            m_Robot->setJointMoveVel(WHEEL_LEFT_INDEX,vel_left);			
-            m_Robot->setJointMoveVel(WHEEL_RIGHT_INDEX,vel_left);	
+            m_Robot->setJointMoveVel(WHEEL_LEFT_INDEX, vel_left);			
+            m_Robot->setJointMoveVel(WHEEL_RIGHT_INDEX, vel_right);	
         }
     }
 
-    if (m_ManualOperator.bLinkMoveFlag && m_ManualOperator.Ready != 0)
+    if (m_manualOperator.bLinkMoveFlag && m_manualOperator.Ready != 0)
     {
-        m_Robot->setRobotStop();			
+        m_Robot->setLinkHalt();			
     }
-    else if (m_ManualOperator.Ready == 1)
+    else if (m_manualOperator.Ready == 1)
     {
         // 移动到举升位置
         m_Robot->setLinkMoveAbs(Postion_Home,END_VEL_LIMIT);
     }
-    else if (m_ManualOperator.Ready == 2)
+    else if (m_manualOperator.Ready == 2)
     {
         // 移动到放钉位置
         m_Robot->setLinkMoveAbs(Postion_Prepare,END_VEL_LIMIT);
     }
-    else if (m_ManualOperator.bLinkMoveFlag)
+    else if (m_manualOperator.bLinkMoveFlag)
     {
-        if (m_ManualOperator.bEndMove != m_preManualOperator.bEndMove)
+        if (m_manualOperator.bEndMove != m_preManualOperator.bEndMove)
         {
-            m_Robot->setRobotStop();			
+            m_Robot->setLinkHalt();			
         }
         else 
         {
-            double jointvel[20];			
+            std::vector<double> jointvel(20, 0);			
             double endvel[6] ={0,0,0,0,0,0};		
-            if (m_ManualOperator.bEndMove)
+            if (m_manualOperator.bEndMove)
             {
                 // 末端运动
                 for(int i= 0;i<6;i++)			
@@ -439,21 +495,19 @@ void CTask::Manual()
             }
             else 
             {
-                // 单轴运动
-                //轴索引待定			
-            
-                jointvel[0] = m_Manual.RobotMove[0]*JOINT_VEL_LIMIT[0];			
-                jointvel[1] = m_Manual.RobotMove[1]*JOINT_VEL_LIMIT[1];			
-                jointvel[2] = m_Manual.RobotMove[2]*JOINT_VEL_LIMIT[2];			
-                jointvel[3] = m_Manual.RobotMove[3]*JOINT_VEL_LIMIT[3];			
-                jointvel[4] = m_Manual.RobotMove[4]*JOINT_VEL_LIMIT[4];			
-                jointvel[5] = m_Manual.RobotMove[5]*JOINT_VEL_LIMIT[5];			
-                m_Robot->setJointGroupMoveVel(jointvel);		
+                // 单轴运动，轴索引待定			
+                jointvel[0] = m_Manual.RobotMove[0] * LINK_0_JOINT_MAX_VEL[0];		// 底升	
+                jointvel[3] = m_Manual.RobotMove[1] * LINK_0_JOINT_MAX_VEL[3];	    // 腰		
+                jointvel[5] = m_Manual.RobotMove[2] * LINK_0_JOINT_MAX_VEL[5];		// 大臂俯仰	
+                jointvel[6] = m_Manual.RobotMove[3] * LINK_0_JOINT_MAX_VEL[6];		// 伸缩
+                jointvel[8] = m_Manual.RobotMove[4] * LINK_0_JOINT_MAX_VEL[8];		// 腕俯仰
+                jointvel[9] = m_Manual.RobotMove[5] * LINK_0_JOINT_MAX_VEL[9];		// 工装(工具)	
+                m_Robot->setJointGroupMoveVel(jointvel.data());		
             }
         }
     }
 
-    switch (m_ManualOperator.TaskIndex)
+    switch (m_manualOperator.TaskIndex)
     {
         case stManualOperator::Parallel:
         {

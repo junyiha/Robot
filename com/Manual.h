@@ -68,6 +68,7 @@ public:
      * @param cmd
      */
     void getManualCmd(stManualCmd& cmd);
+    void getManualCmd(stManualOperator& cmd);
 
     bool getConnectState();
     bool isConnected = false;
@@ -100,10 +101,14 @@ protected:
 
 private:
     stManualOperator m_manualOperator;
+    stManualOperator _manualOperator;
 
 public:
     int RecvDataRefactor();
     int SendDataRefactor();
+
+private:
+    qint16 SpliceByte(qint8 high_byte, qint8 low_byte);
 
 //////////////////////////////////////////////////////////////////////////////
 };

@@ -155,3 +155,13 @@ qint16 CManual::SpliceByte(qint8 high_byte, qint8 low_byte)
 {
     return (static_cast<qint16>(high_byte) << 8) | low_byte;
 }
+
+void CManual::getManualCmd(stManualOperator& cmd)
+{
+    mutex_cmd.lock();
+    
+
+    std::memcpy(&cmd, &_manualOperator, sizeof(stManualOperator));
+
+    mutex_cmd.unlock();
+}

@@ -56,44 +56,27 @@ void CTask::stateTransition()
 
 void CTask::manualStateTransition()
 {
-    //1. 判断机器人是否处于就绪状态
-    bool robotReady = false;
-
-    //2. 如果就绪，判断是否要执行调平指令
-    if(m_eexecutionCommand == EExecutionCommand::eParallel)
+    //1. 判断机器人是否处于就绪状态 
+    bool robotReady = (m_LinkStatus.eLinkActState == eLINK_STANDSTILL) && (m_Robot->isJointReached(Postion_Home_qv));
+    if (robotReady)
     {
-        if(robotReady)
+        //2. 如果就绪，判断是否要执行调平指令
+        if(m_eexecutionCommand == EExecutionCommand::eParallel)
         {
-            updateTopAndSubState(ETopState::eParallel, ESubState::eDetection);
-            
+            if(robotReady)
+            {
+                updateTopAndSubState(ETopState::eParallel, ESubState::eDetection);
+            }
+            else
+            {
+                log->warn("机器人未就绪，无法执行调平指令");
+            }
+            return;
         }
-        else{
-            log->warn("机器人未就绪，无法执行调平指令");
-        }
-        return;
     }
 
     //3. 执行手动操作指令 -- 遥控器处理函数--》遥控器对接。
-    
-
-    // switch (m_esubState)
-    // {
-    //     case ESubState::eNotReady:
-    //     {
-    //         notReadyExecutionCommand();
-    //         break;
-    //     }
-    //     case ESubState::eReady:
-    //     {
-    //         readyExecutionCommand();
-    //         break;
-    //     }
-    //     default:
-    //     {
-    //         log->warn("第二层状态数据无效!!!");
-    //     }
-    // }
-    readyExecutionCommand();
+    Manual();
 }
 
 void CTask::parallelStateTransition()
@@ -782,67 +765,56 @@ std::string CTask::getCurrentExecutionCommandString()
 
 void CTask::TranslateNumberToCMD()
 {
-    switch (ActionIndex.loadRelaxed())
+    switch (m_manualOperator.TaskIndex)
     {
-        case 0: // 调平
+        case 0: // 空指令
+        {
+            updateExecutionCommand(EExecutionCommand::eNULL);
+            break;
+        }
+        case 1: // 调平 
         {
             updateExecutionCommand(EExecutionCommand::eParallel);
             break;
         }
-        case 1: // 对齐边线
+        case 4: // 对齐边线(定位)
         {
-            updateExecutionCommand(EExecutionCommand::eSideline);
+            updateExecutionCommand(EExecutionCommand::ePositioning);
             break;
         }
-        case 2: // 吸合
+        case 16: // 吸合
         {
             updateExecutionCommand(EExecutionCommand::eMagentOn);
             break;
         }
-        case 3: // 碰钉
+        case 64: // 碰钉
         {
             updateExecutionCommand(EExecutionCommand::eAutoWeld);
             break;
         }
-        case 4: // 脱开
+        case 2: // 脱开
         {
             updateExecutionCommand(EExecutionCommand::eMagentOff);
             break;
         }
-        case 5: // 退出
+        case 8: // 退出
         {
             updateExecutionCommand(EExecutionCommand::eQuit);
             break;
         }
-        case 6: // 暂停
+        case 32: // 暂停
         {
             updateExecutionCommand(EExecutionCommand::ePause);
             break;
         }
-        case 7: // 终止
+        case 128: // 终止
         {
             updateExecutionCommand(EExecutionCommand::eTerminate);
             break;
         }
-        case 8: // 举升
+        default:
         {
-            updateExecutionCommand(EExecutionCommand::eLift);
-            break;
-        }
-        case 9: // 放钉
-        {
-            updateExecutionCommand(EExecutionCommand::eAddNail);
-            break;
-        }
-        case 10: // 停止
-        {
-            updateExecutionCommand(EExecutionCommand::eStop);
-            break;
-        }
-        case 11: // 急停
-        {
-            updateExecutionCommand(EExecutionCommand::eCrashStop);
-            break;
+            log->warn("invalid task index: {}", m_manualOperator.TaskIndex);
         }
     }
 }

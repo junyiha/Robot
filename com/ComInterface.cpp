@@ -132,6 +132,11 @@ void ComInterface::getManual(stManualCmd &m_Manual)
    this->m_cManual.getManualCmd(m_Manual);
 }
 
+void ComInterface::getManual(stManualOperator &m_Manual)
+{
+   this->m_cManual.getManualCmd(m_Manual);
+}
+
 void ComInterface::RobotReset()
 {
     m_cRobot.RobotReset();
