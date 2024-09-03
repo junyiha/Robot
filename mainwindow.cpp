@@ -435,30 +435,30 @@ void MainWindow::updateAxisStatus() {
                 old_JointStatus[i] = stJointstatus[i].eState;
 
                 switch (stJointstatus[i].eState) {
-                    case eAxis_ERRORSTOP:
-                        findChild<QLabel *>("label_device_state" + QString::number(i))->setStyleSheet(
-                                "image: url(:/img/images/icon_redLight.png);"
-                                "border:1px solid black;"
-                                );
-                        break;
-                    case eAxis_UNDEFINED:
-                        findChild<QLabel *>("label_device_state" + QString::number(i))->setStyleSheet(
-                                "image: url(:/img/images/icon_greenLight.png);"
-                                "border:1px solid black;"
-                                );
-                        break;
-                    case eAxis_DISABLED:
-                        findChild<QLabel *>("label_device_state" + QString::number(i))->setStyleSheet(
-                                "image: url(:/img/images/icon_yellowLight.png);"
-                                "border:1px solid black;"
-                                );
-                        break;
-                    default:
-                        findChild<QLabel *>("label_device_state" + QString::number(i))->setStyleSheet(
-                                "image: url(:/img/images/icon_greenLight.png);"
-                                "border:1px solid black;"
-                                );
-                        break;
+                    // case eAxis_ERRORSTOP:
+                    //     findChild<QLabel *>("label_device_state" + QString::number(i))->setStyleSheet(
+                    //             "image: url(:/img/images/icon_redLight.png);"
+                    //             "border:1px solid black;"
+                    //             );
+                    //     break;
+                    // case eAxis_UNDEFINED:
+                    //     findChild<QLabel *>("label_device_state" + QString::number(i))->setStyleSheet(
+                    //             "image: url(:/img/images/icon_greenLight.png);"
+                    //             "border:1px solid black;"
+                    //             );
+                    //     break;
+                    // case eAxis_DISABLED:
+                    //     findChild<QLabel *>("label_device_state" + QString::number(i))->setStyleSheet(
+                    //             "image: url(:/img/images/icon_yellowLight.png);"
+                    //             "border:1px solid black;"
+                    //             );
+                    //     break;
+                    // default:
+                    //     findChild<QLabel *>("label_device_state" + QString::number(i))->setStyleSheet(
+                    //             "image: url(:/img/images/icon_greenLight.png);"
+                    //             "border:1px solid black;"
+                    //             );
+                    //     break;
                 }
             }
         }
@@ -904,41 +904,41 @@ void MainWindow::on_btn_SetMagent_clicked()
 }
 
 void MainWindow::updateActionSta() {
-    //半自动作业按钮状态更新
-    static int old_action_index = -100;
-    int action_index = m_Task->ActionIndex.loadRelaxed();
-    const std::map<int,QString> AUTOWORK_NAME = {
-            {10,"btn_location_"}, {12,"btn_lift_"}, {15,"btn_leveling_"}, {16,"btn_lift_2"},
-            {20,"btn_sideline_"}, {35,"btn_sideline_"}, {28,"btn_sideline_"}, {30,"btn_magnet_open_"},
-            {40,"btn_auto_knock_"}, {32,"btn_magnet_close_"}, {42,"btn_magnet_pause_"}, {44,"btn_knock_suspend_"},
-    };
+//     //半自动作业按钮状态更新
+//     static int old_action_index = -100;
+//     int action_index = m_Task->ActionIndex.loadRelaxed();
+//     const std::map<int,QString> AUTOWORK_NAME = {
+//             {10,"btn_location_"}, {12,"btn_lift_"}, {15,"btn_leveling_"}, {16,"btn_lift_2"},
+//             {20,"btn_sideline_"}, {35,"btn_sideline_"}, {28,"btn_sideline_"}, {30,"btn_magnet_open_"},
+//             {40,"btn_auto_knock_"}, {32,"btn_magnet_close_"}, {42,"btn_magnet_pause_"}, {44,"btn_knock_suspend_"},
+//     };
 
-//    const std::map<int,std::string> AUTOWORK_NAME = {
-//            {10,"准备位置"},{12,"举升"},{15,"调平"},{16,"举升去对边"},
-//            {20,"获取边线"},{35,"调整偏差"},{28,"检测调整结果"},{30,"开启磁铁"},
-//            {40,"自动碰钉"},{32,"关闭磁铁"},{42,"碰钉暂停"},{44,"碰钉中止"}
-//    };
+// //    const std::map<int,std::string> AUTOWORK_NAME = {
+// //            {10,"准备位置"},{12,"举升"},{15,"调平"},{16,"举升去对边"},
+// //            {20,"获取边线"},{35,"调整偏差"},{28,"检测调整结果"},{30,"开启磁铁"},
+// //            {40,"自动碰钉"},{32,"关闭磁铁"},{42,"碰钉暂停"},{44,"碰钉中止"}
+// //    };
 
-    //当action_index状态改变时才刷新按钮
-//    logger->info("action_index {}",action_index);
-    if(action_index == 0){
-        for(auto it=AUTOWORK_NAME.begin();it!=AUTOWORK_NAME.end();++it){
-            findChild<QPushButton*>(it->second)->setStyleSheet("background-color: rgb(170, 170, 255)");
-        }
-    }
+//     //当action_index状态改变时才刷新按钮
+// //    logger->info("action_index {}",action_index);
+//     // if(action_index == 0){
+//     //     for(auto it=AUTOWORK_NAME.begin();it!=AUTOWORK_NAME.end();++it){
+//     //         // findChild<QPushButton*>(it->second)->setStyleSheet("background-color: rgb(170, 170, 255)");
+//     //     }
+//     // }
 
-//    ui->btn_camera_close->setText(QString::number(action_index));//临时显示action_index
+// //    ui->btn_camera_close->setText(QString::number(action_index));//临时显示action_index
 
-    if(old_action_index != action_index){
-        old_action_index = action_index;
-        for(auto it=AUTOWORK_NAME.begin();it!=AUTOWORK_NAME.end();++it){
-            if(it->first == action_index){
-                findChild<QPushButton*>(it->second)->setStyleSheet("background-color: green; color: black;");
-            }else{
-                findChild<QPushButton*>(it->second)->setStyleSheet("background-color: rgb(170, 170, 255)");
-            }
-        }
-    }
+//     if(old_action_index != action_index){
+//         old_action_index = action_index;
+//         for(auto it=AUTOWORK_NAME.begin();it!=AUTOWORK_NAME.end();++it){
+//             if(it->first == action_index){
+//                 findChild<QPushButton*>(it->second)->setStyleSheet("background-color: green; color: black;");
+//             }else{
+//                 findChild<QPushButton*>(it->second)->setStyleSheet("background-color: rgb(170, 170, 255)");
+//             }
+//         }
+//     }
 }
 
 void MainWindow::updateConnectSta() {
