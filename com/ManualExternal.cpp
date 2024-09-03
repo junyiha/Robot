@@ -66,22 +66,6 @@ int CManual::RecvDataRefactor()
         return -1;
     }
 
-    //取数据
-    m_InputData.MoveVel   = static_cast<qint8>(readbuff[1]);
-
-    m_InputData.RotateVel = static_cast<qint8>(readbuff[2]);
-
-    m_InputData.BoardMoveVel = static_cast<qint8>(readbuff[3]);
-
-    m_InputData.RobotMove[0] = static_cast<qint8>(readbuff[4]);
-
-    m_InputData.RobotMove[1] = static_cast<qint8>(readbuff[5]);
-    m_InputData.RobotMove[2] = static_cast<qint8>(readbuff[6]);
-    m_InputData.RobotMove[3] = static_cast<qint8>(readbuff[7]);
-    m_InputData.RobotMove[4] = static_cast<qint8>(readbuff[8]);
-    m_InputData.RobotMove[5] = static_cast<qint8>(readbuff[9]);
-    m_InputData.MoveDirection = static_cast<quint8>(readbuff[10]);
-
     ////////////////////////////////--新协议--//////////////////////////////////////////////
     m_manualOperator.TaskIndex = static_cast<quint8>(readbuff[7]);
     m_manualOperator.bEndMove = static_cast<int>(static_cast<quint8>(readbuff[8]) & 0b0000'0011) == 0 ? true : false;
@@ -112,6 +96,16 @@ int CManual::RecvDataRefactor()
     qint16 temp_val_rz = SpliceByte(static_cast<quint8>(readbuff[21]), static_cast<quint8>(readbuff[22]));
     m_manualOperator.LinkMove.at(5) = temp_val_rz / 100.0;    
 
+    if (temp_val_x || temp_val_y || temp_val_z || 
+        temp_val_rx || temp_val_ry || temp_val_rz)
+    {
+        m_manualOperator.bLinkMoveFlag = true;
+    }
+    else 
+    {
+        m_manualOperator.bLinkMoveFlag = false;
+    }
+
     ///////////////////////////////////////////////////////////////////////////////////////
 
     //readbuff[11]未定义，跳过
@@ -141,22 +135,20 @@ int CManual::RecvDataRefactor()
     return 0;
 }
 
-void CManual::ReadDataTest()
+int CManual::SendDataRefactor()
 {
-    std::vector<qint8> data;
+    std::vector<uint8_t> buf(8, 0);
 
-    qint8 arrSize = static_cast<qint8>(data[0]);
-    qint8 DOSsize = static_cast<qint8>(data[1]);
-    qint8 DISsize = static_cast<qint8>(data[2]);
-    qint8 AOSsize = static_cast<qint8>(data[3]);
-    qint8 AISsize = static_cast<qint8>(data[4]);
-    qint8 HardwareCode = static_cast<qint8>(data[5]);
+    buf[0] = buf.size();
+    buf[1] = 0x04;
+    buf[2] = 0x0F;
+    buf[3] = 0x00;
+    buf[4] = 0x0A;
+    buf[5] = 0x01;
+    buf[6] = 0x08;
+    buf[7] = std::accumulate(buf.begin(), buf.end(), 0);
 
-    qint8 DOData = static_cast<qint8>(data[6]); // 0x01: 电源, 0x02: 预留, 0x04: 预留, 0x08: 运行
-    quint8 key1 = 0b00000011;
-    quint8 key1 = 0b00001100;
-
-
+    return write(buf.data(), buf.size());
 }
 
 qint16 CManual::SpliceByte(qint8 high_byte, qint8 low_byte)

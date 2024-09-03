@@ -103,10 +103,8 @@ private:
 
 public:
     int RecvDataRefactor();
+    int SendDataRefactor();
 
-private:
-    void ReadDataTest();
-    
 //////////////////////////////////////////////////////////////////////////////
 };
 
