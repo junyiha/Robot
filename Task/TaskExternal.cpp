@@ -58,6 +58,7 @@ void CTask::manualStateTransition()
 {
     //1. 判断机器人是否处于就绪状态 
     bool robotReady = (m_LinkStatus.eLinkActState == eLINK_STANDSTILL) && (m_Robot->isJointReached(Postion_Home_qv));
+    robotReady = true;  // 状态机离线调试(2024.09.03)
     if (robotReady)
     {
         //2. 如果就绪，判断是否要执行调平指令
@@ -254,6 +255,7 @@ void CTask::detectionInParallelExecutionCommand()
             QVector<double>  laserDistance = m_Comm->getLasersDistance();
 
             auto detectionResult = CheckParallelStateDecorator(laserDistance);
+            detectionResult = EDetectionInParallelResult::eDeviationIsLessThanThreshold;  // 状态机离线调试(2024.09.03)
             switch (detectionResult)
             {
                 case EDetectionInParallelResult::eDeviationIsLessThanThreshold:
@@ -391,6 +393,9 @@ void CTask::detectionInPositioningExecutionCommand()
         case EExecutionCommand::eNULL:
         {
             log->info("调用函数，计算边线偏差，根据偏差判断是否完成调整，继续调整，停止调整");
+            updateTopAndSubState(ETopState::eReadToMagentOn, ESubState::eNULL);  // 状态机离线调试(2024.09.03)
+            break;
+
             //调用视觉函数
             auto vis_res = m_vision->getVisResult();
             if(!vis_res.status) 
@@ -510,6 +515,7 @@ void CTask::readyToMagentOnExecutionCommand()
         case EExecutionCommand::eMagentOn:
         {
             log->info("磁铁吸合指令，状态跳转: 碰钉--待碰钉");
+            updateTopAndSubState(ETopState::eDoWeld, ESubState::eReadyToDoWeld);  // 状态机离线调试(2024.09.03)
             if (doMagentOn())
             {
                 updateTopAndSubState(ETopState::eDoWeld, ESubState::eReadyToDoWeld);
@@ -586,9 +592,10 @@ void CTask::doingWeldExecutionCommand()
         case EExecutionCommand::eNULL:
         {
             // log->info("碰钉--碰钉中 空指令，执行自动碰钉，完成碰钉后状态跳转: 退出--退出中");
+            updateTopAndSubState(ETopState::eQuit, ESubState::eQuiting);  // 状态机离线调试(2024.09.03)
             if (doWeldAction(1))
             {
-                updateTopAndSubState(ETopState::eDoWeld, ESubState::eStopWeld);
+                updateTopAndSubState(ETopState::eQuit, ESubState::eQuiting);
             }
             break;
         }
@@ -663,6 +670,7 @@ void CTask::quitingExecutionCommand()
         case EExecutionCommand::eNULL:
         {
             // log->info("退出--退出中状态下 空指令，移动到退出点，到达退出点后状态跳转: 手动");
+            updateTopAndSubState(ETopState::eManual, ESubState::eReady); // 状态机离线调试(2023.09.03)
             m_Robot->setJointGroupMoveAbs(Postion_Home,JOINT_VEL_LIMIT);
             if(m_Robot->isJointReached(Postion_Home_qv))
             {
@@ -815,6 +823,58 @@ void CTask::TranslateNumberToCMD()
         default:
         {
             log->warn("invalid task index: {}", m_manualOperator.TaskIndex);
+        }
+    }
+}
+
+void CTask::TranslateManualTaskIndexNumberToCMD()
+{
+    switch (static_cast<stManualOperator::ETaskIndex>(m_manualOperator.TaskIndex))
+    {
+        case stManualOperator::ETaskIndex::None:
+        {
+            updateExecutionCommand(EExecutionCommand::eNULL);
+            break;
+        }
+        case stManualOperator::ETaskIndex::Parallel:
+        {
+            updateExecutionCommand(EExecutionCommand::eParallel);
+            break;
+        }
+        case stManualOperator::ETaskIndex::Positioning:
+        {
+            updateExecutionCommand(EExecutionCommand::ePositioning);
+            break;
+        }
+        case stManualOperator::ETaskIndex::MagentOn:
+        {
+            updateExecutionCommand(EExecutionCommand::eMagentOn);
+            break;
+        }
+        case stManualOperator::ETaskIndex::DoWeld:
+        {
+            updateExecutionCommand(EExecutionCommand::eAutoWeld);
+            break;
+        }
+        case stManualOperator::ETaskIndex::MagentOff:
+        {
+            updateExecutionCommand(EExecutionCommand::eMagentOff);
+            break;
+        }
+        case stManualOperator::ETaskIndex::Quit:
+        {
+            updateExecutionCommand(EExecutionCommand::eQuit);
+            break;
+        }
+        case stManualOperator::ETaskIndex::Pause:
+        {
+            updateExecutionCommand(EExecutionCommand::ePause);
+            break;
+        }
+        case stManualOperator::ETaskIndex::Terminate:
+        {
+            updateExecutionCommand(EExecutionCommand::eTerminate);
+            break;
         }
     }
 }

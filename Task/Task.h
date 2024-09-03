@@ -473,6 +473,12 @@ public:
      */
     void TranslateNumberToCMD();
 
+    /**
+     * @brief 将遥控器的命令转换为内部指令
+     * 
+     */
+    void TranslateManualTaskIndexNumberToCMD();
+
 private:
     ETopState m_etopState{ETopState::eManual};
     ESubState m_esubState{ESubState::eReady};

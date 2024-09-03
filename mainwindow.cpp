@@ -382,8 +382,8 @@ void MainWindow::updataDeviceConnectState() {
             findChild<QLabel *>("label_camera_state" + QString::number(i + 1))->setStyleSheet(
                     "image: url(:/img/images/icon_greenLight.png);");
         }else{
-            findChild<QLabel *>("label_camera_state" + QString::number(i + 1))->setStyleSheet(
-                    "image: url(:/img/images/icon_redLight.png);");
+            // findChild<QLabel *>("label_camera_state" + QString::number(i + 1))->setStyleSheet(
+                    // "image: url(:/img/images/icon_redLight.png);");
         }
     }
     // 更新io板和机器人连接状态显示
@@ -427,8 +427,8 @@ void MainWindow::updateAxisStatus() {
     if(stJointstatus.size() > 0) {
         for (int i = 0; i < jointNum; i++) {
             //更新单轴坐标
-            findChild<QLabel *>("label_pos_shaft" + QString::number(i))->setText(
-                    QString::number(stJointstatus[i].Position, 10, 2));
+            // findChild<QLabel *>("label_pos_shaft" + QString::number(i))->setText(
+                    // QString::number(stJointstatus[i].Position, 10, 2));
 
             //更新单轴状态
             if (old_JointStatus[i] != stJointstatus[i].eState) {
@@ -502,7 +502,7 @@ void MainWindow::updateLineDetectResults() {
             for(int i = 0; i < cameraNum; i++){
                 float dist = visResult.stData.m_LineDistance[i];
                 dist = std::isinf(dist) ? 0 : dist;
-                findChild<QLabel*>(prefix + QString::number(i))->setText("Dist " + QString::number(i + 1) + ":" + QString::number(dist));
+                // findChild<QLabel*>(prefix + QString::number(i))->setText("Dist " + QString::number(i + 1) + ":" + QString::number(dist));
             }
         }
 
@@ -536,7 +536,7 @@ void MainWindow::updateCameraData() {
     // 获取相机是否开启
     bool isEnable = m_VisionInterface->camera_controls->camerasIsOpened();
     if(!isEnable){
-       this->logger->info("相机未全部开启,请检查相机连接！");
+    //    this->logger->info("相机未全部开启,请检查相机连接！");
        return ;
     }
 
@@ -950,7 +950,7 @@ void MainWindow::updateConnectSta() {
 
     for(const auto&item: comStatus){
         if(item.second == false){
-            findChild<QLabel*>(item.first)->setStyleSheet("image: url(:/img/images/icon_redLight.png);");
+            // findChild<QLabel*>(item.first)->setStyleSheet("image: url(:/img/images/icon_redLight.png);");
         }else{
             findChild<QLabel*>(item.first)->setStyleSheet("image: url(:/img/images/icon_greenLight.png);");
         }
@@ -1057,6 +1057,7 @@ void MainWindow::setActionIndex() {
     //设置原子变量index
     if(this->m_jobBtnIndex.find(objectName.toStdString()) != this->m_jobBtnIndex.end()){
         m_Task->ActionIndex.storeRelaxed(this->m_jobBtnIndex[objectName.toStdString()]);
+        // m_Task->ActionIndex.storeRelaxed(1);  // 状态机离线调试(20244.09.03)
         this->logger->info("The object name of the clicked button is:{}",objectName.toStdString());
     }else{
         this->logger->error("Button index not found in predefined index map!");

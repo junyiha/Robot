@@ -41,6 +41,7 @@ void CTask::run()
         // SemiAutoProgrcess();
 
         // TranslateNumberToCMD();
+        TranslateManualTaskIndexNumberToCMD();
         stateTransition();
 
 //        if(m_Manual.Auto)
@@ -71,34 +72,35 @@ void CTask::updateCmdandStatus()
     //根据界面指令修改遥控器指令
     m_manualOperator.Ready = 0;
     m_manualOperator.TaskIndex = 0;
+    int tmp_val = static_cast<int>(ActionIndex.loadRelaxed());
     switch(ActionIndex.loadRelaxed())
     {
         case 0:
-            m_manualOperator.TaskIndex = 0;
+            m_manualOperator.TaskIndex = static_cast<int>(stManualOperator::ETaskIndex::None);
             break;
         case 1:
-            m_manualOperator.TaskIndex = 1;
+            m_manualOperator.TaskIndex = static_cast<int>(stManualOperator::ETaskIndex::Parallel);
             break;
         case 2:
-            m_manualOperator.TaskIndex = 4;
+            m_manualOperator.TaskIndex = static_cast<int>(stManualOperator::ETaskIndex::Positioning);
             break;
         case 3:
-            m_manualOperator.TaskIndex = 16;
+            m_manualOperator.TaskIndex = static_cast<int>(stManualOperator::ETaskIndex::MagentOn);
             break;
         case 4:
-            m_manualOperator.TaskIndex = 64;
+            m_manualOperator.TaskIndex = static_cast<int>(stManualOperator::ETaskIndex::DoWeld);
             break;
         case 5:
-            m_manualOperator.TaskIndex = 2;
+            m_manualOperator.TaskIndex = static_cast<int>(stManualOperator::ETaskIndex::MagentOff);
             break;
         case 6:
-            m_manualOperator.TaskIndex = 8;
+            m_manualOperator.TaskIndex = static_cast<int>(stManualOperator::ETaskIndex::Quit);
             break;
         case 7: //暂停
-            m_manualOperator.TaskIndex = 32;
+            m_manualOperator.TaskIndex = static_cast<int>(stManualOperator::ETaskIndex::Pause);
             break;
         case 8: //终止
-            m_manualOperator.TaskIndex = 128;
+            m_manualOperator.TaskIndex = static_cast<int>(stManualOperator::ETaskIndex::Terminate);
             break;
 
         case 9: //举升
