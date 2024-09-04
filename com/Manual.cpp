@@ -3,6 +3,7 @@
 
 CManual::CManual()
 {
+    log = spdlog::get("logger");
 
     //com连接成功发送信号则打开loop，启动两个定时器；连接断开发送信号关闭loop。
     connect(this,&CSerialCom::sigConnected,this,&CManual::slotStartLoop);
@@ -13,6 +14,23 @@ CManual::CManual()
     m_cManualRecvTimer->setInterval(90);
     connect(m_cManualRecvTimer,&QTimer::timeout,this,&CManual::RecvData);
 
+}
+
+void CManual::run()
+{
+    this->log->info("Manual thread start");
+    bool commState = this->isOpen();
+    while(commState){
+        commState = this->isOpen();
+        if(commState){
+            SendDataRefactor();
+            QThread::msleep(10);
+            RecvDataRefactor();
+        }else{
+            this->log->error("CommState is false, please check io connection!");
+        }
+        QThread::msleep(40);
+    }
 }
 
 int CManual::RecvData()

@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <QDebug>
 #include <QObject>
+#include <spdlog/spdlog.h>
 
 #include "ManualProtocol.h"
 
@@ -72,6 +73,7 @@ public:
 
     bool getConnectState();
     bool isConnected = false;
+    std::shared_ptr<spdlog::logger> log;
 
 
 protected:
@@ -80,6 +82,13 @@ protected:
     stManualCmd     _OutCmd;
     QTimer*         m_cManualRecvTimer;
     QMutex          mutex_cmd;
+
+    /**
+     * @brief 
+     * 
+     */
+     void run() override;
+
     /**
      * @brief 数据转换，将协议数据转换为命令m_InputData => m_OutCmd
      * @return 无

@@ -4,9 +4,10 @@
 #include <string>
 #include <Windows.h>
 #include <QDebug>
+#include <QThread>
 
 
-class CSerialCom:public QObject
+class CSerialCom:public QThread
 {
     Q_OBJECT
 public:
