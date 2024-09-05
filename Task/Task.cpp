@@ -426,20 +426,24 @@ void CTask::Manual()
 {
     if (m_manualOperator.StopCommand)
     {
-        m_Robot->setLinkStop();	
+        log->info("{},{}: m_Robot->setLinkStop();", __FILE__,__LINE__);
+        // m_Robot->setLinkStop();	
         return;
     }
 
     if (m_manualOperator.HaltCommand)
     {
-        m_Robot->setLinkHalt();			
+        log->info("{},{}: m_Robot->setLinkHalt();", __FILE__,__LINE__);
+        // m_Robot->setLinkHalt();			
         return;
     }
 
     if (std::fabs(m_manualOperator.VechDirect - m_preManualOperator.VechDirect) < 1)
     {
-        m_Robot->setJointMoveAbs(STEER_LEFT_INDEX, m_Manual.MoveDirection,10);//速度需改为参数			
-        m_Robot->setJointMoveAbs(STEER_RIGHT_INDEX,m_Manual.MoveDirection,10);//速度需改为参数			
+        log->info("{},{}: m_Robot->setJointMoveAbs(STEER_LEFT_INDEX, m_Manual.MoveDirection,10);//速度需改为参数", __FILE__,__LINE__);
+        // m_Robot->setJointMoveAbs(STEER_LEFT_INDEX, m_Manual.MoveDirection,10);//速度需改为参数			
+        log->info("{},{}: m_Robot->setJointMoveAbs(STEER_RIGHT_INDEX,m_Manual.MoveDirection,10);//速度需改为参数", __FILE__,__LINE__);
+        // m_Robot->setJointMoveAbs(STEER_RIGHT_INDEX,m_Manual.MoveDirection,10);//速度需改为参数			
     }
 
     double vel_left,vel_right ;			
@@ -457,30 +461,36 @@ void CTask::Manual()
             vel_left = m_manualOperator.VechVel * 100 - m_manualOperator.RotateVel * 30; //正转为逆时针			
             vel_right = m_manualOperator.VechVel * 100 + m_manualOperator.RotateVel * 30;			
             
-            m_Robot->setJointMoveVel(WHEEL_LEFT_INDEX, vel_left);			
-            m_Robot->setJointMoveVel(WHEEL_RIGHT_INDEX, vel_right);	
+            log->info("{},{}: m_Robot->setJointMoveVel(WHEEL_LEFT_INDEX, vel_left);", __FILE__,__LINE__);
+            // m_Robot->setJointMoveVel(WHEEL_LEFT_INDEX, vel_left);			
+            log->info("{},{}: m_Robot->setJointMoveVel(WHEEL_RIGHT_INDEX, vel_right);", __FILE__,__LINE__);
+            // m_Robot->setJointMoveVel(WHEEL_RIGHT_INDEX, vel_right);	
         }
     }
 
     if (m_manualOperator.bLinkMoveFlag && m_manualOperator.Ready != 0)
     {
-        m_Robot->setLinkHalt();			
+        log->info("{},{}: m_Robot->setLinkHalt();", __FILE__,__LINE__);
+        // m_Robot->setLinkHalt();			
     }
     else if (m_manualOperator.Ready == 1)
     {
         // 移动到举升位置
-        m_Robot->setLinkMoveAbs(Postion_Home,END_VEL_LIMIT);
+        log->info("{},{}: m_Robot->setLinkMoveAbs(Postion_Home,END_VEL_LIMIT);", __FILE__,__LINE__);
+        // m_Robot->setLinkMoveAbs(Postion_Home,END_VEL_LIMIT);
     }
     else if (m_manualOperator.Ready == 2)
     {
         // 移动到放钉位置
-        m_Robot->setLinkMoveAbs(Postion_Prepare,END_VEL_LIMIT);
+        log->info("{},{}: m_Robot->setLinkMoveAbs(Postion_Prepare,END_VEL_LIMIT);", __FILE__,__LINE__);
+        // m_Robot->setLinkMoveAbs(Postion_Prepare,END_VEL_LIMIT);
     }
     else if (m_manualOperator.bLinkMoveFlag)
     {
         if (m_manualOperator.bEndMove != m_preManualOperator.bEndMove)
         {
-            m_Robot->setLinkHalt();			
+            log->info("{},{}: m_Robot->setLinkHalt();", __FILE__,__LINE__);
+            // m_Robot->setLinkHalt();			
         }
         else 
         {
@@ -493,7 +503,8 @@ void CTask::Manual()
                 {			
                     endvel[i] = m_Manual.RobotMove[i]*END_VEL_LIMIT[i];			
                 }			
-                m_Robot->setLinkMoveVel(endvel);			
+                log->info("{},{}: m_Robot->setLinkMoveVel(endvel);", __FILE__,__LINE__);
+                // m_Robot->setLinkMoveVel(endvel);			
             }
             else 
             {
@@ -504,7 +515,8 @@ void CTask::Manual()
                 jointvel[6] = m_Manual.RobotMove[3] * LINK_0_JOINT_MAX_VEL[6];		// 伸缩
                 jointvel[8] = m_Manual.RobotMove[4] * LINK_0_JOINT_MAX_VEL[8];		// 腕俯仰
                 jointvel[9] = m_Manual.RobotMove[5] * LINK_0_JOINT_MAX_VEL[9];		// 工装(工具)	
-                m_Robot->setJointGroupMoveVel(jointvel.data());		
+                log->info("{},{}: m_Robot->setJointGroupMoveVel(jointvel.data());", __FILE__,__LINE__);
+                // m_Robot->setJointGroupMoveVel(jointvel.data());		
             }
         }
     }
