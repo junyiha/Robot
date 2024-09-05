@@ -56,34 +56,37 @@ int CManual::RecvDataRefactor()
     m_manualOperator.TaskIndex = static_cast<quint8>(readbuff[6]);
     m_manualOperator.bEndMove = static_cast<int>(static_cast<quint8>(readbuff[7]) & 0b0000'0011) == 0 ? true : false; //修改1
     m_manualOperator.Ready = static_cast<int>(static_cast<quint8>(readbuff[7]) & 0b0000'1100)>>2; 						//修改2
-    quint16 temp_val;
-    temp_val = SpliceByte(static_cast<quint8>(readbuff[22]), static_cast<quint8>(readbuff[23]))-2048;
-    m_manualOperator.VechVel =  (temp_val- temp_val%200)/1848.0;
-    m_manualOperator.bVechFlag = (temp_val/200 == 0 ? false : true);
+    std::pair<double, bool> temp_val;
+    temp_val = translateToVelocity(static_cast<quint8>(readbuff[22]), static_cast<quint8>(readbuff[23]));
+    m_manualOperator.VechVel = temp_val.first;
+    m_manualOperator.bVechFlag = temp_val.second;
     
-    temp_val = SpliceByte(static_cast<quint8>(readbuff[24]), static_cast<quint8>(readbuff[25]))-2048;
-    m_manualOperator.RotateVel = (temp_val- temp_val%200)/1848.0;
-    m_manualOperator.bRotateFlag = temp_val == 0 ? false : true;
+    temp_val = translateToVelocity(static_cast<quint8>(readbuff[24]), static_cast<quint8>(readbuff[25]));
+    m_manualOperator.RotateVel =  temp_val.first;
+    m_manualOperator.bRotateFlag = temp_val.second;
 
-    temp_val = SpliceByte(static_cast<quint8>(readbuff[8]), static_cast<quint8>(readbuff[9]))-2048;
-    m_manualOperator.VechDirect = temp_val /2048.0*90;
+    m_manualOperator.VechDirect = (static_cast<quint8>(readbuff[8]) * 256 + static_cast<quint8>(readbuff[9]) - 2048 ) / 2048.0 * 90;
 
-    quint16 temp_val_x = SpliceByte(static_cast<quint8>(readbuff[10]), static_cast<quint8>(readbuff[11]))-2048;
-    m_manualOperator.LinkMove.at(0) = (temp_val_x- temp_val%200)/1848.0;
-    quint16 temp_val_y = SpliceByte(static_cast<quint8>(readbuff[12]), static_cast<quint8>(readbuff[13]))-2048;
-    m_manualOperator.LinkMove.at(1) = (temp_val_y- temp_val%200)/1848.0;
-    quint16 temp_val_z = SpliceByte(static_cast<quint8>(readbuff[14]), static_cast<quint8>(readbuff[15]));
-    m_manualOperator.LinkMove.at(2) = (temp_val_z- temp_val%200)/1848.0;
 
-    quint16 temp_val_rx = SpliceByte(static_cast<quint8>(readbuff[16]), static_cast<quint8>(readbuff[17]))-2048;
-    m_manualOperator.LinkMove.at(3) = (temp_val_rx- temp_val%200)/1848.0;
-    quint16 temp_val_ry = SpliceByte(static_cast<quint8>(readbuff[18]), static_cast<quint8>(readbuff[19]))-2048;
-    m_manualOperator.LinkMove.at(4) = (temp_val_ry- temp_val%200)/1848.0;
-    quint16 temp_val_rz = SpliceByte(static_cast<quint8>(readbuff[20]), static_cast<quint8>(readbuff[21]))-2048;
-    m_manualOperator.LinkMove.at(5) = (temp_val_rz- temp_val%200)/1848.0;
+    auto temp_val_x = translateToVelocity(static_cast<quint8>(readbuff[10]), static_cast<quint8>(readbuff[11]));
+    m_manualOperator.LinkMove.at(0) = temp_val_x.first;
+    auto temp_val_y = translateToVelocity(static_cast<quint8>(readbuff[12]), static_cast<quint8>(readbuff[13]));
+    m_manualOperator.LinkMove.at(1) = temp_val_y.first;
+    auto temp_val_z = translateToVelocity(static_cast<quint8>(readbuff[14]), static_cast<quint8>(readbuff[15]));
+    m_manualOperator.LinkMove.at(2) = temp_val_z.first;
 
-    if (temp_val_x/200 || temp_val_y/200 || temp_val_z/200 || 
-        temp_val_rx/200 || temp_val_ry/200 || temp_val_rz/200)
+    auto temp_val_rx =
+            translateToVelocity(static_cast<quint8>(readbuff[16]), static_cast<quint8>(readbuff[17]));
+    m_manualOperator.LinkMove.at(3) = temp_val_rx.first;
+    auto temp_val_ry =
+            translateToVelocity(static_cast<quint8>(readbuff[18]), static_cast<quint8>(readbuff[19]));
+    m_manualOperator.LinkMove.at(4) = temp_val_ry.first;
+    auto temp_val_rz =
+            translateToVelocity(static_cast<quint8>(readbuff[20]), static_cast<quint8>(readbuff[21]));
+    m_manualOperator.LinkMove.at(5) = temp_val_rz.first;
+
+    if (temp_val_x.second || temp_val_y.second || temp_val_z.second ||
+        temp_val_rx.second || temp_val_ry.second || temp_val_rz.second)
     {
         m_manualOperator.bLinkMoveFlag = true;
     }
@@ -136,9 +139,19 @@ int CManual::SendDataRefactor()
     return write(buf.data(), buf.size());
 }
 
-qint16 CManual::SpliceByte(qint8 high_byte, qint8 low_byte)
+std::pair<double, bool>  CManual::translateToVelocity(qint8 high_byte, qint8 low_byte)
 {
-    return (static_cast<qint16>(high_byte) << 8) | low_byte;
+    qint16 tmp =  high_byte*256+ low_byte -2048;
+    if(tmp > 200)
+    {
+        return std::make_pair((tmp-200)/1848.0, true);
+    }else if(tmp<-200)
+    {
+        return std::make_pair((tmp+200)/1848.0, true);
+    }else
+    {
+        return std::make_pair(0.0, false);
+    }
 }
 
 void CManual::getManualCmd(stManualOperator& cmd)

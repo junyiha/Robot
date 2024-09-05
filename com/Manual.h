@@ -117,7 +117,7 @@ public:
     int SendDataRefactor();
 
 private:
-    qint16 SpliceByte(qint8 high_byte, qint8 low_byte);
+    std::pair<double, bool> translateToVelocity(qint8 high_byte, qint8 low_byte);
 
 //////////////////////////////////////////////////////////////////////////////
 };

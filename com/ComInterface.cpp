@@ -92,7 +92,7 @@ void ComInterface::run()
 
        //启动遥控器com口 通过isOpen（）判断打开状态
        if(this->m_cManual.isOpen() == false){
-           m_cManual.open("COM2");
+           m_cManual.open("COM1");
            qDebug()<<"重新连接遥控器";
        }
 

@@ -19,10 +19,8 @@ CManual::CManual()
 void CManual::run()
 {
     this->log->info("Manual thread start");
-    bool commState = this->isOpen();
-    while(commState){
-        commState = this->isOpen();
-        if(commState){
+    while(this->isConnected ){
+        if(this->isOpen()){
             SendDataRefactor();
             QThread::msleep(10);
             RecvDataRefactor();
@@ -257,13 +255,13 @@ void CManual::Input2Cmd()
 
 void CManual::slotStartLoop()
 {
-    m_cManualRecvTimer->start();
+    //m_cManualRecvTimer->start();
+    this->start();
     this->isConnected = true;
 }
 
 void CManual::slotStopLoop()
 {
-    m_cManualRecvTimer->stop();
     this->isConnected = false;
 }
 
