@@ -13,7 +13,7 @@ set(BaseDIR D:/)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W0")
 
-set(QRC_SOURCE_FILE res.qrc)
+set(QRC_SOURCE_FILE ${CMAKE_SOURCE_DIR}/res.qrc)
 
 # add_definitions(-DSTATE_MACHINE_TEST=1)
 
@@ -90,7 +90,7 @@ aux_source_directory(${CMAKE_SOURCE_DIR}/robot src)
 aux_source_directory(${CMAKE_SOURCE_DIR}/Task src)
 aux_source_directory(${CMAKE_SOURCE_DIR}/vision src)
 
-add_executable(${PROJECT_NAME} ${src})
+add_executable(${PROJECT_NAME} ${src} ${QRC_SOURCE_FILE})
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/
                                                   ${CMAKE_SOURCE_DIR}/com

@@ -100,9 +100,9 @@ QVector<Eigen::Matrix4d> CMeasure::calPoseDeviation(stMeasureData data)
     std::vector<double> validDistance(6);
     const double staLineDist = 15;
 
-    data.m_LineDistance[3]  = data.m_LineDistance[3] - 1;//临时加偏置-----------------------------------
-    data.m_LineDistance[4]  = data.m_LineDistance[4] + 2;//临时加偏置-----------------------------------
-    data.m_bLineDistance[5] = false;//临时处理，后面视觉那边得补充数据有效性校验-----------------------------------
+    //data.m_LineDistance[3]  = data.m_LineDistance[3] - 1;//临时加偏置-----------------------------------
+    //data.m_LineDistance[4]  = data.m_LineDistance[4] + 2;//临时加偏置-----------------------------------
+    //data.m_bLineDistance[5] = false;//临时处理，后面视觉那边得补充数据有效性校验-----------------------------------
 
     for(int i=0;i<6;i++)
     {
@@ -112,9 +112,9 @@ QVector<Eigen::Matrix4d> CMeasure::calPoseDeviation(stMeasureData data)
 
 
     Eigen::Vector4f linesDist[3] = {
-        Eigen::Vector4f(validDistance[0],validDistance[4],data.m_bLineDistance[0],data.m_bLineDistance[4]),
-        Eigen::Vector4f(validDistance[1],validDistance[3],data.m_bLineDistance[1],data.m_bLineDistance[3]),
-        Eigen::Vector4f(validDistance[2],validDistance[5],data.m_bLineDistance[2],data.m_bLineDistance[5])
+        Eigen::Vector4f(validDistance[0],validDistance[1],data.m_bLineDistance[0],data.m_bLineDistance[1]),
+        Eigen::Vector4f(validDistance[2],validDistance[3],data.m_bLineDistance[2],data.m_bLineDistance[3]),
+        Eigen::Vector4f(validDistance[5],validDistance[4],data.m_bLineDistance[5],data.m_bLineDistance[4])
     };
 
     stepValid[3] = true;

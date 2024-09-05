@@ -586,12 +586,12 @@ QPushButton::pressed{
 }</string>
                </property>
                <property name="text">
-                <string>点激光2: 0.0</string>
+                <string>点激光1: 0.0</string>
                </property>
               </widget>
              </item>
              <item row="1" column="0">
-              <widget class="QLabel" name="label_laserDist1">
+              <widget class="QLabel" name="label_laserDist0">
                <property name="minimumSize">
                 <size>
                  <width>200</width>
@@ -734,12 +734,12 @@ QPushButton::pressed{
 }</string>
                </property>
                <property name="text">
-                <string>点激光1: 0.0</string>
+                <string>点激光2: 0.0</string>
                </property>
               </widget>
              </item>
              <item row="1" column="0">
-              <widget class="QLabel" name="label_laserDist0">
+              <widget class="QLabel" name="label_laserDist1">
                <property name="minimumSize">
                 <size>
                  <width>200</width>
@@ -922,12 +922,12 @@ QPushButton::pressed{
 }</string>
                </property>
                <property name="text">
-                <string>点激光3: 0.0</string>
+                <string>点激光4: 0.0</string>
                </property>
               </widget>
              </item>
              <item row="1" column="0">
-              <widget class="QLabel" name="label_laserDist2">
+              <widget class="QLabel" name="label_laserDist3">
                <property name="minimumSize">
                 <size>
                  <width>200</width>
@@ -1071,12 +1071,12 @@ QPushButton::pressed{
 }</string>
                </property>
                <property name="text">
-                <string>点激光4: 0.0</string>
+                <string>点激光3: 0.0</string>
                </property>
               </widget>
              </item>
              <item row="1" column="0">
-              <widget class="QLabel" name="label_laserDist3">
+              <widget class="QLabel" name="label_laserDist2">
                <property name="minimumSize">
                 <size>
                  <width>200</width>

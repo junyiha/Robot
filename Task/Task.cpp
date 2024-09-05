@@ -833,9 +833,9 @@ int CTask::CheckParallelState(QVector<double> laserDistance)
         return -1;
     }
     //判断是否完成调平
-    if(maxDistance - minDistance< PARRALLE_DISTANCE)  //最大偏差小于阈值
+    if(maxDistance - minDistance< PARRALLE_DISTANCE && minDistance < Distance_Lift)  //最大偏差小于阈值
     {
-        log->info("激光距离最大偏差小于PARRALLE_DISTANCE，完成调平");
+        log->info("激光距离{},最大偏差小于{}，完成调平", Distance_Lift, PARRALLE_DISTANCE);
         return 1;
     }else
     {

@@ -57,8 +57,7 @@ void CTask::stateTransition()
 void CTask::manualStateTransition()
 {
     //1. 判断机器人是否处于就绪状态 
-    bool robotReady = (m_LinkStatus.eLinkActState == eLINK_STANDSTILL) && (m_Robot->isJointReached(Postion_Home_qv));
-    robotReady = true;  // 状态机离线调试(2024.09.03)
+    bool robotReady = (m_LinkStatus.eLinkActState == eLINK_STANDSTILL);
     if (robotReady)
     {
         //2. 如果就绪，判断是否要执行调平指令
@@ -317,7 +316,6 @@ void CTask::motionInParallelExecutionCommand()
                 log->info("完成调平运动，再次进入调平检测");
                 m_Robot->setLinkHalt();
                 updateTopAndSubState(ETopState::eParallel, ESubState::eDetection);
-
             }
             else
             {
@@ -338,8 +336,8 @@ void CTask::motionInParallelExecutionCommand()
                     tar_pos[i] = tar_position[i];
                 }
                 log->info("m_Robot->setLinkMoveAbs(tar_pos,END_VEL_LIMIT);\ntar_pos:{},{},{},{},{},{}", 
-                          tar_pos[0],tar_pos[0],tar_pos[0],tar_pos[0],tar_pos[0],tar_pos[0]);
-                // m_Robot->setLinkMoveAbs(tar_pos,END_VEL_LIMIT);
+                          tar_pos[0],tar_pos[1],tar_pos[2],tar_pos[3] * 57.3,tar_pos[4] * 57.3,tar_pos[5] * 57.3);
+                m_Robot->setLinkMoveAbs(tar_pos,END_VEL_LIMIT);
             }
             break;
         }
@@ -414,6 +412,13 @@ void CTask::detectionInPositioningExecutionCommand()
             std::copy(std::begin(vis_res.stData.m_LineDistance) , std::end(vis_res.stData.m_LineDistance), m_stMeasuredata.m_LineDistance);
             std::copy(std::begin(vis_res.stData.m_bLineDistance), std::end(vis_res.stData.m_bLineDistance), m_stMeasuredata.m_bLineDistance);
 
+            log->info("m_stMeasuredata.m_bLineDistance:{},{},{},{},{},{}", m_stMeasuredata.m_LineDistance[0],
+                                                                           m_stMeasuredata.m_LineDistance[1],
+                                                                           m_stMeasuredata.m_LineDistance[2],
+                                                                           m_stMeasuredata.m_LineDistance[3],
+                                                                           m_stMeasuredata.m_LineDistance[4],
+                                                                           m_stMeasuredata.m_LineDistance[5]);
+
             auto detectResult = CheckPositionStateDecorator();
             switch (detectResult)
             {
@@ -471,12 +476,14 @@ void CTask::motionInPositioningExecutionCommand()
             QVector<Eigen::Matrix4d> Dev_RT =  CMeasure::calPoseDeviation(m_stMeasuredata);
             QVector<double> tar_position = m_Robot->getTargetPose(Dev_RT[3]);
 
-            double tar_pos[6] ;
+            double tar_pos[6];
             for(int i=0;i<6;i++)
             {
                 tar_pos[i] = tar_position[i];
             }
-            m_Robot->setLinkMoveAbs(tar_pos,END_VEL_LIMIT);
+            log->info("m_Robot->setLinkMoveAbs(tar_pos,END_VEL_LIMIT);\ntar_pos:{},{},{},{},{},{}", 
+                        tar_pos[0],tar_pos[1],tar_pos[2],tar_pos[3],tar_pos[4],tar_pos[5]);
+            // m_Robot->setLinkMoveAbs(tar_pos,END_VEL_LIMIT);
 
             if (m_LinkStatus.eLinkActState == eLINK_STANDSTILL && 
                 m_Robot->isEndReached(tar_position))
