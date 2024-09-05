@@ -39,12 +39,12 @@ CRobot::CRobot(ComInterface* comm,QObject *parent)
         CTransformation(  0 * M_PI / 180,  L5,	        th6 * M_PI / 180,	   0,		Revolute ), //6臂俯仰 (角度不要为0)
         CTransformation( 90 * M_PI / 180,  L6,	          0 * M_PI / 180,	  d7,		Prismatic), //7伸缩 (角度不要为0)
         CTransformation(  0 * M_PI / 180,   0,	        th8 * M_PI / 180,	   0,		Revolute ), //8回转 (角度不要为0)
-        CTransformation(-90 * M_PI / 180,   0,	        th9 * M_PI / 180,	   0,		Revolute ), //9腕 (角度不要为0)
+        CTransformation( 90 * M_PI / 180,   0,	        th9 * M_PI / 180,	   0,		Revolute ), //9腕 (角度不要为0)
     };
 
 
     //    DH_Parameter Tool_Mat = DH_Parameter(90 * M_PI / 180, 0, 90 * M_PI / 180, L6, Prismatic);//竖板旋转用，工具坐标系旋转90
-    CTransformation Tool_Mat = CTransformation(90* M_PI / 180, 0,  0 * M_PI / 180, dt, Prismatic);       //装横板用，末端工具（可伸缩，但是默认不动，不需要刷新）
+    CTransformation Tool_Mat = CTransformation(-90* M_PI / 180, 0,  0 * M_PI / 180, dt, Prismatic);       //装横板用，末端工具（可伸缩，但是默认不动，不需要刷新）
     m_LinkModel =new CRobotKinectModel(DH_List,Tool_Mat);
 
 
@@ -85,11 +85,14 @@ CRobot::CRobot(ComInterface* comm,QObject *parent)
         }
         else
         {
-            m_JointVelLimt[i] = LINK_0_JOINT_MAX_VEL[3]/57.2957795;
-            m_JointPosLimt[i] = LINK_0_JOINT_LIMIT_POS[3]/57.2957795;
-            m_JointNegLimt[i] = LINK_0_JOINT_LIMIT_NEG[3]/57.2957795;
+            m_JointVelLimt[i] = LINK_0_JOINT_MAX_VEL[i]/57.2957795;
+            m_JointPosLimt[i] = LINK_0_JOINT_LIMIT_POS[i]/57.2957795;
+            m_JointNegLimt[i] = LINK_0_JOINT_LIMIT_NEG[i]/57.2957795;
         }
     }
+    m_JointVelLimt[5] = LINK_0_JOINT_MAX_VEL[5];
+    m_JointPosLimt[5] = LINK_0_JOINT_LIMIT_POS[5];
+    m_JointNegLimt[5] = LINK_0_JOINT_LIMIT_NEG[5];
     //工具关节限制参数
     m_JointVelLimt[m_Freedom] = LINK_0_JOINT_MAX_VEL[3];
     m_JointPosLimt[m_Freedom] = LINK_0_JOINT_LIMIT_POS[3];
@@ -157,7 +160,6 @@ void CRobot::UpdateStatus()
     //单位换算degree => rad
     m_JointGroupStatus[3].Position *= 1.0/57.3;
     m_JointGroupStatus[4].Position *= 1.0/57.3;
-    m_JointGroupStatus[5].Position *= 1.0/57.3;
     m_JointGroupStatus[7].Position *= 1.0/57.3;
     m_JointGroupStatus[8].Position *= 1.0/57.3;
 
@@ -175,7 +177,10 @@ void CRobot::UpdateStatus()
     {
         m_ActJoints[i] = m_JointGroupStatus[i].Position;
         vJointValue.push_back(std::make_pair(m_ActJoints[i], true));
+
     }
+    vJointValue[4].second = false; // 腰俯仰不参与联动
+
     m_ActJoints[m_Freedom] = m_JointGroupStatus[m_Freedom].Position;
 
     m_LinkModel->setToolPos(len, 0);//根据工装实际安装位置确定角度。弧度
@@ -283,6 +288,7 @@ void CRobot::StateMachine()
             break;
         case  eLINK_POWER:
             m_Comm->LinkPower(m_Index,m_LinkCmd.stLinkKinPar.bEnable);
+            this->log->info("********Robot m_Index {}, Enable {}*************", m_Index,m_LinkCmd.stLinkKinPar.bEnable);
             break;
         case  eLINK_STOP:
             m_Comm->LinkStop(m_Index);
@@ -387,13 +393,15 @@ void CRobot::StateMachineMove()
 
     log->info(("m_LinkCmd.stLinkKinPar.eActMotionMode: " + std::to_string(m_LinkCmd.stLinkKinPar.eActMotionMode)).c_str());
 
-    log->info("robot move to position: {}, {}, {}, {}, {}, {}",car_pos(0),car_pos(1),car_pos(2),car_pos(3),car_pos(4),car_pos(5));
+
     switch(m_LinkCmd.stLinkKinPar.eActMotionMode)
     {
     case eMotionLineAbsolute:
+        log->info("robot move to position: {}, {}, {}, {}, {}, {}",car_pos(0),car_pos(1),car_pos(2),car_pos(3),car_pos(4),car_pos(5));
         MoveLineAbsBase(car_pos, car_vel);
         break;
     case eMotionLineVelocity:
+        log->info("robot move velocity: {}, {}, {}, {}, {}, {}",car_vel(0),car_vel(1),car_vel(2),car_vel(3),car_vel(4),car_vel(5));
         MoveLineVelTool(car_vel);
         break;
     case eMotionMode1: //关节按给定速度运动
@@ -602,21 +610,27 @@ void CRobot::MoveLineAbsBase(Eigen::VectorXd car_pos, Eigen::VectorXd vel_max)
     //角度单位：弧度->deg
     joint_pos[3] *= 57.2957795;
     joint_pos[4] *= 57.2957795;
-    joint_pos[5] *= 57.2957795;
+    joint_pos[7] *= 57.2957795;
+    joint_pos[8] *= 57.2957795;
 
+ 
+
+     //单位换算rad->degree
     joint_vel_set[3] *= 57.2957795;
     joint_vel_set[4] *= 57.2957795;
-    joint_vel_set[5] *= 57.2957795;
+    joint_vel_set[7] *= 57.2957795;
+    joint_vel_set[8] *= 57.2957795;
 
+ 
     //工具轴保持动
-    joint_pos[6]     = m_ActJoints[6];
-    joint_vel_set[6] = 0;
+    joint_pos[9]     = m_ActJoints[9];
+    joint_vel_set[9] = 0;
 
     //下发指令到设备
     m_Comm->setLinkJointMoveAbs(m_Index,joint_pos,joint_vel_set);
 
-    qDebug()<<"下发位置:"<<joint_pos[0]<<" "<<joint_pos[1]<<" "<<joint_pos[2]<<" "<<joint_pos[3]<<" "<<joint_pos[4]<<" "<<joint_pos[5];
-    qDebug()<<"下发速度:"<<joint_vel_set[0]<<" "<<joint_vel_set[1]<<" "<<joint_vel_set[2]<<" "<<joint_vel_set[3]<<" "<<joint_vel_set[4]<<" "<<joint_vel_set[5];
+    //qDebug()<<"下发位置:"<<joint_pos[0]<<" "<<joint_pos[1]<<" "<<joint_pos[2]<<" "<<joint_pos[3]<<" "<<joint_pos[4]<<" "<<joint_pos[5];
+    //qDebug()<<"下发速度:"<<joint_vel_set[0]<<" "<<joint_vel_set[1]<<" "<<joint_vel_set[2]<<" "<<joint_vel_set[3]<<" "<<joint_vel_set[4]<<" "<<joint_vel_set[5];
 
     m_LinkSta.stLinkActKin.bDone = false;
     m_LinkSta.stLinkActKin.bBusy = true;
@@ -662,18 +676,22 @@ void CRobot::MoveLineVelTool(Eigen::VectorXd car_vel)
     {
         joint_vel_set[i] = joint_vel[i]/maxj;
 
+
     }
 
     //单位换算rad->degree
     joint_vel_set[3] *= 57.2957795;
     joint_vel_set[4] *= 57.2957795;
-    joint_vel_set[5] *= 57.2957795;
+    joint_vel_set[7] *= 57.2957795;
+    joint_vel_set[8] *= 57.2957795;
 
     //工具轴保持动
-    joint_vel_set[6] = 0;
+    joint_vel_set[9] = 0;
 
 
     m_Comm->setLinkJointMoveVel(m_Index,joint_vel_set);
+    log->info("MoveLineVelTool joint vel:{},{},{},{},{},{},{},{},{},{}",joint_vel_set[0],joint_vel_set[1],joint_vel_set[2],joint_vel_set[3],joint_vel_set[4],joint_vel_set[5],joint_vel_set[6],joint_vel_set[7],joint_vel_set[8],joint_vel_set[9]);
+
 
     m_LinkSta.stLinkActKin.bDone = false;
     m_LinkSta.stLinkActKin.bBusy = true;

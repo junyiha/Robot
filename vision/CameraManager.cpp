@@ -29,12 +29,12 @@ CameraManager::CameraManager() {
     // 日志文件
     this->logger = spdlog::get("logger");
     this->serial2names = {
-            {"DA3218718", "cam_1"},// OK
-            {"DA3218690", "cam_2"},
-            {"DA3218784", "cam_3"},  //
-            {"DA3218695", "cam_4"},
-            {"DA3218734", "cam_5"}, // OK
-            {"DA2723075", "cam_6"}, // OK, 焦距调节存在问题
+            {"DA2720028", "cam_1"},// OK
+            {"DA2720133", "cam_2"},
+            {"DA2720132", "cam_3"},  //
+            {"DA2720078", "cam_4"},
+            {"DA2720067", "cam_5"}, // OK
+            {"DA2720068", "cam_6"}, // OK, 焦距调节存在问题
     };
     // this->cameraInfoMap 初始化
     MV_CC_DEVICE_INFO null_dev;

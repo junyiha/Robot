@@ -97,6 +97,8 @@ public:
     QMutex m_mutex;
     QAtomicInt      buttionIndex; // 按钮索引原子变量记录
 
+    double m_wheelVel= 30;
+
 
 
 
@@ -184,18 +186,18 @@ public:
 
     // 工作作业按钮名称-索引值
     std::map<std::string, unsigned int> m_jobBtnIndex = {
-      {"btn_leveling_",      0},          // 调平
-      {"btn_sideline_",      1},          // 对齐边线
-      {"btn_magnet_open_",   2},          // 吸合
-      {"btn_auto_knock_",    3},          // 碰钉
-      {"btn_magnet_close_",  4},          // 脱开
-      {"btn_magnet_exit_",   5},          // 退出
-      {"btn_magnet_pause_",  6},          // 暂停
-      {"btn_knock_suspend_", 7},          // 终止
-      {"btn_lift_",          8},          // 举升
-      {"btn_add_nail",       9},          // 放钉
-      {"btn_magnet_stop_",  10},          // 停止
-      {"btn_magent_crash_stop_", 11}      // 急停
+      {"btn_leveling_",      1},          // 调平
+      {"btn_sideline_",      2},          // 对齐边线
+      {"btn_magnet_open_",   3},          // 吸合
+      {"btn_auto_knock_",    4},          // 碰钉
+      {"btn_magnet_close_",  5},          // 脱开
+      {"btn_magnet_exit_",   6},          // 退出
+      {"btn_magnet_pause_",  7},          // 暂停
+      {"btn_knock_suspend_", 8},          // 终止
+      {"btn_lift_",          9},          // 举升
+      {"btn_add_nail",       10},          // 放钉
+      {"btn_magnet_stop_",  11},          // 停止
+      {"btn_magent_crash_stop_", 12}      // 急停
     };
 
 
@@ -274,6 +276,32 @@ private slots:
     void on_btn_line_detect_debug_clicked();
     void on_btn_camera_capture_clicked();
     void on_btn_camera_save_clicked();
+
+    // 6.0 舵轮移动
+    void on_btn_wheel_forward_pressed();
+    void on_btn_wheel_forward_released();
+
+    void on_btn_wheel_backward_pressed();
+    void on_btn_wheel_backward_released();
+
+    void on_btn_wheel_left_pressed();
+    void on_btn_wheel_left_released();
+
+    void on_btn_wheel_right_pressed();
+    void on_btn_wheel_right_released();
+
+    void on_btn_steering_left_pressed();
+    void on_btn_steering_left_released();
+    void on_btn_steering_right_pressed();
+    void on_btn_steering_right_released();
+
+
+    void on_btn_add_nail_pressed();
+    void on_btn_add_nail_released();
+
+    void on_btn_preparation_pos_pressed();
+    void on_btn_preparation_pos_released();
+
 
 
     void on_comboBox_tools_currentIndexChanged();

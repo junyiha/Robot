@@ -814,15 +814,15 @@ int CTask::CheckParallelState(QVector<double> laserDistance)
         return -1;
     }
     for(int i=0;i<4;++i) {
-        if(laserDistance[i] < 300) {
+        if(laserDistance[i] > 300 || laserDistance[i] < 0) {
             log->error("{}激光数据有误,或壁面距离太远",i);
             return -1;
         }
     }
 
     //计算激光距离最大偏差
-    double maxDistance = 1000;
-    double minDistance = 0;
+    double maxDistance = 0;
+    double minDistance = 1000;
     for(int i=0;i<4;++i) {
         maxDistance = maxDistance>laserDistance[i]?maxDistance:laserDistance[i];
         minDistance = minDistance<laserDistance[i]?minDistance:laserDistance[i];

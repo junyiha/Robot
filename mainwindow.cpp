@@ -110,7 +110,7 @@ void MainWindow::connectSlotFunctions() {// 按钮时间绑定
 //    connect(ui->btn_camera_open, &QPushButton::clicked, this, &MainWindow::on_btn_openCamera_clicked, Qt::UniqueConnection); // 打开摄像头
 //    connect(ui->btn_camera_close, &QPushButton::clicked, this, &MainWindow::on_btn_closeCamera_clicked, Qt::UniqueConnection);
 //    connect(ui->btn_location_, &QPushButton::clicked, this, &MainWindow::on_btn_location_clicked, Qt::UniqueConnection);
-    connect(ui->btn_lift_, &QPushButton::clicked, this, &MainWindow::on_btn_lift_clicked, Qt::UniqueConnection);
+//    connect(ui->btn_lift_, &QPushButton::clicked, this, &MainWindow::on_btn_lift_clicked, Qt::UniqueConnection);
     connect(ui->btn_leveling_, &QPushButton::clicked, this, &MainWindow::on_btn_leveling_clicked, Qt::UniqueConnection);
     connect(ui->btn_sideline_, &QPushButton::clicked, this, &MainWindow::on_btn_sideline_clicked, Qt::UniqueConnection);
     connect(ui->btn_magnet_open_, &QPushButton::clicked, this, &MainWindow::on_btn_magnet_open_clicked, Qt::UniqueConnection);
@@ -154,6 +154,34 @@ void MainWindow::connectSlotFunctions() {// 按钮时间绑定
     connect(ui->btn_line_detect_debug, &QPushButton::clicked, this, &MainWindow::on_btn_line_detect_debug_clicked, Qt::UniqueConnection);
     connect(ui->btn_camera_capture, &QPushButton::clicked, this, &MainWindow::on_btn_camera_capture_clicked, Qt::UniqueConnection);
     connect(ui->btn_savePicture, &QPushButton::clicked, this, &MainWindow::on_btn_camera_save_clicked, Qt::UniqueConnection);
+
+    // 底盘移动
+    connect(ui->btn_wheel_forward, &QPushButton::pressed, this, &MainWindow::on_btn_wheel_forward_pressed, Qt::UniqueConnection);
+    connect(ui->btn_wheel_forward, &QPushButton::released, this, &MainWindow::on_btn_wheel_forward_released, Qt::UniqueConnection);
+
+    connect(ui->btn_wheel_backward, &QPushButton::pressed, this, &MainWindow::on_btn_wheel_backward_pressed, Qt::UniqueConnection);
+    connect(ui->btn_wheel_backward, &QPushButton::released, this, &MainWindow::on_btn_wheel_backward_released, Qt::UniqueConnection);
+
+    connect(ui->btn_wheel_left, &QPushButton::pressed, this, &MainWindow::on_btn_wheel_left_pressed, Qt::UniqueConnection);
+    connect(ui->btn_wheel_left, &QPushButton::released, this, &MainWindow::on_btn_wheel_left_released, Qt::UniqueConnection);
+
+    connect(ui->btn_wheel_right, &QPushButton::pressed, this, &MainWindow::on_btn_wheel_right_pressed, Qt::UniqueConnection);
+    connect(ui->btn_wheel_right, &QPushButton::released, this, &MainWindow::on_btn_wheel_right_released, Qt::UniqueConnection);
+
+    // 舵轮移动
+    connect(ui->btn_steering_left, &QPushButton::pressed, this, &MainWindow::on_btn_steering_left_pressed, Qt::UniqueConnection);
+    connect(ui->btn_steering_left, &QPushButton::released, this, &MainWindow::on_btn_steering_left_released, Qt::UniqueConnection);
+    connect(ui->btn_steering_right, &QPushButton::pressed, this, &MainWindow::on_btn_steering_right_pressed, Qt::UniqueConnection);
+    connect(ui->btn_steering_right, &QPushButton::released, this, &MainWindow::on_btn_steering_right_released, Qt::UniqueConnection);
+
+    // 添加钉子
+    connect(ui->btn_add_nail, &QPushButton::pressed, this, &MainWindow::on_btn_add_nail_pressed, Qt::UniqueConnection);
+    connect(ui->btn_add_nail, &QPushButton::released, this, &MainWindow::on_btn_add_nail_released, Qt::UniqueConnection);
+
+    //准备位置
+    connect(ui->btn_preparation_pos, &QPushButton::pressed, this, &MainWindow::on_btn_preparation_pos_pressed, Qt::UniqueConnection);
+    connect(ui->btn_preparation_pos, &QPushButton::released, this, &MainWindow::on_btn_preparation_pos_released, Qt::UniqueConnection);
+
 }
 
 MainWindow::~MainWindow()
@@ -192,8 +220,9 @@ void MainWindow::on_btn_enable_clicked()
     //这里使用link层且只有link[0]一个索引
     if(m_Com->getCommState_Robot() == true)
     {
-        m_Robot->setLinkEnable(true);
-        this->logger->info("上使能成功!");
+//        m_Robot->setLinkEnable(true);  // 仅机器臂使能
+        m_Robot->setRobotEnable(true);
+        this->logger->info("执行上使能!");
     }
     else
     {
@@ -209,7 +238,7 @@ void MainWindow::on_btn_disable_clicked()
     if(m_Com->getCommState_Robot() == true)
     {
         m_Robot->setLinkEnable(false);
-        this->logger->info("下使能成功!");
+        this->logger->info("执行下使能!");
     }
     else
     {
@@ -229,8 +258,9 @@ void MainWindow::on_btn_setRobotReset_clicked()
 void MainWindow::on_btn_setLinkHalt_clicked()
 {
     setButtonIndex();
-    m_Task->ActionIndex.storeRelaxed(1);
-    m_Robot->setLinkHalt();
+
+    m_Task->ActionIndex.storeRelaxed(11);
+    m_Robot->setLinkStop();
     this->logger->info("紧急停止");
 }
 
@@ -281,7 +311,6 @@ void MainWindow::on_btn_lift_2clicked() {
     m_Task->ActionIndex.storeRelaxed(16);
     this->logger->info("lift up to 15mm");
 }
-
 
 void MainWindow::on_btn_leveling_clicked() {
     // 调平
@@ -382,14 +411,15 @@ void MainWindow::updataDeviceConnectState() {
             findChild<QLabel *>("label_camera_state" + QString::number(i + 1))->setStyleSheet(
                     "image: url(:/img/images/icon_greenLight.png);");
         }else{
-            // findChild<QLabel *>("label_camera_state" + QString::number(i + 1))->setStyleSheet(
-                    // "image: url(:/img/images/icon_redLight.png);");
+            findChild<QLabel *>("label_camera_state" + QString::number(i + 1))->setStyleSheet(
+                    "image: url(:/img/images/icon_redLight.png);");
         }
     }
     // 更新io板和机器人连接状态显示
     bool io_A_sta = m_Com->getCommState_IOA();
     bool io_B_sta = m_Com->getCommState_IOB();
     bool robot_sta = m_Com->getCommState_Robot();
+//    this->logger->info("ioA:{}, ioB:{}, robot:{}", io_A_sta, io_B_sta, robot_sta);
 
     if(io_A_sta){
         ui->label_io_A->setStyleSheet("image: url(:/img/images/icon_greenLight.png);");
@@ -410,55 +440,55 @@ void MainWindow::updataDeviceConnectState() {
     }
 
     // 更新遥控器连接状态
-//    bool manual_sta =  m_Com->m_cManual.getConnectState();
-//    if(manual_sta){
-//        ui->label_controller_state->setStyleSheet("image: url(:/img/images/icon_greenLight.png);");
-//    }else{
-//        ui->label_controller_state->setStyleSheet("image: url(:/img/images/icon_redLight.png);");
-//    }
+    bool manual_sta =  m_Com->m_cManual.getConnectState();
+    if(manual_sta){
+        ui->label_controller_state->setStyleSheet("image: url(:/img/images/icon_greenLight.png);");
+    }else{
+        ui->label_controller_state->setStyleSheet("image: url(:/img/images/icon_redLight.png);");
+    }
 }
 
 void MainWindow::updateAxisStatus() {
 
-    static int old_JointStatus[7] = {-100,-100,-100,-100,-100,-100,-100};
+    static int old_JointStatus[10] = {-100,-100,-100,-100,-100,-100,-100, -100,-100,-100};
 
     // 更新单轴状态信息
     QVector<st_ReadAxis> stJointstatus = m_Com->getLinkJointStatus(0); //link轴组数据
+
     if(stJointstatus.size() > 0) {
         for (int i = 0; i < jointNum; i++) {
             //更新单轴坐标
-            // findChild<QLabel *>("label_pos_shaft" + QString::number(i))->setText(
-                    // QString::number(stJointstatus[i].Position, 10, 2));
+            findChild<QLabel *>("label_pos_shaft" + QString::number(i))->setText(
+                    QString::number(stJointstatus[i].Position, 10, 2));
 
             //更新单轴状态
             if (old_JointStatus[i] != stJointstatus[i].eState) {
                 old_JointStatus[i] = stJointstatus[i].eState;
-
                 switch (stJointstatus[i].eState) {
-                    // case eAxis_ERRORSTOP:
-                    //     findChild<QLabel *>("label_device_state" + QString::number(i))->setStyleSheet(
-                    //             "image: url(:/img/images/icon_redLight.png);"
-                    //             "border:1px solid black;"
-                    //             );
-                    //     break;
-                    // case eAxis_UNDEFINED:
-                    //     findChild<QLabel *>("label_device_state" + QString::number(i))->setStyleSheet(
-                    //             "image: url(:/img/images/icon_greenLight.png);"
-                    //             "border:1px solid black;"
-                    //             );
-                    //     break;
-                    // case eAxis_DISABLED:
-                    //     findChild<QLabel *>("label_device_state" + QString::number(i))->setStyleSheet(
-                    //             "image: url(:/img/images/icon_yellowLight.png);"
-                    //             "border:1px solid black;"
-                    //             );
-                    //     break;
-                    // default:
-                    //     findChild<QLabel *>("label_device_state" + QString::number(i))->setStyleSheet(
-                    //             "image: url(:/img/images/icon_greenLight.png);"
-                    //             "border:1px solid black;"
-                    //             );
-                    //     break;
+                    case eAxis_ERRORSTOP:
+                        findChild<QLabel *>("label_device_state" + QString::number(i))->setStyleSheet(
+                                "image: url(:/img/images/icon_redLight.png);"
+                                "border:1px solid black;"
+                                );
+                        break;
+                    case eAxis_UNDEFINED:
+                        findChild<QLabel *>("label_device_state" + QString::number(i))->setStyleSheet(
+                                "image: url(:/img/images/icon_greenLight.png);"
+                                "border:1px solid black;"
+                                );
+                        break;
+                    case eAxis_DISABLED:
+                        findChild<QLabel *>("label_device_state" + QString::number(i))->setStyleSheet(
+                                "image: url(:/img/images/icon_yellowLight.png);"
+                                "border:1px solid black;"
+                                );
+                        break;
+                    default:
+                        findChild<QLabel *>("label_device_state" + QString::number(i))->setStyleSheet(
+                                "image: url(:/img/images/icon_greenLight.png);"
+                                "border:1px solid black;"
+                                );
+                        break;
                 }
             }
         }
@@ -466,6 +496,7 @@ void MainWindow::updateAxisStatus() {
 
     // 更新末端姿态信息
     stLinkStatus linkstatus = m_Robot->getLinkSta();
+
     double  robotActPose[6];
     for(int i=0; i < freeJointNum; ++i){
         if(i>2){
@@ -476,6 +507,12 @@ void MainWindow::updateAxisStatus() {
         }
         findChild<QLabel*>("label_pos_end" + QString::number(i))->setText(QString::number(robotActPose[i]));
     }
+
+    // 更新舵轮位置
+    QVector<st_ReadAxis> jointStatus = m_Com->getJointGroupStatus();
+    findChild<QLabel*>("label_steering_pos")->setText(QString::number(jointStatus[STEER_LEFT_INDEX].Position));
+
+
 }
 
 void MainWindow::updateLineDetectResults() {
@@ -502,7 +539,7 @@ void MainWindow::updateLineDetectResults() {
             for(int i = 0; i < cameraNum; i++){
                 float dist = visResult.stData.m_LineDistance[i];
                 dist = std::isinf(dist) ? 0 : dist;
-                // findChild<QLabel*>(prefix + QString::number(i))->setText("Dist " + QString::number(i + 1) + ":" + QString::number(dist));
+                findChild<QLabel*>(prefix + QString::number(i))->setText("Dist " + QString::number(i + 1) + ":" + QString::number(dist));
             }
         }
 
@@ -536,7 +573,7 @@ void MainWindow::updateCameraData() {
     // 获取相机是否开启
     bool isEnable = m_VisionInterface->camera_controls->camerasIsOpened();
     if(!isEnable){
-    //    this->logger->info("相机未全部开启,请检查相机连接！");
+//       this->logger->info("相机未全部开启,请检查相机连接！");
        return ;
     }
 
@@ -616,6 +653,7 @@ void MainWindow::btn_moveFwd_shaft_pressed() {
     if (!pressedButton){
         return;
     }
+    setButtonIndex();
 
     // 获取按钮在数组中的索引
     int index = -1;
@@ -630,6 +668,7 @@ void MainWindow::btn_moveFwd_shaft_pressed() {
     {
 //        m_Robot->setJointMoveVel(index,0.1 * axisVelLimit[index][1]);
         m_Robot->setJointMoveVel(index,0.5 * LINK_0_JOINT_MAX_VEL[index]);
+        this->logger->info("************设置轴{}速度为{}****************", index, 0.5 * LINK_0_JOINT_MAX_VEL[index]);
     }
 
 }
@@ -694,24 +733,28 @@ void MainWindow::btn_moveFwd_shaft_released() {
 }
 
 void MainWindow::btn_moveBwd_shaft_pressed() {
+
+
     QPushButton *pressedButton = qobject_cast<QPushButton*>(sender());
     if (!pressedButton){
         return;
     }
+    setButtonIndex();
 
     // 获取按钮在数组中的索引
     int index = -1;
-    for (int i = 0; i < JointNum; i++) {
+    for (int i = 0; i < jointNum; i++) {
         if (pressedButton == findChild<QPushButton*>("btn_moveBwd_shaft" + QString::number(i))) {
             index = i;
             break;
         }
     }
 
-    if(index>=0 && index< JointNum)
+    if(index>=0 && index< jointNum)
     {
 //        m_Robot->setJointMoveVel(index,-0.1* axisVelLimit[index][1]);
         m_Robot->setJointMoveVel(index,-0.5* LINK_0_JOINT_MAX_VEL[index]);
+        this->logger->info("************设置轴{}速度为{}****************", index, -0.5* LINK_0_JOINT_MAX_VEL[index]);
     }
 
 }
@@ -727,6 +770,7 @@ void MainWindow::on_moveRel_shaft_clicked() {
     if (!pressedButton) {
         return;
     }
+    setButtonIndex();
 
     // 获取按钮在数组中的索引
     int index = -1;
@@ -741,15 +785,13 @@ void MainWindow::on_moveRel_shaft_clicked() {
     QVector<st_ReadAxis> stJointstatus = m_Com->getLinkJointStatus(0); //link轴组数据
     QVector<st_ReadAxis> stJointPitch = m_Com->getLinkJointStatus(1);//腰部俯仰数据
     stJointstatus.append(stJointPitch.back());
-    double vel =  0.7 * axisVelLimit[index][1];
+    double vel =  0.2 * LINK_0_JOINT_MAX_VEL[index];
 
     if(index>=0 && index< jointNum)
     {
         double delta = findChild<QLineEdit*>("lineEdit_setPos_shaft" + QString::number(index))->text().toDouble();
         if(delta < 0) vel = -vel;
-
         logger->info(("[ on_moveRel_shaft_clicked ]  index : " + std::to_string(index) + " delta:"+std::to_string(delta) + " vel:"+ std::to_string(vel)).c_str());
-
         m_Robot->setJointMoveAbs(index , stJointstatus[index].Position + delta  , vel);
     }
     findChild<QLineEdit*>("lineEdit_setPos_shaft" + QString::number(index))->setText("0");
@@ -778,7 +820,6 @@ void MainWindow::btn_moveFwd_end_pressed() {
             vel[index] = velRotate;
         }
         logger->info(("[ btn_moveFwd_end_pressed ]  index : " + std::to_string(index) + " vel:"+ std::to_string(vel[index])).c_str());
-
         m_Robot->setLinkMoveVel(vel);
     }else{
         qDebug()<<"【ERROR】 void MainWindow::on_btn_setLinkMoveVel_pressed() ";
@@ -904,41 +945,41 @@ void MainWindow::on_btn_SetMagent_clicked()
 }
 
 void MainWindow::updateActionSta() {
-//     //半自动作业按钮状态更新
-//     static int old_action_index = -100;
-//     int action_index = m_Task->ActionIndex.loadRelaxed();
-//     const std::map<int,QString> AUTOWORK_NAME = {
-//             {10,"btn_location_"}, {12,"btn_lift_"}, {15,"btn_leveling_"}, {16,"btn_lift_2"},
-//             {20,"btn_sideline_"}, {35,"btn_sideline_"}, {28,"btn_sideline_"}, {30,"btn_magnet_open_"},
-//             {40,"btn_auto_knock_"}, {32,"btn_magnet_close_"}, {42,"btn_magnet_pause_"}, {44,"btn_knock_suspend_"},
-//     };
-
-// //    const std::map<int,std::string> AUTOWORK_NAME = {
-// //            {10,"准备位置"},{12,"举升"},{15,"调平"},{16,"举升去对边"},
-// //            {20,"获取边线"},{35,"调整偏差"},{28,"检测调整结果"},{30,"开启磁铁"},
-// //            {40,"自动碰钉"},{32,"关闭磁铁"},{42,"碰钉暂停"},{44,"碰钉中止"}
-// //    };
-
-//     //当action_index状态改变时才刷新按钮
-// //    logger->info("action_index {}",action_index);
-//     // if(action_index == 0){
-//     //     for(auto it=AUTOWORK_NAME.begin();it!=AUTOWORK_NAME.end();++it){
-//     //         // findChild<QPushButton*>(it->second)->setStyleSheet("background-color: rgb(170, 170, 255)");
-//     //     }
-//     // }
-
-// //    ui->btn_camera_close->setText(QString::number(action_index));//临时显示action_index
-
-//     if(old_action_index != action_index){
-//         old_action_index = action_index;
-//         for(auto it=AUTOWORK_NAME.begin();it!=AUTOWORK_NAME.end();++it){
-//             if(it->first == action_index){
-//                 findChild<QPushButton*>(it->second)->setStyleSheet("background-color: green; color: black;");
-//             }else{
-//                 findChild<QPushButton*>(it->second)->setStyleSheet("background-color: rgb(170, 170, 255)");
-//             }
-//         }
-//     }
+    //半自动作业按钮状态更新
+//    static int old_action_index = -100;
+//    int action_index = m_Task->ActionIndex.loadRelaxed();
+//    const std::map<int,QString> AUTOWORK_NAME = {
+//            {10,"btn_location_"}, {12,"btn_lift_"}, {15,"btn_leveling_"}, {16,"btn_lift_2"},
+//            {20,"btn_sideline_"}, {35,"btn_sideline_"}, {28,"btn_sideline_"}, {30,"btn_magnet_open_"},
+//            {40,"btn_auto_knock_"}, {32,"btn_magnet_close_"}, {42,"btn_magnet_pause_"}, {44,"btn_knock_suspend_"},
+//    };
+//
+////    const std::map<int,std::string> AUTOWORK_NAME = {
+////            {10,"准备位置"},{12,"举升"},{15,"调平"},{16,"举升去对边"},
+////            {20,"获取边线"},{35,"调整偏差"},{28,"检测调整结果"},{30,"开启磁铁"},
+////            {40,"自动碰钉"},{32,"关闭磁铁"},{42,"碰钉暂停"},{44,"碰钉中止"}
+////    };
+//
+//    //当action_index状态改变时才刷新按钮
+////    logger->info("action_index {}",action_index);
+//    if(action_index == 0){
+//        for(auto it=AUTOWORK_NAME.begin();it!=AUTOWORK_NAME.end();++it){
+//            findChild<QPushButton*>(it->second)->setStyleSheet("background-color: rgb(170, 170, 255)");
+//        }
+//    }
+//
+////    ui->btn_camera_close->setText(QString::number(action_index));//临时显示action_index
+//
+//    if(old_action_index != action_index){
+//        old_action_index = action_index;
+//        for(auto it=AUTOWORK_NAME.begin();it!=AUTOWORK_NAME.end();++it){
+//            if(it->first == action_index){
+//                findChild<QPushButton*>(it->second)->setStyleSheet("background-color: green; color: black;");
+//            }else{
+//                findChild<QPushButton*>(it->second)->setStyleSheet("background-color: rgb(170, 170, 255)");
+//            }
+//        }
+//    }
 }
 
 void MainWindow::updateConnectSta() {
@@ -950,7 +991,7 @@ void MainWindow::updateConnectSta() {
 
     for(const auto&item: comStatus){
         if(item.second == false){
-            // findChild<QLabel*>(item.first)->setStyleSheet("image: url(:/img/images/icon_redLight.png);");
+            findChild<QLabel*>(item.first)->setStyleSheet("image: url(:/img/images/icon_redLight.png);");
         }else{
             findChild<QLabel*>(item.first)->setStyleSheet("image: url(:/img/images/icon_greenLight.png);");
         }
@@ -1039,7 +1080,7 @@ void MainWindow::setButtonIndex() {
     //设置原子变量index
     if(this->m_btnIndex.find(objectName.toStdString()) != this->m_btnIndex.end()){
         m_Task->ButtonIndex.storeRelaxed(this->m_btnIndex[objectName.toStdString()]);
-        this->logger->info("The object name of the clicked button is:{}",objectName.toStdString());
+//        this->logger->info("The object name of the clicked button is:{}",objectName.toStdString());
     }else{
         this->logger->error("Button index not found in predefined index map!");
     }
@@ -1057,7 +1098,6 @@ void MainWindow::setActionIndex() {
     //设置原子变量index
     if(this->m_jobBtnIndex.find(objectName.toStdString()) != this->m_jobBtnIndex.end()){
         m_Task->ActionIndex.storeRelaxed(this->m_jobBtnIndex[objectName.toStdString()]);
-        // m_Task->ActionIndex.storeRelaxed(1);  // 状态机离线调试(20244.09.03)
         this->logger->info("The object name of the clicked button is:{}",objectName.toStdString());
     }else{
         this->logger->error("Button index not found in predefined index map!");
@@ -1076,4 +1116,105 @@ void MainWindow::slots_on_btn_add_nail_clicked() {
     setActionIndex();
     this->logger->info("放钉");
 
+}
+
+void MainWindow::on_btn_wheel_forward_pressed() {
+
+    // 底盘前进
+    m_Robot->setJointMoveVel(WHEEL_LEFT_INDEX, m_wheelVel);
+    m_Robot->setJointMoveVel(WHEEL_RIGHT_INDEX, m_wheelVel);
+    this->logger->info("******前进*******");
+
+}
+
+void MainWindow::on_btn_wheel_backward_released() {
+    // 停止前进
+    m_Com->JointHalt(WHEEL_LEFT_INDEX);
+    m_Com->JointHalt(WHEEL_RIGHT_INDEX);
+}
+
+void MainWindow::on_btn_wheel_left_pressed() {
+    m_Robot->setJointMoveVel(WHEEL_LEFT_INDEX, -10);
+    m_Robot->setJointMoveVel(WHEEL_RIGHT_INDEX, 10);
+    this->logger->info("******左转*******");
+}
+
+void MainWindow::on_btn_wheel_right_released() {
+    m_Com->JointHalt(WHEEL_LEFT_INDEX);
+    m_Com->JointHalt(WHEEL_RIGHT_INDEX);
+}
+
+void MainWindow::on_btn_wheel_forward_released() {
+    m_Com->JointHalt(WHEEL_LEFT_INDEX);
+    m_Com->JointHalt(WHEEL_RIGHT_INDEX);
+}
+
+void MainWindow::on_btn_wheel_backward_pressed() {
+    m_Robot->setJointMoveVel(WHEEL_LEFT_INDEX, -m_wheelVel);
+    m_Robot->setJointMoveVel(WHEEL_RIGHT_INDEX, -m_wheelVel);
+    this->logger->info("******后退*******");
+}
+
+void MainWindow::on_btn_wheel_left_released() {
+    m_Com->JointHalt(WHEEL_LEFT_INDEX);
+    m_Com->JointHalt(WHEEL_RIGHT_INDEX);
+}
+
+void MainWindow::on_btn_wheel_right_pressed() {
+    m_Robot->setJointMoveVel(WHEEL_LEFT_INDEX, 10);
+    m_Robot->setJointMoveVel(WHEEL_RIGHT_INDEX, -10);
+    this->logger->info("******右转*******");
+}
+
+void MainWindow::on_btn_steering_left_pressed() {
+    double angle = findChild<QLabel*>("label_steering_pos")->text().toDouble() +5;
+    angle = angle > 90 ? 90 : angle;
+    m_Robot->setJointMoveAbs(STEER_LEFT_INDEX, angle ,5);
+    m_Robot->setJointMoveAbs(STEER_RIGHT_INDEX, angle ,5);
+
+
+
+}
+
+void MainWindow::on_btn_steering_left_released() {
+
+
+}
+
+void MainWindow::on_btn_steering_right_pressed() {
+    double angle = findChild<QLabel*>("label_steering_pos")->text().toDouble() -5;
+    angle = angle <- 90 ? -90 : angle;
+    m_Robot->setJointMoveAbs(STEER_LEFT_INDEX, angle ,5);
+    m_Robot->setJointMoveAbs(STEER_RIGHT_INDEX, angle ,5);
+}
+
+void MainWindow::on_btn_steering_right_released() {
+
+}
+
+void MainWindow::on_btn_add_nail_pressed() {
+
+//    m->setJointGroupMove(eMC_Motion,Postion_Home, )
+   double vel_Home[10] = {0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1};
+   for(int i = 0;i<10;i++){
+       vel_Home[i] = LINK_0_JOINT_MAX_VEL[i]*0.1;
+   }
+   m_Robot->setJointGroupMoveAbs(Postion_Home,vel_Home);
+
+}
+
+void MainWindow::on_btn_add_nail_released() {
+    m_Robot->setLinkHalt();
+}
+
+void MainWindow::on_btn_preparation_pos_pressed() {
+    double vel_pre[10] = {0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1};
+    for(int i = 0;i<10;i++){
+        vel_pre[i] = LINK_0_JOINT_MAX_VEL[i]*0.1;
+    }
+    m_Robot->setJointGroupMoveAbs(Postion_Prepare,vel_pre);
+}
+
+void MainWindow::on_btn_preparation_pos_released() {
+    m_Robot->setLinkHalt();
 }

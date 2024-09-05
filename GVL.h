@@ -21,7 +21,7 @@ const double y_camera = 1075;
 
 
 const double velLine = 5;           //界面点动限速：平移
-const double velRotate = 0.1/57.3;  //界面点动限速：旋转
+const double velRotate = 0.5/57.3;  //界面点动限速：旋转
 
 const double JOINT_VEL_MOVE = 3;      //单位degree
 
@@ -51,10 +51,17 @@ const double TarPositionA[20] ={10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
 //A1 末端速度限制
 const double A1_VEL[6]={1,1,1,0.2,0.2,0.2};
 
+//
+const double Postion_Home[10]    =    {36.75,0,0,-4.68,82.24,860,1075, 0.56, 0, 1189}; //放钉位置
+const double Postion_Prepare[10]    = {36.75,0,0,-4.68,82.24,906,1421, 0.56, -35.5, 1189}; //碰钉准备位置
+const QVector<double> Postion_Home_qv = {36.75,0,0,-4.68,82.24,860,1075, 0.56, 0, 1189}; //碰钉准备位置
+const QVector<double> Postion_Prepare_qv = {36.75,0,0,-4.68,82.24,906,1421, 0.56, -35.5, 1189}; //碰钉准备位置
+
 
 //robotcomm的ip和端口"192.168.1.130" 5999
 const char g_str_robotip[] = "192.168.1.130";
-const int g_i_robotport = 5999;
+//const int g_i_robotport = 5999;  old
+const int g_i_robotport = 6999;
 
 //IOAcomm的ip和端口"192.168.1.201" 5999
 const char g_str_IOAip[] = "192.168.1.201";

@@ -6,7 +6,7 @@ CRobotKinectModel::CRobotKinectModel(std::vector<CTransformation> Input_DH_List,
     m_SerialLink = Input_DH_List;
     m_ToolLink   = Tool_DH;
     Valid_Index.clear();
-    m_CylinderLen = 1200;
+    m_CylinderLen = 800;
     log = spdlog::get("logger");
 }
 
@@ -15,8 +15,9 @@ void CRobotKinectModel::setJointPos(std:: vector<std::pair<double, bool>> Joint_
 
     //修改827
     //推缸行程转为旋转角度
-    Joint_Value[5].first =Joint2Fkine(Joint_Value[5].first);
     m_CylinderLen = Joint_Value[CYLINDER_INDEX].first;
+    Joint_Value[CYLINDER_INDEX].first =Joint2Fkine(Joint_Value[CYLINDER_INDEX].first);
+
 
     if (Joint_Value.size() != m_SerialLink.size())
     {
@@ -35,7 +36,7 @@ void CRobotKinectModel::setJointPos(std:: vector<std::pair<double, bool>> Joint_
 void CRobotKinectModel::setToolPos(double len, double rot)
 {
     m_ToolLink.Set_Val(len, false); //末端工具改变长度
-    m_ToolLink.Set_Val(rot,true);   //末端托盘旋转
+    //m_ToolLink.Set_Val(rot,true);   //末端托盘旋转
     //Transformation();
 }
 
@@ -65,8 +66,9 @@ Eigen::VectorXd CRobotKinectModel::getJointVel_nolimit(Eigen::VectorXd Tar_Speed
 
     //修改827
     //推缸关节速度
-    double theta = Joint2Fkine(m_SerialLink[5].getJointPos());
-    Full_Joint_Speed[5] = Joint2InvKine(m_SerialLink[5].getJointPos(),m_CylinderLen);
+    Full_Joint_Speed[CYLINDER_INDEX] = Joint2InvKine(Full_Joint_Speed[CYLINDER_INDEX],m_CylinderLen);
+//    double theta = Joint2Fkine(m_SerialLink[5].getJointPos());
+//    Full_Joint_Speed[5] = Joint2InvKine(m_SerialLink[5].getJointPos(),m_CylinderLen);
 
 
     return Full_Joint_Speed;
@@ -74,10 +76,10 @@ Eigen::VectorXd CRobotKinectModel::getJointVel_nolimit(Eigen::VectorXd Tar_Speed
 
 Eigen::VectorXd CRobotKinectModel::getJointVel(Eigen::VectorXd Tar_Speed,bool Ref_End)
 {
-    for (int i = 0; i < m_SerialLink.size(); i++)
-    {
-        m_SerialLink[i].Set_free(true);
-    }
+    // for (int i = 0; i < m_SerialLink.size(); i++)
+    // {
+    //     m_SerialLink[i].Set_free(true);
+    // }
     //m_SerialLink[4].Set_free(false);
 
     calJacobian();
@@ -88,6 +90,24 @@ Eigen::VectorXd CRobotKinectModel::getJointVel(Eigen::VectorXd Tar_Speed,bool Re
     //根据限位判断是否锁定轴
     for (int i = 0; i < m_SerialLink.size(); i++)
     {
+        if(m_SerialLink[i].Is_Free() == false) continue;
+
+        if(i == CYLINDER_INDEX)
+        {
+            if( ((LINK_0_JOINT_LIMIT_POS[i]- m_CylinderLen) <1  && speed[i]>0)||
+                (  (m_CylinderLen- LINK_0_JOINT_LIMIT_NEG[i])<1 && speed[i]<0))
+            {
+                qDebug()<<QString("-------------Lock joint  %1----------- ").arg(i);
+                qDebug()<<        "               Prismatic               ";
+                qDebug()<<QString("%1---LINK_0_JOINT_LIMIT_POS[ ]    :  ").arg(i)<<LINK_0_JOINT_LIMIT_POS[i];
+                qDebug()<<QString("%1---m_SerialLink[].getJointPos() :  ").arg(i)<<m_SerialLink[i].getJointPos();
+                qDebug()<<QString("%1---LINK_0_JOINT_LIMIT_NEG[ ]    :  ").arg(i)<<LINK_0_JOINT_LIMIT_NEG[i];
+                qDebug()<<"\n";
+                //m_SerialLink[i].Set_free(false); //锁定轴
+                lock = true;
+            }
+            continue;
+        }
         if(m_SerialLink[i].Get_Type() == Revolute) //旋转轴
         {
             if( ((LINK_0_JOINT_LIMIT_POS[i]/57.3 - m_SerialLink[i].getJointPos()) < 0.5/57.3  && speed[i]>0)||
@@ -331,7 +351,7 @@ double CRobotKinectModel::Joint2Fkine(double D2)
     double R3 = 886;
     double R4 = 518.5;
     double Theta = (a1 + a3 - acos(( D2 * D2 - R3 * R3 - R4 * R4)/(2 * R3 * R4)));
-    std::cout<<"Theta: "<<Theta<<std::endl<<std::endl;
+//    std::cout<<"Theta: "<<Theta<<std::endl<<std::endl;
     return Theta;
 }
 //修改827

@@ -255,21 +255,24 @@ void CTask::detectionInParallelExecutionCommand()
             QVector<double>  laserDistance = m_Comm->getLasersDistance();
 
             auto detectionResult = CheckParallelStateDecorator(laserDistance);
-            detectionResult = EDetectionInParallelResult::eDeviationIsLessThanThreshold;  // 状态机离线调试(2024.09.03)
+            log->info("laser distance: {},{},{},{}", laserDistance[0],laserDistance[1],laserDistance[2],laserDistance[3]);
             switch (detectionResult)
             {
                 case EDetectionInParallelResult::eDeviationIsLessThanThreshold:
                 {
+                    log->info("updateTopAndSubState(ETopState::ePositioning, ESubState::eReadyToPositioning);");
                     updateTopAndSubState(ETopState::ePositioning, ESubState::eReadyToPositioning);
                     break;
                 }
                 case EDetectionInParallelResult::eDistanceMeetsRequirement:
                 {
+                    log->info("updateTopAndSubState(ETopState::eParallel, ESubState::eMotion);");
                     updateTopAndSubState(ETopState::eParallel, ESubState::eMotion);
                     break;
                 }
                 case EDetectionInParallelResult::eNoWallDetected:
                 {
+                    log->info("updateTopAndSubState(ETopState::eManual, ESubState::eReady);");
                     updateTopAndSubState(ETopState::eManual, ESubState::eReady);
                     break;
                 }
@@ -308,31 +311,36 @@ void CTask::motionInParallelExecutionCommand()
             {
                 log->warn("反馈异常，末端激光偏差过大，状态跳转: 手动");
                 updateTopAndSubState(ETopState::eManual, ESubState::eReady);
-                break;
             }
-            else if (result == EDetectionInParallelResult::eDistanceMeetsRequirement)
-            {
+            else if (result == EDetectionInParallelResult::eDeviationIsLessThanThreshold)
+            { 
+                log->info("完成调平运动，再次进入调平检测");
                 m_Robot->setLinkHalt();
                 updateTopAndSubState(ETopState::eParallel, ESubState::eDetection);
-                break;
+
             }
-            
-            m_stMeasuredata.m_LaserDistance[0] = LaserDistance[0];
-            m_stMeasuredata.m_LaserDistance[1] = LaserDistance[1];
-            m_stMeasuredata.m_LaserDistance[2] = LaserDistance[2];
-            m_stMeasuredata.m_LaserDistance[3] = LaserDistance[3];
-
-            // 计算偏差，控制机器人运动
-            QVector<Eigen::Matrix4d> Dev_RT =  CMeasure::calPoseDeviation(m_stMeasuredata);
-            QVector<double> tar_position = m_Robot->getTargetPose(Dev_RT[0]);
-
-            double tar_pos[6] ;
-            for(int i=0;i<6;i++)
+            else
             {
-                tar_pos[i] = tar_position[i];
-            }
-            m_Robot->setLinkMoveAbs(tar_pos,END_VEL_LIMIT);
+                log->warn("激光测量数据满足调整条件，控制机器人调平运动");
+            
+                m_stMeasuredata.m_LaserDistance[0] = LaserDistance[0];
+                m_stMeasuredata.m_LaserDistance[1] = LaserDistance[1];
+                m_stMeasuredata.m_LaserDistance[2] = LaserDistance[2];
+                m_stMeasuredata.m_LaserDistance[3] = LaserDistance[3];
 
+                // 计算偏差，控制机器人运动
+                QVector<Eigen::Matrix4d> Dev_RT =  CMeasure::calPoseDeviation(m_stMeasuredata);
+                QVector<double> tar_position = m_Robot->getTargetPose(Dev_RT[0]);
+
+                double tar_pos[6] ;
+                for(int i=0;i<6;i++)
+                {
+                    tar_pos[i] = tar_position[i];
+                }
+                log->info("m_Robot->setLinkMoveAbs(tar_pos,END_VEL_LIMIT);\ntar_pos:{},{},{},{},{},{}", 
+                          tar_pos[0],tar_pos[0],tar_pos[0],tar_pos[0],tar_pos[0],tar_pos[0]);
+                // m_Robot->setLinkMoveAbs(tar_pos,END_VEL_LIMIT);
+            }
             break;
         }
         case EExecutionCommand::eTerminate:

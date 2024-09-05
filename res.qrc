@@ -36,6 +36,13 @@
         <file>images/icon_gotoStation.png</file>
         <file>images/icon_gotoStation_pressed.png</file>
         <file>images/icon_layout.png</file>
+        <file>images/icon_forward.png</file>
+        <file>images/icon_backward.png</file>
+        <file>images/icon_left_move.png</file>
+        <file>images/icon_right_move.png</file>
+        <file>images/icon_moveRel_left.png</file>
+        <file>images/icon_right_remove.png</file>
+        <file>images/icon_left_remove.png</file>
 
     </qresource>
 </RCC>
