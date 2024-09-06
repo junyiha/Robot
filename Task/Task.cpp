@@ -440,9 +440,10 @@ void CTask::Manual()
 
     if (std::fabs(m_manualOperator.VechDirect - m_preManualOperator.VechDirect) < 1)
     {
-        log->info("{},{}: m_Robot->setJointMoveAbs(STEER_LEFT_INDEX, m_Manual.MoveDirection,10);//速度需改为参数", __FILE__,__LINE__);
+        // 当前指令和上一个指令的VechDirect都为零，判断条件始终成立
+        // log->info("{},{}: m_Robot->setJointMoveAbs(STEER_LEFT_INDEX, m_Manual.MoveDirection,10);//速度需改为参数", __FILE__,__LINE__);
         // m_Robot->setJointMoveAbs(STEER_LEFT_INDEX, m_Manual.MoveDirection,10);//速度需改为参数			
-        log->info("{},{}: m_Robot->setJointMoveAbs(STEER_RIGHT_INDEX,m_Manual.MoveDirection,10);//速度需改为参数", __FILE__,__LINE__);
+        // log->info("{},{}: m_Robot->setJointMoveAbs(STEER_RIGHT_INDEX,m_Manual.MoveDirection,10);//速度需改为参数", __FILE__,__LINE__);
         // m_Robot->setJointMoveAbs(STEER_RIGHT_INDEX,m_Manual.MoveDirection,10);//速度需改为参数			
     }
 
@@ -523,43 +524,56 @@ void CTask::Manual()
 
     switch (m_manualOperator.TaskIndex)
     {
+        case stManualOperator::None:
+        {
+            updateExecutionCommand(EExecutionCommand::eNULL);
+            break;
+        }
         case stManualOperator::Parallel:
         {
+            log->info("updateExecutionCommand(EExecutionCommand::eParallel);");
             updateExecutionCommand(EExecutionCommand::eParallel);
             break;
         }
         case stManualOperator::Positioning:
         {
+            log->info("updateExecutionCommand(EExecutionCommand::ePositioning);");
             updateExecutionCommand(EExecutionCommand::ePositioning);
             break;
         }
         case stManualOperator::DoWeld:
         {
+            log->info("updateExecutionCommand(EExecutionCommand::eAutoWeld);");
             updateExecutionCommand(EExecutionCommand::eAutoWeld);
             break;
         }
         case stManualOperator::MagentOn:
         {
+            log->info("updateExecutionCommand(EExecutionCommand::eMagentOn);");
             updateExecutionCommand(EExecutionCommand::eMagentOn);
             break;
         }
         case stManualOperator::MagentOff:
         {
+            log->info("updateExecutionCommand(EExecutionCommand::eMagentOff);");
             updateExecutionCommand(EExecutionCommand::eMagentOff);
             break;
         }
         case stManualOperator::Quit:
         {
+            log->info("updateExecutionCommand(EExecutionCommand::eQuit);");
             updateExecutionCommand(EExecutionCommand::eQuit);
             break;
         }
         case stManualOperator::Pause:
         {
+            log->info("updateExecutionCommand(EExecutionCommand::ePause);");
             updateExecutionCommand(EExecutionCommand::ePause);
             break;
         }
         case stManualOperator::Terminate:
         {
+            log->info("updateExecutionCommand(EExecutionCommand::eTerminate);");
             updateExecutionCommand(EExecutionCommand::eTerminate);
             break;
         }

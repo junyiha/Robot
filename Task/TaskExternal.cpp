@@ -403,12 +403,26 @@ void CTask::detectionInPositioningExecutionCommand()
             break;
 
             //调用视觉函数
-            auto vis_res = m_vision->getVisResult();
-            if(!vis_res.status) 
+            VisionResult vis_res = m_vision->getVisResult();
+            if(!vis_res.status)
             { // 视觉检测无数据，等待下一个周期
                 break;
             }
-            
+            for(int i=0;i<6;i++){
+                vis_res.stData.m_bLineDistance[i] = false;
+            }
+            vis_res.stData.m_bLineDistance[1] = true;
+            vis_res.stData.m_bLineDistance[3] = true;
+            vis_res.stData.m_bLineDistance[5] = true;
+
+            vis_res.stData.m_LineDistance[0] = 15;
+            vis_res.stData.m_LineDistance[1] = 15;
+            vis_res.stData.m_LineDistance[2] = 15;
+            vis_res.stData.m_LineDistance[3] = 15;
+            vis_res.stData.m_LineDistance[4] = 10;
+            vis_res.stData.m_LineDistance[5] = 20;
+
+
             std::copy(std::begin(vis_res.stData.m_LineDistance) , std::end(vis_res.stData.m_LineDistance), m_stMeasuredata.m_LineDistance);
             std::copy(std::begin(vis_res.stData.m_bLineDistance), std::end(vis_res.stData.m_bLineDistance), m_stMeasuredata.m_bLineDistance);
 
@@ -465,6 +479,10 @@ void CTask::motionInPositioningExecutionCommand()
         case EExecutionCommand::eNULL:
         {
             QVector<double> LaserDistance = m_Comm->getLasersDistance();
+            LaserDistance[0] = 20;
+            LaserDistance[1] = 20;
+            LaserDistance[2] = 20;
+            LaserDistance[3] = 20;
 
             if (CheckParallelStateDecorator(LaserDistance) == EDetectionInParallelResult::eNoWallDetected)
             {
@@ -474,7 +492,7 @@ void CTask::motionInPositioningExecutionCommand()
             }
 
             QVector<Eigen::Matrix4d> Dev_RT =  CMeasure::calPoseDeviation(m_stMeasuredata);
-            QVector<double> tar_position = m_Robot->getTargetPose(Dev_RT[3]);
+            QVector<double> tar_position = m_Robot->getTargetPose(Dev_RT[3]);  // 计算调整量
 
             double tar_pos[6];
             for(int i=0;i<6;i++)

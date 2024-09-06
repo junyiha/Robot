@@ -29,6 +29,7 @@ void CManual::run()
         }
         QThread::msleep(40);
     }
+    log->error("{}:{} CManual::run() 退出!!!", __FILE__, __LINE__);
 }
 
 int CManual::RecvData()
