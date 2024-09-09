@@ -86,6 +86,7 @@ int TcpCom_IO::Sendbuffer()
         if (-1 == sendnum)
         {
             int err = WSAGetLastError();
+            log->warn("tcp io send error:{}",err);
 //            qDebug()<<err;
             if (err == EAGAIN || err == EWOULDBLOCK || err == EINPROGRESS)
             {
@@ -131,7 +132,8 @@ DINT TcpCom_IO::Recvbuffer()
         if (-1 == recvnum)
         {
             int err = WSAGetLastError();
-//            qDebug()<<err;
+            log->warn("tcp io recv error:{}",err);
+//
             if (err == EAGAIN || err == EWOULDBLOCK || err == EINTR)
             {
                 continue;

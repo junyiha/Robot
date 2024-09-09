@@ -127,6 +127,7 @@ void MainWindow::connectSlotFunctions() {// 按钮时间绑定
 //    connect(ui->btn_lift_2, &QPushButton::clicked, this, &MainWindow::on_btn_lift_2clicked, Qt::UniqueConnection);
     // 3.0 机械臂功能按钮槽函数绑定
     for(unsigned int i = 0; i < jointNum; i++){
+
         // 单轴
         connect(findChild<QPushButton*>("btn_moveFwd_shaft" + QString::number(i)), &QPushButton::pressed, this, &MainWindow::btn_moveFwd_shaft_pressed, Qt::UniqueConnection);
         connect(findChild<QPushButton*>("btn_moveFwd_shaft" + QString::number(i)), &QPushButton::released, this, &MainWindow::btn_moveFwd_shaft_released, Qt::UniqueConnection);
