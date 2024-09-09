@@ -238,6 +238,7 @@ void MainWindow::on_btn_disable_clicked()
     if(m_Com->getCommState_Robot() == true)
     {
         m_Robot->setLinkEnable(false);
+        m_Robot->setRobotEnable(false);
         this->logger->info("执行下使能!");
     }
     else

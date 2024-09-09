@@ -253,5 +253,10 @@ QVector<double> CTools::getLaserDistance()
     re[3] = tmp[3];
 
    //log->debug("测量距离：{} {} {} {} ",re[0],re[1],re[2],re[3]);
+   // test
+//    re[0] = 14;
+//    re[1] = 15;
+//    re[2] = 15;
+//    re[3] = 15;
     return re;
 }

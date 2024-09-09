@@ -87,7 +87,7 @@ int main(int argc, char *argv[])
     w.setWindowTitle("LNG Panel Loading Robot");
     w.show();
 
-    QMessageBox::information(nullptr, "Info", "请确保机器人底部升降电机位于初始位置");
+//    QMessageBox::information(nullptr, "Info", "请确保机器人底部升降电机位于初始位置");
     return a.exec();
 //    line_detect_demo();
 //    return 0;

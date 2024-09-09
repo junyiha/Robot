@@ -22,12 +22,12 @@ void CManual::run()
     while(this->isConnected ){
         if(this->isOpen()){
             SendDataRefactor();
-            QThread::msleep(10);
+            QThread::msleep(30);
             RecvDataRefactor();
         }else{
             this->log->error("CommState is false, please check io connection!");
         }
-        QThread::msleep(40);
+        QThread::msleep(20);
     }
     log->error("{}:{} CManual::run() 退出!!!", __FILE__, __LINE__);
 }

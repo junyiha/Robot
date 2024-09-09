@@ -22,6 +22,8 @@ CTask::CTask(ComInterface* comm,CRobot* robot,VisionInterface* vision,QObject *p
 
     log = spdlog::get("logger");
     m_bMagnetOn = false;
+
+    log->info("碰钉机器人--任务模块构造完成...");
 }
 
 
@@ -52,7 +54,7 @@ void CTask::run()
 //            Manual();
 //            m_preManual = m_Manual;
 //        }
-        m_preManualOperator = m_manualOperator;
+//        m_preManualOperator = m_manualOperator;
         Sleep(50);
     }
 
@@ -70,14 +72,11 @@ void CTask::updateCmdandStatus()
     m_Comm->getManual(m_manualOperator);
 
     //根据界面指令修改遥控器指令
-    m_manualOperator.Ready = 0;
-    m_manualOperator.TaskIndex = 0;
+    //m_manualOperator.Ready = 0;
+    //m_manualOperator.TaskIndex = 0;
     int tmp_val = static_cast<int>(ActionIndex.loadRelaxed());
     switch(ActionIndex.loadRelaxed())
     {
-        case 0:
-            m_manualOperator.TaskIndex = static_cast<int>(stManualOperator::ETaskIndex::None);
-            break;
         case 1:
             m_manualOperator.TaskIndex = static_cast<int>(stManualOperator::ETaskIndex::Parallel);
             break;
@@ -116,8 +115,6 @@ void CTask::updateCmdandStatus()
             m_manualOperator.StopCommand = true;
             break;
         default:
-            m_manualOperator.TaskIndex = 0;
-            m_manualOperator.Ready = 0;
             break;
     }
     ActionIndex.storeRelaxed(0);
@@ -427,101 +424,128 @@ void CTask::Manual()
     if (m_manualOperator.StopCommand)
     {
         log->info("{},{}: m_Robot->setLinkStop();", __FILE__,__LINE__);
-        // m_Robot->setLinkStop();	
+        m_Robot->setLinkStop();
+        m_preManualOperator = m_manualOperator ;
         return;
     }
 
     if (m_manualOperator.HaltCommand)
     {
         log->info("{},{}: m_Robot->setLinkHalt();", __FILE__,__LINE__);
-        // m_Robot->setLinkHalt();			
+         m_Robot->setLinkHalt();
+        m_preManualOperator = m_manualOperator ;
         return;
     }
 
-    if (std::fabs(m_manualOperator.VechDirect - m_preManualOperator.VechDirect) < 1)
+    if (std::fabs(m_manualOperator.VechDirect -  m_JointGroupStatus[STEER_LEFT_INDEX].Position) > 3)
     {
         // 当前指令和上一个指令的VechDirect都为零，判断条件始终成立
-        // log->info("{},{}: m_Robot->setJointMoveAbs(STEER_LEFT_INDEX, m_Manual.MoveDirection,10);//速度需改为参数", __FILE__,__LINE__);
-        // m_Robot->setJointMoveAbs(STEER_LEFT_INDEX, m_Manual.MoveDirection,10);//速度需改为参数			
-        // log->info("{},{}: m_Robot->setJointMoveAbs(STEER_RIGHT_INDEX,m_Manual.MoveDirection,10);//速度需改为参数", __FILE__,__LINE__);
-        // m_Robot->setJointMoveAbs(STEER_RIGHT_INDEX,m_Manual.MoveDirection,10);//速度需改为参数			
+         m_Robot->setJointMoveAbs(STEER_LEFT_INDEX, m_manualOperator.VechDirect,10);//速度需改为参数
+        log->info("m_Robot->setJointMoveAbs(STEER_LEFT_INDEX, {}", m_manualOperator.VechDirect);
+
+         m_Robot->setJointMoveAbs(STEER_RIGHT_INDEX,m_manualOperator.VechDirect,10);//速度需改为参数
+        log->info("m_Robot->setJointMoveAbs(STEER_RIGHT_INDEX, {}", m_manualOperator.VechDirect);
     }
 
-    double vel_left,vel_right ;			
-    if(m_JointGroupStatus[STEER_LEFT_INDEX].eState == eAxis_STANDSTILL &&			
-            m_JointGroupStatus[STEER_RIGHT_INDEX].eState == eAxis_STANDSTILL)//左右舵轮均不动			
-    {		
-        if (m_manualOperator.bVechFlag || m_manualOperator.bRotateFlag)
+    double vel_left,vel_right ;
+
+    if (m_manualOperator.bVechFlag || m_manualOperator.bRotateFlag)
+    {
+        //计算轮速
+        if(fabs(m_manualOperator.VechDirect)>M_PI/6)//舵轮角度大于45°时禁止差速转向
         {
-            //计算轮速			
-            if(fabs(m_manualOperator.VechDirect)>M_PI/6)//舵轮角度大于45°时禁止差速转向			
-            {			
-                m_manualOperator.VechDirect = 0;			
-            }			
-            // 速度待修改 2024.09.03
-            vel_left = m_manualOperator.VechVel * 100 - m_manualOperator.RotateVel * 30; //正转为逆时针			
-            vel_right = m_manualOperator.VechVel * 100 + m_manualOperator.RotateVel * 30;			
-            
-            log->info("{},{}: m_Robot->setJointMoveVel(WHEEL_LEFT_INDEX, vel_left);", __FILE__,__LINE__);
-            // m_Robot->setJointMoveVel(WHEEL_LEFT_INDEX, vel_left);			
-            log->info("{},{}: m_Robot->setJointMoveVel(WHEEL_RIGHT_INDEX, vel_right);", __FILE__,__LINE__);
-            // m_Robot->setJointMoveVel(WHEEL_RIGHT_INDEX, vel_right);	
+            m_manualOperator.VechDirect = 0;
         }
+        // 速度待修改 2024.09.03
+        vel_left = m_manualOperator.VechVel * 100 - m_manualOperator.RotateVel * 30; //正转为逆时针
+        vel_right = m_manualOperator.VechVel * 100 + m_manualOperator.RotateVel * 30;
+
+        log->info("{},{}: m_Robot->setJointMoveVel(WHEEL_LEFT_INDEX, {});", __FILE__,__LINE__,vel_left);
+         m_Robot->setJointMoveVel(WHEEL_LEFT_INDEX, -vel_left);
+        log->info("{},{}: m_Robot->setJointMoveVel(WHEEL_RIGHT_INDEX, {});", __FILE__,__LINE__,vel_right);
+         m_Robot->setJointMoveVel(WHEEL_RIGHT_INDEX, -vel_right);
+    }else
+    {
+        m_Robot->setJointMoveVel(WHEEL_LEFT_INDEX, 0);
+        m_Robot->setJointMoveVel(WHEEL_RIGHT_INDEX, 0);
+    }
+
+    std::vector<double> TEMP_LINK_0_JOINT_MAX_VEL(MAX_FREEDOM_LINK, 0.0);
+    for (int i = 0; i < TEMP_LINK_0_JOINT_MAX_VEL.size(); i++)
+    {
+        TEMP_LINK_0_JOINT_MAX_VEL.at(i) = LINK_0_JOINT_MAX_VEL[i] * 0.1;
     }
 
     if (m_manualOperator.bLinkMoveFlag && m_manualOperator.Ready != 0)
     {
         log->info("{},{}: m_Robot->setLinkHalt();", __FILE__,__LINE__);
-        // m_Robot->setLinkHalt();			
+        m_Robot->setLinkHalt();
     }
     else if (m_manualOperator.Ready == 1)
     {
         // 移动到举升位置
         log->info("{},{}: m_Robot->setLinkMoveAbs(Postion_Home,END_VEL_LIMIT);", __FILE__,__LINE__);
-        // m_Robot->setLinkMoveAbs(Postion_Home,END_VEL_LIMIT);
+
+        //m_Comm->setLinkJointMoveAbs(0, Postion_Prepare,TEMP_LINK_0_JOINT_MAX_VEL.data());
+        log->info("Postion_Prepare: {},{},{},{},{},{},{},{},{},{}\nTEMP_LINK_0_JOINT_MAX_VEL: {},{},{},{},{},{},{},{},{},{}",
+                  Postion_Prepare[0],Postion_Prepare[1],Postion_Prepare[2],Postion_Prepare[3],Postion_Prepare[4],Postion_Prepare[5],Postion_Prepare[6],Postion_Prepare[7],Postion_Prepare[8],Postion_Prepare[0],
+                  TEMP_LINK_0_JOINT_MAX_VEL[1],TEMP_LINK_0_JOINT_MAX_VEL[2],TEMP_LINK_0_JOINT_MAX_VEL[3],TEMP_LINK_0_JOINT_MAX_VEL[4],TEMP_LINK_0_JOINT_MAX_VEL[5],TEMP_LINK_0_JOINT_MAX_VEL[6],TEMP_LINK_0_JOINT_MAX_VEL[7],TEMP_LINK_0_JOINT_MAX_VEL[8],TEMP_LINK_0_JOINT_MAX_VEL[9]);
+        m_Robot->setJointGroupMoveAbs(Postion_Prepare,TEMP_LINK_0_JOINT_MAX_VEL.data());
     }
     else if (m_manualOperator.Ready == 2)
     {
         // 移动到放钉位置
         log->info("{},{}: m_Robot->setLinkMoveAbs(Postion_Prepare,END_VEL_LIMIT);", __FILE__,__LINE__);
-        // m_Robot->setLinkMoveAbs(Postion_Prepare,END_VEL_LIMIT);
+
+        //m_Comm->setLinkJointMoveAbs(0, Postion_Home,TEMP_LINK_0_JOINT_MAX_VEL.data());
+        m_Robot->setJointGroupMoveAbs(Postion_Home,TEMP_LINK_0_JOINT_MAX_VEL.data());
     }
     else if (m_manualOperator.bLinkMoveFlag)
     {
         if (m_manualOperator.bEndMove != m_preManualOperator.bEndMove)
         {
             log->info("{},{}: m_Robot->setLinkHalt();", __FILE__,__LINE__);
-            // m_Robot->setLinkHalt();			
+             m_Robot->setLinkHalt();
         }
-        else 
+        else
         {
-            std::vector<double> jointvel(20, 0);			
-            double endvel[6] ={0,0,0,0,0,0};		
+            std::vector<double> jointvel(20, 0);
+            double endvel[6] ={0,0,0,0,0,0};
             if (m_manualOperator.bEndMove)
             {
                 // 末端运动
-                for(int i= 0;i<6;i++)			
-                {			
-                    endvel[i] = m_Manual.RobotMove[i]*END_VEL_LIMIT[i];			
-                }			
-                log->info("{},{}: m_Robot->setLinkMoveVel(endvel);", __FILE__,__LINE__);
-                // m_Robot->setLinkMoveVel(endvel);			
+                for(int i= 0;i<6;i++)
+                {
+                    endvel[i] = m_manualOperator.LinkMove[i]*END_VEL_LIMIT[i];
+                }
+                log->info("{},{}: m_Robot->setLinkMoveVel(endvel): {},{},{},{},{},{}", __FILE__,__LINE__,
+                endvel[0],endvel[1],endvel[2],endvel[3],endvel[4],endvel[5]);
+                 m_Robot->setLinkMoveVel(endvel);
             }
-            else 
+            else
             {
-                // 单轴运动，轴索引待定			
-                jointvel[0] = m_Manual.RobotMove[0] * LINK_0_JOINT_MAX_VEL[0];		// 底升	
-                jointvel[3] = m_Manual.RobotMove[1] * LINK_0_JOINT_MAX_VEL[3];	    // 腰		
-                jointvel[5] = m_Manual.RobotMove[2] * LINK_0_JOINT_MAX_VEL[5];		// 大臂俯仰	
-                jointvel[6] = m_Manual.RobotMove[3] * LINK_0_JOINT_MAX_VEL[6];		// 伸缩
-                jointvel[8] = m_Manual.RobotMove[4] * LINK_0_JOINT_MAX_VEL[8];		// 腕俯仰
-                jointvel[9] = m_Manual.RobotMove[5] * LINK_0_JOINT_MAX_VEL[9];		// 工装(工具)	
-                log->info("{},{}: m_Robot->setJointGroupMoveVel(jointvel.data());", __FILE__,__LINE__);
-                // m_Robot->setJointGroupMoveVel(jointvel.data());		
+                // 单轴运动，轴索引待定
+                jointvel[0] = m_manualOperator.LinkMove[0] * LINK_0_JOINT_MAX_VEL[0];		// 底升
+                jointvel[3] = m_manualOperator.LinkMove[1] * LINK_0_JOINT_MAX_VEL[3];	    // 腰
+                jointvel[5] = m_manualOperator.LinkMove[2] * LINK_0_JOINT_MAX_VEL[5];		// 大臂俯仰
+                jointvel[6] = m_manualOperator.LinkMove[3] * LINK_0_JOINT_MAX_VEL[6];		// 伸缩
+                jointvel[8] = m_manualOperator.LinkMove[4] * LINK_0_JOINT_MAX_VEL[8];		// 腕俯仰
+                jointvel[9] = m_manualOperator.LinkMove[5] * LINK_0_JOINT_MAX_VEL[9];		// 工装(工具)
+                log->info("m_Robot->setJointGroupMoveVel: {},{},{},{},{},{}",
+                                jointvel[0],jointvel[3],jointvel[5],jointvel[6],jointvel[8],jointvel[9]);
+                 m_Robot->setJointGroupMoveVel(jointvel.data());
             }
         }
     }
+    else if((!m_manualOperator.bLinkMoveFlag  && !m_manualOperator.Ready) && (m_preManualOperator.bLinkMoveFlag || m_preManualOperator.Ready))
+    {
+        m_Robot->setLinkHalt();
+    }
 
+    if(m_manualOperator.TaskIndex != 0)
+    {
+        log->info("TaskIndex:{}",m_manualOperator.TaskIndex);
+    }
     switch (m_manualOperator.TaskIndex)
     {
         case stManualOperator::None:
@@ -580,8 +604,10 @@ void CTask::Manual()
         default:
         {
             // 非法任务指令
+            log->warn("invalid task index: {}", m_manualOperator.TaskIndex);
         }
     }
+    m_preManualOperator = m_manualOperator;
 }
 
 bool CTask::doWeldAction(qint8 execute)
@@ -905,27 +931,27 @@ EDetectionInParallelResult CTask::CheckParallelStateDecorator(QVector<double> la
 int CTask::CheckPositionState()
 {
     //视觉检测结果有效性检测
-    if(m_stMeasuredata.m_bLineDistance[0]||m_stMeasuredata.m_bLineDistance[1]  == false
-    || m_stMeasuredata.m_bLineDistance[2]||m_stMeasuredata.m_bLineDistance[3]  == false
-    || m_stMeasuredata.m_bLineDistance[4]||m_stMeasuredata.m_bLineDistance[5] == false)
+    if((m_stMeasuredata.m_bLineDistance[0]||m_stMeasuredata.m_bLineDistance[1])  == false
+    || (m_stMeasuredata.m_bLineDistance[2]||m_stMeasuredata.m_bLineDistance[3] ) == false
+    || (m_stMeasuredata.m_bLineDistance[4]||m_stMeasuredata.m_bLineDistance[5] )== false)
     {
-        log->error("检测到的边线数据不满足调整需求");
+        log->error("line918检测到的边线数据不满足调整需求");
         return -1;
     }
 
     double Ref_Distance = 15;
 
     //边线偏差是否小于阈值
-    double line_dis_1 = (m_stMeasuredata.m_bLineDistance[0] * m_stMeasuredata.m_bLineDistance[0] - 
-                         m_stMeasuredata.m_bLineDistance[1] * m_stMeasuredata.m_bLineDistance[1]) / 
+    double line_dis_1 = (m_stMeasuredata.m_LineDistance[0] * m_stMeasuredata.m_bLineDistance[0] -
+                         m_stMeasuredata.m_LineDistance[1] * m_stMeasuredata.m_bLineDistance[1]) /
                          (static_cast<int>(m_stMeasuredata.m_bLineDistance[0]) + static_cast<int>(m_stMeasuredata.m_bLineDistance[1]));
 
-    double line_dis_2 = (m_stMeasuredata.m_bLineDistance[2] * m_stMeasuredata.m_bLineDistance[2] - 
-                         m_stMeasuredata.m_bLineDistance[3]*m_stMeasuredata.m_bLineDistance[3]) / 
+    double line_dis_2 = (m_stMeasuredata.m_LineDistance[2] * m_stMeasuredata.m_bLineDistance[2] -
+                         m_stMeasuredata.m_LineDistance[3]*m_stMeasuredata.m_bLineDistance[3]) /
                          (static_cast<int>(m_stMeasuredata.m_bLineDistance[2]) + static_cast<int>(m_stMeasuredata.m_bLineDistance[3]));
 
-    double line_dis_3 = (m_stMeasuredata.m_bLineDistance[4] * m_stMeasuredata.m_bLineDistance[4] - 
-                         m_stMeasuredata.m_bLineDistance[5] * m_stMeasuredata.m_bLineDistance[5]) / 
+    double line_dis_3 = (m_stMeasuredata.m_LineDistance[4] * m_stMeasuredata.m_bLineDistance[4] -
+                         m_stMeasuredata.m_LineDistance[5] * m_stMeasuredata.m_bLineDistance[5]) /
                          (static_cast<int>(m_stMeasuredata.m_bLineDistance[4]) + static_cast<int>(m_stMeasuredata.m_bLineDistance[5]));
 
     if(fabs(line_dis_1) < LINE_DEVIATION_THRESHOLD

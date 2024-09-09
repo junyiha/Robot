@@ -130,14 +130,16 @@ QVector<Eigen::Matrix4d> CMeasure::calPoseDeviation(stMeasureData data)
         }
     }
 
+    double delatY  = (distance[0]-distance[1])/4; //短边旋转补偿
+
     std::vector<Eigen::Vector3d>  linePosition(4); //边线虚拟面;
     if(stepValid[3] == true){
-        linePosition[0]<<  x_camera + distance[0], -y_camera + distance[2] , data.m_LaserDistance[0]-Distance_work;
-        linePosition[1]<<  x_camera + distance[1],  y_camera + distance[2] , data.m_LaserDistance[1]-Distance_work;
-        linePosition[2]<< -x_camera + distance[1],  y_camera + distance[2] , data.m_LaserDistance[2]-Distance_work;
-        linePosition[3]<< -x_camera + distance[0], -y_camera + distance[2] , data.m_LaserDistance[3]-Distance_work;
+        linePosition[0]<<  x_camera + distance[0],   delatY - y_camera + distance[2] , data.m_LaserDistance[0]-Distance_work;
+        linePosition[1]<<  x_camera + distance[1],   delatY + y_camera + distance[2] , data.m_LaserDistance[1]-Distance_work;
+        linePosition[2]<< -x_camera + distance[1],  -delatY + y_camera + distance[2] , data.m_LaserDistance[2]-Distance_work;
+        linePosition[3]<< -x_camera + distance[0],  -delatY - y_camera + distance[2] , data.m_LaserDistance[3]-Distance_work;
         Result[3] = calPoseforSquare(linePosition);
-        Result[3](1,3) = Result[3](1,3) -25;//让工具向着y负方向偏离框中心24mm，让3号相机边线距39
+        //Result[3](1,3) = Result[3](1,3)-25;//让工具向着y负方向偏离框中心24mm，让3号相机边线距39
         //Result[3](0,3) = Result[3](0,3) + 1;
     }else{
         Result[3] << 1, 0, 0, 0,
@@ -241,9 +243,11 @@ Eigen::Matrix4d CMeasure::calPoseforSquare(std::vector<Eigen::Vector3d> points)
     Eigen::Vector3d  normalz = normalx.cross(normaly).normalized();
 
 
+
+
     result << normalx[0],normaly[0],normalz[0],position[0],
-              normalx[1],normaly[1],normalz[1],position[1],
-              normalx[2],normaly[2],normalz[2],position[2],
+            normalx[1],normaly[1],normalz[1],position[1],
+            normalx[2],normaly[2],normalz[2],position[2],
                        0,         0,        0,          1;
 
 

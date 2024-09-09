@@ -92,8 +92,8 @@ void ComInterface::run()
 
        //启动遥控器com口 通过isOpen（）判断打开状态
        if(this->m_cManual.isOpen() == false){
-           m_cManual.open("COM1");
-           qDebug()<<"重新连接遥控器";
+           this->m_cManual.open("COM1");
+           qDebug()<<"reconnect manual...";
        }
 
         Sleep(1000);
@@ -101,7 +101,7 @@ void ComInterface::run()
     qDebug()<<"cominterface： run() stopped";
 }
 
-void ComInterface::setLinkJointMoveAbs(uint index, double pos[],double vel[])
+void ComInterface::setLinkJointMoveAbs(uint index, const double pos[],double vel[])
 {
     double end_vel[100], distance[100];
     m_cRobot.setLinkGroupMove(index,eMC_MOV_ABS,pos,vel,end_vel,distance);

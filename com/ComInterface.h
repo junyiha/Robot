@@ -96,7 +96,7 @@ public:
     * @param vel:   设定速度
     * @return
     */
-    void setLinkJointMoveAbs(uint index, double pos[],double vel[]);
+    void setLinkJointMoveAbs(uint index, const double pos[],double vel[]);
 
     /**
     * @brief 轴组关节速度

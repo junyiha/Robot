@@ -117,7 +117,7 @@ public:
     int SendDataRefactor();
 
 private:
-    std::pair<double, bool> translateToVelocity(qint8 high_byte, qint8 low_byte);
+    std::pair<double, bool> translateToVelocity(quint8 high_byte, quint8 low_byte);
 
 //////////////////////////////////////////////////////////////////////////////
 };

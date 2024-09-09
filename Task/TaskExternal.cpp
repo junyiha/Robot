@@ -252,6 +252,10 @@ void CTask::detectionInParallelExecutionCommand()
         {
             log->info("调用函数，根据激光数值判断壁面状态");
             QVector<double>  laserDistance = m_Comm->getLasersDistance();
+            m_stMeasuredata.m_LaserDistance[0] = laserDistance[0];
+            m_stMeasuredata.m_LaserDistance[1] = laserDistance[1];
+            m_stMeasuredata.m_LaserDistance[2] = laserDistance[2];
+            m_stMeasuredata.m_LaserDistance[3] = laserDistance[3];
 
             auto detectionResult = CheckParallelStateDecorator(laserDistance);
             log->info("laser distance: {},{},{},{}", laserDistance[0],laserDistance[1],laserDistance[2],laserDistance[3]);
@@ -304,6 +308,10 @@ void CTask::motionInParallelExecutionCommand()
         case EExecutionCommand::eNULL:
         {
             QVector<double> LaserDistance = m_Comm->getLasersDistance();
+            m_stMeasuredata.m_LaserDistance[0] = LaserDistance[0];
+            m_stMeasuredata.m_LaserDistance[1] = LaserDistance[1];
+            m_stMeasuredata.m_LaserDistance[2] = LaserDistance[2];
+            m_stMeasuredata.m_LaserDistance[3] = LaserDistance[3];
 
             auto result = CheckParallelStateDecorator(LaserDistance);
             if (result == EDetectionInParallelResult::eNoWallDetected)
@@ -321,10 +329,6 @@ void CTask::motionInParallelExecutionCommand()
             {
                 log->warn("激光测量数据满足调整条件，控制机器人调平运动");
             
-                m_stMeasuredata.m_LaserDistance[0] = LaserDistance[0];
-                m_stMeasuredata.m_LaserDistance[1] = LaserDistance[1];
-                m_stMeasuredata.m_LaserDistance[2] = LaserDistance[2];
-                m_stMeasuredata.m_LaserDistance[3] = LaserDistance[3];
 
                 // 计算偏差，控制机器人运动
                 QVector<Eigen::Matrix4d> Dev_RT =  CMeasure::calPoseDeviation(m_stMeasuredata);
@@ -337,7 +341,7 @@ void CTask::motionInParallelExecutionCommand()
                 }
                 log->info("m_Robot->setLinkMoveAbs(tar_pos,END_VEL_LIMIT);\ntar_pos:{},{},{},{},{},{}", 
                           tar_pos[0],tar_pos[1],tar_pos[2],tar_pos[3] * 57.3,tar_pos[4] * 57.3,tar_pos[5] * 57.3);
-                m_Robot->setLinkMoveAbs(tar_pos,END_VEL_LIMIT);
+                //m_Robot->setLinkMoveAbs(tar_pos,END_VEL_LIMIT);
             }
             break;
         }
@@ -399,8 +403,6 @@ void CTask::detectionInPositioningExecutionCommand()
         case EExecutionCommand::eNULL:
         {
             log->info("调用函数，计算边线偏差，根据偏差判断是否完成调整，继续调整，停止调整");
-            updateTopAndSubState(ETopState::eReadToMagentOn, ESubState::eNULL);  // 状态机离线调试(2024.09.03)
-            break;
 
             //调用视觉函数
             VisionResult vis_res = m_vision->getVisResult();
@@ -409,18 +411,15 @@ void CTask::detectionInPositioningExecutionCommand()
                 break;
             }
             for(int i=0;i<6;i++){
-                vis_res.stData.m_bLineDistance[i] = false;
+                vis_res.stData.m_bLineDistance[i] = true;
             }
-            vis_res.stData.m_bLineDistance[1] = true;
-            vis_res.stData.m_bLineDistance[3] = true;
-            vis_res.stData.m_bLineDistance[5] = true;
 
-            vis_res.stData.m_LineDistance[0] = 15;
-            vis_res.stData.m_LineDistance[1] = 15;
-            vis_res.stData.m_LineDistance[2] = 15;
-            vis_res.stData.m_LineDistance[3] = 15;
-            vis_res.stData.m_LineDistance[4] = 10;
-            vis_res.stData.m_LineDistance[5] = 20;
+            vis_res.stData.m_LineDistance[0] = 10;
+            vis_res.stData.m_LineDistance[1] = 20;
+            vis_res.stData.m_LineDistance[2] = 20;
+            vis_res.stData.m_LineDistance[3] = 10;
+            vis_res.stData.m_LineDistance[4] = 15;
+            vis_res.stData.m_LineDistance[5] = 15;
 
 
             std::copy(std::begin(vis_res.stData.m_LineDistance) , std::end(vis_res.stData.m_LineDistance), m_stMeasuredata.m_LineDistance);
@@ -479,10 +478,11 @@ void CTask::motionInPositioningExecutionCommand()
         case EExecutionCommand::eNULL:
         {
             QVector<double> LaserDistance = m_Comm->getLasersDistance();
-            LaserDistance[0] = 20;
-            LaserDistance[1] = 20;
-            LaserDistance[2] = 20;
-            LaserDistance[3] = 20;
+            m_stMeasuredata.m_LaserDistance[0] = LaserDistance[0];
+            m_stMeasuredata.m_LaserDistance[1] = LaserDistance[1];
+            m_stMeasuredata.m_LaserDistance[2] = LaserDistance[2];
+            m_stMeasuredata.m_LaserDistance[3] = LaserDistance[3];
+
 
             if (CheckParallelStateDecorator(LaserDistance) == EDetectionInParallelResult::eNoWallDetected)
             {
@@ -500,8 +500,11 @@ void CTask::motionInPositioningExecutionCommand()
                 tar_pos[i] = tar_position[i];
             }
             log->info("m_Robot->setLinkMoveAbs(tar_pos,END_VEL_LIMIT);\ntar_pos:{},{},{},{},{},{}", 
-                        tar_pos[0],tar_pos[1],tar_pos[2],tar_pos[3],tar_pos[4],tar_pos[5]);
+                        tar_pos[0],tar_pos[1],tar_pos[2],tar_pos[3]*57.3,tar_pos[4]*57.3,tar_pos[5]*57.3);
             // m_Robot->setLinkMoveAbs(tar_pos,END_VEL_LIMIT);
+            stLinkStatus linkstatus  = m_Robot->getLinkSta();
+            log->info("m_Robot->setLinkMoveAbs(tar_pos,END_VEL_LIMIT);\nact_pos:{},{},{},{},{},{}",
+                      linkstatus.stLinkActKin.LinkPos[0],linkstatus.stLinkActKin.LinkPos[1],linkstatus.stLinkActKin.LinkPos[2],linkstatus.stLinkActKin.LinkPos[3]*57.3,linkstatus.stLinkActKin.LinkPos[4]*57.3,linkstatus.stLinkActKin.LinkPos[5]*57.3);
 
             if (m_LinkStatus.eLinkActState == eLINK_STANDSTILL && 
                 m_Robot->isEndReached(tar_position))

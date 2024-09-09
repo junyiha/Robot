@@ -13,7 +13,7 @@ int CManual::RecvDataRefactor()
     {
         emit sigDisconnected();
         mutex_cmd.lock();
-        std::memset(&_OutCmd,0,sizeof(m_OutCmd));
+        std::memset(&_manualOperator,0,sizeof(m_manualOperator));
         mutex_cmd.unlock();
         qDebug()<<"Port is not open";
         return -1;
@@ -24,7 +24,7 @@ int CManual::RecvDataRefactor()
 
     if(recvlen>=0x1D)
     {
-        for(int i=0;i<recvlen;i++)
+        for(int i=0;i<=recvlen-0x1D;i++)
         {
             if(buffData[i] == 0x1D)
             {
@@ -35,9 +35,21 @@ int CManual::RecvDataRefactor()
         }
     }
 
+    static int failedcnt = 0;
+
+    if(failedcnt > 3)
+    {
+        mutex_cmd.lock();
+        std::memset(&_manualOperator,0,sizeof(_manualOperator));
+        mutex_cmd.unlock();
+
+        failedcnt = 0;
+    }
+
     if(recvlen < 0x1D || !is_Valid)
     {
-        qDebug()<<"Invalid data length, data is unused";
+        log->warn("Invalid data length, data is unused");
+        failedcnt ++;
         return -1;
     }
 
@@ -48,13 +60,14 @@ int CManual::RecvDataRefactor()
 
     if(check_plus == readbuff[0x1C]) //校验
     {
-        qDebug()<<"Check data failed, data is unused";
+        log->warn("Check data failed, data is unused");
+        failedcnt ++;
         return -1;
     }
 
     ////////////////////////////////--新协议--//////////////////////////////////////////////
     m_manualOperator.TaskIndex = static_cast<quint8>(readbuff[6]);
-    m_manualOperator.bEndMove = static_cast<int>(static_cast<quint8>(readbuff[7]) & 0b0000'0011) == 0 ? true : false; //修改1
+    m_manualOperator.bEndMove = static_cast<int>(static_cast<quint8>(readbuff[7]) & 0b0000'0011) == 2 ? true : false; //修改1
     m_manualOperator.Ready = static_cast<int>(static_cast<quint8>(readbuff[7]) & 0b0000'1100)>>2; 						//修改2
     std::pair<double, bool> temp_val;
     temp_val = translateToVelocity(static_cast<quint8>(readbuff[22]), static_cast<quint8>(readbuff[23]));
@@ -106,20 +119,11 @@ int CManual::RecvDataRefactor()
     //Input2Cmd(); //转为指令
     //m_OutCmd.status = true;
     mutex_cmd.lock();
-    std::memcpy(&_manualOperator,&m_manualOperator,sizeof(m_OutCmd)); //修改
+    std::memcpy(&_manualOperator,&m_manualOperator,sizeof(m_manualOperator)); //修改
     mutex_cmd.unlock();
 
     //多次未收到指令，清空指令结构体
-    static int failedcnt = 0;
-    failedcnt ++;
-    if(failedcnt > 3)
-    {
-        mutex_cmd.lock();
-        std::memset(&_manualOperator,0,sizeof(_manualOperator));
-        mutex_cmd.unlock();
 
-        failedcnt = 0;
-    }
 
     return 0;
 }
@@ -139,15 +143,15 @@ int CManual::SendDataRefactor()
     return write(buf.data(), buf.size());
 }
 
-std::pair<double, bool>  CManual::translateToVelocity(qint8 high_byte, qint8 low_byte)
+std::pair<double, bool>  CManual::translateToVelocity(quint8 high_byte, quint8 low_byte)
 {
     qint16 tmp =  high_byte*256+ low_byte -2048;
     if(tmp > 200)
     {
-        return std::make_pair((tmp-200)/1848.0, true);
+        return std::make_pair((tmp-200)/1500.0, true);
     }else if(tmp<-200)
     {
-        return std::make_pair((tmp+200)/1848.0, true);
+        return std::make_pair((tmp+200)/1500.0, true);
     }else
     {
         return std::make_pair(0.0, false);
@@ -157,9 +161,9 @@ std::pair<double, bool>  CManual::translateToVelocity(qint8 high_byte, qint8 low
 void CManual::getManualCmd(stManualOperator& cmd)
 {
     mutex_cmd.lock();
-    
 
-    std::memcpy(&cmd, &_manualOperator, sizeof(stManualOperator));
+    cmd = _manualOperator;
+    //std::memcpy(&cmd, &_manualOperator, sizeof(stManualOperator));
 
     mutex_cmd.unlock();
 }
