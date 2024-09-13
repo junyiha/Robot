@@ -95,9 +95,13 @@ int RunRobot(int argc, char *argv[])
 
 void TestTask()
 {
+    initLog();
     CTask task(nullptr, nullptr, nullptr);
 
-
+    while (true)
+    {
+        task.TestStateMachine();
+    }
 }
 
 int main(int argc, char *argv[])

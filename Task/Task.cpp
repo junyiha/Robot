@@ -487,10 +487,6 @@ void CTask::Manual()
         log->info("{},{}: m_Robot->setLinkMoveAbs(Postion_Home,END_VEL_LIMIT);", __FILE__,__LINE__);
         std::vector<double> TEMP_LINK_0_JOINT_MAX_VEL_FOR_READY_POINT(MAX_FREEDOM_LINK, 0.0);
         TEMP_LINK_0_JOINT_MAX_VEL_FOR_READY_POINT = {1, 1, 1, 1, 0.3, 10, 5, 0.5, 4, 1};
-        //m_Comm->setLinkJointMoveAbs(0, Postion_Prepare,TEMP_LINK_0_JOINT_MAX_VEL.data());
-//        log->info("Postion_Prepare: {},{},{},{},{},{},{},{},{},{}\nTEMP_LINK_0_JOINT_MAX_VEL: {},{},{},{},{},{},{},{},{},{}",
-//                  Postion_Prepare[0],Postion_Prepare[1],Postion_Prepare[2],Postion_Prepare[3],Postion_Prepare[4],Postion_Prepare[5],Postion_Prepare[6],Postion_Prepare[7],Postion_Prepare[8],Postion_Prepare[9],
-//                  TEMP_LINK_0_JOINT_MAX_VEL[1],TEMP_LINK_0_JOINT_MAX_VEL[2],TEMP_LINK_0_JOINT_MAX_VEL[3],TEMP_LINK_0_JOINT_MAX_VEL[4],TEMP_LINK_0_JOINT_MAX_VEL[5],TEMP_LINK_0_JOINT_MAX_VEL[6],TEMP_LINK_0_JOINT_MAX_VEL[7],TEMP_LINK_0_JOINT_MAX_VEL[8],TEMP_LINK_0_JOINT_MAX_VEL[9]);
         m_Robot->setJointGroupMoveAbs(Postion_Prepare,TEMP_LINK_0_JOINT_MAX_VEL_FOR_READY_POINT.data());
     }
     else if (m_manualOperator.Ready == 2)
@@ -499,7 +495,6 @@ void CTask::Manual()
         log->info("{},{}: m_Robot->setLinkMoveAbs(Postion_Prepare,END_VEL_LIMIT);", __FILE__,__LINE__);
         std::vector<double> TEMP_LINK_0_JOINT_MAX_VEL_FOR_SET_POINT(MAX_FREEDOM_LINK, 0.0);
         TEMP_LINK_0_JOINT_MAX_VEL_FOR_SET_POINT = {1, 1, 1, 1, 0.3, 10, 5, 0.5, 2, 6};
-        //m_Comm->setLinkJointMoveAbs(0, Postion_Home,TEMP_LINK_0_JOINT_MAX_VEL.data());
         m_Robot->setJointGroupMoveAbs(Postion_Home,TEMP_LINK_0_JOINT_MAX_VEL_FOR_SET_POINT.data());
     }
     else if (m_manualOperator.bLinkMoveFlag)

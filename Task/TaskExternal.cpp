@@ -29,14 +29,9 @@ void CTask::stateTransition()
             positioningStateTransition();
             break;
         }
-        case ETopState::eReadToMagentOn:
+        case ETopState::eFitBoard:
         {
-            readyToMagentOnStateTransition();
-            break;
-        }
-        case ETopState::eDoWeld:
-        {
-            doWeldStateTransition();
+            fitBoardStateTransition();
             break;
         }
         case ETopState::eQuit :
@@ -65,6 +60,18 @@ void CTask::manualStateTransition()
             if(robotReady)
             {
                 updateTopAndSubState(ETopState::eParallel, ESubState::eDetection);
+            }
+            else
+            {
+                log->warn("机器人未就绪，无法执行调平指令");
+            }
+            return;
+        }
+        else if (m_eexecutionCommand == EExecutionCommand::eParallel)
+        {
+            if(robotReady)
+            {
+                updateTopAndSubState(ETopState::eFitBoard, ESubState::eDetection);
             }
             else
             {
@@ -152,6 +159,37 @@ void CTask::doWeldStateTransition()
         case ESubState::eStopWeld:
         {
             stopWeldExecutionCommand();
+            break;
+        }
+        default:
+        {
+            log->warn("第二层状态数据无效!!!");
+        }
+    }
+}
+
+void CTask::fitBoardStateTransition()
+{
+    switch (m_esubState)
+    {
+        case ESubState::eReadyToFitBoard:
+        {
+            readyToFitBoardExecutionCommand();
+            break;
+        }
+        case ESubState::eDetection:
+        {
+            detectionInFitBoardExecutionCommand();
+            break;
+        }
+        case ESubState::eMotion:
+        {
+            motionInFitBoardExecutionCommand();
+            break;
+        }
+        case ESubState::eFitBoardFinished:
+        {
+            fitBoardFinishedExecutionCommand();
             break;
         }
         default:
@@ -418,8 +456,8 @@ void CTask::detectionInPositioningExecutionCommand()
             {
                 case EDetectionInPositioningResult::eDeviationIsLessThanThreshold:
                 {
-                    log->warn("{} 定位检测结果小于阈值，状态跳转: 待吸合--空状态",__LINE__);
-                    updateTopAndSubState(ETopState::eReadToMagentOn, ESubState::eNULL);
+                    log->warn("{} 定位检测结果小于阈值，状态跳转: 贴合--待贴合",__LINE__);
+                    updateTopAndSubState(ETopState::eFitBoard, ESubState::eReadyToFitBoard);
                     break;
                 }
                 case EDetectionInPositioningResult::eEndAdjustmentDataIsValid:
@@ -734,6 +772,149 @@ void CTask::stopWeldExecutionCommand()
             m_Comm->SetMagentAction(0,eMag_Off);
                     log->info("{} 终止指令执行，磁铁脱开，状态跳转: 手动--准备", __LINE__);
             terminateCommand();
+            break;
+        }
+        default:
+        {
+            log->warn("{} {}: 执行指令不合法!指令: {}",__FILE__, __LINE__, ExecutionCommandStringMap.find(m_eexecutionCommand)->second);
+        }
+    }
+}
+
+void CTask::readyToFitBoardExecutionCommand()
+{
+    switch (m_eexecutionCommand)
+    {
+        case EExecutionCommand::eNULL:
+        {
+            break;
+        }
+        case EExecutionCommand::eFitBoard:
+        {
+            updateTopAndSubState(ETopState::eFitBoard, ESubState::eDetection);
+            break;
+        }
+        case EExecutionCommand::ePositioning:
+        {
+            updateTopAndSubState(ETopState::ePositioning, ESubState::eDetection);
+            break;
+        }
+        case EExecutionCommand::ePause:
+        {
+            // LIINKHALT
+            break;
+        }
+        case EExecutionCommand::eTerminate:
+        {
+            updateTopAndSubState(ETopState::eManual, ESubState::eReady);
+            break;
+        }
+        default:
+        {
+            log->warn("{} {}: 执行指令不合法!指令: {}",__FILE__, __LINE__, ExecutionCommandStringMap.find(m_eexecutionCommand)->second);
+        }
+    }
+}
+
+void CTask::detectionInFitBoardExecutionCommand()
+{
+    switch (m_eexecutionCommand)
+    {
+        case EExecutionCommand::eNULL:
+        {
+            EDetectionInPositioningResult result;  // CheckBoarding
+            switch (result)
+            {
+                case EDetectionInPositioningResult::eDeviationIsLessThanThreshold:
+                {
+                    updateTopAndSubState(ETopState::eFitBoard, ESubState::eFitBoardFinished);
+                    break;
+                }
+                case EDetectionInPositioningResult::eEndAdjustmentDataIsValid:
+                {
+                    updateTopAndSubState(ETopState::eFitBoard, ESubState::eMotion);
+                    break;
+                }
+                case EDetectionInPositioningResult::eDataIsInvalid:
+                {
+                    updateTopAndSubState(ETopState::eManual, ESubState::eReady);
+                    break;
+                }
+            }
+            break;
+        }
+        case EExecutionCommand::ePause:
+        {
+            updateTopAndSubState(ETopState::eFitBoard, ESubState::eReadyToFitBoard);
+            break;
+        }
+        case EExecutionCommand::eTerminate:
+        {
+            updateTopAndSubState(ETopState::eManual, ESubState::eReady);
+            break;
+        }
+        default:
+        {
+            log->warn("{} {}: 执行指令不合法!指令: {}",__FILE__, __LINE__, ExecutionCommandStringMap.find(m_eexecutionCommand)->second);
+        }
+    }
+}
+
+void CTask::motionInFitBoardExecutionCommand()
+{
+    switch (m_eexecutionCommand)
+    {
+        case EExecutionCommand::eNULL:
+        {
+            // 运动-->完成运动
+            // m_Robot->moveAbs(pos, vel); if (isreachedendpos && standstill) 状态跳转: 贴合--检测
+            updateTopAndSubState(ETopState::eFitBoard, ESubState::eDetection);
+            break;
+        }
+        case EExecutionCommand::ePause:
+        {
+            updateTopAndSubState(ETopState::eFitBoard, ESubState::eReadyToFitBoard);
+            break;
+        }
+        case EExecutionCommand::eTerminate:
+        {
+            updateTopAndSubState(ETopState::eManual, ESubState::eReady);
+            break;
+        }
+        default:
+        {
+            log->warn("{} {}: 执行指令不合法!指令: {}",__FILE__, __LINE__, ExecutionCommandStringMap.find(m_eexecutionCommand)->second);
+        }
+    }
+}
+
+void CTask::fitBoardFinishedExecutionCommand()
+{
+    switch (m_eexecutionCommand)
+    {
+        case EExecutionCommand::eNULL:
+        {
+
+            break;
+        }
+        case EExecutionCommand::eFitBoard:
+        {
+            updateTopAndSubState(ETopState::eFitBoard, ESubState::eDetection);
+            break;
+        }
+        case EExecutionCommand::eQuit:
+        {
+            updateTopAndSubState(ETopState::eQuit, ESubState::eQuiting);
+            break;
+        }
+        case EExecutionCommand::ePause:
+        {
+
+            break;
+        }
+        case EExecutionCommand::eTerminate:
+        {
+            updateTopAndSubState(ETopState::eManual, ESubState::eReady);
             break;
         }
         default:
