@@ -37,7 +37,11 @@ void LineDetectorRunner::run() {
                         continue;
                     }
                     // 检测图像
+                    auto start_time = std::chrono::high_resolution_clock::now();
                     LineResult line_res = this->line_helper->getLineDistance(image);
+                    auto end_time = std::chrono::high_resolution_clock::now();
+                    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
+//                    std::cout << "line detection total time:: " << duration.count() << " milliseconds." << std::endl;
                     if(line_res.status){ //检测成功
                         vision_res.status = true;
                         vision_res.dist = line_res.lineDist;
@@ -47,6 +51,7 @@ void LineDetectorRunner::run() {
                     else{
                         vision_res.status = false;
                         vision_res.dist = -1;
+//                        this->logger->info(vision_res.)
                         vision_res.img_drawed =line_res.imgDrawed;
                     }
                     temp_results[camera_name] = vision_res;

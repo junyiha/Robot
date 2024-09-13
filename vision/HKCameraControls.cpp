@@ -184,13 +184,15 @@ void HKCameraControls::run(){
 
     while(this->isRunning){
 
+        int lossCount = 0;
+
         if(this->thread_runing){
 
             // 开启数据流抓取
             // 获取图像数据
             int  nRet =-1;
              //GetImageBuffer() 其取流缓存的分配是由sdk内部自动分配的,用户不用担心,   MV_CC_GetOneFrameTimeout() 接口是需要客户自行分配
-            nRet = this->pstMvCamera->GetImageBuffer(&stImageInfo, 8000);   // 从缓存中获取图像数据,效率更高一些
+            nRet = this->pstMvCamera->GetImageBuffer(&stImageInfo, 1000);   // 从缓存中获取图像数据,效率更高一些
             if (MV_OK == nRet)
             {
 //                // 分配内存
@@ -227,7 +229,14 @@ void HKCameraControls::run(){
             }else{
                 // 待处理   软触发模式处理策略
                 this->logger->info("GetImageBuffer fail {}", this->stHkDev.camName);
-                QThread::msleep(500);
+                QThread::msleep(100);
+                lossCount++;
+                if(lossCount>50){
+                    this->openCamera();
+                    this->logger->info("{} is reconnected!", this->stHkDev.camName);
+                    lossCount = 0;
+                }
+                continue;
             }
         }
         QThread::msleep(200);

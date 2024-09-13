@@ -520,8 +520,8 @@ void MainWindow::updateAxisStatus() {
 void MainWindow::updateLineDetectResults() {
 
     bool isEnable = m_VisionInterface->camera_controls->camerasIsOpened();
-    if(isEnable){
-//        this->logger->info("相机未全部开启成功,请检查相机连接！");
+    if(!isEnable){
+        this->logger->info("相机未全部开启成功,请检查相机连接！");
         return;
     }
     unsigned pageIndex = ui->stackedWidget_view->currentIndex();

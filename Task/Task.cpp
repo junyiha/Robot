@@ -485,20 +485,22 @@ void CTask::Manual()
     {
         // 移动到举升位置
         log->info("{},{}: m_Robot->setLinkMoveAbs(Postion_Home,END_VEL_LIMIT);", __FILE__,__LINE__);
-
+        std::vector<double> TEMP_LINK_0_JOINT_MAX_VEL_FOR_READY_POINT(MAX_FREEDOM_LINK, 0.0);
+        TEMP_LINK_0_JOINT_MAX_VEL_FOR_READY_POINT = {1, 1, 1, 1, 0.3, 10, 5, 0.5, 4, 1};
         //m_Comm->setLinkJointMoveAbs(0, Postion_Prepare,TEMP_LINK_0_JOINT_MAX_VEL.data());
-        log->info("Postion_Prepare: {},{},{},{},{},{},{},{},{},{}\nTEMP_LINK_0_JOINT_MAX_VEL: {},{},{},{},{},{},{},{},{},{}",
-                  Postion_Prepare[0],Postion_Prepare[1],Postion_Prepare[2],Postion_Prepare[3],Postion_Prepare[4],Postion_Prepare[5],Postion_Prepare[6],Postion_Prepare[7],Postion_Prepare[8],Postion_Prepare[0],
-                  TEMP_LINK_0_JOINT_MAX_VEL[1],TEMP_LINK_0_JOINT_MAX_VEL[2],TEMP_LINK_0_JOINT_MAX_VEL[3],TEMP_LINK_0_JOINT_MAX_VEL[4],TEMP_LINK_0_JOINT_MAX_VEL[5],TEMP_LINK_0_JOINT_MAX_VEL[6],TEMP_LINK_0_JOINT_MAX_VEL[7],TEMP_LINK_0_JOINT_MAX_VEL[8],TEMP_LINK_0_JOINT_MAX_VEL[9]);
-        m_Robot->setJointGroupMoveAbs(Postion_Prepare,TEMP_LINK_0_JOINT_MAX_VEL.data());
+//        log->info("Postion_Prepare: {},{},{},{},{},{},{},{},{},{}\nTEMP_LINK_0_JOINT_MAX_VEL: {},{},{},{},{},{},{},{},{},{}",
+//                  Postion_Prepare[0],Postion_Prepare[1],Postion_Prepare[2],Postion_Prepare[3],Postion_Prepare[4],Postion_Prepare[5],Postion_Prepare[6],Postion_Prepare[7],Postion_Prepare[8],Postion_Prepare[9],
+//                  TEMP_LINK_0_JOINT_MAX_VEL[1],TEMP_LINK_0_JOINT_MAX_VEL[2],TEMP_LINK_0_JOINT_MAX_VEL[3],TEMP_LINK_0_JOINT_MAX_VEL[4],TEMP_LINK_0_JOINT_MAX_VEL[5],TEMP_LINK_0_JOINT_MAX_VEL[6],TEMP_LINK_0_JOINT_MAX_VEL[7],TEMP_LINK_0_JOINT_MAX_VEL[8],TEMP_LINK_0_JOINT_MAX_VEL[9]);
+        m_Robot->setJointGroupMoveAbs(Postion_Prepare,TEMP_LINK_0_JOINT_MAX_VEL_FOR_READY_POINT.data());
     }
     else if (m_manualOperator.Ready == 2)
     {
         // 移动到放钉位置
         log->info("{},{}: m_Robot->setLinkMoveAbs(Postion_Prepare,END_VEL_LIMIT);", __FILE__,__LINE__);
-
+        std::vector<double> TEMP_LINK_0_JOINT_MAX_VEL_FOR_SET_POINT(MAX_FREEDOM_LINK, 0.0);
+        TEMP_LINK_0_JOINT_MAX_VEL_FOR_SET_POINT = {1, 1, 1, 1, 0.3, 10, 5, 0.5, 2, 6};
         //m_Comm->setLinkJointMoveAbs(0, Postion_Home,TEMP_LINK_0_JOINT_MAX_VEL.data());
-        m_Robot->setJointGroupMoveAbs(Postion_Home,TEMP_LINK_0_JOINT_MAX_VEL.data());
+        m_Robot->setJointGroupMoveAbs(Postion_Home,TEMP_LINK_0_JOINT_MAX_VEL_FOR_SET_POINT.data());
     }
     else if (m_manualOperator.bLinkMoveFlag)
     {
@@ -537,7 +539,7 @@ void CTask::Manual()
             }
         }
     }
-    else if((!m_manualOperator.bLinkMoveFlag  && !m_manualOperator.Ready) && (m_preManualOperator.bLinkMoveFlag || m_preManualOperator.Ready))
+    else if( (m_manualOperator.Ready == 0 &&  m_preManualOperator.Ready !=0) || ((m_manualOperator.bLinkMoveFlag == false) && m_preManualOperator.bLinkMoveFlag))
     {
         m_Robot->setLinkHalt();
     }
@@ -887,7 +889,7 @@ int CTask::CheckParallelState(QVector<double> laserDistance)
     //判断是否完成调平
     if(maxDistance - minDistance< PARRALLE_DISTANCE && minDistance < Distance_Lift)  //最大偏差小于阈值
     {
-        log->info("激光距离{},最大偏差小于{}，完成调平", Distance_Lift, PARRALLE_DISTANCE);
+        //log->info("激光距离{},最大偏差小于{}，完成调平", Distance_Lift, PARRALLE_DISTANCE);
         return 1;
     }else
     {
@@ -942,23 +944,31 @@ int CTask::CheckPositionState()
     double Ref_Distance = 15;
 
     //边线偏差是否小于阈值
-    double line_dis_1 = (m_stMeasuredata.m_LineDistance[0] * m_stMeasuredata.m_bLineDistance[0] -
-                         m_stMeasuredata.m_LineDistance[1] * m_stMeasuredata.m_bLineDistance[1]) /
+    double line_dis_1 = ((m_stMeasuredata.m_LineDistance[0]-15) * m_stMeasuredata.m_bLineDistance[0] -
+                         (m_stMeasuredata.m_LineDistance[1]-15) * m_stMeasuredata.m_bLineDistance[1]) /
                          (static_cast<int>(m_stMeasuredata.m_bLineDistance[0]) + static_cast<int>(m_stMeasuredata.m_bLineDistance[1]));
 
-    double line_dis_2 = (m_stMeasuredata.m_LineDistance[2] * m_stMeasuredata.m_bLineDistance[2] -
-                         m_stMeasuredata.m_LineDistance[3]*m_stMeasuredata.m_bLineDistance[3]) /
+    double line_dis_2 = ((m_stMeasuredata.m_LineDistance[2]-15) * m_stMeasuredata.m_bLineDistance[2] -
+                         (m_stMeasuredata.m_LineDistance[3]-15)*m_stMeasuredata.m_bLineDistance[3]) /
                          (static_cast<int>(m_stMeasuredata.m_bLineDistance[2]) + static_cast<int>(m_stMeasuredata.m_bLineDistance[3]));
 
-    double line_dis_3 = (m_stMeasuredata.m_LineDistance[4] * m_stMeasuredata.m_bLineDistance[4] -
-                         m_stMeasuredata.m_LineDistance[5] * m_stMeasuredata.m_bLineDistance[5]) /
-                         (static_cast<int>(m_stMeasuredata.m_bLineDistance[4]) + static_cast<int>(m_stMeasuredata.m_bLineDistance[5]));
+//    double line_dis_3 = (m_stMeasuredata.m_LineDistance[4] * m_stMeasuredata.m_bLineDistance[4] -
+//                         m_stMeasuredata.m_LineDistance[5] * m_stMeasuredata.m_bLineDistance[5]) /
+//                         (static_cast<int>(m_stMeasuredata.m_bLineDistance[4]) + static_cast<int>(m_stMeasuredata.m_bLineDistance[5]));
+    double line_dis_3 = 0 ;
+    if(m_stMeasuredata.m_bLineDistance[4])
+    {
+         line_dis_3 = m_stMeasuredata.m_LineDistance[4];
+    }
 
+
+
+    log->info("line_dis:{},{},{}",line_dis_1,line_dis_2,line_dis_3);
     if(fabs(line_dis_1) < LINE_DEVIATION_THRESHOLD
     && fabs(line_dis_2) < LINE_DEVIATION_THRESHOLD
-    && fabs(line_dis_3) < LINE_DEVIATION_THRESHOLD)
+    && fabs(line_dis_3-41) < LINE_DEVIATION_THRESHOLD)
     {
-        log->info("完成调平，边线距离为：{},{},{},{},{},{}",m_stMeasuredata.m_LineDistance[0],m_stMeasuredata.m_LineDistance[1],m_stMeasuredata.m_LineDistance[2],m_stMeasuredata.m_LineDistance[3],m_stMeasuredata.m_LineDistance[4],m_stMeasuredata.m_LineDistance[5]);
+        log->info("完成对边，边线距离为：{},{},{},{},{},{}",m_stMeasuredata.m_LineDistance[0],m_stMeasuredata.m_LineDistance[1],m_stMeasuredata.m_LineDistance[2],m_stMeasuredata.m_LineDistance[3],m_stMeasuredata.m_LineDistance[4],m_stMeasuredata.m_LineDistance[5]);
         return 1;
     }
     else

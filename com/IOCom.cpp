@@ -189,7 +189,7 @@ void IOCom::run() {
     while(this->is_Running){
         if(commState){
             SendIO();
-            QThread::msleep(150);
+            QThread::msleep(200);
             RecvIO();
         }else{
             this->log->error("CommState is false, please check io connection!");

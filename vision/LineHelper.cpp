@@ -40,11 +40,11 @@ LineHelper::LineHelper() {
     this->resize_h = 512;
     this->resize_w = 512;
 
-    this->min_pos_valid = 50;
-    this->max_pos_valid = 512 - 50;
+    this->min_pos_valid = 20;
+    this->max_pos_valid = 512 - 20;
 
     this->min_dist_lines = 20;
-    this->max_dist_lines = 200;
+    this->max_dist_lines = 400;
 
     this->max_angle_degrees = 10;
     this->min_len_seg = static_cast<unsigned>(512 * 0.1);
@@ -328,6 +328,7 @@ LineRes LineHelper::compute_lines_distance(cv::Mat img) {
         //获取板线
         get_border_line(img_gray, bin_img, pred_lines, res);
         if (!res.border_line_status) {
+            std::cout<<" border line detection is failed!"<<std::endl;
             //板线检测失败
             return res;
         }
@@ -335,6 +336,7 @@ LineRes LineHelper::compute_lines_distance(cv::Mat img) {
         //获取墨迹线
         get_ink_line(bin_img, pred_lines, res);
         if (!res.ink_line_status) {
+            std::cout<<" ink line detection is failed!"<<std::endl;
             return res;
         }
 

@@ -397,7 +397,7 @@ void CRobot::StateMachineMove()
     switch(m_LinkCmd.stLinkKinPar.eActMotionMode)
     {
     case eMotionLineAbsolute:
-        log->info("robot move to position: {}, {}, {}, {}, {}, {}",car_pos(0),car_pos(1),car_pos(2),car_pos(3),car_pos(4),car_pos(5));
+        //log->info("robot move to position: {}, {}, {}, {}, {}, {}",car_pos(0),car_pos(1),car_pos(2),car_pos(3)*57.3,car_pos(4)*57.3,car_pos(5)*57.3);
         MoveLineAbsBase(car_pos, car_vel);
         break;
     case eMotionLineVelocity:
@@ -959,6 +959,12 @@ bool CRobot::isEndReached(QVector<double> tarpos)
         log->warn("ERROR: pose dim must be 6!");
         return false;
     }
+//    log->info("pos differ: {},{},{},{},{},{}\n",LinkStatus.stLinkActKin.LinkPos[0] - tarpos[0],
+//                                                  LinkStatus.stLinkActKin.LinkPos[1] - tarpos[1],
+//                                                  LinkStatus.stLinkActKin.LinkPos[2] - tarpos[2],
+//                                                  (LinkStatus.stLinkActKin.LinkPos[3] - tarpos[3]) * 57.3,
+//                                                  (LinkStatus.stLinkActKin.LinkPos[4] - tarpos[4]) * 57.3,
+//                                                  (LinkStatus.stLinkActKin.LinkPos[5] - tarpos[5]) * 57.3);
     for(int i=0;i<3;i++)
     {
         if(fabs(tarpos[i] - LinkStatus.stLinkActKin.LinkPos[i])>POSITION_RESOLUTION)
@@ -966,7 +972,7 @@ bool CRobot::isEndReached(QVector<double> tarpos)
             return false;
         }
 
-        if(fabs(tarpos[i] - LinkStatus.stLinkActKin.LinkPos[i])>ROTATE_RESOLUTION)
+        if(fabs(tarpos[i+3] - LinkStatus.stLinkActKin.LinkPos[i+3])>ROTATE_RESOLUTION)
         {
             return false;
         }

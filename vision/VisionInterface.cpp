@@ -14,6 +14,9 @@ VisionInterface::VisionInterface() {
     // 相机读取+边线检测 端到端处理类(线程)
     this->line_handler = new LineDetectorRunner(this->line_helper,this->camera_controls,this->sharedDataLine);
 
+    // 启动直线检测线程
+    this->line_handler->is_running = true;
+    this->line_handler->start();
 
     this->scales_line= {
             {"cam_1", 0.153846153846153},
@@ -66,7 +69,7 @@ void VisionInterface::parser_result(stMeasureData *stm) {
                 number = (prefix[index+1]-'0')*10+(prefix[index+2]-'0');
             }
             double dist = line.second.dist*this->scales_line[line.first];
-            if(dist<1 || dist>44){
+            if(dist<1){
                 stm->m_LineDistance[number-1] = 0;
                 stm->m_bLineDistance[number-1] = false;
             }else{

@@ -108,7 +108,7 @@ const double LINE_DEVIATION_THRESHOLD = 1.0;//边线调整允许偏差
 
  //碰钉动作序列，及动作周期数(50ms)，根据实际工艺调整；eWeld_Up eWeld_Down绑定了接触器，必须保留
 const QVector<E_WeldAction> ActionList ={eGrind_MovorOff, eGrind_OnorDown, eGrind_Up, eGrind_OnorDown, eGrind_MovorOff, eWeld_MovorDwon, eWeld_Fix, eWeld_Up, eWeld_On, eWeld_Down, eInitAction};
-const QVector<int>          ActionTime ={             40,              20,       150,              20,              20,              40,        40,       40,       40,         40,          5};
+const QVector<int>          ActionTime ={             40,              20,       100,              20,              20,              40,        40,       40,       40,         40,          5};
 const QVector<std::string>  ActionName ={"GrindMovorOff","Grind_OnorDown","Grind_Up","Weld_MovorDwon","Grind_MovorOff","Weld_MovorDwon","Weld_Fix","Weld_Up","Weld_On","Weld_Down","InitAction"};
 
 class CTask:public QThread
@@ -486,6 +486,7 @@ private:
     
 private:
     std::mutex m_mutex;
+    bool m_position_motion_flag{false};
 
     std::map<ETopState, std::string> TopStateStringMap 
     {

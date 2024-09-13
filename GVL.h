@@ -26,11 +26,12 @@ const double velRotate = 0.5/57.3;  //界面点动限速：旋转
 const double JOINT_VEL_MOVE = 3;      //单位degree
 
 const double POSITION_RESOLUTION = 0.5;    //单位mm
-const double ROTATE_RESOLUTION  = 0.02/57.3;      //单位rad
+const double ROTATE_RESOLUTION  = 0.05/57.3;      //单位°
 
-const double END_VEL_LIMIT[6] = {3,3,3,0.1,0.1,0.1}; //关节末端运动限速
+const double END_VEL_LIMIT[6] = {5,5,5,0.1,0.1,0.1}; //关节末端运动限速
+const double END_VEL_POSITION[6] = {1,1,1,0.05,0.05,0.05}; //关节末端运动限速
 //                                   0底升 1前后  2左右  3腰转 4大臂  5腕部  6末端
-const double JOINT_VEL_LIMIT[20] = {8,2,2,2,1,1,8,0,0,0,0,0,0,0,0,0,0,0,0,0};
+const double JOINT_VEL_LIMIT[20] = {2,2,2,2,1,10,10,1,2,5,0,0,0,0,0,0,0,0,0,0};
 
 const unsigned int CYLINDER_INDEX = 5; //推杆关节轴号索引
 const unsigned int STEER_LEFT_INDEX = 10; //左舵轮索引
@@ -52,10 +53,12 @@ const double TarPositionA[20] ={10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
 const double A1_VEL[6]={1,1,1,0.2,0.2,0.2};
 
 //
-const double Postion_Home[10]    =    {36.75,0,0,-4.68,82.24,860,1075, 0.56, 0, 1189}; //放钉位置
-const double Postion_Prepare[10]    = {36.75,0,0,-4.68,82.24,906,1421, 0.56, -35.5, 1189}; //碰钉准备位置
-const QVector<double> Postion_Home_qv = {36.75,0,0,-4.68,82.24,860,1075, 0.56, 0, 1189}; //碰钉准备位置
-const QVector<double> Postion_Prepare_qv = {36.75,0,0,-4.68,82.24,906,1421, 0.56, -35.5, 1189}; //碰钉准备位置
+const double Postion_Home[10]    =    {16.020,-90,0,10.23,76,801, 1095, 0, -12, 1109}; //放钉位置
+const double Postion_Quit[10]    =    {16.02,-30,0,10.23,76.01,900,1177.37, 0.8, -71.17, 1100.56}; //退出位置
+const double Postion_Prepare[10]    = {16.02,-30,0,10.23,76.01,1034.45,1177.37, 0.8, -71.17, 1162.56}; //碰钉准备位置
+const QVector<double> Postion_Home_qv = {16.020,-90,0,10.23,76,801, 1095, 0, -12, 1109}; //碰钉准备位置S
+const QVector<double> Postion_Quit_qv    =    {16.02,-30,0,10.23,76.01,900,1177.37, 0.8, -71.17, 1100.56}; //退出位置
+const QVector<double> Postion_Prepare_qv = {16.02,-30,0,10.23,76.01,1034.45,1177.37, 0.8, -71.17, 1162.56}; //碰钉准备位置
 
 
 //robotcomm的ip和端口"192.168.1.130" 5999

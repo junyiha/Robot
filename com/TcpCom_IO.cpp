@@ -132,7 +132,7 @@ DINT TcpCom_IO::Recvbuffer()
         if (-1 == recvnum)
         {
             int err = WSAGetLastError();
-            log->warn("tcp io recv error:{}",err);
+            //log->warn("tcp io recv error:{},{}",err,cnt);
 //
             if (err == EAGAIN || err == EWOULDBLOCK || err == EINTR)
             {
@@ -144,7 +144,7 @@ DINT TcpCom_IO::Recvbuffer()
 //                qDebug()<<"recv time out";
                 if (cnt > TIMEOUT_LIMIT)
                 {
-//                    qDebug()<<" IO板 give up recieve once";
+                    log->warn(" IO板 give up recieve once");
                     return -2;
                 }
             }
