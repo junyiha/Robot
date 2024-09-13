@@ -4,6 +4,7 @@
 #include <stdio.h>//修改
 #include <string.h>
 #include <math.h>
+#include <QVector>
 
 /* Parameter for Robot 
 */

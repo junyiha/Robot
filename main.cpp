@@ -1,4 +1,14 @@
-﻿#include "mainwindow.h"
+﻿/**
+ * @file main.cpp
+ * @author your name (you@domain.com)
+ * @brief 碰钉机器人主函数
+ * @version 0.1
+ * @date 2024-09-13
+ * 
+ * @copyright Copyright (c) 2024
+ * 
+ */
+#include "mainwindow.h"
 #include <QApplication>
 #include<string>
 #include "vision/VisionInterface.h"
@@ -9,6 +19,9 @@
 #include <QThread>
 #include <QTextCodec>
 #include <clocale>
+#include <Eigen/Eigen>
+
+
 void initLog()
 {
     //创建控制台日志记录器
@@ -28,12 +41,7 @@ void initLog()
     //根据需要调整记录级别：调试debug，发布info
     spdlog::set_level(spdlog::level::debug);
     std::shared_ptr<spdlog::logger> log = spdlog::get("logger");
-
 }
-
-
-
-
 
 void vision_demo(){
     initLog();
@@ -71,15 +79,10 @@ void line_detect_demo(){
         cv::waitKey(0);
         std::cout<<res.errorInfo<<std::endl;
     }
-
-
 }
 
-
-#include<Eigen/Eigen>
-int main(int argc, char *argv[])
+int RunRobot(int argc, char *argv[])
 {
-//    QTextCodec::setCodecForTr(QTextCodec::codecForName("UTF-8"));
     QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8")); // 设置中文编码
 
     QApplication a(argc, argv);
@@ -87,11 +90,25 @@ int main(int argc, char *argv[])
     w.setWindowTitle("LNG Panel Loading Robot");
     w.show();
 
-//    QMessageBox::information(nullptr, "Info", "请确保机器人底部升降电机位于初始位置");
     return a.exec();
-//    line_detect_demo();
-//    return 0;
+}
+
+void TestTask()
+{
+    CTask task(nullptr, nullptr, nullptr);
 
 
 }
 
+int main(int argc, char *argv[])
+{
+    if (argc < 2)
+    {
+        return RunRobot(argc, argv);
+    }
+
+    spdlog::info("test program...");
+    TestTask();
+
+    return 0;
+}

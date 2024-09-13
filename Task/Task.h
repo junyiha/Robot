@@ -91,8 +91,6 @@ enum AutoProcessStage
     eD2 = 7,
 };
 
-
-
 enum ECommadforTask
 {
     eNONE = 0,
@@ -150,20 +148,9 @@ protected:
     stMeasureData m_stMeasuredata; //传感器状态反馈
     stMeasureData _stMeasuredata;  //传感器状态反馈
 
-
-//    double Postion_Home[10]    =    {10,0,0,-90.04,-0.52,0,1210, 0, 0, 0}; //碰钉准备位置
-//    double Postion_Prepare[10]    = {800,0,0,-90.04,0.12,0.27,1300, 0, 0, 0}; //碰钉准备位置
-//    QVector<double> Postion_Home_qv = {10,0,0,-90.04,-0.52,0,1210, 0, 0, 0}; //碰钉准备位置
-//    QVector<double> Postion_Prepare_qv = {800,0,0,-90.04,0.12,0.27,1300,0, 0, 0}; //碰钉准备位置
-
     //  机器人
-
     bool         c_running = true;
-
-
     std::shared_ptr<spdlog::logger> log;
-
-
     QMutex          mutex_cmd;
     QMutex          mutex_read;
     QMutex          mutex_write;
@@ -188,7 +175,6 @@ protected:
     * @brief 自动作业过程
     */
     //void AutoProgrcess();
-
 
     /**
     * @brief 手动操作指令处理
@@ -447,7 +433,7 @@ public:
     void updateTopAndSubState(ETopState topState, ESubState subState);
 
     /**
-     * @brief 更新执行指令(线程安全)
+     * @brief 更新执行指令(线程安全 默认更新为空指令)
      * 
      * @param executionCommand 
      */

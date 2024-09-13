@@ -50,7 +50,6 @@ void CTask::stateTransition()
         }
     }
 
-    // 将指令置为默认空指令
     updateExecutionCommand();
 }
 
@@ -58,7 +57,7 @@ void CTask::manualStateTransition()
 {
     //1. 判断机器人是否处于就绪状态 
     bool robotReady = (m_LinkStatus.eLinkActState == eLINK_STANDSTILL);
-    if (robotReady)
+        if (robotReady)
     {
         //2. 如果就绪，判断是否要执行调平指令
         if(m_eexecutionCommand == EExecutionCommand::eParallel)
@@ -191,7 +190,6 @@ void CTask::readyExecutionCommand()
     {
         case EExecutionCommand::eManual:
         {
-            // log->info("所有手动操作指令,等待手动触发...\n") ;
             break;
         }
         case EExecutionCommand::eParallel:
@@ -217,7 +215,6 @@ void CTask::readyToParallelExecutionCommand()
     {
         case EExecutionCommand::eNULL:
         {
-            // log->info("调平-待调平下 空指令，不执行任何操作");
             break;
         }
         case EExecutionCommand::eParallel:
@@ -234,7 +231,6 @@ void CTask::readyToParallelExecutionCommand()
         }
         case EExecutionCommand::ePause:
         {
-            // log->info("待调平状态下的暂停指令，不执行任何动作");
             break;
         }
         default:
@@ -414,16 +410,8 @@ void CTask::detectionInPositioningExecutionCommand()
                 break;
             }
 
-
             std::copy(std::begin(vis_res.stData.m_LineDistance) , std::end(vis_res.stData.m_LineDistance), m_stMeasuredata.m_LineDistance);
             std::copy(std::begin(vis_res.stData.m_bLineDistance), std::end(vis_res.stData.m_bLineDistance), m_stMeasuredata.m_bLineDistance);
-
-//            log->info("m_stMeasuredata.m_bLineDistance:{},{},{},{},{},{}", m_stMeasuredata.m_LineDistance[0],
-//                                                                           m_stMeasuredata.m_LineDistance[1],
-//                                                                           m_stMeasuredata.m_LineDistance[2],
-//                                                                           m_stMeasuredata.m_LineDistance[3],
-//                                                                           m_stMeasuredata.m_LineDistance[4],
-//                                                                           m_stMeasuredata.m_LineDistance[5]);
 
             auto detectResult = CheckPositionStateDecorator();
             switch (detectResult)
@@ -835,6 +823,8 @@ void CTask::updateTopAndSubState(ETopState topState, ESubState subState)
 {
     std::lock_guard<std::mutex> lock(m_mutex);
 
+    log->info("{} 状态转换: {}--{} ==> {}--{}", __LINE__, TopStateStringMap[m_etopState], SubStateStringMap[m_esubState], TopStateStringMap[topState], SubStateStringMap[subState]);
+
     m_etopState = topState;
     m_esubState = subState;
 }
@@ -842,6 +832,8 @@ void CTask::updateTopAndSubState(ETopState topState, ESubState subState)
 void CTask::updateExecutionCommand(EExecutionCommand executionCommand)
 {
     std::lock_guard<std::mutex> lock(m_mutex);
+
+    // log->info("{} 指令转换: {} ==> {}", __LINE__, ExecutionCommandStringMap[m_eexecutionCommand], ExecutionCommandStringMap[executionCommand]);
 
     m_eexecutionCommand = executionCommand;
 }
