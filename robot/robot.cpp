@@ -238,10 +238,15 @@ void CRobot::StateMachine()
         case  eLINK_RESET:
             m_Comm->LinkReset(m_Index);
             break;
+        case  eLINK_HALT:
+            m_Comm->LinkHalt(m_Index);
+            break;
+        case  eLINK_STOP:
+            m_Comm->LinkStop(m_Index);
+            break;
         case  eLINK_HOME://将当前位置记为零点
         case  eLINK_POWER:
-        case  eLINK_STOP:
-        case  eLINK_HALT:
+
         case  eLINK_MOV:
             qDebug()<<"Error State! Cannot execute command except reset.";
             break;
