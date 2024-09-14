@@ -67,7 +67,7 @@ void CTask::manualStateTransition()
             }
             return;
         }
-        else if (m_eexecutionCommand == EExecutionCommand::eParallel)
+        else if (m_eexecutionCommand == EExecutionCommand::eFitBoard)
         {
             if(robotReady)
             {
@@ -581,11 +581,6 @@ void CTask::motionInPositioningExecutionCommand()
 
 void CTask::readyToMagentOnExecutionCommand()
 {
-//    static EExecutionCommand static_command {EExecutionCommand::eNULL};
-//    if (static_command != EExecutionCommand::eNULL)
-//    {
-//        m_eexecutionCommand = static_command;
-//    }
     static int magent{0};
     switch (m_eexecutionCommand)
     {
@@ -600,9 +595,6 @@ void CTask::readyToMagentOnExecutionCommand()
                     updateTopAndSubState(ETopState::eDoWeld, ESubState::eReadyToDoWeld);
                 }
             }
-
-
-            // log->info("待吸合空指令，不执行任何操作");
             break;
         }
         case EExecutionCommand::eParallel:
@@ -613,15 +605,12 @@ void CTask::readyToMagentOnExecutionCommand()
         }
         case EExecutionCommand::eMagentOn:
         {
-//            log->info("磁铁吸合指令，状态跳转: 碰钉--待碰钉");
-
             doMagentOn();
             magent = 1;
             break;
         }
         case EExecutionCommand::eQuit:
         {
-            //doMagentOff();
             m_Comm->SetMagentAction(0,eMag_Off);
             log->warn("{} 退出指令，状态跳转: 退出--退出中", __LINE__);
             updateTopAndSubState(ETopState::eQuit, ESubState::eQuiting);
@@ -668,8 +657,6 @@ void CTask::readyToWeldExecutionCommand()
         }
         case EExecutionCommand::eMagentOff:
         {
-//            log->info("磁铁脱开，状态跳转: 待吸合");
-
             doMagentOff();
             weld = -1;
             break;
@@ -845,6 +832,7 @@ void CTask::detectionInFitBoardExecutionCommand()
         }
         case EExecutionCommand::ePause:
         {
+
             updateTopAndSubState(ETopState::eFitBoard, ESubState::eReadyToFitBoard);
             break;
         }
@@ -1013,8 +1001,6 @@ void CTask::updateTopAndSubState(ETopState topState, ESubState subState)
 void CTask::updateExecutionCommand(EExecutionCommand executionCommand)
 {
     std::lock_guard<std::mutex> lock(m_mutex);
-
-    // log->info("{} 指令转换: {} ==> {}", __LINE__, ExecutionCommandStringMap[m_eexecutionCommand], ExecutionCommandStringMap[executionCommand]);
 
     m_eexecutionCommand = executionCommand;
 }
