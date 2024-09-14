@@ -30,7 +30,6 @@ CTask::CTask(ComInterface* comm,CRobot* robot,VisionInterface* vision,QObject *p
 void CTask::run()
 {
     //初始参数初始化
-
     log->info("Task 启动运行....");
 
     //周期函数
@@ -40,21 +39,10 @@ void CTask::run()
 
         updateCmdandStatus();
 
-        // SemiAutoProgrcess();
-
-        // TranslateNumberToCMD();
         TranslateManualTaskIndexNumberToCMD();
+
         stateTransition();
 
-//        if(m_Manual.Auto)
-//        {
-//            SemiAutoProgrcess();
-//        }else
-//        {
-//            Manual();
-//            m_preManual = m_Manual;
-//        }
-//        m_preManualOperator = m_manualOperator;
         Sleep(50);
     }
 
