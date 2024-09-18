@@ -7,7 +7,7 @@
  * 调平：TarPose0 使用四个点激光
  * 对齐：VirtualPose3 使用 6个边线数据+4个点激光数据
  */
-QVector<Eigen::Matrix4d> CMeasure::calPoseDeviation(stMeasureData data)
+QVector<Eigen::Matrix4d> CMeasure::calPoseDeviation(stMeasureData data, double tar_distance)
 {
     std::vector<int> stepValid = {-2,-2,-2,-2,-2,-2};
 
@@ -188,10 +188,10 @@ QVector<Eigen::Matrix4d> CMeasure::calPoseDeviation(stMeasureData data)
                 targetdistance[i] = data.m_LaserDistance[i];
             }
         }
-        linePosition_4[0]<<  x_camera + distance[0], -y_camera + distance[2],targetdistance[0]-DistanceD;//方向问题
-        linePosition_4[1]<<  x_camera + distance[1],  y_camera + distance[2],targetdistance[1]-DistanceD;
-        linePosition_4[2]<< -x_camera + distance[1],  y_camera + distance[3],targetdistance[2]-DistanceD;
-        linePosition_4[3]<< -x_camera + distance[0], -y_camera + distance[3],targetdistance[3]-DistanceD;
+        linePosition_4[0]<<  x_camera + distance[0], -y_camera + distance[2],targetdistance[0]- tar_distance;//方向问题
+        linePosition_4[1]<<  x_camera + distance[1],  y_camera + distance[2],targetdistance[1]- tar_distance;
+        linePosition_4[2]<< -x_camera + distance[1],  y_camera + distance[3],targetdistance[2]- tar_distance;
+        linePosition_4[3]<< -x_camera + distance[0], -y_camera + distance[3],targetdistance[3]- tar_distance;
         Result[5] = calPoseforSquare(linePosition_4);
         stepValid[5] = true;
     }else{

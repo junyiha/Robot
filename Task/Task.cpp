@@ -997,3 +997,121 @@ void CTask::TaskTerminate()
     // 磁铁脱开
     m_Comm->SetMagentAction(0,eMag_Off);
 }
+
+int CTask::CheckBoardingState(uint& motion_index)
+{
+
+    int re_line = -1;
+    int re_laser = -1;
+    //视觉检测结果有效性检测
+    if ((m_stMeasuredata.m_bLineDistance[0] || m_stMeasuredata.m_bLineDistance[1] == false)
+        || (m_stMeasuredata.m_bLineDistance[2] || m_stMeasuredata.m_bLineDistance[3] == false)
+        || (m_stMeasuredata.m_bLineDistance[4] || m_stMeasuredata.m_bLineDistance[5] == false))
+    {
+        log->error("检测到的边线数据不满足调整需求");
+        return -1;
+    }
+
+    //计算边线偏差
+    double line_dis_1 = ((m_stMeasuredata.m_bLineDistance[0] - 15) * m_stMeasuredata.m_bLineDistance[0] - (m_stMeasuredata.m_bLineDistance[1] - 15) * m_stMeasuredata.m_bLineDistance[1]) / (static_cast<int>(m_stMeasuredata.m_bLineDistance[0] )+ static_cast<int>(m_stMeasuredata.m_bLineDistance[1]));
+    double line_dis_2 = ((m_stMeasuredata.m_bLineDistance[2] - 15) * m_stMeasuredata.m_bLineDistance[2] - (m_stMeasuredata.m_bLineDistance[3] - 15) * m_stMeasuredata.m_bLineDistance[3]) / (static_cast<int>(m_stMeasuredata.m_bLineDistance[2] )+ static_cast<int>(m_stMeasuredata.m_bLineDistance[3]));
+    double line_dis_3 = ((m_stMeasuredata.m_bLineDistance[4] - 15) * m_stMeasuredata.m_bLineDistance[4] - (m_stMeasuredata.m_bLineDistance[5] - 15) * m_stMeasuredata.m_bLineDistance[5]) / (static_cast<int>(m_stMeasuredata.m_bLineDistance[4] )+ static_cast<int>(m_stMeasuredata.m_bLineDistance[5]));
+
+    if (fabs(line_dis_1) < LINE_DEVIATION_THRESHOLD
+        && fabs(line_dis_2) < LINE_DEVIATION_THRESHOLD
+        && fabs(line_dis_3) < LINE_DEVIATION_THRESHOLD)
+    {
+        log->info("完成贴合定位，边线距离为：{},{},{},{},{},{}", m_stMeasuredata.m_LineDistance[0], m_stMeasuredata.m_LineDistance[1], m_stMeasuredata.m_LineDistance[2], m_stMeasuredata.m_LineDistance[3], m_stMeasuredata.m_LineDistance[4], m_stMeasuredata.m_LineDistance[5]);
+        re_line = 1;
+    }
+    else if (fabs(line_dis_1) < LINE_DEVIATION_BOARDING_THRESHOLD
+        && fabs(line_dis_2) < LINE_DEVIATION_BOARDING_THRESHOLD
+        && fabs(line_dis_3) < LINE_DEVIATION_BOARDING_THRESHOLD)
+    {
+        log->error("边线距离需要继续调整，边线距离为：{},{},{},{},{},{}", m_stMeasuredata.m_LineDistance[0], m_stMeasuredata.m_LineDistance[1], m_stMeasuredata.m_LineDistance[2], m_stMeasuredata.m_LineDistance[3], m_stMeasuredata.m_LineDistance[4], m_stMeasuredata.m_LineDistance[5]);
+        re_line = 0;
+    }
+
+    //计算激光距离最大偏差
+    double laser[4] = { 0,0,0,0 };
+    for (int i = 0; i < 4; ++i)
+    {
+        if (m_stMeasuredata.m_bLaserProfile[0] == true)
+        {
+            laser[i] = m_stMeasuredata.m_LaserGapHeight[i];
+        }
+        else if (m_stMeasuredata.m_bLaserDistance[1] == true)
+        {
+            laser[i] = m_stMeasuredata.m_LaserDistance[i];
+        }
+        else
+        {
+            log->error("激光{}距离缺失,停止贴合", i);
+            return -1;
+        }
+
+    }
+    double maxDistance = 0;
+    double minDistance = 1000;
+    for (int i = 0; i < 4; ++i) {
+        maxDistance = maxDistance > m_stMeasuredata.m_LaserDistance[i] ? maxDistance : m_stMeasuredata.m_LaserDistance[i];
+        minDistance = minDistance < m_stMeasuredata.m_LaserDistance[i] ? minDistance : m_stMeasuredata.m_LaserDistance[i];
+    }
+    if (maxDistance - minDistance > 20)
+    {
+        log->error("激光距离最大偏差大于20mm,停止贴合");
+        return -1;
+    }
+    else if (maxDistance - minDistance < 2 && maxDistance < 2)
+    {
+        log->info("激光距离满足贴合要求");
+        re_laser = 1;
+    }
+
+    //根据板面距离确定目标贴合距离
+    for (int i = 0; i < BOARDING_MOTION_QUE.size(); ++i)
+    {
+        if (BOARDING_MOTION_QUE[i] + 5 < minDistance)
+        {
+            motion_index = i;
+            re_line = 0;
+            log->info("贴合调整目标距离为：{}", BOARDING_MOTION_QUE[i]);
+            break;
+        }
+    }
+
+    if (re_line == 1 && re_laser == 1)
+    {
+        log->info("完成贴合作业，可以进行拧螺丝作业");
+        return 1;
+    }
+
+    return 0;
+}
+
+EDetectionInPositioningResult CTask::CheckBoardingStateDecorator()
+{
+    EDetectionInPositioningResult result;
+    int res = CheckBoardingState(m_motion_index);
+
+    switch (res)
+    {
+    case -1:
+    {
+        result = EDetectionInPositioningResult::eDataIsInvalid;
+        break;
+    }
+    case 0:
+    {
+        result = EDetectionInPositioningResult::eEndAdjustmentDataIsValid;
+        break;
+    }
+    case 1:
+    {
+        result = EDetectionInPositioningResult::eDeviationIsLessThanThreshold;
+        break;
+    }
+    }
+
+    return result;
+}

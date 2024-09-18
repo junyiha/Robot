@@ -78,8 +78,7 @@ enum class EDetectionInPositioningResult
 {
     eDeviationIsLessThanThreshold = 0,     // 边线偏差小于阈值
     eEndAdjustmentDataIsValid,             // 末端调整数据合法
-    eDataIsInvalid,                         // 数据非法
-
+    eDataIsInvalid,                        // 数据非法
 };
 
 #endif  // TASK_EXTERNAL_H

@@ -38,6 +38,11 @@ enum ECommadforTask
 const double PARRALLE_DISTANCE = 5.0; //调平允许偏差
 const double LINE_DEVIATION_THRESHOLD = 1.0;//边线调整允许偏差
 
+// 装板机器人
+const double LINE_DEVIATION_BOARDING_THRESHOLD = 5.0;//贴合允许偏差
+const int que_size = 7;
+const std::vector<double> BOARDING_MOTION_QUE = { 60,30,20,15,10,5,0 }; //贴合运动序列
+
  //碰钉动作序列，及动作周期数(50ms)，根据实际工艺调整；eWeld_Up eWeld_Down绑定了接触器，必须保留
 const QVector<E_WeldAction> ActionList ={eGrind_MovorOff, eGrind_OnorDown, eGrind_Up, eGrind_OnorDown, eGrind_MovorOff, eWeld_MovorDwon, eWeld_Fix, eWeld_Up, eWeld_On, eWeld_Down, eInitAction};
 const QVector<int>          ActionTime ={             40,              20,       100,              20,              20,              40,        40,       40,       40,         40,          5};
@@ -179,25 +184,6 @@ protected:
             throw std::runtime_error("Unknown enum value");
         }
     }
-
-///////////////////////////////////////////--前端界面按钮映射表--//////////////////////////////////////////////////////
-
-    // 工作作业按钮名称-索引值
-    std::map<std::string, unsigned int> m_jobBtnIndex = {
-      {"btn_leveling_",      0},          // 调平
-      {"btn_sideline_",      1},          // 对齐边线
-      {"btn_magnet_open_",   2},          // 吸合
-      {"btn_auto_knock_",    3},          // 碰钉
-      {"btn_magnet_close_",  4},          // 脱开
-      {"btn_magnet_exit_",   5},          // 退出
-      {"btn_magnet_pause_",  6},          // 暂停
-      {"btn_knock_suspend_", 7},          // 终止
-      {"btn_lift_",          8},          // 举升
-      {"btn_add_nail",       9},          // 放钉
-      {"btn_magnet_stop_",  10},          // 停止
-      {"btn_magent_crash_stop_", 11}      // 急停
-    };
-
 ///////////////////////////////////////////--0827新增函数--//////////////////////////////////////////////////////
 private:
     /**
@@ -215,6 +201,15 @@ private:
      */
     int CheckPositionState();
     EDetectionInPositioningResult CheckPositionStateDecorator();
+
+    /**
+     * @brief 定位检测函数，根据相机返回数据，判断是否具备定位条件或完成定位
+     * @param /   内部调用传感器参数m_stMeasuredata
+     * @param  motion_index 运动序列索引
+     * @return  -1:不具备定位条件， 0,可执行定位， 1:完成定位
+     */
+    int CheckBoardingState(uint& motion_index);
+    EDetectionInPositioningResult CheckBoardingStateDecorator();
 
     /**
      * @brief 终止函数，停止自动过程，切换到手动模式
@@ -440,6 +435,7 @@ private:
 private:
     std::mutex m_mutex;
     bool m_position_motion_flag{false};
+    uint m_motion_index;
 
     std::map<ETopState, std::string> TopStateStringMap 
     {

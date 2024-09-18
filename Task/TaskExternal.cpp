@@ -451,7 +451,7 @@ void CTask::detectionInPositioningExecutionCommand()
             std::copy(std::begin(vis_res.stData.m_LineDistance) , std::end(vis_res.stData.m_LineDistance), m_stMeasuredata.m_LineDistance);
             std::copy(std::begin(vis_res.stData.m_bLineDistance), std::end(vis_res.stData.m_bLineDistance), m_stMeasuredata.m_bLineDistance);
 
-            auto detectResult = CheckPositionStateDecorator();
+            auto detectResult = CheckBoardingStateDecorator();
             switch (detectResult)
             {
                 case EDetectionInPositioningResult::eDeviationIsLessThanThreshold:

@@ -86,7 +86,7 @@ public:
     * @return   [5]:TarPose5 根据边线+临板高差+垫板高差计算目标位置
     * @return   [6]:[0]板壁最小距离 [1]轮廓激光完备性 [2]点激光最大高差[3]孔位数据有效性，[4~5]NUll
     */
-    static QVector<Eigen::Matrix4d> calPoseDeviation(stMeasureData data);
+    static QVector<Eigen::Matrix4d> calPoseDeviation(stMeasureData data, double tar_distance = 0.0);
 
 protected:
     /**

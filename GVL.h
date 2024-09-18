@@ -2,8 +2,8 @@
 #define GVL_H
 #include "robot/Parameter.h"
 
-const double Distance_Lift = 15; //调平位置
-const double Distance_work = 15; //位置
+const double Distance_Lift = 90; //调平位置
+const double Distance_work = 90; //位置
 
 
 const double DistanceB = 80;//2024年5月17日20点20分 修改，原始为80
