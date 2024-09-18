@@ -142,7 +142,7 @@ protected:
      * @brief 磁铁下降
      * @return
      */
-    bool doMagentDown();
+    //bool doMagentDown();
     /**
      * @brief PrintTargetPos 利用qDebug()打印矩阵(替代cout)
      * @param m_TargetDeviation
@@ -435,7 +435,7 @@ private:
 private:
     std::mutex m_mutex;
     bool m_position_motion_flag{false};
-    uint m_motion_index;
+    uint m_motion_index{ 0 };
 
     std::map<ETopState, std::string> TopStateStringMap 
     {

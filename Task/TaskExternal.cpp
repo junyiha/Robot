@@ -757,7 +757,7 @@ void CTask::stopWeldExecutionCommand()
         case EExecutionCommand::eTerminate:
         {
             m_Comm->SetMagentAction(0,eMag_Off);
-                    log->info("{} 终止指令执行，磁铁脱开，状态跳转: 手动--准备", __LINE__);
+            log->info("{} 终止指令执行，磁铁脱开，状态跳转: 手动--准备", __LINE__);
             terminateCommand();
             break;
         }
@@ -788,7 +788,7 @@ void CTask::readyToFitBoardExecutionCommand()
         }
         case EExecutionCommand::ePause:
         {
-            // LIINKHALT
+            m_Robot->setLinkHalt();
             break;
         }
         case EExecutionCommand::eTerminate:
@@ -809,7 +809,7 @@ void CTask::detectionInFitBoardExecutionCommand()
     {
         case EExecutionCommand::eNULL:
         {
-            EDetectionInPositioningResult result;  // CheckBoarding
+            EDetectionInPositioningResult result = CheckBoardingStateDecorator();  // CheckBoarding
             switch (result)
             {
                 case EDetectionInPositioningResult::eDeviationIsLessThanThreshold:
@@ -832,7 +832,6 @@ void CTask::detectionInFitBoardExecutionCommand()
         }
         case EExecutionCommand::ePause:
         {
-
             updateTopAndSubState(ETopState::eFitBoard, ESubState::eReadyToFitBoard);
             break;
         }
