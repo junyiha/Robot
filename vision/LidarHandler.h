@@ -1,3 +1,6 @@
+
+#ifndef PDROBOT_LIDARHANDLER_H
+#define PDROBOT_LIDARHANDLER_H
 #include <string>
 #include <iostream>
 #include <time.h>
@@ -11,8 +14,8 @@
 #include <QApplication>
 #include<QMutex>
 #include "LidarHelper.h"
-#include "GocatorControls.h"
-#include "../vision/ShareData.h"
+#include "LaserScanerControls.h"
+#include "ShareData.h"
 
 
 
@@ -27,14 +30,18 @@ public:
     bool detect_control_flag = false;
     bool thread_control_flag = true;
     std::map<std::string, LidarData> results;
-    LidarHelper* lidar_helper= nullptr;
-    GocatorControls* gocator_controls = nullptr;
+    LidarHelper* lidar_helper = nullptr;
+    SharedData* sharedData = nullptr;
+    LaserScanerControls* laser_controls = nullptr;
+    QMutex pointsMaskMutex;
 
     void run();
-    SharedData* sharedData = nullptr;
+
     void is_start_detect(bool flag);
     void closed();
-    LidarHandler(LidarHelper* lidar,GocatorControls* gocator, SharedData* sharedData);
+    LidarHandler(LidarHelper* lidarHelper, LaserScanerControls* laserControls, SharedData* sharedData);
     ~LidarHandler();
 
 };
+
+#endif PDROBOT_LIDARHANDLER_H

@@ -33,10 +33,19 @@ LineResult LineDetector::getLineDistance(cv::Mat img) {
     res.imgDrawed = img_512;
 
     // mlsd  算法检测所有可能的线段
+    auto start_poss = std::chrono::high_resolution_clock::now();
     std::vector<MLine> all_lines =  getAllPossibleLines(img_512);
+    auto end_poss = std::chrono::high_resolution_clock::now();
+    auto end_poss_total =  std::chrono::duration_cast<std::chrono::milliseconds>(end_poss - start_poss);
+    std::cout<<"get possible times:"<<end_poss_total.count()<<std::endl;
 
     // 2.0 获取参考线
+    auto start_refer = std::chrono::high_resolution_clock::now();
     MLine referenceLine = getReferenceLine(img_512, all_lines);
+    auto end_refer = std::chrono::high_resolution_clock::now();
+    auto end_refer_total =  std::chrono::duration_cast<std::chrono::milliseconds>(end_refer - start_refer);
+    std::cout<<"getReferenceLine:"<<end_refer_total.count()<<std::endl;
+
     if(referenceLine.x1!=referenceLine.x2){
         res.refResult = referenceLine;
         res.referLineStatus = true;
@@ -48,7 +57,14 @@ LineResult LineDetector::getLineDistance(cv::Mat img) {
     }
 
     // 3.0 获取墨水线
+    auto start_ink = std::chrono::high_resolution_clock::now();
     MLine inkLine = getInkLine(bin_img, all_lines, referenceLine);
+    auto end_ink = std::chrono::high_resolution_clock::now();
+    auto end_ink_total =  std::chrono::duration_cast<std::chrono::milliseconds>(end_ink - start_ink);
+    std::cout<<"getInkLine:"<<end_ink_total.count()<<std::endl;
+
+
+
     if(inkLine.x1!=inkLine.x2){
         res.inkResult = inkLine;
         res.inkLineStatus = true;
@@ -143,7 +159,10 @@ MLine LineDetector::getReferenceLine(cv::Mat img, std::vector<MLine> lines) {
     }else{
         img_gray = img;
     }
-    cv::threshold(img_gray, bin_img, 0, 255, cv::THRESH_BINARY|cv::THRESH_OTSU);
+    cv::threshold(img_gray, bin_img, 0, 255, cv::THRESH_OTSU);
+
+//    cv::imshow("bin_image", bin_img);
+//    cv::waitKey();
 
     // 传统图像处理算法获取结果
     refLine_lsd = getReferenceLineLSD(img, bin_img);
@@ -189,7 +208,15 @@ std::vector<MLine> LineDetector::getAllPossibleLines(cv::Mat img) {
     for(auto item: lines_mlsd){
         cv::line(line_mask, cv::Point(item[0], item[1]), cv::Point(item[2], item[3]), cv::Scalar(255), 1);
     }
+    auto start = std::chrono::high_resolution_clock::now();
     std::vector<std::vector<float>> lines = get_line_by_lsd(line_mask);
+    auto end = std::chrono::high_resolution_clock::now();
+
+    // 计算并输出运行时间
+    auto  elapsed_seconds = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+    std::cout << "get_line_by_lsd: " << elapsed_seconds.count() << " 秒" << std::endl;
+
+
     sort_lines(lines);
     std::vector<std::vector<float>> lines_new = linesAggregation(lines);
 

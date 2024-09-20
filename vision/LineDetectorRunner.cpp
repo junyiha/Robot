@@ -25,7 +25,7 @@ void LineDetectorRunner::run() {
             // 先获取待检测图像
             std::map<std::string, LineDetectRes> temp_results;
             this->cam_controls->getImageAll();
-            std::map<std::string, cv::Mat> cameraData = this->cam_controls->getCameraImages();
+            std::map<std::string, cv::Mat> cameraData = this->cam_controls->getCameraImages("Line");
             if(cameraData.size() > 0){
                 for(auto &camera_data : cameraData)
                 {
@@ -37,11 +37,7 @@ void LineDetectorRunner::run() {
                         continue;
                     }
                     // 检测图像
-                    auto start_time = std::chrono::high_resolution_clock::now();
                     LineResult line_res = this->line_helper->getLineDistance(image);
-                    auto end_time = std::chrono::high_resolution_clock::now();
-                    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
-//                    std::cout << "line detection total time:: " << duration.count() << " milliseconds." << std::endl;
                     if(line_res.status){ //检测成功
                         vision_res.status = true;
                         vision_res.dist = line_res.lineDist;
@@ -51,17 +47,22 @@ void LineDetectorRunner::run() {
                     else{
                         vision_res.status = false;
                         vision_res.dist = -1;
-//                        this->logger->info(vision_res.)
                         vision_res.img_drawed =line_res.imgDrawed;
                     }
                     temp_results[camera_name] = vision_res;
                 }
-                QMutexLocker locker(&this->sharedData->mutex);
-                this->results = temp_results;
-                if(this->results.size()>0){ // 生产一个数据， 唤醒消费者进程，通知消费
-                    this->sharedData->dataReady.wakeOne();
-                    this->sharedData->spaceAvailable.wait(&this->sharedData->mutex);
+//                QMutexLocker locker(&this->sharedData->mutex);
+                imagesLock.lock();
+                if(this->results.size()>0){
+                    this->results.clear();
                 }
+                this->results = temp_results;
+                imagesLock.unlock();
+
+//                if(this->results.size()>0){ // 生产一个数据， 唤醒消费者进程，通知消费
+//                    this->sharedData->dataReady.wakeOne();
+//                    this->sharedData->spaceAvailable.wait(&this->sharedData->mutex);
+//                }
             }else{
                 logger->info("Gets the number of image frames 0!");
             }

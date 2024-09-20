@@ -42,7 +42,6 @@ public:
     std::string ip="192.168.1.10";
     const char * SENSOR_IP = ip.c_str();
     cv::Mat lidar_data;
-
     std::string goc_name; //雷达名称
     Gocator();
     int getData(); //获取雷达数据

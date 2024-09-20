@@ -39,6 +39,7 @@ public:
     LineDetector* line_helper= nullptr;
     CameraManager* cam_controls = nullptr;
     SharedData* sharedData = nullptr;
+    QMutex imagesLock;
 
     QMutex data_lock;
     QWaitCondition condition;

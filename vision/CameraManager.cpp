@@ -26,26 +26,27 @@ bool CameraManager::openCamera(std::string camera_name) {
 CameraManager::CameraManager() {
 
 
-    // ï¿½ï¿½Ö¾ï¿½Ä¼ï¿½
+    // ÈÕÖ¾ÎÄ¼þ
     this->logger = spdlog::get("logger");
+
     this->serial2names = {
-            {"DA2720028", "cam_1"},
-            {"DA2720133", "cam_2"},
-            {"DA2720068", "cam_3"},
-            {"DA2720132", "cam_4"},
-            {"DA2720067", "cam_5"},
-            {"DA2720078", "cam_6"},
+            {"DA2720028", "LineCam_1"},  // ok
+            {"DA2720133", "LineCam_2"},  // ok
+            {"DA2720068", "LineCam_3"}, // ok
+            {"DA2720132", "LineCam_4"},  // ok
+            {"DA2720067", "LineCam_5"},  // ok
+            {"DA2720078", "LineCam_6"},  // ok
     };
-    // this->cameraInfoMap ï¿½ï¿½Ê¼ï¿½ï¿½
+    // this->cameraInfoMap ³õÊ¼»¯
     MV_CC_DEVICE_INFO null_dev;
     memset(&null_dev, 0, sizeof(MV_CC_DEVICE_INFO));
     this->cameraInfoMap = {
-            {"cam_1",  null_dev},
-            {"cam_2",  null_dev},
-            {"cam_3",  null_dev},
-            {"cam_4",  null_dev},
-            {"cam_5",  null_dev},
-            {"cam_6",  null_dev}
+            {"LineCam_1",  null_dev},
+            {"LineCam_2",  null_dev},
+            {"LineCam_3",  null_dev},
+            {"LineCam_4",  null_dev},
+            {"LineCam_5",  null_dev},
+            {"LineCam_6",  null_dev}
     };
 
     this->camera_info = {
@@ -58,20 +59,20 @@ CameraManager::CameraManager() {
 //            {"cam_06",  "192.168.1.115"}
     };
 
-    //ï¿½Ô¶ï¿½Ã¶ï¿½Ù¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½cameraInfoMapï¿½ï¿½ï¿½Ð¸ï¿½Öµ
+    //×Ô¶¯Ã¶¾Ù¾ÖÓòÍøÄÚµÄÏà»ú²¢¶ÔcameraInfoMap½øÐÐ¸³Öµ
     this->getDeviceList();
 
     if(this->m_stDevList.nDeviceNum==0){
         this->logger->info("no device found");
 //        return ;
     }
-    // ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    // ³õÊ¼»¯Ïà»ú¶ÔÏó
     for (auto &camera_info : this->cameraInfoMap) {
 //        this->cameraList[camera_info.first] = new HKCameraControls(camera_info.first.data(), camera_info.second.data(), this->ethIp);
         this->cameraList[camera_info.first] = new HKCameraControls(camera_info.second, camera_info.first.data());
 //        this->cameraList[camera_info.first]->start();
     }
-    // ï¿½ï¿½ï¿½ï¿½ï¿½ß³ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    // ¿ªÆôÏß³Ì, ´ò¿ªËùÓÐÏà»ú
     this->openCameraAll();
 
 }
@@ -106,8 +107,8 @@ CameraManager::~CameraManager() {
      }
 }
 
-void CameraManager::getImageAll() {
-    // ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ï¿½
+void CameraManager::getImageAll(std::string camType) {
+    // »ñÈ¡ËùÓÐÏà»úÍ¼Ïñ
     this->dataMutex.lock();
     if(this->cameraImages.size()>0){
         this->cameraImages.clear();
@@ -115,10 +116,23 @@ void CameraManager::getImageAll() {
 
     for (auto &camera : this->cameraList) {
         cv::Mat image = this->cameraList[camera.first]->getFrame();
+
+        if(camType =="Line"){ // ÂË³ý¿×Î»Ïà»ú
+            if(camera.first.find("HoleCam") != std::string::npos){
+                continue;
+            }
+        }
+
+        if(camType =="Hole"){// ÂË³ýÏßÎ»Ïà»ú
+            if(camera.first.find("LineCam") != std::string::npos){
+                continue;
+            }
+        }
+
         if(!image.empty()){
             this->cameraImages[camera.first] = image;
         }else{
-            image = cv::imread("C:\\Users\\csh_i\\MVS\\Data\\Image_20240710150737081.bmp"); //ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½
+            image = cv::imread("C:\\Users\\csh_i\\MVS\\Data\\Image_20240710150737081.bmp"); //ÊÇÒ»¸ö¿Ó
             this->cameraImages[camera.first] = image;
             this->logger->error("get image from camera {} failed", camera.first);
         }
@@ -134,11 +148,24 @@ bool CameraManager::closeCameraAll() {
     return 0;
 }
 
-std::map<std::string, cv::Mat> CameraManager::getCameraImages() {
+std::map<std::string, cv::Mat> CameraManager::getCameraImages(std::string camType){
     std::map<std::string, cv::Mat> cameraImages;
     this->dataMutex.lock();
     if(this->cameraImages.size()>0){
-        cameraImages = this->cameraImages;
+        for(auto &item : this->cameraImages){
+            if(camType =="Line"){ // ÂË³ý¿×Î»Ïà»ú
+                if(item.first.find("HoleCam") != std::string::npos){
+                    continue;
+                }
+            }
+
+            if(camType =="Hole"){// ÂË³ýÏßÎ»Ïà»ú
+                if(item.first.find("LineCam") != std::string::npos){
+                    continue;
+                }
+            }
+            cameraImages[item.first] = item.second;
+        }
     }
     this->dataMutex.unlock();
     return cameraImages;
@@ -152,7 +179,7 @@ void CameraManager::getDeviceList() {
         return ;
     }
     this->logger->info("find {} device", m_stDevList.nDeviceNum);
-    // ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    // ×Ô¶¯»¯ÅäÖÃ
     for (int i = 0; i < m_stDevList.nDeviceNum; i++) {
         MV_CC_DEVICE_INFO stDevInfo;
         memcpy(&stDevInfo, m_stDevList.pDeviceInfo[i], sizeof(MV_CC_DEVICE_INFO));
@@ -173,7 +200,7 @@ void CameraManager::closeAllCameraThread() {
 
 void CameraManager::run() {
 
-    // ï¿½ï¿½ï¿½ï¿½ï¿½ß³ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    // ¿ªÆôÏß³Ì, ´ò¿ªËùÓÐÏà»ú
     for (auto &camera : this->cameraList) {
         this->cameraList[camera.first]->openCamera();
         if(!this->cameraList[camera.first]->open_status){

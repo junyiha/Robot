@@ -49,7 +49,7 @@ void vision_demo(){
     vision.start();
 
     VisionResult res = vision.getVisResult();
-    if(res.status){
+    if(res.lineStatus){
         for(int i=0;i<5;++i){
             std::cout<<"cam:"<<i<<" :dist:"<<res.stData.m_LineDistance[i]<<std::endl;
         }

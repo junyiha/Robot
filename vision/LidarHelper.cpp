@@ -22,7 +22,7 @@ void get_bin_img(cv::Mat img, cv::Mat &bin_img) {
     cvtColor(img, imageGray, cv::COLOR_BGR2GRAY);
     threshold(imageGray, bin_img, 55, 200, cv::THRESH_BINARY);
 
-    }
+}
 
 
 void get_connected_components_info(cv::Mat imageBW, cv::Mat &outImage, cv::Mat &stats, cv::Mat &centroids,  cv::Mat &show_rect, std::vector<int> &linesIndex){
@@ -151,9 +151,9 @@ std::vector<std::vector<cv::Point2f>>  get_lines_by_connected_components(std::ve
         cv::Point p1(minX,k_line*(minX - fitline[2]) + fitline[3]);
         cv::Point p2(maxX,k_line*(maxX - fitline[2]) + fitline[3]);
 
-
         std::vector<cv::Point2f> end={p1,p2};
         linesEnd.push_back(end);
+
     }
     return linesEnd;
 }
@@ -164,22 +164,28 @@ LidarHelper::LidarHelper()
     this->resultFlag = false;
 }
 
-void LidarHelper::lidarDetecter(cv::Mat img,bool isleft,bool revAngle)
+void LidarHelper::lidarDetecter(cv::Mat img,bool isleft,bool revAngle, \
+                                int min_X, int min_Y, bool pIsLeft)
 {
+    /* min_X: 点云结果中最小x值
+     * min_y: 点云结果中最大x值
+     * direct_b: 表示板线边缘点方向
+     * direct_r: 表示参考板边缘点方向
+     */
 
     this->Left=isleft;
     //------------得到连通域并筛选面积--------------
     if(img.empty()){
         img = cv::imread("D:/_Project/Ship/program/ZBRobot/ZBRobotV23/bin/board/Lidar_test.jpg");
-        error="没有接受到图像";
-        std::cout<<"没有接受到图像"<<std::endl;
+        error="no image";
+        std::cout<<error<<std::endl;
     }
-    if (img.empty()) {
-        std::cout << "not get data" << std::endl;
-        error="没有接受到图像";
-        std::cout<<"没有接受到图像"<<std::endl;
-        return;
-    }
+//    if (img.empty()) {
+//        std::cout << "not get data" << std::endl;
+//        error="没有接受到图像";
+//        std::cout<<"没有接受到图像"<<std::endl;
+//        return;
+//    }
     this->show=img.clone();
 
     if(img.channels()<3){//转彩色
@@ -205,13 +211,38 @@ void LidarHelper::lidarDetecter(cv::Mat img,bool isleft,bool revAngle)
     //直线拟合
     std::vector<std::vector<cv::Point2f>> linesEnd= get_lines_by_connected_components(linesIndex, img, outImage);
 
+    //------------获取绝版板角点位置信息, 用户自动取板模块位姿感知--------------
+    if(linesEnd.size()==1){
 
-    //------------筛选出两条直线，得到直线关系--------------
+        double dx = linesEnd[0][0].x - linesEnd[0][1].x ;
+        double dy = linesEnd[0][0].y - linesEnd[0][1].y ;
+        double dist = std::sqrt(dx * dx + dy * dy);
+        if(dist<10){   //板线长度短于10个像素，则认为没有检测到板线
+            return ;
+        }
+
+        if(pIsLeft){ // 左边点
+            this->vertex = linesEnd[0][0].x<linesEnd[0][1].x?linesEnd[0][0]: linesEnd[0][1];
+        }else{
+            this->vertex = linesEnd[0][0].x>linesEnd[0][1].x?linesEnd[0][0]: linesEnd[0][1];
+        }
+        // 坐标系转换
+        this->vertex.x = (this->vertex.x - 50)/10+min_X;
+        this->vertex.y = (this->vertex.y - 50)/10+min_Y;
+
+        // 错误标志位
+        this->vertexValidFlag = true;
+        return ;
+    }
+
+
+    //------------筛选出两条直线，得到直线关系,  用于后续测量板间隙任务--------------
     if(linesEnd.size()<2){
         error="没有检测到两条直线";
         std::cout<<"没有检测到两条直线"<<std::endl;
         return;
     }
+
     while(linesEnd.size()>2){
         int delettIndex=0;
         float y=10000000;
@@ -225,8 +256,10 @@ void LidarHelper::lidarDetecter(cv::Mat img,bool isleft,bool revAngle)
     }
 
     cv::Mat fi;
-    this->resultFlag=true;
-    std::vector<cv::Point2f> board,ref;
+    if(linesEnd.size() ==2){
+        this->resultFlag=true;
+    }
+    std::vector<cv::Point2f> board, ref;
 
     //获取板线和参考线
     board=linesEnd[0][0].x+linesEnd[0][1].x<linesEnd[1][0].x+linesEnd[1][1].x?linesEnd[0]:linesEnd[1];
@@ -239,6 +272,7 @@ void LidarHelper::lidarDetecter(cv::Mat img,bool isleft,bool revAngle)
         board=ref;
         ref=tmp;
     }
+
     //展示结果
     cv::Mat show_line;
     img.copyTo(show_line);
@@ -297,6 +331,8 @@ void LidarHelper::clear()
     lidarAngle=0;
     lidarDist=0;
     gap=0;
+    vertexValidFlag = 0;
+    vertex = cv::Point2f(0.0,0.0);
     cv::Mat newImg;
     show=newImg;
 }
@@ -306,7 +342,7 @@ void LidarHelper::shrink()
 
     if(!show.empty()){
         if(show.channels()<3){//转彩色
-           cv::Mat color_show;
+            cv::Mat color_show;
             cv::cvtColor(show, color_show, cv::COLOR_GRAY2BGR);
             show=color_show;
         }
@@ -316,7 +352,7 @@ void LidarHelper::shrink()
         float scale=scale1>scale2?scale2:scale1;
         cv::Size dsize = cv::Size(show.cols*scale, show.rows*scale);
         cv::Mat shrink;
-       cv:: resize(show, shrink, dsize, 0, 0, cv::INTER_AREA);
+        cv:: resize(show, shrink, dsize, 0, 0, cv::INTER_AREA);
         show=shrink;
     }
 }
@@ -423,7 +459,7 @@ cv::Mat LidarHelper::showImg(std::vector<cv::Point2f> board, std::vector<cv::Poi
     cv::Mat canvas(int(hight), int(maxX), CV_8UC3, cv::Scalar(150, 150, 150));
     cv::line(canvas,board[0],board[1],cv::Scalar(255,0,0),6, cv::LINE_AA);
     cv::line(canvas,boardmid, cv::Point2d(boardmid.x+hight*sin(boardBias),boardmid.y-hight*cos(boardBias)),
-         cv::Scalar(255,0,0),6,cv::LINE_AA);
+             cv::Scalar(255,0,0),6,cv::LINE_AA);
     line(canvas,ref[0],ref[1],cv::Scalar(0,255,0),6,cv::LINE_AA);
     line(canvas,refmid,cv::Point2d(refmid.x+hight*sin(refBias),refmid.y-hight*cos(refBias)),
          cv::Scalar(0,255,0),6,cv::LINE_AA);

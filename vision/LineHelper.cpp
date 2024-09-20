@@ -1,156 +1,279 @@
-#include"LineHelper.h"
-#include<string>
-#include<iostream>
-#include<vector>
-#include<opencv2/opencv.hpp>
-#include<opencv2/highgui.hpp>
-#include "utils.h"
-#include<cmath>
-#include<chrono>
+//
+// Created by csh_i on 2024/6/12.
+//
 
+#include "LineHelper.h"
 #define PI acos(-1)
 
 
-std::vector<cv::Vec4f> detectEDLines(const cv::Mat& binaryImage) {
-    std::vector<cv::Vec4f> lines;
-    cv::Mat grad;
-    // 使用Canny边缘检测器检测边缘
-    Canny(binaryImage, grad, 50, 150);
+// double calculateDistanceBetweenParallelLines(double slope, double intercept1, double intercept2) {
+//     double denominator = std::sqrt(1 + slope * slope);
+//     return std::abs(intercept2 - intercept1) / denominator;
+// }
 
-    // 提取非零像素点
-    std::vector<cv::Point> points;
-    for (int y = 0; y < grad.rows; ++y) {
-        for (int x = 0; x < grad.cols; ++x) {
-            if (grad.at<uchar>(y, x) != 0) {
-                points.push_back(cv::Point(x, y));
-            }
-        }
-    }
-
-    // 对边缘点进行分组以形成直线段（这里省略了分组逻辑）
-    // ...
-
-    return lines;
-}
-
-
-/* 直线检测算法类方法实现 */
-// LineHelper 构造函数
 LineHelper::LineHelper() {
     this->resize_h = 512;
     this->resize_w = 512;
-
-    this->min_pos_valid = 20;
-    this->max_pos_valid = 512 - 20;
-
-    this->min_dist_lines = 20;
-    this->max_dist_lines = 400;
-
-    this->max_angle_degrees = 10;
+    // 有效线段分布区间
+    this->min_pos_valid = 30;
+    this->max_pos_valid = 512 - 50;
+    // 两个线段之间的距离范围
+    this->min_dist_lines = 50;
+    this->max_dist_lines = 250;
+    // 角度范围
+    this->max_angle_degrees = 7;
     this->min_len_seg = static_cast<unsigned>(512 * 0.1);
 }
 
-// 输入图像预处理
-void LineHelper::img_processing(cv::Mat img, cv::Mat& img_gray, cv::Mat& bin_img) {
-    /**
-     * @brief 图像预处理
-     *
-     * 对输入图像进行预处理，包括调整大小、直方图均衡化、去除边缘锯齿和高斯模糊。
-     *
-     * @param img 输入图像
-     * @param img_gray 灰度图像
-     * @param bin_img 二值化图像
-     */
-    cv::Mat img_eq;
-    cvtColor(img, img_gray, cv::COLOR_BGR2GRAY);
-    cv::GaussianBlur(img_gray, img_gray, cv::Size(5, 5), 0);
-    //cv::equalizeHist(img_gray, img_eq); // 不要使用直方图均衡化
-    cv::threshold(img_gray, bin_img, 0, 255,  cv::THRESH_OTSU);//OSTU算法二值化分割
-//    bin_img = padding_hollow(bin_img);// 边缘去锯齿
+// 计算两条线段是否重合或接近重合
+bool isOverlapping(const std::vector<float>& a, const std::vector<float>& b, double tolerance = 3) {
+    // 这里使用简单的逻辑来判断线段是否重合
+    // 你可以根据需要添加更复杂的逻辑，比如检查线段是否足够接近
+    return (std::abs(a[0] - b[0]) < tolerance && std::abs(a[1] - b[1]) < tolerance &&
+            std::abs(a[2] - b[2]) < tolerance && std::abs(a[3] - b[3]) < tolerance);
 }
 
-InkInfo LineHelper::get_ink_rough_property(cv::Mat bin_img, std::vector<float> line) {
-
-    InkInfo ink_info;
-    int height = bin_img.rows;
-    int width = bin_img.cols;
-
-    int half_height = height / 2;
-
-    // 创建两个Mat对象来存储图像的上下半部分
-    cv::Mat upper_half(height / 2, width, bin_img.type());
-    cv::Mat lower_half(height - half_height, width, bin_img.type());
-
-    // 提取图像的上半部分
-    cv::Rect upper_rect(0, 0, width, half_height);
-    bin_img(upper_rect).copyTo(upper_half);
-
-    // 提取图像的下半部分
-    cv::Rect lower_rect(0, half_height, width, height - half_height);
-    bin_img(lower_rect).copyTo(lower_half);
-
-    cv::Scalar upper_mean = cv::mean(upper_half);
-    cv::Scalar lower_mean = cv::mean(lower_half);
-
-    if (upper_mean.val[0] <lower_mean.val[0]) {
-        ink_info.is_upper = true;
-        float min_value = line[1] < line[3] ? line[1] : line[3];
-        ink_info.base_y = min_value;
+// 过滤掉重合的线段
+std::vector<std::vector<float>> filterOverlappingSegments(const std::vector<std::vector<float>>& segments) {
+    std::vector<std::vector<float>> filteredSegments;
+    for (const auto& segment : segments) {
+        bool is_overlapping = false;
+        for (const auto& existingSegment : filteredSegments) {
+            if (isOverlapping(segment, existingSegment)) {
+                is_overlapping = true;
+                break;
+            }
+        }
+        if (!is_overlapping) {
+            filteredSegments.push_back(segment);
+        }
     }
-    else {
-        ink_info.is_upper = false;
-        float max_value = line[1] > line[3] ? line[1] : line[3];
-        ink_info.base_y = max_value;
-    }
-    return ink_info;
+    return filteredSegments;
 }
 
-//LSD算法进行直线检测
-std::vector<cv::Vec4f> LineHelper::line_detect_lsd(cv::Mat binary_img) {
+
+void LineHelper::img_processing(cv::Mat img, cv::Mat &img_gray, cv::Mat &bin_img) {
+    return ;
+}
+
+LineRes LineHelper::compute_lines_distance(cv::Mat img, bool is_upper) {
+
+    //数据合法性校验
+    LineRes res;
+    memset(&res, 0, sizeof(LineRes));
+    if (img.empty()) {
+        res.error_info = "Input data can not be null";
+        return res;
+    }
+    // 图像旋转, 主要针对9号和10号相机
+    if (img.rows > img.cols) {
+        img = rotateImage(img);
+    }
+
+    float origin_h = img.rows;
+    float origin_w = img.cols;
+    float h_ratio = origin_h / this->resize_h;
+    float w_ratio = origin_w / this->resize_w;
+
+    //图像预处理
+    cv::Mat img_gray, bin_img, img_512;
+    cv::resize(img, img_512, cv::Size(this->resize_w,this->resize_h));
+    cv::cvtColor(img_512, img_gray, cv::COLOR_BGR2GRAY);
+    cv::threshold(img_gray, bin_img, 0, 255, cv::THRESH_BINARY|cv::THRESH_OTSU);
+    res.img_drawed = img_512;
+
+    // mlsd  算法检测所有可能的线段
+    std::vector<std::vector<float>>  all_lines = get_all_possible_lines(img_512);
+
+    // 对检测到的直线进行排序 ;
+    if(is_upper){
+        sort_lines(all_lines, true) ;   // 升序排序
+    }else{
+        sort_lines(all_lines, false) ;  // 降序排序
+    }
+
+    if(all_lines.empty()){
+        res.error_info = "Invalid input image";
+        return res;
+    }
+
+    // 获取板线段
+    std::vector<float> line_border_res = this->get_border_line(img_512,all_lines);
+
+    if(line_border_res.empty()){
+        res.error_info = "Board line detection failed";
+        return res;
+    }else{
+        double x1 = line_border_res[0]*w_ratio,  y1 =line_border_res[1]*h_ratio, x2 = line_border_res[2]*w_ratio ,y2 = line_border_res[3]*h_ratio;
+        float scope = (y1-y2)/(x1-x2);
+        res.border_res = {line_border_res[0]*w_ratio,line_border_res[1]*h_ratio,line_border_res[2]*w_ratio,line_border_res[3]*h_ratio, scope};
+        res.border_line_status = true;
+        cv::line(img_512, cv::Point2f(line_border_res[0], line_border_res[1]), cv::Point2f(line_border_res[2], line_border_res[3]), cv::Scalar(255,0,255),2);
+        res.img_drawed = img_512;
+    }
+
+    // 获取墨迹线段
+    std::vector<float> line_ink_res = this->get_ink_line(bin_img, line_border_res,all_lines);
+    if(line_ink_res.empty()){
+        res.error_info = "Ink line detection failed";
+        return res;
+    }else{
+        res.ink_line_status = true;
+        double x1 = line_ink_res[0]*w_ratio,  y1 =line_ink_res[1]*h_ratio, x2 = line_ink_res[2]*w_ratio ,y2 = line_ink_res[3]*h_ratio;
+        float scope1 = (y1-y2)/(x1-x2);
+        res.ink_res = {line_ink_res[0]*w_ratio,line_ink_res[1]*h_ratio,line_ink_res[2]*w_ratio,line_ink_res[3]*h_ratio, scope1};
+        cv::line(img_512, cv::Point2f(line_ink_res[0], line_ink_res[1]), cv::Point2f(line_ink_res[2], line_ink_res[3]), cv::Scalar(0,255,255),2);
+        res.img_drawed = img_512;
+    }
+
+    if(line_ink_res.size()>0 && line_border_res.size()>0){
+        // 计算墨迹线与板线的距离
+        double distance = calculateDistanceBetweenParallelLines(line_border_res[4], line_ink_res[1]*h_ratio, line_border_res[1]*h_ratio);
+        double distance_1 = computePointToLineDistance(res.border_res, res.ink_res);
+        res.dist = distance;
+        res.status = true;
+    }
+    return res;
+}
+
+
+
+
+// 函数用于计算两条平行直线之间的距离
+std::vector<std::vector<float>> LineHelper::get_all_possible_lines(cv::Mat img) {
+
+    // MLSD算法检测所有可能的线段
+    std::vector<std::vector<float>> line_res;
+    std::vector<std::vector<float>>  lines_mlsd = this->line_detector.detect(img);
+    cv::Mat line_mask = cv::Mat::zeros(img.size(), CV_8UC1);
+    for(auto item: lines_mlsd){
+        cv::line(line_mask, cv::Point(item[0], item[1]), cv::Point(item[2], item[3]), cv::Scalar(255), 1);
+    }
+    std::vector<std::vector<float>> lines = get_line_by_lsd(line_mask);
+    sort_lines(lines);
+    std::vector<std::vector<float>> lines_new = linesAggregation(lines);
+
+    //对检测出的直线进一步过滤
+    for (auto &line : lines_new) {
+        // 1.0 边线分布位置特点过滤
+        if (line[1] < this->min_pos_valid || line[3] > max_pos_valid) { continue;}
+        // 2.0 过滤掉竖直为竖直方向的直线
+        if(line[1]<0 | line[3]<0|line[1]>img.cols|line[3]>img.cols){
+            continue;
+        }
+        line_res.push_back(std::vector<float>{line[0],line[1],line[2],line[3],line[4]});
+    }
+    return line_res;
+}
+
+std::vector<float> LineHelper::get_border_line(cv::Mat img, std::vector<std::vector<float>> lines) {
+
+    // 率先通过mlsd 算法检测出板线
+    std::vector<float> border_line_res;
+    cv::Mat bin_img;
+    if(img.channels() == 3){
+        cv::Mat img_gray;
+        cv::cvtColor(img, img_gray, cv::COLOR_BGR2GRAY);
+        cv::threshold(img_gray, bin_img, 0, 255, cv::THRESH_OTSU);
+    }else{
+        bin_img = img;
+    }
+
+
+    std::vector<float> border_line_mlsd;
+    for(auto &line_item : lines){
+        cv::Vec4f line = { round(line_item[0]),
+                           round(line_item[1]),
+                           round(line_item[2]),
+                           round(line_item[3])
+        };
+        if(check_is_border_line(bin_img, line, 0.65)){
+            border_line_mlsd = line_item;
+            std::cout<<"border scope:"<<line_item[4]<<std::endl;
+            break;
+        }
+    }
+
+    //  传统算法进一步线段矫正
+    std::vector<float> border_line_lsd;
+//    border_line_lsd = get_border_line_by_lsd(bin_img);    //LSD算法检测线段较为耗时, 默认状态下没有开启
+    if(border_line_mlsd.size()>0){
+        if (border_line_lsd.size()>0){
+            // 计算两个线段的距离
+            float dist = calculateDistanceBetweenParallelLines(border_line_mlsd[4], border_line_mlsd[1], border_line_lsd[1]);
+            if(dist<5){
+                border_line_res = border_line_lsd;
+                std::cout << "mlsd 算法检测的板线与 lsd 算法检测的板线距离为："<< dist << std::endl;
+            }
+            else {
+                border_line_res = border_line_mlsd;
+            }
+        }else{
+            border_line_res = border_line_mlsd;
+        }
+    }else{
+        if(border_line_lsd.size()>0){
+            border_line_res = border_line_lsd;
+        }
+    }
+    return border_line_res;
+}
+
+void LineHelper::imageLocalBinarization(cv::Mat img, const std::vector<std::vector<float>> &lines, cv::Mat &bin_img) {
     /**
-     * @brief 对二值化分割图像进行直线检测
-     *
-     * 使用 LSD 算法对二值化分割图像进行直线检测，并返回检测到的直线信息。
-     *
-     * @param binary_img 二值化分割图像
-     *
-     * @return 检测到的直线信息
-     */
+ * @brief 对图像进行局部二值化处理
+ *
+ * 根据给定的线条信息，对图像进行局部二值化处理。首先将图像转换为灰度图像，
+ * 然后使用 Otsu 阈值法进行全局二值化。接着，遍历线条信息，对每条线条的中心区域
+ * 进行局部二值化处理，并将结果应用到输出图像中。
+ *
+ * @param img 输入图像
+ * @param lines 线条信息，以二维浮点向量形式表示
+ * @param bin_img 输出二值化图像
+ */
+
+    cv::Mat img_gray;
+    cv::cvtColor(img, img_gray, cv::COLOR_BGR2GRAY);
+    cv::threshold(img_gray, bin_img, 0, 255, cv::THRESH_OTSU);
+
+    int offset = 50;
+    for(const auto &line : lines){
+        cv::Vec4f line_item = {round(line[0]), round(line[1]), round(line[2]), round(line[3])};
+        cv::Point2f center = {
+                (line_item[0] + line_item[2]) / 2,
+                (line_item[1] + line_item[3]) / 2
+        };
+        cv::Point2f left_point = {
+                center.x - offset/2,
+                center.y - offset/2
+        };
+
+        cv::Point2f right_point = {
+                center.x + offset/2,
+                center.y + offset/2
+        };
+        if(left_point.x>0 && left_point.y>0
+           &&right_point.x<img.cols
+           && right_point.y<img.rows){
+            cv::rectangle(img, left_point, right_point, cv::Scalar(0,255,0), 1);
+            cv::Rect roi(center.x, center.y, offset, offset);
+            cv::Mat roi_img = img_gray(roi);
+            cv::Mat roi_bin;
+            cv::threshold(roi_img, roi_bin, 0, 255, cv::THRESH_BINARY|cv::THRESH_OTSU);
+            bin_img(roi) = roi_bin;
+
+        }
+    }
+}
+
+std::vector<float> LineHelper::get_border_line_by_lsd(cv::Mat bin_img) {
+
+    std::vector<float> border_line;
+    //基于LSD算法获取线检测点
     cv::Ptr<cv::LineSegmentDetector> detector = createLineSegmentDetector(cv::LSD_REFINE_STD);
     std::vector<cv::Vec4f> lines;
-    detector->detect(binary_img, lines);
-    return lines;
-}
-
-// 获取板界线
-void LineHelper::get_border_line(cv::Mat img, cv::Mat bin_img, std::vector<std::vector<float>> pred_lines, LineRes& res) {
-
-    /**
-     * @brief 获取板线
-     *
-     * 基于给定的图像和预测直线，获取板线信息并存储到 LineRes 结构体中。
-     *
-     * @param img 输入的图像
-     * @param bin_img 二值化后的图像
-     * @param pred_lines 预测直线集合
-     * @param res 存储板线信息的 LineRes 结构体引用
-     */
-
-    int img_h, img_w;
-    img_h = bin_img.rows;
-    img_w = bin_img.cols;
-    float ratio = 0.3;
-    // 基于LSD算法进行直线检测
-
-    auto start_time = std::chrono::high_resolution_clock::now();
-
-    std::vector<cv::Vec4f> lines = line_detect_lsd(bin_img);
-    //vector<Vec4f> lines = detectEDLines(bin_img);
-    auto end_time = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
-
-
-    //基于LSD算法获取线检测点
+    detector->detect(bin_img, lines);
+    // 筛选板线点
     std::vector<cv::Point2f> points;
     for (size_t i = 0; i < lines.size(); i++) {
         cv::Vec4f line = lines[i];
@@ -161,198 +284,47 @@ void LineHelper::get_border_line(cv::Mat img, cv::Mat bin_img, std::vector<std::
         float distance = calculatePointsDistance(cv::Point2f(line[0], line[1]), cv::Point2f(line[2], line[3]));
         // 如何判别检测的线属于板线的范畴？
         // 长度大小、外观纹理、位置特点
-        if ((distance > img_w*0.2) && check_is_boundary(bin_img, line)) { //满足直线的长度要求，且直线上下区域像素相似度低
+        if ((distance > this->resize_w*0.2) && check_is_boundary(bin_img, line)) { //满足直线的长度要求，且直线上下区域像素相似度低
             points.push_back(cv::Point2f(line[0], line[1]));
             points.push_back(cv::Point2f(line[2], line[3]));
             break;
         }
     }
-
-
-    std::vector<float> line_new; // LSD算法获取的板界线
-    // MLSD检测算法进行兜底或者LSD算法结果进行修正
-    if (points.size() == 0) {
-        for (const auto& row : pred_lines) {
-            float start_x = row[0];
-            float start_y = row[1];
-            float end_x = row[2];
-            float end_y = row[3];
-            if (start_y < this->min_pos_valid || end_y > max_pos_valid) { continue; }
-
-            float distance = calculatePointsDistance(cv::Point2f(start_x, start_y), cv::Point2f(end_x, end_y));
-            cv::Vec4f line = { start_x ,start_y ,end_x,end_y };
-            if ((distance > this->min_len_seg) && check_is_boundary(bin_img, line)) {
-                points.push_back(cv::Point2f(start_x, start_y));
-                points.push_back(cv::Point2f(end_x, end_y));
-                break;
-            }
-        }
+    if(points.size()>0){
+        border_line = fiting_line(points);
     }
-
-    // 对结果进行校验
-    if (points.size()>0) {
-        // 直线重新拟合
-        line_new = fiting_line(points);
-        if (line_new.size()>0) {
-            res.border_line_status = true;
-            res.border_res = line_new;
-            cv::line(res.img_drawed,
-                     cv::Point( static_cast<int>(line_new[0]), static_cast<int>(line_new[1])),
-                     cv::Point(static_cast<int>(line_new[2]), static_cast<int>(line_new[3])),
-                     cv::Scalar(0, 0, 255), 2);
-        }
-        else {
-            res.error_info = "板线直线拟和失败!";
-        }
-    }
-    else {
-        res.error_info = "板线检测失败,请重新确认输入图像是否符合要求!!!";
-    }
-
+    return border_line;
 }
 
-//// 函数用于计算两条平行直线之间的距离
-//double calculateDistanceBetweenParallelLines(double slope, double intercept1, double intercept2) {
-//    double denominator = std::sqrt(1 + slope * slope);
-//    return std::abs(intercept2 - intercept1) / denominator;
-//}
+std::vector<float> LineHelper::get_ink_line(cv::Mat bin_img,  std::vector<float> &border_line,   std::vector<std::vector<float>>& pred_lines) {
 
-// 获取墨迹线
-void LineHelper::get_ink_line(cv::Mat bin_img, std::vector<std::vector<float>> pred_lines, LineRes& res) {
-    /**
-     * @brief 获取墨迹线
-     *
-     * 根据 MLSD 预测结果，筛选墨迹线条并存储到 LineRes 结构体中。
-     *
-     * @param pred_lines MLSD 预测直线集合
-     * @param res 存储板线信息的 LineRes 结构体引用
-     */
-    std::vector<float> border_line_info = res.border_res;
+    std::vector<float> border_line_info =border_line;
     float slope = border_line_info[4]; //板线斜率
     std::vector<float> ink_line;
 
-    InkInfo ink_info = get_ink_rough_property(bin_img, border_line_info);
     for (const auto& row : pred_lines) {
-        float start_x = row[0];
-        float start_y = row[1];
-        float end_x = row[2];
-        float end_y = row[3];
-        // 非工作区间内线段过滤
-        if (start_y < this->min_pos_valid || end_y > this->max_pos_valid) { continue; }
 
-        // 斜率相同且保持一定的间距、一定的长度
-        float distance = calculatePointsDistance(cv::Point2f(start_x, start_y), cv::Point2f(end_x, end_y));
-        // 直线拟合
-        std::vector<cv::Point2f> points;
-        points.push_back(cv::Point2f(start_x, start_y));
-        points.push_back(cv::Point2f(end_x, end_y));
-        std::vector<float> line_new = fiting_line(points);
-        float slope_ink = line_new[4];
-        float line_dist = abs(border_line_info[1] - line_new[1]);
+        float slope_ink = row[4];
+        float line_dist = abs(border_line_info[1] - row[1]);
 
         // 计算两条之间角度偏差
         float slope_offset = slope - slope_ink;
         float angle = atan(slope_offset);
         float angle_degrees = abs(angle*(180.0 / PI));
 
-        if (line_dist>this->min_dist_lines &&
-            line_dist<this->max_dist_lines&&
-            angle_degrees < this->max_angle_degrees &&
-            distance>this->min_len_seg ) {
-            ink_line = line_new;
-            break;
+        // 线间距、角度偏差判断
+        if (line_dist>this->min_dist_lines &&line_dist<this->max_dist_lines&&angle_degrees < this->max_angle_degrees) {
+            cv::Vec4f line = { round(row[0]),
+                               round(row[1]),
+                               round(row[2]),
+                               round(row[3])
+            };
+            // 判断是否是墨迹线
+            if(!check_is_border_line(bin_img, line,0.7)){
+                ink_line = row;
+                break;
+            }
         }
     }
-
-    if (ink_line.size()>0) {
-        res.ink_line_status = true;
-        res.ink_res = ink_line;
-        res.status = true;
-        cv::line(res.img_drawed, cv::Point(static_cast<int>(ink_line[0]), static_cast<int>(ink_line[1])),
-                 cv::Point(static_cast<int>(ink_line[2]), static_cast<int>(ink_line[3])),
-                 cv::Scalar(0,255,0), 2);
-    }
-    else {
-        res.error_info = "墨迹检测失败!";
-    }
-
+    return ink_line;
 }
-
-// 获取板线与墨迹线之间的距离
-LineRes LineHelper::compute_lines_distance(cv::Mat img) {
-
-    /**
-        * @brief 计算直线之间的距离
-        *
-        * 根据给定的图像，计算板线和墨迹线之间的距离。
-        *
-        * @param img 输入的图像
-        *
-        * @return 返回包含直线信息的结构体
-        */
-
-    //数据合法性校验
-    LineRes res;
-    res.status = false;
-    res.ink_line_status = false;
-    res.border_line_status = false;
-
-    if (img.empty()) {
-        res.error_info = "Invalid input image";
-        return res;
-    }
-
-    //图像宽高比校验
-//    if (img.rows > img.cols) {
-//        img = rotateImage(img);
-//    }
-    float origin_h = img.rows;
-    float origin_w = img.cols;
-    float h_ratio = origin_h / this->resize_h;
-    float w_ratio = origin_w / this->resize_w;
-
-    //图像预处理
-    cv::Mat img_gray, bin_img, img_512;
-    cv::resize(img, img_512, cv::Size(this->resize_w,this->resize_h));
-    img_processing(img_512, img_gray, bin_img);
-    res.img_drawed = img_512;
-
-    try {
-        //MLSD算法直线检测
-        std::vector<std::vector<float>> pred_lines = line_tooler.detect(img_512);
-
-        if (!(pred_lines.size() > 0)) {
-            res.error_info = "待检测图像场景类型不合法,请重新核对图像内容!!!";
-        }
-
-        //获取板线
-        get_border_line(img_gray, bin_img, pred_lines, res);
-        if (!res.border_line_status) {
-            std::cout<<" border line detection is failed!"<<std::endl;
-            //板线检测失败
-            return res;
-        }
-
-        //获取墨迹线
-        get_ink_line(bin_img, pred_lines, res);
-        if (!res.ink_line_status) {
-            std::cout<<" ink line detection is failed!"<<std::endl;
-            return res;
-        }
-
-        //计算方式待进一步修正
-        double dist = calculateDistanceBetweenParallelLines(res.border_res[4], res.border_res[1] * h_ratio, res.ink_res[1] * h_ratio);
-        res.dist = dist*this->scale;
-        return res;
-    }
-    catch (...) {
-        res.error_info = "直线检测算法出现运行异常!";
-        std::cout<<res.error_info<<std::endl;
-        return res;
-    }
-
-}
-
-
-
-

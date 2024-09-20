@@ -5,8 +5,9 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
+    // 设置窗口标志，禁止拖动
     ui->setupUi(this);
-
+//    this->setWindowFlags(Qt::FramelessWindowHint);
     //1.0 初始化化日志
     initLog();
 
@@ -113,9 +114,9 @@ void MainWindow::connectSlotFunctions() {// 按钮时间绑定
 //    connect(ui->btn_lift_, &QPushButton::clicked, this, &MainWindow::on_btn_lift_clicked, Qt::UniqueConnection);
     connect(ui->btn_leveling_, &QPushButton::clicked, this, &MainWindow::on_btn_leveling_clicked, Qt::UniqueConnection);
     connect(ui->btn_sideline_, &QPushButton::clicked, this, &MainWindow::on_btn_sideline_clicked, Qt::UniqueConnection);
-    connect(ui->btn_magnet_open_, &QPushButton::clicked, this, &MainWindow::on_btn_magnet_open_clicked, Qt::UniqueConnection);
+//    connect(ui->btn_magnet_open_, &QPushButton::clicked, this, &MainWindow::on_btn_magnet_open_clicked, Qt::UniqueConnection);
     connect(ui->btn_auto_knock_, &QPushButton::clicked, this, &MainWindow::on_btn_auto_knock_clicked, Qt::UniqueConnection);
-    connect(ui->btn_magnet_close_, &QPushButton::clicked, this, &MainWindow::on_btn_magnet_close_clicked, Qt::UniqueConnection);
+//    connect(ui->btn_magnet_close_, &QPushButton::clicked, this, &MainWindow::on_btn_magnet_close_clicked, Qt::UniqueConnection);
     connect(ui->btn_magnet_pause_, &QPushButton::clicked, this, &MainWindow::on_btn_magnet_pause_clicked, Qt::UniqueConnection);
     connect(ui->btn_knock_suspend_, &QPushButton::clicked, this, &MainWindow::on_btn_knock_suspend_clicked, Qt::UniqueConnection);
     connect(ui->btn_magnet_stop_, &QPushButton::clicked, this, &MainWindow::on_btn_magnet_stop_clicked, Qt::UniqueConnection);
@@ -127,7 +128,6 @@ void MainWindow::connectSlotFunctions() {// 按钮时间绑定
 //    connect(ui->btn_lift_2, &QPushButton::clicked, this, &MainWindow::on_btn_lift_2clicked, Qt::UniqueConnection);
     // 3.0 机械臂功能按钮槽函数绑定
     for(unsigned int i = 0; i < jointNum; i++){
-
         // 单轴
         connect(findChild<QPushButton*>("btn_moveFwd_shaft" + QString::number(i)), &QPushButton::pressed, this, &MainWindow::btn_moveFwd_shaft_pressed, Qt::UniqueConnection);
         connect(findChild<QPushButton*>("btn_moveFwd_shaft" + QString::number(i)), &QPushButton::released, this, &MainWindow::btn_moveFwd_shaft_released, Qt::UniqueConnection);
@@ -239,7 +239,6 @@ void MainWindow::on_btn_disable_clicked()
     if(m_Com->getCommState_Robot() == true)
     {
         m_Robot->setLinkEnable(false);
-        m_Robot->setRobotEnable(false);
         this->logger->info("执行下使能!");
     }
     else
@@ -381,16 +380,16 @@ void MainWindow::on_btn_magent_crash_stop_clicked() {
 
 void MainWindow::slotUpdateUIAll() {
 
-    //// 1.0 更新点激光测量值
-    //updateLaserData();
+    // 1.0 更新点激光测量值
+    updateLaserData();
 
-    //// 2.0 更新相机图像帧
-    //updateCameraData();
+    // 2.0 更新相机图像帧
+    updateCameraData();
 
-    //// 3.0 更新边线检测实时测量值
-    //updateLineDetectResults();
+    // 3.0 更新边线检测实时测量值
+    updateLineDetectResults();
 
-    //// 4.0 更新轴状态信息
+    // 4.0 更新轴状态信息
     updateAxisStatus();
 
     // 5.0 更新机器人任务流程状态
@@ -406,22 +405,22 @@ void MainWindow::slotUpdateUIAll() {
 }
 
 void MainWindow::updataDeviceConnectState() {
-    //// 相机连接状态显示
-    //std::vector<bool> camera_open_sta = m_VisionInterface->camera_controls->getCameraOpenedInfo();
-    //for(int i=0; i<camera_open_sta.size(); i++){
-    //    if(camera_open_sta[i]){
-    //        findChild<QLabel *>("label_camera_state" + QString::number(i + 1))->setStyleSheet(
-    //                "image: url(:/img/images/icon_greenLight.png);");
-    //    }else{
-    //        findChild<QLabel *>("label_camera_state" + QString::number(i + 1))->setStyleSheet(
-    //                "image: url(:/img/images/icon_redLight.png);");
-    //    }
-    //}
+    // 相机连接状态显示
+    std::vector<bool> camera_open_sta = m_VisionInterface->camera_controls->getCameraOpenedInfo();
+    for(int i=0; i<camera_open_sta.size(); i++){
+        if(camera_open_sta[i]){
+            findChild<QLabel *>("label_camera_state" + QString::number(i + 1))->setStyleSheet(
+                    "image: url(:/img/images/icon_greenLight.png);");
+        }else{
+            findChild<QLabel *>("label_camera_state" + QString::number(i + 1))->setStyleSheet(
+                    "image: url(:/img/images/icon_redLight.png);");
+        }
+    }
     // 更新io板和机器人连接状态显示
     bool io_A_sta = m_Com->getCommState_IOA();
     bool io_B_sta = m_Com->getCommState_IOB();
     bool robot_sta = m_Com->getCommState_Robot();
-    //this->logger->info("ioA:{}, ioB:{}, robot:{}", io_A_sta, io_B_sta, robot_sta);
+//    this->logger->info("ioA:{}, ioB:{}, robot:{}", io_A_sta, io_B_sta, robot_sta);
 
     if(io_A_sta){
         ui->label_io_A->setStyleSheet("image: url(:/img/images/icon_greenLight.png);");
@@ -520,8 +519,8 @@ void MainWindow::updateAxisStatus() {
 void MainWindow::updateLineDetectResults() {
 
     bool isEnable = m_VisionInterface->camera_controls->camerasIsOpened();
-    if(!isEnable){
-        this->logger->info("相机未全部开启成功,请检查相机连接！");
+    if(isEnable){
+//        this->logger->info("相机未全部开启成功,请检查相机连接！");
         return;
     }
     unsigned pageIndex = ui->stackedWidget_view->currentIndex();
@@ -537,13 +536,35 @@ void MainWindow::updateLineDetectResults() {
             return ;
         }
         VisionResult visResult = m_VisionInterface->getVisResult();
-        if(visResult.status){
+        if(visResult.lineStatus){
             for(int i = 0; i < cameraNum; i++){
                 float dist = visResult.stData.m_LineDistance[i];
                 dist = std::isinf(dist) ? 0 : dist;
                 findChild<QLabel*>(prefix + QString::number(i))->setText("Dist " + QString::number(i + 1) + ":" + QString::number(dist));
             }
         }
+
+        // 更新轮廓激光测量结果
+        if(visResult.laserStatus){
+            for(int i = 0; i < 4; i++){
+                bool isValid = visResult.stData.m_bLaserProfile[i];
+                QLabel *labelHeight = findChild<QLabel*>("label_heightDist_" + QString::number(i));
+                QLabel *labelGap = findChild<QLabel*>("label_gap_" + QString::number(i));
+                if(isValid){
+                    float borderDist = visResult.stData.m_LaserGapHeight[i]; // 板高差
+                    float gapDist = visResult.stData.m_LaserGapDistance[i]; // 版间距
+                    labelHeight->setText(QString::number(borderDist));
+                    labelGap->setText(QString::number(gapDist));
+                }else{
+                    labelHeight->setText(QString::number(0.00));
+                    labelGap->setText(QString::number(0.00));
+                }
+            }
+        }
+
+
+
+
 
 
 //        std::map<std::string, LineDetectRes> res = m_VisionInterface->getLineRes();
@@ -560,14 +581,17 @@ void MainWindow::updateLineDetectResults() {
 }
 
 void MainWindow::updateLaserData() {
+
+    // 更新点激光
     QVector  laserdis = m_Com->getLasersDistance();
     if(laserdis.size() > 0){
         for(int i = 0; i < larserNum; i++){
-            findChild<QLabel*>("label_laserDist" + QString::number(i))->setText(QString::number(laserdis[i]));
+            findChild<QLabel*>("label_laserDist" + QString::number(i))->setText("Laser "+QString::number(i)+" Value :"+QString::number(laserdis[i]));
         }
     }else{
         logger->info("获取点激光值为空!");
     }
+
 }
 
 void MainWindow::updateCameraData() {
@@ -605,6 +629,11 @@ void MainWindow::updateCameraData() {
                 }
                 size_t index = item.first.find("_")+1;
                 int number = item.first[index]-'0';
+                // 处理圆孔相机显示
+                if(item.first.find("hole") != std::string::npos){
+                    prefix = "label_hole_cam";
+                }
+
                 cv::Mat temp;
                 cv::resize(item.second,temp,imgSize);
                 QImage img = QImage((uchar*)temp.data, temp.cols, temp.rows, QImage::Format_RGB888);
@@ -1219,4 +1248,51 @@ void MainWindow::on_btn_preparation_pos_pressed() {
 
 void MainWindow::on_btn_preparation_pos_released() {
     m_Robot->setLinkHalt();
+}
+
+void MainWindow::mousePressEvent(QMouseEvent *event) {
+//    logger->info("Mouse press event");
+    event->ignore();
+////     禁止拖动窗口
+//    if (event->button() == Qt::LeftButton) {
+//        this->logger->info("Mouse press event*****************");
+//        event->ignore();
+//    } else {
+//        QMainWindow::mousePressEvent(event);
+//    }
+
+//    // 检查鼠标是否在标题栏区域内
+//    QRect titleBarRect = frameGeometry();
+//    titleBarRect.setHeight(frameGeometry().height() - frameGeometry().height() / 2); // 假设标题栏高度为窗口高度的一半
+//
+//    if (titleBarRect.contains(event->pos())&!m_dragEnabled) {
+//        event->ignore(); // 忽略左键点击事件
+//    } else {
+//        QMainWindow::mousePressEvent(event);
+//    }
+}
+
+void MainWindow::mouseMoveEvent(QMouseEvent *event) {
+
+    QRect titleBarRect = frameGeometry();
+    titleBarRect.setHeight(titleBarRect.height() / 6); // 假设标题栏高度为窗口高度的六分之一
+
+    if (titleBarRect.contains(event->pos())) {
+        logger->info("Mouse move event");
+        event->ignore(); // 忽略鼠标移动事件
+    } else {
+        QMainWindow::mouseMoveEvent(event);
+    }
+
+
+//    // 检查鼠标是否在标题栏区域内
+//    QRect titleBarRect = frameGeometry();
+//    titleBarRect.setHeight(frameGeometry().height() - frameGeometry().height() / 2); // 假设标题栏高度为窗口高度的一半
+//
+//    if (titleBarRect.contains(event->pos())&!m_dragEnabled) {
+//        event->ignore(); // 忽略鼠标移动事件
+//    } else {
+//        QMainWindow::mouseMoveEvent(event);
+//    }
+
 }

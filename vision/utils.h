@@ -54,4 +54,8 @@ bool check_is_ink_line(cv::Mat img, cv::Vec4f line);
 std::string getCurrentTimeAsString();
 
 std::string getCurrentTimestampString();
+
+double perpendicularDistance(double A, double B, double C, double x1, double y1);
+double computePointToLineDistance(std::vector<float> line_1, std::vector<float> line_2);
+
 #endif // UTILS_H

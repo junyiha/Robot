@@ -23,7 +23,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>碰钉机器人</string>
+   <string>装板机器人</string>
   </property>
   <property name="styleSheet">
    <string notr="true">QWidget#centralwidget{
@@ -479,7 +479,7 @@ QPushButton::pressed{
         <string notr="true">border: none;</string>
        </property>
        <property name="text">
-        <string>碰钉机器人控制系统</string>
+        <string>装板机器人控制系统</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
@@ -540,9 +540,9 @@ QPushButton::pressed{
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>50</y>
+         <y>20</y>
          <width>881</width>
-         <height>841</height>
+         <height>911</height>
         </rect>
        </property>
        <property name="styleSheet">
@@ -553,571 +553,1099 @@ QPushButton::pressed{
        <property name="title">
         <string/>
        </property>
-       <widget class="QWidget" name="layoutWidget">
+       <widget class="QGroupBox" name="groupBox_15">
         <property name="geometry">
          <rect>
           <x>20</x>
-          <y>41</y>
-          <width>832</width>
-          <height>734</height>
+          <y>80</y>
+          <width>851</width>
+          <height>751</height>
          </rect>
         </property>
-        <layout class="QGridLayout" name="gridLayout_20">
-         <item row="0" column="0">
-          <layout class="QGridLayout" name="gridLayout_16">
-           <item row="0" column="0">
-            <layout class="QGridLayout" name="gridLayout_3">
-             <property name="verticalSpacing">
-              <number>1</number>
-             </property>
-             <item row="0" column="0">
-              <widget class="QLabel" name="label_19">
-               <property name="minimumSize">
-                <size>
-                 <width>200</width>
-                 <height>35</height>
-                </size>
-               </property>
-               <property name="styleSheet">
-                <string notr="true">QLabel {
+        <property name="styleSheet">
+         <string notr="true">QGroupBox{
+  border: 4px solid yellow; 
+}</string>
+        </property>
+        <property name="title">
+         <string/>
+        </property>
+        <widget class="QWidget" name="layoutWidget_2">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>10</y>
+           <width>832</width>
+           <height>734</height>
+          </rect>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_20">
+          <item row="2" column="0">
+           <layout class="QGridLayout" name="gridLayout_17">
+            <item row="0" column="0">
+             <layout class="QGridLayout" name="gridLayout_15">
+              <property name="horizontalSpacing">
+               <number>6</number>
+              </property>
+              <property name="verticalSpacing">
+               <number>1</number>
+              </property>
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_laserDist3">
+                <property name="minimumSize">
+                 <size>
+                  <width>200</width>
+                  <height>35</height>
+                 </size>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">QLabel {
 	background-color: rgb(255, 0, 0);
     border: 2px solid black;
     text-align: left;
 }</string>
-               </property>
-               <property name="text">
-                <string>点激光1: 0.0</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0">
-              <widget class="QLabel" name="label_laserDist0">
-               <property name="minimumSize">
-                <size>
-                 <width>200</width>
-                 <height>200</height>
-                </size>
-               </property>
-               <property name="font">
-                <font>
-                 <pointsize>12</pointsize>
-                 <weight>75</weight>
-                 <bold>true</bold>
-                </font>
-               </property>
-               <property name="styleSheet">
-                <string notr="true">QLabel {
-    border: 2px solid black;
-    text-align: left;
-}</string>
-               </property>
-               <property name="text">
-                <string>0.00</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignCenter</set>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-           <item row="0" column="1">
-            <layout class="QGridLayout" name="gridLayout_4">
-             <property name="verticalSpacing">
-              <number>1</number>
-             </property>
-             <item row="0" column="0">
-              <widget class="QLabel" name="label_cam_dist0">
-               <property name="minimumSize">
-                <size>
-                 <width>200</width>
-                 <height>35</height>
-                </size>
-               </property>
-               <property name="styleSheet">
-                <string notr="true">QLabel {
-    border: 2px solid black;
-	background-color: rgb(85, 170, 255);
-    text-align: left;
-}</string>
-               </property>
-               <property name="text">
-                <string>线间距1: 0.0</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0">
-              <widget class="QLabel" name="label_cam_dis0">
-               <property name="minimumSize">
-                <size>
-                 <width>200</width>
-                 <height>200</height>
-                </size>
-               </property>
-               <property name="styleSheet">
-                <string notr="true">QLabel {
-    border: 2px solid black;
-    text-align: left;
-}</string>
-               </property>
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-           <item row="0" column="2">
-            <layout class="QGridLayout" name="gridLayout_5">
-             <property name="verticalSpacing">
-              <number>1</number>
-             </property>
-             <item row="0" column="0">
-              <widget class="QLabel" name="label_cam_dist2">
-               <property name="minimumSize">
-                <size>
-                 <width>200</width>
-                 <height>35</height>
-                </size>
-               </property>
-               <property name="styleSheet">
-                <string notr="true">QLabel {
-    border: 2px solid black;
-	background-color: rgb(85, 170, 255);
-    text-align: left;
-}</string>
-               </property>
-               <property name="text">
-                <string>线间距3: 0.0</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0">
-              <widget class="QLabel" name="label_cam_dis2">
-               <property name="minimumSize">
-                <size>
-                 <width>200</width>
-                 <height>200</height>
-                </size>
-               </property>
-               <property name="styleSheet">
-                <string notr="true">QLabel {
-    border: 2px solid black;
-    text-align: left;
-}</string>
-               </property>
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-           <item row="0" column="3">
-            <layout class="QGridLayout" name="gridLayout_6">
-             <property name="verticalSpacing">
-              <number>1</number>
-             </property>
-             <item row="0" column="0">
-              <widget class="QLabel" name="label_31">
-               <property name="minimumSize">
-                <size>
-                 <width>200</width>
-                 <height>35</height>
-                </size>
-               </property>
-               <property name="styleSheet">
-                <string notr="true">QLabel {
-    border: 2px solid black;
-	background-color: rgb(255, 0, 0);
-    text-align: left;
-}</string>
-               </property>
-               <property name="text">
-                <string>点激光2: 0.0</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0">
-              <widget class="QLabel" name="label_laserDist1">
-               <property name="minimumSize">
-                <size>
-                 <width>200</width>
-                 <height>200</height>
-                </size>
-               </property>
-               <property name="font">
-                <font>
-                 <pointsize>12</pointsize>
-                 <weight>75</weight>
-                 <bold>true</bold>
-                </font>
-               </property>
-               <property name="styleSheet">
-                <string notr="true">QLabel {
-    border: 2px solid black;
-    text-align: left;
-}</string>
-               </property>
-               <property name="text">
-                <string>0.00</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignCenter</set>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-          </layout>
-         </item>
-         <item row="1" column="0">
-          <layout class="QGridLayout" name="gridLayout_19">
-           <item row="0" column="0">
-            <layout class="QGridLayout" name="gridLayout_7">
-             <property name="verticalSpacing">
-              <number>1</number>
-             </property>
-             <item row="1" column="0">
-              <widget class="QLabel" name="label_cam_dis4">
-               <property name="minimumSize">
-                <size>
-                 <width>200</width>
-                 <height>200</height>
-                </size>
-               </property>
-               <property name="styleSheet">
-                <string notr="true">QLabel {
-    border: 2px solid black;
-    text-align: left;
-}</string>
-               </property>
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="0">
-              <widget class="QLabel" name="label_cam_dist4">
-               <property name="minimumSize">
-                <size>
-                 <width>200</width>
-                 <height>35</height>
-                </size>
-               </property>
-               <property name="styleSheet">
-                <string notr="true">QLabel {
-	background-color: rgb(85, 170, 255);
-    border: 2px solid black;
-    text-align: left;
-}</string>
-               </property>
-               <property name="text">
-                <string>线间距5: 0.0</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-           <item row="0" column="1">
-            <widget class="QLabel" name="label">
-             <property name="minimumSize">
-              <size>
-               <width>412</width>
-               <height>238</height>
-              </size>
-             </property>
-             <property name="font">
-              <font>
-               <family>Agency FB</family>
-               <pointsize>16</pointsize>
-               <weight>75</weight>
-               <bold>true</bold>
-              </font>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">QLabel {
-	image: url(:/img/images/icon_layout.png);
-}</string>
-             </property>
-             <property name="text">
-              <string/>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="2">
-            <layout class="QGridLayout" name="gridLayout_9">
-             <property name="verticalSpacing">
-              <number>1</number>
-             </property>
-             <item row="0" column="0">
-              <widget class="QLabel" name="label_cam_dist5">
-               <property name="minimumSize">
-                <size>
-                 <width>200</width>
-                 <height>35</height>
-                </size>
-               </property>
-               <property name="styleSheet">
-                <string notr="true">QLabel {
-    border: 2px solid black;
-	background-color: rgb(85, 170, 255);
-    text-align: left;
-}</string>
-               </property>
-               <property name="text">
-                <string>线间距6: 0.0</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0">
-              <widget class="QLabel" name="label_cam_dis5">
-               <property name="minimumSize">
-                <size>
-                 <width>200</width>
-                 <height>200</height>
-                </size>
-               </property>
-               <property name="styleSheet">
-                <string notr="true">QLabel {
-    border: 2px solid black;
-    text-align: left;
-}</string>
-               </property>
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-          </layout>
-         </item>
-         <item row="2" column="0">
-          <layout class="QGridLayout" name="gridLayout_17">
-           <item row="0" column="0">
-            <layout class="QGridLayout" name="gridLayout_15">
-             <property name="horizontalSpacing">
-              <number>6</number>
-             </property>
-             <property name="verticalSpacing">
-              <number>1</number>
-             </property>
-             <item row="0" column="0">
-              <widget class="QLabel" name="label_68">
-               <property name="minimumSize">
-                <size>
-                 <width>200</width>
-                 <height>35</height>
-                </size>
-               </property>
-               <property name="styleSheet">
-                <string notr="true">QLabel {
-	background-color: rgb(255, 0, 0);
-    border: 2px solid black;
-    text-align: left;
-}</string>
-               </property>
-               <property name="text">
-                <string>点激光4: 0.0</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0">
-              <widget class="QLabel" name="label_laserDist3">
-               <property name="minimumSize">
-                <size>
-                 <width>200</width>
-                 <height>200</height>
-                </size>
-               </property>
-               <property name="font">
-                <font>
-                 <family>SimSun-ExtB</family>
-                 <pointsize>12</pointsize>
-                 <weight>75</weight>
-                 <bold>true</bold>
-                </font>
-               </property>
-               <property name="styleSheet">
-                <string notr="true">QLabel {
+                </property>
+                <property name="text">
+                 <string>点激光4: 0.0</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="label_hole_cam3">
+                <property name="minimumSize">
+                 <size>
+                  <width>200</width>
+                  <height>200</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <family>SimSun-ExtB</family>
+                  <pointsize>12</pointsize>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">QLabel {
     border: 2px solid black;
     text-align: center;
 }</string>
-               </property>
-               <property name="text">
-                <string>0.00</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignCenter</set>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-           <item row="0" column="1">
-            <layout class="QGridLayout" name="gridLayout_14">
-             <property name="verticalSpacing">
-              <number>1</number>
-             </property>
-             <item row="0" column="0">
-              <widget class="QLabel" name="label_cam_dist1">
-               <property name="minimumSize">
-                <size>
-                 <width>200</width>
-                 <height>35</height>
-                </size>
-               </property>
-               <property name="styleSheet">
-                <string notr="true">QLabel {
+                </property>
+                <property name="text">
+                 <string>0.00</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item row="0" column="1">
+             <layout class="QGridLayout" name="gridLayout_14">
+              <property name="verticalSpacing">
+               <number>1</number>
+              </property>
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_cam_dist1">
+                <property name="minimumSize">
+                 <size>
+                  <width>200</width>
+                  <height>35</height>
+                 </size>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">QLabel {
     border: 2px solid black;
 	background-color: rgb(85, 170, 255);
     text-align: left;
 }</string>
-               </property>
-               <property name="text">
-                <string>线间距2: 0.0</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0">
-              <widget class="QLabel" name="label_cam_dis1">
-               <property name="minimumSize">
-                <size>
-                 <width>200</width>
-                 <height>200</height>
-                </size>
-               </property>
-               <property name="styleSheet">
-                <string notr="true">QLabel {
+                </property>
+                <property name="text">
+                 <string>线间距2: 0.0</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="label_cam_dis1">
+                <property name="minimumSize">
+                 <size>
+                  <width>200</width>
+                  <height>200</height>
+                 </size>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">QLabel {
     border: 2px solid black;
     text-align: left;
 }</string>
-               </property>
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-           <item row="0" column="2">
-            <layout class="QGridLayout" name="gridLayout_13">
-             <property name="verticalSpacing">
-              <number>1</number>
-             </property>
-             <item row="0" column="0">
-              <widget class="QLabel" name="label_cam_dist3">
-               <property name="minimumSize">
-                <size>
-                 <width>200</width>
-                 <height>35</height>
-                </size>
-               </property>
-               <property name="styleSheet">
-                <string notr="true">QLabel {
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item row="0" column="2">
+             <layout class="QGridLayout" name="gridLayout_13">
+              <property name="verticalSpacing">
+               <number>1</number>
+              </property>
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_cam_dist3">
+                <property name="minimumSize">
+                 <size>
+                  <width>200</width>
+                  <height>35</height>
+                 </size>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">QLabel {
     border: 2px solid black;
 	background-color: rgb(85, 170, 255);
     text-align: left;
 }</string>
-               </property>
-               <property name="text">
-                <string>线间距4: 0.0</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0">
-              <widget class="QLabel" name="label_cam_dis3">
-               <property name="minimumSize">
-                <size>
-                 <width>200</width>
-                 <height>200</height>
-                </size>
-               </property>
-               <property name="styleSheet">
-                <string notr="true">QLabel {
+                </property>
+                <property name="text">
+                 <string>线间距4: 0.0</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="label_cam_dis3">
+                <property name="minimumSize">
+                 <size>
+                  <width>200</width>
+                  <height>200</height>
+                 </size>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">QLabel {
     border: 2px solid black;
     text-align: left;
 }</string>
-               </property>
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-           <item row="0" column="3">
-            <layout class="QGridLayout" name="gridLayout_12">
-             <property name="verticalSpacing">
-              <number>1</number>
-             </property>
-             <item row="0" column="0">
-              <widget class="QLabel" name="label_67">
-               <property name="minimumSize">
-                <size>
-                 <width>200</width>
-                 <height>35</height>
-                </size>
-               </property>
-               <property name="styleSheet">
-                <string notr="true">QLabel {
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item row="0" column="3">
+             <layout class="QGridLayout" name="gridLayout_12">
+              <property name="verticalSpacing">
+               <number>1</number>
+              </property>
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_laserDist2">
+                <property name="minimumSize">
+                 <size>
+                  <width>200</width>
+                  <height>35</height>
+                 </size>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">QLabel {
     border: 2px solid black;
 	background-color: rgb(255, 0, 0);
     text-align: left;
 }</string>
-               </property>
-               <property name="text">
-                <string>点激光3: 0.0</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0">
-              <widget class="QLabel" name="label_laserDist2">
-               <property name="minimumSize">
-                <size>
-                 <width>200</width>
-                 <height>200</height>
-                </size>
-               </property>
-               <property name="font">
-                <font>
-                 <pointsize>12</pointsize>
-                 <weight>75</weight>
-                 <bold>true</bold>
-                </font>
-               </property>
-               <property name="styleSheet">
-                <string notr="true">QLabel {
+                </property>
+                <property name="text">
+                 <string>点激光3: 0.0</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="llabel_hole_cam2">
+                <property name="minimumSize">
+                 <size>
+                  <width>200</width>
+                  <height>200</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>12</pointsize>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">QLabel {
     border: 2px solid black;
     text-align: left;
 }</string>
-               </property>
-               <property name="text">
-                <string>0.00</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignCenter</set>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-          </layout>
-         </item>
-        </layout>
+                </property>
+                <property name="text">
+                 <string>0.00</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </item>
+          <item row="1" column="0">
+           <layout class="QGridLayout" name="gridLayout_19">
+            <item row="0" column="0">
+             <layout class="QGridLayout" name="gridLayout_7">
+              <property name="verticalSpacing">
+               <number>1</number>
+              </property>
+              <item row="1" column="0">
+               <widget class="QLabel" name="label_cam_dis4">
+                <property name="minimumSize">
+                 <size>
+                  <width>200</width>
+                  <height>200</height>
+                 </size>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">QLabel {
+    border: 2px solid black;
+    text-align: left;
+}</string>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_cam_dist4">
+                <property name="minimumSize">
+                 <size>
+                  <width>200</width>
+                  <height>35</height>
+                 </size>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">QLabel {
+	background-color: rgb(85, 170, 255);
+    border: 2px solid black;
+    text-align: left;
+}</string>
+                </property>
+                <property name="text">
+                 <string>线间距5: 0.0</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item row="0" column="1">
+             <widget class="QLabel" name="label">
+              <property name="minimumSize">
+               <size>
+                <width>412</width>
+                <height>238</height>
+               </size>
+              </property>
+              <property name="font">
+               <font>
+                <family>Agency FB</family>
+                <pointsize>16</pointsize>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">QLabel {
+	image: url(:/img/images/icon_layout.png);
+}</string>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="2">
+             <layout class="QGridLayout" name="gridLayout_9">
+              <property name="verticalSpacing">
+               <number>1</number>
+              </property>
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_cam_dist5">
+                <property name="minimumSize">
+                 <size>
+                  <width>200</width>
+                  <height>35</height>
+                 </size>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">QLabel {
+    border: 2px solid black;
+	background-color: rgb(85, 170, 255);
+    text-align: left;
+}</string>
+                </property>
+                <property name="text">
+                 <string>线间距6: 0.0</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="label_cam_dis5">
+                <property name="minimumSize">
+                 <size>
+                  <width>200</width>
+                  <height>200</height>
+                 </size>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">QLabel {
+    border: 2px solid black;
+    text-align: left;
+}</string>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </item>
+          <item row="0" column="0">
+           <layout class="QGridLayout" name="gridLayout_16">
+            <item row="0" column="0">
+             <layout class="QGridLayout" name="gridLayout_3">
+              <property name="verticalSpacing">
+               <number>1</number>
+              </property>
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_laserDist0">
+                <property name="minimumSize">
+                 <size>
+                  <width>200</width>
+                  <height>35</height>
+                 </size>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">QLabel {
+	background-color: rgb(255, 0, 0);
+    border: 2px solid black;
+    text-align: left;
+}</string>
+                </property>
+                <property name="text">
+                 <string>点激光1: 0.0</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="label_hole_cam0">
+                <property name="minimumSize">
+                 <size>
+                  <width>200</width>
+                  <height>200</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>12</pointsize>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">QLabel {
+    border: 2px solid black;
+    text-align: left;
+}</string>
+                </property>
+                <property name="text">
+                 <string>0.00</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item row="0" column="1">
+             <layout class="QGridLayout" name="gridLayout_4">
+              <property name="verticalSpacing">
+               <number>1</number>
+              </property>
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_cam_dist0">
+                <property name="minimumSize">
+                 <size>
+                  <width>200</width>
+                  <height>35</height>
+                 </size>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">QLabel {
+    border: 2px solid black;
+	background-color: rgb(85, 170, 255);
+    text-align: left;
+}</string>
+                </property>
+                <property name="text">
+                 <string>线间距1: 0.0</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="label_cam_dis0">
+                <property name="minimumSize">
+                 <size>
+                  <width>200</width>
+                  <height>200</height>
+                 </size>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">QLabel {
+    border: 2px solid black;
+    text-align: left;
+}</string>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item row="0" column="2">
+             <layout class="QGridLayout" name="gridLayout_5">
+              <property name="verticalSpacing">
+               <number>1</number>
+              </property>
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_cam_dist2">
+                <property name="minimumSize">
+                 <size>
+                  <width>200</width>
+                  <height>35</height>
+                 </size>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">QLabel {
+    border: 2px solid black;
+	background-color: rgb(85, 170, 255);
+    text-align: left;
+}</string>
+                </property>
+                <property name="text">
+                 <string>线间距3: 0.0</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="label_cam_dis2">
+                <property name="minimumSize">
+                 <size>
+                  <width>200</width>
+                  <height>200</height>
+                 </size>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">QLabel {
+    border: 2px solid black;
+    text-align: left;
+}</string>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item row="0" column="3">
+             <layout class="QGridLayout" name="gridLayout_6">
+              <property name="verticalSpacing">
+               <number>1</number>
+              </property>
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_laserDist1">
+                <property name="minimumSize">
+                 <size>
+                  <width>200</width>
+                  <height>35</height>
+                 </size>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">QLabel {
+    border: 2px solid black;
+	background-color: rgb(255, 0, 0);
+    text-align: left;
+}</string>
+                </property>
+                <property name="text">
+                 <string>点激光2: 0.0</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="label_hole_cam1">
+                <property name="minimumSize">
+                 <size>
+                  <width>200</width>
+                  <height>200</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>12</pointsize>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">QLabel {
+    border: 2px solid black;
+    text-align: left;
+}</string>
+                </property>
+                <property name="text">
+                 <string>0.00</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+       </widget>
+       <widget class="QGroupBox" name="groupBox_16">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>10</y>
+          <width>851</width>
+          <height>61</height>
+         </rect>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QGroupBox{
+   border: 4px solid blue;
+}</string>
+        </property>
+        <property name="title">
+         <string/>
+        </property>
+        <widget class="QLabel" name="label_heightDist_1">
+         <property name="geometry">
+          <rect>
+           <x>664</x>
+           <y>4</y>
+           <width>62</width>
+           <height>25</height>
+          </rect>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>60</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QLabel {
+ border: 1px solid black;
+ }</string>
+         </property>
+         <property name="text">
+          <string>0.00</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_20">
+         <property name="geometry">
+          <rect>
+           <x>600</x>
+           <y>4</y>
+           <width>63</width>
+           <height>25</height>
+          </rect>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>60</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <family>Agency FB</family>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QLabel {
+	border:1px solid black; 
+	background-color: rgb(170, 85, 0);
+   
+ }</string>
+         </property>
+         <property name="text">
+          <string>阶差2:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_gap_1">
+         <property name="geometry">
+          <rect>
+           <x>664</x>
+           <y>30</y>
+           <width>62</width>
+           <height>24</height>
+          </rect>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>60</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QLabel {
+ border: 1px solid black;
+ }</string>
+         </property>
+         <property name="text">
+          <string>0.00</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_30">
+         <property name="geometry">
+          <rect>
+           <x>600</x>
+           <y>30</y>
+           <width>63</width>
+           <height>24</height>
+          </rect>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>60</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <family>Agency FB</family>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QLabel {
+ border: 1px solid black;
+	background-color: rgb(85, 170, 255);
+ }</string>
+         </property>
+         <property name="text">
+          <string>间隙2:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+        <widget class="QWidget" name="layoutWidget">
+         <property name="geometry">
+          <rect>
+           <x>96</x>
+           <y>3</y>
+           <width>128</width>
+           <height>52</height>
+          </rect>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_60">
+          <property name="spacing">
+           <number>1</number>
+          </property>
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_18">
+            <property name="minimumSize">
+             <size>
+              <width>60</width>
+              <height>20</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <family>Agency FB</family>
+              <pointsize>10</pointsize>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QLabel {
+	border:1px solid black; 
+	background-color: rgb(170, 85, 0);
+   
+ }</string>
+            </property>
+            <property name="text">
+             <string>阶差1:</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLabel" name="label_heightDist_0">
+            <property name="minimumSize">
+             <size>
+              <width>60</width>
+              <height>20</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QLabel {
+ border: 1px solid black;
+ }</string>
+            </property>
+            <property name="text">
+             <string>0.00</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_10">
+            <property name="minimumSize">
+             <size>
+              <width>60</width>
+              <height>20</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <family>Agency FB</family>
+              <pointsize>10</pointsize>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QLabel {
+ border: 1px solid black;
+	background-color: rgb(85, 170, 255);
+ }</string>
+            </property>
+            <property name="text">
+             <string>间隙1:</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLabel" name="label_gap_0">
+            <property name="minimumSize">
+             <size>
+              <width>60</width>
+              <height>20</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QLabel {
+ border: 1px solid black;
+ }</string>
+            </property>
+            <property name="text">
+             <string>0.00</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </widget>
+       <widget class="QGroupBox" name="groupBox_17">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>840</y>
+          <width>851</width>
+          <height>61</height>
+         </rect>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QGroupBox{
+   border: 4px solid blue;
+}</string>
+        </property>
+        <property name="title">
+         <string/>
+        </property>
+        <widget class="QLabel" name="label_heightDist_3">
+         <property name="geometry">
+          <rect>
+           <x>664</x>
+           <y>4</y>
+           <width>62</width>
+           <height>25</height>
+          </rect>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>60</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QLabel {
+ border: 1px solid black;
+ }</string>
+         </property>
+         <property name="text">
+          <string>0.00</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_39">
+         <property name="geometry">
+          <rect>
+           <x>600</x>
+           <y>4</y>
+           <width>63</width>
+           <height>25</height>
+          </rect>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>60</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <family>Agency FB</family>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QLabel {
+	border:1px solid black; 
+	background-color: rgb(170, 85, 0);
+   
+ }</string>
+         </property>
+         <property name="text">
+          <string>阶差4:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_gap_3">
+         <property name="geometry">
+          <rect>
+           <x>664</x>
+           <y>30</y>
+           <width>62</width>
+           <height>24</height>
+          </rect>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>60</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QLabel {
+ border: 1px solid black;
+ }</string>
+         </property>
+         <property name="text">
+          <string>0.00</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_40">
+         <property name="geometry">
+          <rect>
+           <x>600</x>
+           <y>30</y>
+           <width>63</width>
+           <height>24</height>
+          </rect>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>60</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <family>Agency FB</family>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QLabel {
+ border: 1px solid black;
+	background-color: rgb(85, 170, 255);
+ }</string>
+         </property>
+         <property name="text">
+          <string>间隙4:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+        <widget class="QWidget" name="layoutWidget_4">
+         <property name="geometry">
+          <rect>
+           <x>96</x>
+           <y>3</y>
+           <width>128</width>
+           <height>52</height>
+          </rect>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_62">
+          <property name="spacing">
+           <number>1</number>
+          </property>
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_41">
+            <property name="minimumSize">
+             <size>
+              <width>60</width>
+              <height>20</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <family>Agency FB</family>
+              <pointsize>10</pointsize>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QLabel {
+	border:1px solid black; 
+	background-color: rgb(170, 85, 0);
+   
+ }</string>
+            </property>
+            <property name="text">
+             <string>阶差3:</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLabel" name="label_heightDist_2">
+            <property name="minimumSize">
+             <size>
+              <width>60</width>
+              <height>20</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QLabel {
+ border: 1px solid black;
+ }</string>
+            </property>
+            <property name="text">
+             <string>0.00</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_42">
+            <property name="minimumSize">
+             <size>
+              <width>60</width>
+              <height>20</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <family>Agency FB</family>
+              <pointsize>10</pointsize>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QLabel {
+ border: 1px solid black;
+	background-color: rgb(85, 170, 255);
+ }</string>
+            </property>
+            <property name="text">
+             <string>间隙3:</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLabel" name="label_gap_2">
+            <property name="minimumSize">
+             <size>
+              <width>60</width>
+              <height>20</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QLabel {
+ border: 1px solid black;
+ }</string>
+            </property>
+            <property name="text">
+             <string>0.00</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
        </widget>
       </widget>
       <widget class="QGroupBox" name="groupBox_4">
        <property name="geometry">
         <rect>
-         <x>1500</x>
-         <y>50</y>
+         <x>1510</x>
+         <y>20</y>
          <width>361</width>
-         <height>841</height>
+         <height>911</height>
         </rect>
        </property>
        <property name="minimumSize">
@@ -1134,76 +1662,13 @@ QPushButton::pressed{
        <property name="title">
         <string/>
        </property>
-       <widget class="QPushButton" name="btn_savePicture">
-        <property name="geometry">
-         <rect>
-          <x>230</x>
-          <y>650</y>
-          <width>100</width>
-          <height>50</height>
-         </rect>
-        </property>
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>100</width>
-          <height>50</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>60</width>
-          <height>40</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <family>等线</family>
-          <pointsize>10</pointsize>
-         </font>
-        </property>
-        <property name="cursor">
-         <cursorShape>PointingHandCursor</cursorShape>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">QPushButton#btn_savePicture{
-	border-radius:5%;
-	border:2px solid black;
-}
-QPushButton#btn_savePicture:pressed{
-	background-color: rgb(131, 255, 148);
-}
-
-QPushButton:hover {
-    background-color: rgb(10, 240, 10);
-}
-
-
-
-
-
-
-
-
-
-</string>
-        </property>
-        <property name="text">
-         <string>保存图像</string>
-        </property>
-       </widget>
        <widget class="QGroupBox" name="groupBox_13">
         <property name="geometry">
          <rect>
           <x>10</x>
           <y>10</y>
-          <width>341</width>
-          <height>211</height>
+          <width>331</width>
+          <height>191</height>
          </rect>
         </property>
         <property name="styleSheet">
@@ -1224,7 +1689,7 @@ QPushButton:hover {
          <property name="geometry">
           <rect>
            <x>10</x>
-           <y>130</y>
+           <y>110</y>
            <width>98</width>
            <height>32</height>
           </rect>
@@ -1266,420 +1731,8 @@ image: url(:/img/images/icon_redLight.png);
         <widget class="QWidget" name="layoutWidget">
          <property name="geometry">
           <rect>
-           <x>11</x>
-           <y>11</y>
-           <width>280</width>
-           <height>62</height>
-          </rect>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_53">
-          <property name="spacing">
-           <number>1</number>
-          </property>
-          <item row="0" column="0">
-           <layout class="QGridLayout" name="gridLayout_2">
-            <item row="0" column="0">
-             <widget class="QLabel" name="label_2">
-              <property name="minimumSize">
-               <size>
-                <width>60</width>
-                <height>30</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>相机状态</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QLabel" name="label_camera_state1">
-              <property name="minimumSize">
-               <size>
-                <width>30</width>
-                <height>30</height>
-               </size>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">QLabel{
-image: url(:/img/images/icon_redLight.png);
-}</string>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="2">
-             <widget class="QLabel" name="label_camera_state2">
-              <property name="minimumSize">
-               <size>
-                <width>30</width>
-                <height>30</height>
-               </size>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">QLabel{
-image: url(:/img/images/icon_redLight.png);
-}</string>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="3">
-             <widget class="QLabel" name="label_camera_state3">
-              <property name="minimumSize">
-               <size>
-                <width>30</width>
-                <height>30</height>
-               </size>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">QLabel{
-image: url(:/img/images/icon_redLight.png);
-}</string>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="4">
-             <widget class="QLabel" name="label_camera_state4">
-              <property name="minimumSize">
-               <size>
-                <width>30</width>
-                <height>30</height>
-               </size>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">QLabel{
-image: url(:/img/images/icon_redLight.png);
-}</string>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="5">
-             <widget class="QLabel" name="label_camera_state5">
-              <property name="minimumSize">
-               <size>
-                <width>30</width>
-                <height>30</height>
-               </size>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">QLabel{
-image: url(:/img/images/icon_redLight.png);
-}</string>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="6">
-             <widget class="QLabel" name="label_camera_state6">
-              <property name="minimumSize">
-               <size>
-                <width>30</width>
-                <height>30</height>
-               </size>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">QLabel{
-image: url(:/img/images/icon_redLight.png);
-}</string>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item row="1" column="0">
-           <layout class="QGridLayout" name="gridLayout_50">
-            <item row="0" column="0">
-             <widget class="QLabel" name="label_17">
-              <property name="minimumSize">
-               <size>
-                <width>60</width>
-                <height>20</height>
-               </size>
-              </property>
-              <property name="styleSheet">
-               <string notr="true"/>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QLabel" name="label_11">
-              <property name="minimumSize">
-               <size>
-                <width>30</width>
-                <height>20</height>
-               </size>
-              </property>
-              <property name="styleSheet">
-               <string notr="true"/>
-              </property>
-              <property name="text">
-               <string>1</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignHCenter|Qt::AlignTop</set>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="2">
-             <widget class="QLabel" name="label_12">
-              <property name="minimumSize">
-               <size>
-                <width>30</width>
-                <height>20</height>
-               </size>
-              </property>
-              <property name="styleSheet">
-               <string notr="true"/>
-              </property>
-              <property name="text">
-               <string>2</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignHCenter|Qt::AlignTop</set>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="3">
-             <widget class="QLabel" name="label_13">
-              <property name="minimumSize">
-               <size>
-                <width>30</width>
-                <height>20</height>
-               </size>
-              </property>
-              <property name="styleSheet">
-               <string notr="true"/>
-              </property>
-              <property name="text">
-               <string>3</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignHCenter|Qt::AlignTop</set>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="4">
-             <widget class="QLabel" name="label_14">
-              <property name="minimumSize">
-               <size>
-                <width>30</width>
-                <height>20</height>
-               </size>
-              </property>
-              <property name="styleSheet">
-               <string notr="true"/>
-              </property>
-              <property name="text">
-               <string>4</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignHCenter|Qt::AlignTop</set>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="5">
-             <widget class="QLabel" name="label_15">
-              <property name="minimumSize">
-               <size>
-                <width>30</width>
-                <height>20</height>
-               </size>
-              </property>
-              <property name="styleSheet">
-               <string notr="true"/>
-              </property>
-              <property name="text">
-               <string>5</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignHCenter|Qt::AlignTop</set>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="6">
-             <widget class="QLabel" name="label_16">
-              <property name="minimumSize">
-               <size>
-                <width>30</width>
-                <height>20</height>
-               </size>
-              </property>
-              <property name="styleSheet">
-               <string notr="true"/>
-              </property>
-              <property name="text">
-               <string>6</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignHCenter|Qt::AlignTop</set>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-         </layout>
-        </widget>
-        <widget class="QWidget" name="layoutWidget">
-         <property name="geometry">
-          <rect>
            <x>10</x>
-           <y>70</y>
-           <width>126</width>
-           <height>62</height>
-          </rect>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_54">
-          <property name="spacing">
-           <number>1</number>
-          </property>
-          <item row="0" column="0">
-           <layout class="QGridLayout" name="gridLayout_51">
-            <property name="spacing">
-             <number>1</number>
-            </property>
-            <item row="0" column="0">
-             <widget class="QLabel" name="label_3">
-              <property name="minimumSize">
-               <size>
-                <width>60</width>
-                <height>30</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>IO板状态</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QLabel" name="label_io_A">
-              <property name="minimumSize">
-               <size>
-                <width>30</width>
-                <height>30</height>
-               </size>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">QLabel{
-image: url(:/img/images/icon_redLight.png);
-}</string>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="2">
-             <widget class="QLabel" name="label_io_B">
-              <property name="minimumSize">
-               <size>
-                <width>30</width>
-                <height>30</height>
-               </size>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">QLabel{
-image: url(:/img/images/icon_redLight.png);
-}</string>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item row="1" column="0">
-           <layout class="QGridLayout" name="gridLayout_52">
-            <property name="spacing">
-             <number>1</number>
-            </property>
-            <item row="0" column="0">
-             <widget class="QLabel" name="label_33">
-              <property name="minimumSize">
-               <size>
-                <width>60</width>
-                <height>20</height>
-               </size>
-              </property>
-              <property name="styleSheet">
-               <string notr="true"/>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QLabel" name="label_28">
-              <property name="minimumSize">
-               <size>
-                <width>30</width>
-                <height>20</height>
-               </size>
-              </property>
-              <property name="styleSheet">
-               <string notr="true"/>
-              </property>
-              <property name="text">
-               <string>A</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignHCenter|Qt::AlignTop</set>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="2">
-             <widget class="QLabel" name="label_29">
-              <property name="minimumSize">
-               <size>
-                <width>30</width>
-                <height>20</height>
-               </size>
-              </property>
-              <property name="styleSheet">
-               <string notr="true"/>
-              </property>
-              <property name="text">
-               <string>B</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignHCenter|Qt::AlignTop</set>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-         </layout>
-        </widget>
-        <widget class="QWidget" name="layoutWidget">
-         <property name="geometry">
-          <rect>
-           <x>10</x>
-           <y>160</y>
+           <y>140</y>
            <width>98</width>
            <height>32</height>
           </rect>
@@ -1718,14 +1771,356 @@ image: url(:/img/images/icon_redLight.png);
           </item>
          </layout>
         </widget>
+        <widget class="QWidget" name="layoutWidget">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>20</y>
+           <width>278</width>
+           <height>32</height>
+          </rect>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_2">
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_2">
+            <property name="minimumSize">
+             <size>
+              <width>60</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>边线相机</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLabel" name="label_camera_state1">
+            <property name="minimumSize">
+             <size>
+              <width>30</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QLabel{
+image: url(:/img/images/icon_redLight.png);
+}</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="3">
+           <widget class="QLabel" name="label_camera_state3">
+            <property name="minimumSize">
+             <size>
+              <width>30</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QLabel{
+image: url(:/img/images/icon_redLight.png);
+}</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="4">
+           <widget class="QLabel" name="label_camera_state4">
+            <property name="minimumSize">
+             <size>
+              <width>30</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QLabel{
+image: url(:/img/images/icon_redLight.png);
+}</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="5">
+           <widget class="QLabel" name="label_camera_state5">
+            <property name="minimumSize">
+             <size>
+              <width>30</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QLabel{
+image: url(:/img/images/icon_redLight.png);
+}</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="6">
+           <widget class="QLabel" name="label_camera_state6">
+            <property name="minimumSize">
+             <size>
+              <width>30</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QLabel{
+image: url(:/img/images/icon_redLight.png);
+}</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QLabel" name="label_camera_state2">
+            <property name="minimumSize">
+             <size>
+              <width>30</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QLabel{
+image: url(:/img/images/icon_redLight.png);
+}</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="layoutWidget">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>50</y>
+           <width>206</width>
+           <height>32</height>
+          </rect>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_66">
+          <item row="0" column="4">
+           <widget class="QLabel" name="label_camera_state4_2">
+            <property name="minimumSize">
+             <size>
+              <width>30</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>30</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QLabel{
+image: url(:/img/images/icon_redLight.png);
+}</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLabel" name="label_camera_state1_2">
+            <property name="minimumSize">
+             <size>
+              <width>30</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>30</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QLabel{
+image: url(:/img/images/icon_redLight.png);
+}</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="3">
+           <widget class="QLabel" name="label_camera_state3_2">
+            <property name="minimumSize">
+             <size>
+              <width>30</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>30</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QLabel{
+image: url(:/img/images/icon_redLight.png);
+}</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QLabel" name="label_camera_state2_2">
+            <property name="minimumSize">
+             <size>
+              <width>30</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>30</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QLabel{
+image: url(:/img/images/icon_redLight.png);
+}</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_19">
+            <property name="minimumSize">
+             <size>
+              <width>60</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>60</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>圆孔相机</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="layoutWidget">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>80</y>
+           <width>134</width>
+           <height>32</height>
+          </rect>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_51">
+          <property name="spacing">
+           <number>6</number>
+          </property>
+          <item row="0" column="2">
+           <widget class="QLabel" name="label_io_B">
+            <property name="minimumSize">
+             <size>
+              <width>30</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>30</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QLabel{
+image: url(:/img/images/icon_redLight.png);
+}</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLabel" name="label_io_A">
+            <property name="minimumSize">
+             <size>
+              <width>30</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>30</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QLabel{
+image: url(:/img/images/icon_redLight.png);
+}</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_3">
+            <property name="minimumSize">
+             <size>
+              <width>60</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>60</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>IO板</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
        </widget>
        <widget class="QGroupBox" name="groupBox_14">
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>240</y>
+          <y>210</y>
           <width>341</width>
-          <height>381</height>
+          <height>341</height>
          </rect>
         </property>
         <property name="styleSheet">
@@ -1743,7 +2138,7 @@ image: url(:/img/images/icon_redLight.png);
          <property name="geometry">
           <rect>
            <x>120</x>
-           <y>320</y>
+           <y>270</y>
            <width>208</width>
            <height>52</height>
           </rect>
@@ -1809,18 +2204,37 @@ QPushButton {
           </item>
          </layout>
         </widget>
+        <widget class="Line" name="line">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>140</y>
+           <width>311</width>
+           <height>31</height>
+          </rect>
+         </property>
+         <property name="lineWidth">
+          <number>2</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
         <widget class="QWidget" name="layoutWidget">
          <property name="geometry">
           <rect>
            <x>10</x>
-           <y>20</y>
-           <width>314</width>
-           <height>164</height>
+           <y>170</y>
+           <width>208</width>
+           <height>52</height>
           </rect>
          </property>
-         <layout class="QGridLayout" name="gridLayout_59">
-          <item row="0" column="0">
-           <widget class="QPushButton" name="btn_leveling_">
+         <layout class="QGridLayout" name="gridLayout_58">
+          <property name="spacing">
+           <number>1</number>
+          </property>
+          <item row="0" column="1">
+           <widget class="QPushButton" name="btn_add_nail">
             <property name="minimumSize">
              <size>
               <width>100</width>
@@ -1851,7 +2265,94 @@ QPushButton:pressed {
 }</string>
             </property>
             <property name="text">
-             <string>1.调平</string>
+             <string>放板</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QPushButton" name="btn_preparation_pos">
+            <property name="minimumSize">
+             <size>
+              <width>100</width>
+              <height>50</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <family>Agency FB</family>
+              <pointsize>10</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton {
+    border: 2px solid blue;
+    border-radius: 10px;
+}
+QPushButton:hover {
+    border: 2px solid red;
+    border-radius: 10px;
+}
+
+QPushButton:pressed {
+    border: 2px solid green;
+    border-radius: 10px;
+}</string>
+            </property>
+            <property name="text">
+             <string>准备</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="layoutWidget">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>20</y>
+           <width>314</width>
+           <height>125</height>
+          </rect>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_59">
+          <property name="spacing">
+           <number>1</number>
+          </property>
+          <item row="1" column="0">
+           <widget class="QPushButton" name="btn_magnet_exit">
+            <property name="minimumSize">
+             <size>
+              <width>100</width>
+              <height>50</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <family>Agency FB</family>
+              <pointsize>10</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton {
+    border: 2px solid blue;
+    border-radius: 10px;
+}
+QPushButton:hover {
+    border: 2px solid red;
+    border-radius: 10px;
+}
+
+QPushButton:pressed {
+    border: 2px solid green;
+    border-radius: 10px;
+}</string>
+            </property>
+            <property name="text">
+             <string>4.退出</string>
             </property>
            </widget>
           </item>
@@ -1891,187 +2392,7 @@ QPushButton:pressed {
             </property>
            </widget>
           </item>
-          <item row="0" column="2">
-           <widget class="QPushButton" name="btn_magnet_open_">
-            <property name="minimumSize">
-             <size>
-              <width>100</width>
-              <height>50</height>
-             </size>
-            </property>
-            <property name="font">
-             <font>
-              <family>Agency FB</family>
-              <pointsize>10</pointsize>
-              <weight>75</weight>
-              <bold>true</bold>
-             </font>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">QPushButton {
-    border: 2px solid blue;
-    border-radius: 10px;
-}
-QPushButton:hover {
-    border: 2px solid red;
-    border-radius: 10px;
-}
-
-QPushButton:pressed {
-    border: 2px solid green;
-    border-radius: 10px;
-}</string>
-            </property>
-            <property name="text">
-             <string>3.吸合</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QPushButton" name="btn_auto_knock_">
-            <property name="minimumSize">
-             <size>
-              <width>100</width>
-              <height>50</height>
-             </size>
-            </property>
-            <property name="font">
-             <font>
-              <family>Agency FB</family>
-              <pointsize>10</pointsize>
-              <weight>75</weight>
-              <bold>true</bold>
-             </font>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">QPushButton {
-    border: 2px solid blue;
-    border-radius: 10px;
-}
-QPushButton:hover {
-    border: 2px solid red;
-    border-radius: 10px;
-}
-
-QPushButton:pressed {
-    border: 2px solid green;
-    border-radius: 10px;
-}</string>
-            </property>
-            <property name="text">
-             <string>4.碰钉</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QPushButton" name="btn_magnet_close_">
-            <property name="minimumSize">
-             <size>
-              <width>100</width>
-              <height>50</height>
-             </size>
-            </property>
-            <property name="font">
-             <font>
-              <family>Agency FB</family>
-              <pointsize>10</pointsize>
-              <weight>75</weight>
-              <bold>true</bold>
-             </font>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">QPushButton {
-    border: 2px solid blue;
-    border-radius: 10px;
-}
-QPushButton:hover {
-    border: 2px solid red;
-    border-radius: 10px;
-}
-
-QPushButton:pressed {
-    border: 2px solid green;
-    border-radius: 10px;
-}</string>
-            </property>
-            <property name="text">
-             <string>5.脱开</string>
-            </property>
-           </widget>
-          </item>
           <item row="1" column="2">
-           <widget class="QPushButton" name="btn_magnet_exit">
-            <property name="minimumSize">
-             <size>
-              <width>100</width>
-              <height>50</height>
-             </size>
-            </property>
-            <property name="font">
-             <font>
-              <family>Agency FB</family>
-              <pointsize>10</pointsize>
-              <weight>75</weight>
-              <bold>true</bold>
-             </font>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">QPushButton {
-    border: 2px solid blue;
-    border-radius: 10px;
-}
-QPushButton:hover {
-    border: 2px solid red;
-    border-radius: 10px;
-}
-
-QPushButton:pressed {
-    border: 2px solid green;
-    border-radius: 10px;
-}</string>
-            </property>
-            <property name="text">
-             <string>6.退出</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="0">
-           <widget class="QPushButton" name="btn_magnet_pause_">
-            <property name="minimumSize">
-             <size>
-              <width>100</width>
-              <height>50</height>
-             </size>
-            </property>
-            <property name="font">
-             <font>
-              <family>Agency FB</family>
-              <pointsize>10</pointsize>
-              <weight>75</weight>
-              <bold>true</bold>
-             </font>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">QPushButton {
-    border: 2px solid black;
-    border-radius: 10px;
-}
-QPushButton:hover {
-    border: 2px solid red;
-    border-radius: 10px;
-}
-
-QPushButton:pressed {
-    border: 2px solid green;
-    border-radius: 10px;
-}</string>
-            </property>
-            <property name="text">
-             <string>7.暂停</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="1">
            <widget class="QPushButton" name="btn_knock_suspend_">
             <property name="minimumSize">
              <size>
@@ -2103,40 +2424,1181 @@ QPushButton:pressed {
 }</string>
             </property>
             <property name="text">
-             <string>8.终止</string>
+             <string>6.终止</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QPushButton" name="btn_auto_knock_">
+            <property name="minimumSize">
+             <size>
+              <width>100</width>
+              <height>50</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <family>Agency FB</family>
+              <pointsize>10</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton {
+    border: 2px solid blue;
+    border-radius: 10px;
+}
+QPushButton:hover {
+    border: 2px solid red;
+    border-radius: 10px;
+}
+
+QPushButton:pressed {
+    border: 2px solid green;
+    border-radius: 10px;
+}</string>
+            </property>
+            <property name="text">
+             <string>3.贴合</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QPushButton" name="btn_magnet_pause_">
+            <property name="minimumSize">
+             <size>
+              <width>100</width>
+              <height>50</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <family>Agency FB</family>
+              <pointsize>10</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton {
+    border: 2px solid black;
+    border-radius: 10px;
+}
+QPushButton:hover {
+    border: 2px solid red;
+    border-radius: 10px;
+}
+
+QPushButton:pressed {
+    border: 2px solid green;
+    border-radius: 10px;
+}</string>
+            </property>
+            <property name="text">
+             <string>5.暂停</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QPushButton" name="btn_leveling_">
+            <property name="minimumSize">
+             <size>
+              <width>100</width>
+              <height>50</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <family>Agency FB</family>
+              <pointsize>10</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton {
+    border: 2px solid blue;
+    border-radius: 10px;
+}
+QPushButton:hover {
+    border: 2px solid red;
+    border-radius: 10px;
+}
+
+QPushButton:pressed {
+    border: 2px solid green;
+    border-radius: 10px;
+}</string>
+            </property>
+            <property name="text">
+             <string>1.调平</string>
             </property>
            </widget>
           </item>
          </layout>
         </widget>
-        <widget class="Line" name="line">
+        <widget class="QGroupBox" name="groupBox_18">
          <property name="geometry">
           <rect>
-           <x>20</x>
-           <y>190</y>
-           <width>311</width>
-           <height>31</height>
+           <x>90</x>
+           <y>390</y>
+           <width>341</width>
+           <height>391</height>
           </rect>
          </property>
-         <property name="lineWidth">
-          <number>2</number>
+         <property name="styleSheet">
+          <string notr="true">QGroupBox {
+    color: white;                           /* 字体颜色 */
+    border-radius: 10px;                    /* 设置圆角的半径 */
+    border: 3px groove gray;                /* 边框样式和颜色 */
+    border-style: outset;                   /* 边框样式为外凹 */
+}</string>
          </property>
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
+         <property name="title">
+          <string/>
+         </property>
+         <widget class="QWidget" name="layoutWidget_3">
+          <property name="geometry">
+           <rect>
+            <x>120</x>
+            <y>320</y>
+            <width>208</width>
+            <height>52</height>
+           </rect>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_61">
+           <item row="0" column="0">
+            <widget class="QPushButton" name="btn_magnet_stop_1">
+             <property name="minimumSize">
+              <size>
+               <width>100</width>
+               <height>50</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <family>Agency FB</family>
+               <pointsize>16</pointsize>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">
+QPushButton {
+    border: 2px solid yellow;
+    border-radius: 10px;
+    background-color: rgb(255, 255, 0);
+}</string>
+             </property>
+             <property name="text">
+              <string>停止</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QPushButton" name="btn_magent_crash_stop_1">
+             <property name="minimumSize">
+              <size>
+               <width>100</width>
+               <height>50</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <family>Agency FB</family>
+               <pointsize>16</pointsize>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">
+QPushButton {
+    border: 2px solid red;
+    border-radius: 10px;
+    background-color: rgb(255, 0, 0);
+}</string>
+             </property>
+             <property name="text">
+              <string>急停</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+         <widget class="Line" name="line_2">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>140</y>
+            <width>311</width>
+            <height>31</height>
+           </rect>
+          </property>
+          <property name="lineWidth">
+           <number>2</number>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+         <widget class="QWidget" name="layoutWidget_6">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>170</y>
+            <width>208</width>
+            <height>52</height>
+           </rect>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_67">
+           <property name="spacing">
+            <number>1</number>
+           </property>
+           <item row="0" column="1">
+            <widget class="QPushButton" name="btn_add_nail_2">
+             <property name="minimumSize">
+              <size>
+               <width>100</width>
+               <height>50</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <family>Agency FB</family>
+               <pointsize>10</pointsize>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QPushButton {
+    border: 2px solid blue;
+    border-radius: 10px;
+}
+QPushButton:hover {
+    border: 2px solid red;
+    border-radius: 10px;
+}
+
+QPushButton:pressed {
+    border: 2px solid green;
+    border-radius: 10px;
+}</string>
+             </property>
+             <property name="text">
+              <string>放板</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QPushButton" name="btn_preparation_pos_2">
+             <property name="minimumSize">
+              <size>
+               <width>100</width>
+               <height>50</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <family>Agency FB</family>
+               <pointsize>10</pointsize>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QPushButton {
+    border: 2px solid blue;
+    border-radius: 10px;
+}
+QPushButton:hover {
+    border: 2px solid red;
+    border-radius: 10px;
+}
+
+QPushButton:pressed {
+    border: 2px solid green;
+    border-radius: 10px;
+}</string>
+             </property>
+             <property name="text">
+              <string>准备</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="layoutWidget_7">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>20</y>
+            <width>314</width>
+            <height>108</height>
+           </rect>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_68">
+           <property name="spacing">
+            <number>1</number>
+           </property>
+           <item row="0" column="0">
+            <widget class="QPushButton" name="btn_leveling_1">
+             <property name="minimumSize">
+              <size>
+               <width>100</width>
+               <height>50</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <family>Agency FB</family>
+               <pointsize>10</pointsize>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QPushButton {
+    border: 2px solid blue;
+    border-radius: 10px;
+}
+QPushButton:hover {
+    border: 2px solid red;
+    border-radius: 10px;
+}
+
+QPushButton:pressed {
+    border: 2px solid green;
+    border-radius: 10px;
+}</string>
+             </property>
+             <property name="text">
+              <string>1.调平</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QPushButton" name="btn_sideline_1">
+             <property name="minimumSize">
+              <size>
+               <width>100</width>
+               <height>50</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <family>Agency FB</family>
+               <pointsize>10</pointsize>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QPushButton {
+    border: 2px solid blue;
+    border-radius: 10px;
+}
+QPushButton:hover {
+    border: 2px solid red;
+    border-radius: 10px;
+}
+
+QPushButton:pressed {
+    border: 2px solid green;
+    border-radius: 10px;
+}</string>
+             </property>
+             <property name="text">
+              <string>2.对齐边线</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="2">
+            <widget class="QPushButton" name="btn_auto_knock_1">
+             <property name="minimumSize">
+              <size>
+               <width>100</width>
+               <height>50</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <family>Agency FB</family>
+               <pointsize>10</pointsize>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QPushButton {
+    border: 2px solid blue;
+    border-radius: 10px;
+}
+QPushButton:hover {
+    border: 2px solid red;
+    border-radius: 10px;
+}
+
+QPushButton:pressed {
+    border: 2px solid green;
+    border-radius: 10px;
+}</string>
+             </property>
+             <property name="text">
+              <string>3.贴合</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QPushButton" name="btn_magnet_exit_2">
+             <property name="minimumSize">
+              <size>
+               <width>100</width>
+               <height>50</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <family>Agency FB</family>
+               <pointsize>10</pointsize>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QPushButton {
+    border: 2px solid blue;
+    border-radius: 10px;
+}
+QPushButton:hover {
+    border: 2px solid red;
+    border-radius: 10px;
+}
+
+QPushButton:pressed {
+    border: 2px solid green;
+    border-radius: 10px;
+}</string>
+             </property>
+             <property name="text">
+              <string>4.退出</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QPushButton" name="btn_magnet_pause_1">
+             <property name="minimumSize">
+              <size>
+               <width>100</width>
+               <height>50</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <family>Agency FB</family>
+               <pointsize>10</pointsize>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QPushButton {
+    border: 2px solid black;
+    border-radius: 10px;
+}
+QPushButton:hover {
+    border: 2px solid red;
+    border-radius: 10px;
+}
+
+QPushButton:pressed {
+    border: 2px solid green;
+    border-radius: 10px;
+}</string>
+             </property>
+             <property name="text">
+              <string>5.暂停</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="2">
+            <widget class="QPushButton" name="btn_knock_suspend_1">
+             <property name="minimumSize">
+              <size>
+               <width>100</width>
+               <height>50</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <family>Agency FB</family>
+               <pointsize>10</pointsize>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QPushButton {
+    border: 2px solid black;
+    border-radius: 10px;
+}
+QPushButton:hover {
+    border: 2px solid red;
+    border-radius: 10px;
+}
+
+QPushButton:pressed {
+    border: 2px solid green;
+    border-radius: 10px;
+}</string>
+             </property>
+             <property name="text">
+              <string>6.终止</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+       </widget>
+       <widget class="QGroupBox" name="groupBox_19">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>570</y>
+          <width>341</width>
+          <height>231</height>
+         </rect>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QGroupBox {
+    color: white;                           /* 字体颜色 */
+    border-radius: 10px;                    /* 设置圆角的半径 */
+    border: 3px groove gray;                /* 边框样式和颜色 */
+    border-style: outset;                   /* 边框样式为外凹 */
+}</string>
+        </property>
+        <property name="title">
+         <string/>
+        </property>
+        <widget class="QWidget" name="layoutWidget_14">
+         <property name="geometry">
+          <rect>
+           <x>120</x>
+           <y>320</y>
+           <width>208</width>
+           <height>52</height>
+          </rect>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_75">
+          <item row="0" column="0">
+           <widget class="QPushButton" name="btn_magnet_stop_4">
+            <property name="minimumSize">
+             <size>
+              <width>100</width>
+              <height>50</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <family>Agency FB</family>
+              <pointsize>16</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">
+QPushButton {
+    border: 2px solid yellow;
+    border-radius: 10px;
+    background-color: rgb(255, 255, 0);
+}</string>
+            </property>
+            <property name="text">
+             <string>停止</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QPushButton" name="btn_magent_crash_stop_4">
+            <property name="minimumSize">
+             <size>
+              <width>100</width>
+              <height>50</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <family>Agency FB</family>
+              <pointsize>16</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">
+QPushButton {
+    border: 2px solid red;
+    border-radius: 10px;
+    background-color: rgb(255, 0, 0);
+}</string>
+            </property>
+            <property name="text">
+             <string>急停</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QGroupBox" name="groupBox_21">
+         <property name="geometry">
+          <rect>
+           <x>90</x>
+           <y>390</y>
+           <width>341</width>
+           <height>391</height>
+          </rect>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QGroupBox {
+    color: white;                           /* 字体颜色 */
+    border-radius: 10px;                    /* 设置圆角的半径 */
+    border: 3px groove gray;                /* 边框样式和颜色 */
+    border-style: outset;                   /* 边框样式为外凹 */
+}</string>
+         </property>
+         <property name="title">
+          <string/>
+         </property>
+         <widget class="QWidget" name="layoutWidget_17">
+          <property name="geometry">
+           <rect>
+            <x>120</x>
+            <y>320</y>
+            <width>208</width>
+            <height>52</height>
+           </rect>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_78">
+           <item row="0" column="0">
+            <widget class="QPushButton" name="btn_magnet_stop_5">
+             <property name="minimumSize">
+              <size>
+               <width>100</width>
+               <height>50</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <family>Agency FB</family>
+               <pointsize>16</pointsize>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">
+QPushButton {
+    border: 2px solid yellow;
+    border-radius: 10px;
+    background-color: rgb(255, 255, 0);
+}</string>
+             </property>
+             <property name="text">
+              <string>停止</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QPushButton" name="btn_magent_crash_stop_5">
+             <property name="minimumSize">
+              <size>
+               <width>100</width>
+               <height>50</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <family>Agency FB</family>
+               <pointsize>16</pointsize>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">
+QPushButton {
+    border: 2px solid red;
+    border-radius: 10px;
+    background-color: rgb(255, 0, 0);
+}</string>
+             </property>
+             <property name="text">
+              <string>急停</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+         <widget class="Line" name="line_6">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>140</y>
+            <width>311</width>
+            <height>31</height>
+           </rect>
+          </property>
+          <property name="lineWidth">
+           <number>2</number>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+         <widget class="QWidget" name="layoutWidget_18">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>170</y>
+            <width>208</width>
+            <height>52</height>
+           </rect>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_79">
+           <property name="spacing">
+            <number>1</number>
+           </property>
+           <item row="0" column="1">
+            <widget class="QPushButton" name="btn_add_nail_6">
+             <property name="minimumSize">
+              <size>
+               <width>100</width>
+               <height>50</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <family>Agency FB</family>
+               <pointsize>10</pointsize>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QPushButton {
+    border: 2px solid blue;
+    border-radius: 10px;
+}
+QPushButton:hover {
+    border: 2px solid red;
+    border-radius: 10px;
+}
+
+QPushButton:pressed {
+    border: 2px solid green;
+    border-radius: 10px;
+}</string>
+             </property>
+             <property name="text">
+              <string>放板</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QPushButton" name="btn_preparation_pos_6">
+             <property name="minimumSize">
+              <size>
+               <width>100</width>
+               <height>50</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <family>Agency FB</family>
+               <pointsize>10</pointsize>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QPushButton {
+    border: 2px solid blue;
+    border-radius: 10px;
+}
+QPushButton:hover {
+    border: 2px solid red;
+    border-radius: 10px;
+}
+
+QPushButton:pressed {
+    border: 2px solid green;
+    border-radius: 10px;
+}</string>
+             </property>
+             <property name="text">
+              <string>准备</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="layoutWidget_19">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>20</y>
+            <width>314</width>
+            <height>108</height>
+           </rect>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_80">
+           <property name="spacing">
+            <number>1</number>
+           </property>
+           <item row="0" column="0">
+            <widget class="QPushButton" name="btn_leveling_5">
+             <property name="minimumSize">
+              <size>
+               <width>100</width>
+               <height>50</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <family>Agency FB</family>
+               <pointsize>10</pointsize>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QPushButton {
+    border: 2px solid blue;
+    border-radius: 10px;
+}
+QPushButton:hover {
+    border: 2px solid red;
+    border-radius: 10px;
+}
+
+QPushButton:pressed {
+    border: 2px solid green;
+    border-radius: 10px;
+}</string>
+             </property>
+             <property name="text">
+              <string>1.调平</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QPushButton" name="btn_sideline_5">
+             <property name="minimumSize">
+              <size>
+               <width>100</width>
+               <height>50</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <family>Agency FB</family>
+               <pointsize>10</pointsize>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QPushButton {
+    border: 2px solid blue;
+    border-radius: 10px;
+}
+QPushButton:hover {
+    border: 2px solid red;
+    border-radius: 10px;
+}
+
+QPushButton:pressed {
+    border: 2px solid green;
+    border-radius: 10px;
+}</string>
+             </property>
+             <property name="text">
+              <string>2.对齐边线</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="2">
+            <widget class="QPushButton" name="btn_auto_knock_5">
+             <property name="minimumSize">
+              <size>
+               <width>100</width>
+               <height>50</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <family>Agency FB</family>
+               <pointsize>10</pointsize>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QPushButton {
+    border: 2px solid blue;
+    border-radius: 10px;
+}
+QPushButton:hover {
+    border: 2px solid red;
+    border-radius: 10px;
+}
+
+QPushButton:pressed {
+    border: 2px solid green;
+    border-radius: 10px;
+}</string>
+             </property>
+             <property name="text">
+              <string>3.贴合</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QPushButton" name="btn_magnet_exit_6">
+             <property name="minimumSize">
+              <size>
+               <width>100</width>
+               <height>50</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <family>Agency FB</family>
+               <pointsize>10</pointsize>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QPushButton {
+    border: 2px solid blue;
+    border-radius: 10px;
+}
+QPushButton:hover {
+    border: 2px solid red;
+    border-radius: 10px;
+}
+
+QPushButton:pressed {
+    border: 2px solid green;
+    border-radius: 10px;
+}</string>
+             </property>
+             <property name="text">
+              <string>4.退出</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QPushButton" name="btn_magnet_pause_5">
+             <property name="minimumSize">
+              <size>
+               <width>100</width>
+               <height>50</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <family>Agency FB</family>
+               <pointsize>10</pointsize>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QPushButton {
+    border: 2px solid black;
+    border-radius: 10px;
+}
+QPushButton:hover {
+    border: 2px solid red;
+    border-radius: 10px;
+}
+
+QPushButton:pressed {
+    border: 2px solid green;
+    border-radius: 10px;
+}</string>
+             </property>
+             <property name="text">
+              <string>5.暂停</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="2">
+            <widget class="QPushButton" name="btn_knock_suspend_5">
+             <property name="minimumSize">
+              <size>
+               <width>100</width>
+               <height>50</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <family>Agency FB</family>
+               <pointsize>10</pointsize>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QPushButton {
+    border: 2px solid black;
+    border-radius: 10px;
+}
+QPushButton:hover {
+    border: 2px solid red;
+    border-radius: 10px;
+}
+
+QPushButton:pressed {
+    border: 2px solid green;
+    border-radius: 10px;
+}</string>
+             </property>
+             <property name="text">
+              <string>6.终止</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+        <widget class="QPushButton" name="btn_leveling_10">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>120</y>
+           <width>103</width>
+           <height>50</height>
+          </rect>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>100</width>
+           <height>50</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <family>Agency FB</family>
+           <pointsize>10</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QPushButton {
+    border: 2px solid blue;
+    border-radius: 10px;
+}
+QPushButton:hover {
+    border: 2px solid red;
+    border-radius: 10px;
+}
+
+QPushButton:pressed {
+    border: 2px solid green;
+    border-radius: 10px;
+}</string>
+         </property>
+         <property name="text">
+          <string>点激光开关</string>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="btn_savePicture">
+         <property name="geometry">
+          <rect>
+           <x>220</x>
+           <y>170</y>
+           <width>100</width>
+           <height>50</height>
+          </rect>
+         </property>
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>100</width>
+           <height>50</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>60</width>
+           <height>40</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <family>等线</family>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+         <property name="cursor">
+          <cursorShape>PointingHandCursor</cursorShape>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QPushButton#btn_savePicture{
+	border-radius:5%;
+	border:2px solid black;
+}
+QPushButton#btn_savePicture:pressed{
+	background-color: rgb(131, 255, 148);
+}
+
+QPushButton:hover {
+    background-color: rgb(10, 240, 10);
+}
+
+
+
+
+
+
+
+
+
+</string>
+         </property>
+         <property name="text">
+          <string>保存图像</string>
          </property>
         </widget>
         <widget class="QWidget" name="layoutWidget">
          <property name="geometry">
           <rect>
-           <x>20</x>
-           <y>220</y>
-           <width>208</width>
+           <x>10</x>
+           <y>20</y>
+           <width>314</width>
            <height>52</height>
           </rect>
          </property>
-         <layout class="QGridLayout" name="gridLayout_58">
+         <layout class="QGridLayout" name="gridLayout_50">
+          <property name="spacing">
+           <number>1</number>
+          </property>
           <item row="0" column="0">
-           <widget class="QPushButton" name="btn_preparation_pos">
+           <widget class="QPushButton" name="btn_leveling_4">
             <property name="minimumSize">
              <size>
               <width>100</width>
@@ -2167,12 +3629,12 @@ QPushButton:pressed {
 }</string>
             </property>
             <property name="text">
-             <string>准备</string>
+             <string>长边相机灯</string>
             </property>
            </widget>
           </item>
           <item row="0" column="1">
-           <widget class="QPushButton" name="btn_add_nail">
+           <widget class="QPushButton" name="btn_leveling_6">
             <property name="minimumSize">
              <size>
               <width>100</width>
@@ -2203,7 +3665,130 @@ QPushButton:pressed {
 }</string>
             </property>
             <property name="text">
-             <string>放钉</string>
+             <string>短边相机灯</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QPushButton" name="btn_leveling_7">
+            <property name="minimumSize">
+             <size>
+              <width>100</width>
+              <height>50</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <family>Agency FB</family>
+              <pointsize>10</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton {
+    border: 2px solid blue;
+    border-radius: 10px;
+}
+QPushButton:hover {
+    border: 2px solid red;
+    border-radius: 10px;
+}
+
+QPushButton:pressed {
+    border: 2px solid green;
+    border-radius: 10px;
+}</string>
+            </property>
+            <property name="text">
+             <string>圆孔相机灯</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="layoutWidget">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>70</y>
+           <width>208</width>
+           <height>52</height>
+          </rect>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_52">
+          <property name="spacing">
+           <number>1</number>
+          </property>
+          <item row="0" column="0">
+           <widget class="QPushButton" name="btn_leveling_8">
+            <property name="minimumSize">
+             <size>
+              <width>100</width>
+              <height>50</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <family>Agency FB</family>
+              <pointsize>10</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton {
+    border: 2px solid blue;
+    border-radius: 10px;
+}
+QPushButton:hover {
+    border: 2px solid red;
+    border-radius: 10px;
+}
+
+QPushButton:pressed {
+    border: 2px solid green;
+    border-radius: 10px;
+}</string>
+            </property>
+            <property name="text">
+             <string>电推杆前进</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QPushButton" name="btn_leveling_9">
+            <property name="minimumSize">
+             <size>
+              <width>100</width>
+              <height>50</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <family>Agency FB</family>
+              <pointsize>10</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton {
+    border: 2px solid blue;
+    border-radius: 10px;
+}
+QPushButton:hover {
+    border: 2px solid red;
+    border-radius: 10px;
+}
+
+QPushButton:pressed {
+    border: 2px solid green;
+    border-radius: 10px;
+}</string>
+            </property>
+            <property name="text">
+             <string>电推杆后退</string>
             </property>
            </widget>
           </item>
@@ -2215,9 +3800,9 @@ QPushButton:pressed {
        <property name="geometry">
         <rect>
          <x>910</x>
-         <y>50</y>
+         <y>20</y>
          <width>581</width>
-         <height>841</height>
+         <height>911</height>
         </rect>
        </property>
        <property name="styleSheet">
@@ -2232,9 +3817,9 @@ QPushButton:pressed {
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>50</y>
+          <y>10</y>
           <width>561</width>
-          <height>611</height>
+          <height>501</height>
          </rect>
         </property>
         <property name="minimumSize">
@@ -2666,7 +4251,7 @@ QTabBar::tab:!selected {
                 </widget>
                </item>
                <item row="2" column="0">
-                <widget class="QLabel" name="label_sta_shaft2">
+                <widget class="QLabel" name="label_sta_shaft1">
                  <property name="minimumSize">
                   <size>
                    <width>80</width>
@@ -5891,211 +7476,427 @@ border-image: url(:/img/images/icon_backward.png);
        <widget class="QWidget" name="layoutWidget">
         <property name="geometry">
          <rect>
-          <x>10</x>
-          <y>690</y>
-          <width>551</width>
-          <height>51</height>
+          <x>20</x>
+          <y>530</y>
+          <width>531</width>
+          <height>101</height>
          </rect>
         </property>
-        <layout class="QGridLayout" name="gridLayout_44">
+        <layout class="QGridLayout" name="gridLayout_64">
+         <property name="spacing">
+          <number>1</number>
+         </property>
          <item row="0" column="0">
-          <widget class="QLabel" name="label_device_state9">
-           <property name="minimumSize">
-            <size>
-             <width>80</width>
-             <height>40</height>
-            </size>
+          <layout class="QGridLayout" name="gridLayout_44">
+           <property name="spacing">
+            <number>1</number>
            </property>
-           <property name="maximumSize">
-            <size>
-             <width>80</width>
-             <height>40</height>
-            </size>
-           </property>
-           <property name="styleSheet">
-            <string notr="true">QLabel {
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_device_state9">
+             <property name="minimumSize">
+              <size>
+               <width>80</width>
+               <height>40</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>80</width>
+               <height>40</height>
+              </size>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QLabel {
     text-align: center; /* 水平居中文本 */
     vertical-align: middle; /* 垂直居中文本 */
     border: 1px solid black;
     image: url(:/img/images/icon_redLight.png);
 }</string>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="QLabel" name="label_sta_shaft10">
-           <property name="minimumSize">
-            <size>
-             <width>80</width>
-             <height>40</height>
-            </size>
-           </property>
-           <property name="styleSheet">
-            <string notr="true">QLabel {
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QLabel" name="label_sta_shaft10">
+             <property name="minimumSize">
+              <size>
+               <width>80</width>
+               <height>40</height>
+              </size>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QLabel {
 	background-color: rgb(214, 214, 214);
     text-align: center; /* 水平居中文本 */
     vertical-align: middle; /* 垂直居中文本 */
     border: 1px solid black;
 }</string>
-           </property>
-           <property name="text">
-            <string>9.工具</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="2">
-          <widget class="QLabel" name="label_pos_shaft9">
-           <property name="minimumSize">
-            <size>
-             <width>100</width>
-             <height>40</height>
-            </size>
-           </property>
-           <property name="styleSheet">
-            <string notr="true">QLabel{
+             </property>
+             <property name="text">
+              <string>9.工具升降</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="2">
+            <widget class="QLabel" name="label_pos_shaft9">
+             <property name="minimumSize">
+              <size>
+               <width>100</width>
+               <height>40</height>
+              </size>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QLabel{
   border:1px solid black;
 }</string>
-           </property>
-           <property name="text">
-            <string>000.000</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="3">
-          <widget class="QLineEdit" name="lineEdit_setPos_shaft9">
-           <property name="minimumSize">
-            <size>
-             <width>100</width>
-             <height>40</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>120</width>
-             <height>50</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>0</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="4">
-          <widget class="QPushButton" name="btn_moveFwd_shaft9">
-           <property name="minimumSize">
-            <size>
-             <width>42</width>
-             <height>40</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>30</width>
-             <height>30</height>
-            </size>
-           </property>
-           <property name="font">
-            <font>
-             <family>等线</family>
-             <pointsize>14</pointsize>
-            </font>
-           </property>
-           <property name="cursor">
-            <cursorShape>PointingHandCursor</cursorShape>
-           </property>
-           <property name="styleSheet">
-            <string notr="true">border-image: url(:/img/images/icon_moveFwd.png);
+             </property>
+             <property name="text">
+              <string>000.000</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="3">
+            <widget class="QLineEdit" name="lineEdit_setPos_shaft9">
+             <property name="minimumSize">
+              <size>
+               <width>100</width>
+               <height>40</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>120</width>
+               <height>50</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>0</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="4">
+            <widget class="QPushButton" name="btn_moveFwd_shaft9">
+             <property name="minimumSize">
+              <size>
+               <width>42</width>
+               <height>40</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>30</width>
+               <height>30</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <family>等线</family>
+               <pointsize>14</pointsize>
+              </font>
+             </property>
+             <property name="cursor">
+              <cursorShape>PointingHandCursor</cursorShape>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">border-image: url(:/img/images/icon_moveFwd.png);
 
 
 </string>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="5">
-          <widget class="QPushButton" name="btn_moveBwd_shaft9">
-           <property name="minimumSize">
-            <size>
-             <width>42</width>
-             <height>40</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>30</width>
-             <height>30</height>
-            </size>
-           </property>
-           <property name="font">
-            <font>
-             <family>等线</family>
-             <pointsize>14</pointsize>
-            </font>
-           </property>
-           <property name="cursor">
-            <cursorShape>PointingHandCursor</cursorShape>
-           </property>
-           <property name="styleSheet">
-            <string notr="true">border-image: url(:/img/images/icon_moveBwd.png);
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="5">
+            <widget class="QPushButton" name="btn_moveBwd_shaft9">
+             <property name="minimumSize">
+              <size>
+               <width>42</width>
+               <height>40</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>30</width>
+               <height>30</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <family>等线</family>
+               <pointsize>14</pointsize>
+              </font>
+             </property>
+             <property name="cursor">
+              <cursorShape>PointingHandCursor</cursorShape>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">border-image: url(:/img/images/icon_moveBwd.png);
 
 
 </string>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="6">
-          <widget class="QPushButton" name="btn_moveRel_shaft9">
-           <property name="minimumSize">
-            <size>
-             <width>42</width>
-             <height>40</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>30</width>
-             <height>30</height>
-            </size>
-           </property>
-           <property name="font">
-            <font>
-             <family>等线</family>
-             <pointsize>14</pointsize>
-            </font>
-           </property>
-           <property name="cursor">
-            <cursorShape>PointingHandCursor</cursorShape>
-           </property>
-           <property name="styleSheet">
-            <string notr="true">border-image: url(:/img/images/icon_moveRel.png);
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="6">
+            <widget class="QPushButton" name="btn_moveRel_shaft9">
+             <property name="minimumSize">
+              <size>
+               <width>42</width>
+               <height>40</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>30</width>
+               <height>30</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <family>等线</family>
+               <pointsize>14</pointsize>
+              </font>
+             </property>
+             <property name="cursor">
+              <cursorShape>PointingHandCursor</cursorShape>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">border-image: url(:/img/images/icon_moveRel.png);
 
 
 </string>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item row="1" column="0">
+          <layout class="QGridLayout" name="gridLayout_63">
+           <property name="spacing">
+            <number>1</number>
            </property>
-           <property name="text">
-            <string/>
-           </property>
-          </widget>
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_device_state10">
+             <property name="minimumSize">
+              <size>
+               <width>80</width>
+               <height>40</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>80</width>
+               <height>40</height>
+              </size>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QLabel {
+    text-align: center; /* 水平居中文本 */
+    vertical-align: middle; /* 垂直居中文本 */
+    border: 1px solid black;
+    image: url(:/img/images/icon_redLight.png);
+}</string>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QLabel" name="label_sta_shaft11">
+             <property name="minimumSize">
+              <size>
+               <width>80</width>
+               <height>40</height>
+              </size>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QLabel {
+	background-color: rgb(214, 214, 214);
+    text-align: center; /* 水平居中文本 */
+    vertical-align: middle; /* 垂直居中文本 */
+    border: 1px solid black;
+}</string>
+             </property>
+             <property name="text">
+              <string>10.工具旋转</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="2">
+            <widget class="QLabel" name="label_pos_shaft10">
+             <property name="minimumSize">
+              <size>
+               <width>100</width>
+               <height>40</height>
+              </size>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QLabel{
+  border:1px solid black;
+}</string>
+             </property>
+             <property name="text">
+              <string>000.000</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="3">
+            <widget class="QLineEdit" name="lineEdit_setPos_shaft10">
+             <property name="minimumSize">
+              <size>
+               <width>100</width>
+               <height>40</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>120</width>
+               <height>50</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>0</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="4">
+            <widget class="QPushButton" name="btn_moveFwd_shaft10">
+             <property name="minimumSize">
+              <size>
+               <width>42</width>
+               <height>40</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>30</width>
+               <height>30</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <family>等线</family>
+               <pointsize>14</pointsize>
+              </font>
+             </property>
+             <property name="cursor">
+              <cursorShape>PointingHandCursor</cursorShape>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">border-image: url(:/img/images/icon_moveFwd.png);
+
+
+</string>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="5">
+            <widget class="QPushButton" name="btn_moveBwd_shaft10">
+             <property name="minimumSize">
+              <size>
+               <width>42</width>
+               <height>40</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>30</width>
+               <height>30</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <family>等线</family>
+               <pointsize>14</pointsize>
+              </font>
+             </property>
+             <property name="cursor">
+              <cursorShape>PointingHandCursor</cursorShape>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">border-image: url(:/img/images/icon_moveBwd.png);
+
+
+</string>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="6">
+            <widget class="QPushButton" name="btn_moveRel_shaft10">
+             <property name="minimumSize">
+              <size>
+               <width>42</width>
+               <height>40</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>30</width>
+               <height>30</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <family>等线</family>
+               <pointsize>14</pointsize>
+              </font>
+             </property>
+             <property name="cursor">
+              <cursorShape>PointingHandCursor</cursorShape>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">border-image: url(:/img/images/icon_moveRel.png);
+
+
+</string>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </item>
         </layout>
        </widget>

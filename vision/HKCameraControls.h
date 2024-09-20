@@ -79,11 +79,11 @@ private:
 
 
     /*****图像预处理超参数配置相关 ********/
-    double  m_dFrameRateEdit = 6.0;     // 帧率
-    int imgWidth = 1536;                       //  图像宽度
-    int imgHeight = 1024;                      //  图像高度
+    double  m_dFrameRateEdit = 10.0;     // 帧率
+    int imgWidth = 768;                       //  图像宽度
+    int imgHeight = 512;                      //  图像高度
     int stIntValue_SCPD = 1000;           //  SCPD  数据包间隔
-    int stIntValue_HBTO = 7000;            //  心跳包超时时间
+    int stIntValue_HBTO = 6000;            //  心跳包超时时间
     double m_dGainEdit = 1000.0 ;         // 相机增益
     double  m_dExposureEdit = 2000.0;       //  曝光时间
 

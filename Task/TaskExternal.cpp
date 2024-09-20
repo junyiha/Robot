@@ -428,7 +428,7 @@ void CTask::detectionInPositioningExecutionCommand()
 
             //调用视觉函数
             VisionResult vis_res = m_vision->getVisResult();
-            if(!vis_res.status)
+            if(!vis_res.lineStatus)
             { // 视觉检测无数据，等待下一个周期
                 break;
             }
@@ -778,7 +778,7 @@ void CTask::detectionInFitBoardExecutionCommand()
 
             //调用视觉函数
             VisionResult vis_res = m_vision->getVisResult();
-            if (!vis_res.status)
+            if (!vis_res.lineStatus)
             { // 视觉检测无数据，等待下一个周期
                 break;
             }

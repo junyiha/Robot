@@ -26,6 +26,8 @@ struct LidarData{
     bool flag=0;//是否有效
     cv::Mat show;
     std::string error;
+    bool  pointValidFlag = false;  // 边缘点位置有效性
+    cv::Point2f board;
 };
 
 
@@ -42,10 +44,12 @@ public:
     cv::Mat show;
     std::string error;
     bool Left;
+    bool vertexValidFlag = false;  // 绝缘板获取位置有效性    (自动取板功能使用)
+    cv::Point2f vertex; // 绝缘板边缘点位置
 
 
     //检测相关函数
-    void lidarDetecter(cv::Mat img,bool isleft,bool revAngle=false); // 雷达检测函数
+    void lidarDetecter(cv::Mat img,bool isleft,bool revAngle=false,int min_X=0, int min_Y=0, bool pIsLeft=false); // 雷达检测函数
     float getAngle(cv::Point2f p1,cv::Point2f p2);  // 获取两个点的角度
 
     void clear();   // 清空所有检测结果

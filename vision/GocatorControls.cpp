@@ -33,6 +33,8 @@ GocatorControls::GocatorControls(){
         this->gocators[item.first] = goc;
         index+=1;
    }
+
+
  }
 
 GocatorControls::~GocatorControls(){
@@ -56,7 +58,6 @@ void GocatorControls::get_data(){
     //获取雷达数据Mat
     for(auto &item : this->gocators){
         item.second->getData();
-
         this->lidars[item.first]=item.second->lidar_data;
     }
 }

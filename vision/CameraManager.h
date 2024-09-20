@@ -45,14 +45,14 @@ public:
     void openCameraAll();  //   打开所有相机
     bool closeCameraAll(); //   关闭所有相机
     cv::Mat getImage(std::string camera_name); // 获取单个相机图像
-    void getImageAll(); // 获取所有相机图像
+    void getImageAll(std::string camType="all"); // 获取所有相机图像
     void getDeviceList(); // 获取设备列表
     std::vector<bool> checkCameraIsAccessible(); // 检查相机是否可以访问
     std::vector<bool> getCameraOpenedInfo(); // 检查相机是否打开
     bool camerasIsOpened();
 
 
-    std::map<std::string, cv::Mat> getCameraImages(); // 获取所有相机图像
+    std::map<std::string, cv::Mat> getCameraImages(std::string camType="all"); // 获取所有相机图像
 
     void closeAllCameraThread();
 

@@ -11,21 +11,31 @@ VisionInterface::VisionInterface() {
     this->line_helper = new LineDetector();       // 边线检测功能类
     this->sharedDataLine = new SharedData();      // 共享数据类
 
+    this->laser_controls = new LaserScanerControls();
+    this->lidar_helper = new LidarHelper();
+    this->sharedDataLaser = new SharedData();
+
+
+
+
+
     // 相机读取+边线检测 端到端处理类(线程)
     this->line_handler = new LineDetectorRunner(this->line_helper,this->camera_controls,this->sharedDataLine);
+    this->lidar_handler = new LidarHandler(this->lidar_helper, this->laser_controls, this->sharedDataLaser);
 
-    // 启动直线检测线程
-    this->line_handler->is_running = true;
-    this->line_handler->start();
 
     this->scales_line= {
-            {"cam_1", 0.153846153846153},
-            {"cam_2", 0.153061224489795},
-            {"cam_3", 0.153061224489795},
-            {"cam_4", 0.153061224489795},
-            {"cam_5", 0.153061224489795},
-            {"cam_6", 0.153061224489795},
+            {"LineCam_1", 0.153846153846153},
+            {"LineCam_2", 0.153061224489795},
+            {"LineCam_3", 0.153061224489795},
+            {"LineCam_4", 0.153061224489795},
+            {"LineCam_5", 0.153061224489795},
+            {"LineCam_6", 0.153061224489795},
     };
+
+    //
+
+
 
     this->logger = spdlog::get("logger");
 }
@@ -38,48 +48,96 @@ VisionInterface::~VisionInterface() {
         delete this->camera_controls;
     if(this->sharedDataLine != nullptr)
         delete this->sharedDataLine;
+
+    if(this->line_handler!= nullptr){
+        delete this->line_handler;
+    }
+    if(this->laser_controls!= nullptr){
+        delete this->laser_controls;
+    }
+    if(this->sharedDataLaser!= nullptr){
+        delete this->sharedDataLaser;
+    }
+
     this->isRunning = false;
     this->quit();
 }
 
-void VisionInterface::getDetectResult(DetectType type, stMeasureData *stm) {
+void VisionInterface::getDetectResult(VisionResult &vis_result){
 
-    QMutexLocker locker_line(&this->sharedDataLine->mutex);
-    if(this->line_handler->results.size()>0){
-        this->line_handler->results.clear();
-    }
-    this->sharedDataLine->spaceAvailable.wakeOne();
-    if(!this->line_handler->results.size()){
-        this->sharedDataLine->dataReady.wait(&this->sharedDataLine->mutex);
+//    QMutexLocker locker_line(&this->sharedDataLine->mutex);
+//    if(this->line_handler->results.size()>0){
+//        this->line_handler->results.clear();
+//    }
+//    this->sharedDataLine->spaceAvailable.wakeOne();
+//    if(!this->line_handler->results.size()){
+//        this->sharedDataLine->dataReady.wait(&this->sharedDataLine->mutex);
+//    }
+
+    // 获取直线检测结果
+    std::map<std::string, LineDetectRes> lineDetectRes;
+    this->imagesMutex.lock();
+    lineDetectRes = this->line_handler->results;
+    this->imagesMutex.unlock();
+    if(lineDetectRes.size()>0){
+        this->line_res = lineDetectRes;
+        this->parser_result("Line", &vis_result.stData);
+        vis_result.lineStatus = true;
+    }else{
+        vis_result.lineStatus = false;
     }
 
-    this->line_res = this->line_handler->results;
-    //解析相关数据
-    this->parser_result(stm);
+    // 获取轮廓激光测量结果
+    std::map<std::string, LidarData> lidarDetectRes;
+    this->pointMaskMutex.lock();
+    lidarDetectRes = this->lidar_handler->results;
+    this->pointMaskMutex.unlock();
+    if(lidarDetectRes.size()>0){
+        this->lidar_res = lidarDetectRes;
+        this->parser_result("Laser", &vis_result.stData);
+        vis_result.laserStatus = true;
+    }else{
+        vis_result.laserStatus = false;
+    }
 }
 
-void VisionInterface::parser_result(stMeasureData *stm) {
+void VisionInterface::parser_result(std::string paserType, stMeasureData *stm) {
 
-    if(this->line_res.size()>0){
-        for(auto& line: this->line_res){
-            std::string prefix =  line.first;
-            size_t index = prefix.find("_");
-            int number = prefix[index+1]-'0';
-            if(index+1!=prefix.size()-1){
-                number = (prefix[index+1]-'0')*10+(prefix[index+2]-'0');
-            }
-            double dist = line.second.dist*this->scales_line[line.first];
-            if(dist<1){
-                stm->m_LineDistance[number-1] = 0;
-                stm->m_bLineDistance[number-1] = false;
-            }else{
-                stm->m_LineDistance[number-1] = dist;
-                stm->m_bLineDistance[number-1] = line.second.status;
+    if(paserType == "line"){
+        if(this->line_res.size()>0){
+            for(auto& line: this->line_res){
+                std::string prefix =  line.first;
+                size_t index = prefix.find("_");
+                int number = prefix[index+1]-'0';
+                if(index+1!=prefix.size()-1){
+                    number = (prefix[index+1]-'0')*10+(prefix[index+2]-'0');
+                }
+                double dist = line.second.dist*this->scales_line[line.first];
+                if(dist<1 || dist>44){
+                    stm->m_LineDistance[number-1] = 0;
+                    stm->m_bLineDistance[number-1] = false;
+                }else{
+                    stm->m_LineDistance[number-1] = dist;
+                    stm->m_bLineDistance[number-1] = line.second.status;
+                }
             }
         }
     }
 
+    if(paserType == "laser"){
+        if(this->lidar_res.size()>0){
+            for(auto& lidar: this->lidar_res) {
+                std::string prefix =  lidar.first;
+                size_t index = prefix.find("_");
+                int number = prefix[index+1]-'0';
+                stm->m_LaserGapHeight[number-1] = lidar.second.dist; // 板高差
+                stm->m_LaserGapDistance[number-1] = lidar.second.gap; // 板间距
+                stm->m_bLaserProfile[number-1] = lidar.second.flag;  // 板间测量结果有效性
+            }
+        }
+    }
 }
+
 
 VisionResult VisionInterface::getVisResult(){
     VisionResult vis_result;
@@ -93,17 +151,15 @@ VisionResult VisionInterface::getVisResult(){
 void VisionInterface::run() {
 
     while(this->isRunning){
-        //if(this->is_Detected){
-        //    // 获取检测结果
-        //    memset(&this->vis_result,0,sizeof(this->vis_result));
-        //    getDetectResult(DetectType::LINE, &this->vis_result.stData);
-        //    this->vis_result.status = true;
-        //    // 结果拷贝
-        //    this->mutex.lock();
-        //    memset(&this->vis_result_,0,sizeof(this->vis_result_));
-        //    this->vis_result_ = this->vis_result;
-        //    this->mutex.unlock();
-        //}
+        if(this->is_Detected){
+            // 获取检测结果
+            memset(&this->vis_result,0,sizeof(this->vis_result));
+            getDetectResult(this->vis_result);
+            // 结果拷贝
+            this->mutex.lock();
+            this->vis_result_ = this->vis_result;
+            this->mutex.unlock();
+        }
         QThread::msleep(200);
     }
 }

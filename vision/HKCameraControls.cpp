@@ -184,8 +184,6 @@ void HKCameraControls::run(){
 
     while(this->isRunning){
 
-        int lossCount = 0;
-
         if(this->thread_runing){
 
             // 开启数据流抓取
@@ -225,21 +223,21 @@ void HKCameraControls::run(){
                 }else{
                     this->logger->info(" HKCameraControls::  camName: {}, get image failed", this->stHkDev.camName);
                 }
-                this->pstMvCamera->FreeImageBuffer(&stImageInfo);  // 释放图像缓存
-            }else{
+                int res = this->pstMvCamera->FreeImageBuffer(&stImageInfo);  // 释放图像缓存
+                if(MV_OK!=res){
+                    this->logger->info("FreeImageBuffer fail {}", this->stHkDev.camName);
+                    continue;
+                }
+
+            }
+            else{
                 // 待处理   软触发模式处理策略
                 this->logger->info("GetImageBuffer fail {}", this->stHkDev.camName);
-                QThread::msleep(100);
-                lossCount++;
-                if(lossCount>50){
-                    this->openCamera();
-                    this->logger->info("{} is reconnected!", this->stHkDev.camName);
-                    lossCount = 0;
-                }
                 continue;
+                QThread::msleep(500);
             }
         }
-        QThread::msleep(200);
+        QThread::msleep(100);
     }
 
     delete[] pData;
@@ -514,6 +512,8 @@ void HKCameraControls::initializationCameraConfig() {
             if(nRet != MV_OK)
             {
                 this->logger->info("Warning: Set Packet Size fail nRet {:02x}!", nRet);
+            }else{
+                this->logger->info("Set Packet Size nRet {}!", nPacketSize);
             }
         }
         else
@@ -526,7 +526,9 @@ void HKCameraControls::initializationCameraConfig() {
     this->setHeartBeatTimeOut();
 
     // 3. 0设置像素格式
-    nRet = this->pstMvCamera->SetEnumValue("PixelFormat", PixelType_Gvsp_RGB8_Packed);
+//    nRet = this->pstMvCamera->SetEnumValue("PixelFormat", PixelType_Gvsp_RGB8_Packed);
+    nRet = this->pstMvCamera->SetEnumValue("PixelFormat", PixelType_Gvsp_Mono8);
+
     if (nRet != MV_OK)
     {
         this->logger->info("Camrea {} Warning: Set PixelFormat fail nRet !", this->stHkDev.camName);

@@ -27,7 +27,7 @@
 #include "robot/robot.h"
 #include "GVL.h"
 //--------------视觉部分--------------//
-#include "vision/VisionControls.h"
+//#include "vision/VisionControls.h"
 #include "vision/VisionInterface.h"
 
 //--------------任务部分--------------//
@@ -35,7 +35,7 @@
 #include <QAtomicInt>
 
 //--------------可视化----------------//
-#include "vision/CameraDisplay.h"
+//#include "vision/CameraDisplay.h"
 #include <bitset>
 
 //--------------日志文件----------------//
@@ -45,7 +45,7 @@
 #include <spdlog/sinks/rotating_file_sink.h>
 #include "GVL.h"
 
-
+#include <QMouseEvent>
 
 
 QT_BEGIN_NAMESPACE
@@ -77,7 +77,7 @@ public:
     CTask* m_Task;
 
     //视觉模块
-    VisionControls* m_Vision;
+    //VisionControls* m_Vision;
     VisionInterface* m_VisionInterface;
 
     //控十字激光
@@ -208,6 +208,8 @@ private:
     Ui::MainWindow *ui;
     void initUiForm();
 
+    bool m_dragEnabled;
+
     QTimer* updateUiTimer;
 
     const unsigned int larserNum=4;
@@ -224,6 +226,10 @@ private:
     void setActionIndex();  // 记录当前触发动作索引(工作流程记录)
     void closeEvent(QCloseEvent *event);
     bool lineStatus = false; // 是否处于直线检测状态
+
+protected:
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
 
 
 private slots:

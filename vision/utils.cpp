@@ -27,13 +27,14 @@ std::vector<std::vector<float>> get_line_by_lsd(cv::Mat bin_img) {
 
     //基于LSD算法获取线检测点
     cv::Ptr<cv::LineSegmentDetector> detector = createLineSegmentDetector(cv::LSD_REFINE_STD);
+//    LSD_REFINE_STD
     std::vector<cv::Vec4f> lines;
     std::vector<std::vector<float>> line_res;
     detector->detect(bin_img, lines);
 
 
-
     for (size_t i = 0; i < lines.size(); i++) {
+
         cv::Vec4f line = {
                 round(lines[i][0]),
                 round(lines[i][1]),
@@ -41,7 +42,6 @@ std::vector<std::vector<float>> get_line_by_lsd(cv::Mat bin_img) {
                 round(lines[i][3])
         };
         double dist = calculatePointsDistance(cv::Point2f(line[0], line[1]), cv::Point2f(line[2], line[3]));
-
 
         // 过滤掉距离过小的线段
         if (dist <512*0.15) { continue;}   // 不过滤小线段的话，会导致预测的结果存在偏差，因为小线段拟合的直线可能不准确
@@ -61,6 +61,30 @@ std::vector<std::vector<float>> get_line_by_lsd(cv::Mat bin_img) {
     return line_res;
 }
 
+double computePointToLineDistance(std::vector<float> line_1, std::vector<float> line_2) {
+
+    double Slope_1 =line_1[4];
+    double C1 = line_1[1];
+
+    double Slope_2 =line_2[4];
+    double C2 = line_2[1];
+
+    // 直线上的某点
+//    double X1 = line_1[0];
+//    double Y1 = line_1[1];
+    //直线上的中点
+    double X1 = (line_1[0]+line_1[2])/2;
+    double Y1 = (line_1[1]+line_1[3])/2;
+    // 点斜式转为标准式
+    double A2 = -Slope_2;
+    double B2 =1;
+    C2 = -C2;
+    // 函数用于计算点到直线的垂直距离
+    return perpendicularDistance(A2, B2, C2, X1, Y1);
+}
+double perpendicularDistance(double A, double B, double C, double x1, double y1) {
+    return std::abs(A * x1 + B * y1 + C) / std::sqrt(A * A + B * B);
+}
 
 
 double calculateDistanceBetweenParallelLines(double slope, double intercept1, double intercept2) {
@@ -390,12 +414,6 @@ bool check_is_border_line(cv::Mat img, cv::Vec4f line, float thr) {
     if(base_up_y < 0 || (base_down_y>img.rows-1)){
         return false;  // 超出边界
     }
-
-    if((base_x+offset-10)>512 ||  (base_up_y+offset-10)>512 || base_y+offset>512){
-
-        return false;
-    }
-
 
     cv::Rect roi_img_1(base_x, base_up_y, offset-10,offset-10);
     cv::Rect roi_img_2(base_x, base_y+10, offset-10,offset-10);

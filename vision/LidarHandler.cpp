@@ -1,8 +1,8 @@
-﻿#include"LidarHandler.h"
+#include"LidarHandler.h"
 
-LidarHandler::LidarHandler(LidarHelper* lidar, GocatorControls* gocator, SharedData* sharedData){
-    this->lidar_helper = lidar;
-    this->gocator_controls = gocator;
+LidarHandler::LidarHandler(LidarHelper* lidarHelper, LaserScanerControls* laserControls, SharedData* sharedData){
+    this->lidar_helper = lidarHelper;
+    this->laser_controls = laserControls;
     this->sharedData = sharedData;
 }
 
@@ -15,15 +15,12 @@ LidarHandler::~LidarHandler(){
 void LidarHandler::run(){
 
     while(this->thread_control_flag){
-         QThread::sleep(100);
 
         if(this->detect_control_flag){
-
-
             // 获取数据
-            this->gocator_controls->get_data();
-            std::map<std::string, LidarData> temp_results; 
-            std::map<std::string, cv::Mat> lidar_data = this->gocator_controls->lidars;
+            this->laser_controls->getDataAll();
+            std::map<std::string, cv::Mat> lidar_data = this->laser_controls->pointCloudMasks;
+            std::map<std::string, LidarData> temp_results;
             for(auto& item : lidar_data) {
                LidarData lidar_res;
                if(item.second.empty()){ //判别是否获取到有效的点云数据
@@ -35,8 +32,8 @@ void LidarHandler::run(){
                    lidar_res.error = "雷达未获取到有效的点云数据！";
                    temp_results[item.first] = lidar_res;
                }else{
-                   Gocator *goc = this->gocator_controls->gocators[item.first];
-                   this->lidar_helper->lidarDetecter(item.second, goc->isleft, goc->revAngle); //雷达成像检测
+                   MyBestfitLaserScaner *scaner_ = this->laser_controls->scaners[item.first];
+                   this->lidar_helper->lidarDetecter(item.second, scaner_->isleft, scaner_->revAngle,scaner_->minX, scaner_->minY, this->laser_controls->direct_config[item.first]); //雷达成像检测
                    this->lidar_helper->shrink();
                    lidar_res.flag = this->lidar_helper->resultFlag;
                    lidar_res.dist = this->lidar_helper->lidarDist;
@@ -44,18 +41,24 @@ void LidarHandler::run(){
                    lidar_res.angle = this->lidar_helper->lidarAngle;
                    lidar_res.error = this->lidar_helper->error;
                    lidar_res.show = this->lidar_helper->show;
+                   lidar_res.pointValidFlag = this->lidar_helper->vertexValidFlag; // 绝缘板角点标志位
+                   lidar_res.board = this->lidar_helper->vertex;   // 绝缘板角点坐标
                    temp_results[item.first] = lidar_res;
                    this->lidar_helper->clear();
                }
             }
 
-            QMutexLocker locker(&this->sharedData->mutex);
-            if(this->results.size()>0){
-                this->sharedData->spaceAvailable.wait(&this->sharedData->mutex);
-            }
+//            QMutexLocker locker(&this->sharedData->mutex);
+            this->pointsMaskMutex.lock();
             this->results = temp_results;
-            this->sharedData->dataReady.wakeOne();
+            this->pointsMaskMutex.unlock();
+
+//            if(this->results.size()>0){
+//                this->sharedData->dataReady.wakeOne();
+//                this->sharedData->spaceAvailable.wait(&this->sharedData->mutex);
+//            }
         }
+        Sleep(200);
     }
 }
 

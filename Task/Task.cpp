@@ -259,7 +259,7 @@ void CTask::SemiAutoProgrcess()
     case 20: //获取边线数据，并计算调整量
         if(this->m_bMagnetOn){break;}
         vis_res = m_vision->getVisResult();
-        if(vis_res.status) {  //调用视觉函数
+        if(vis_res.lineStatus) {  //调用视觉函数
             std::copy(std::begin(vis_res.stData.m_LineDistance) , std::end(vis_res.stData.m_LineDistance), m_stMeasuredata.m_LineDistance);
             std::copy(std::begin(vis_res.stData.m_bLineDistance), std::end(vis_res.stData.m_bLineDistance), m_stMeasuredata.m_bLineDistance);
 
@@ -335,7 +335,7 @@ void CTask::SemiAutoProgrcess()
         const double staLineDistance = 15;
         const double deltaLineDistance = 1.5;
         vis_res = m_vision->getVisResult();
-        if(vis_res.status) //调用视觉函数
+        if(vis_res.lineStatus) //调用视觉函数
         {
             //输出偏差 emit
             bool b_line_error = false;

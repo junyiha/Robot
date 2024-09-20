@@ -43,6 +43,9 @@ file(COPY ${BaseDIR}/packages/HK_SDK/Libraries/win64/MvCameraControl.lib DESTINA
 file(COPY ${BaseDIR}/packages/GocatorSDK/bin/win64/kApi.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/)
 file(COPY ${BaseDIR}/packages/GocatorSDK/bin/win64/GoSdk.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/)
 
+# BestfitLaserScanner
+file(COPY ${BaseDIR}/packages/BestfitLayserScaner/lib/bin/BestfitLaserScanerSDK.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/)
+
 # Opencv Setting
 include_directories(${BaseDIR}/packages/opencv4.55/build/include)
 link_directories(${BaseDIR}/packages/opencv4.55/build/x64/vc15/lib)
@@ -67,11 +70,22 @@ link_directories(${BaseDIR}/packages/GocatorSDK/lib/win64d)
 include_directories(${BaseDIR}/packages/OnnxRuntime/Microsoft.ML.OnnxRuntime.1.7.0/build/native/include)
 link_directories(${BaseDIR}/packages/OnnxRuntime/Microsoft.ML.OnnxRuntime.1.7.0/runtimes/win-x64/native)
 
+
+#Bestfit laser setting
+include_directories(${BaseDIR}/packages/BestfitLayserScaner/lib/include)
+link_directories(${BaseDIR}/packages/BestfitLayserScaner/lib/lib)
+
+
+
 # eigen3
 include_directories(${BaseDIR}/packages/eigen3.4.0)
 
 add_compile_options("$<$<C_COMPILER_ID:MSVC>:/source-charset:utf-8>")
 add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/source-charset:utf-8>")
+
+#add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
+#add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
+
 
 find_package(Qt5 COMPONENTS
         Core
@@ -89,6 +103,8 @@ aux_source_directory(${CMAKE_SOURCE_DIR}/com src)
 aux_source_directory(${CMAKE_SOURCE_DIR}/robot src)
 aux_source_directory(${CMAKE_SOURCE_DIR}/Task src)
 aux_source_directory(${CMAKE_SOURCE_DIR}/vision src)
+
+message(STATUS ${src})
 
 add_executable(${PROJECT_NAME} ${src} ${QRC_SOURCE_FILE})
 
@@ -130,6 +146,7 @@ target_link_libraries(PDRobot-master onnxruntime.dll)
 target_link_libraries(PDRobot-master
         GoSdk.lib
         kApi.lib
+        BestfitLaserScanerSDK.lib
 )
 
 
