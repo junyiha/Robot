@@ -133,16 +133,6 @@ void CTask::SemiAutoProgrcess()
     static double tar_pos[6] = {0};
     double tool_tar = 0;
 
-    // double Postion_Home[10]    =    {10,0,0,-90.04,-0.52,0,1210, 0, 0, 0}; //碰钉准备位置
-    // double Postion_Prepare[10]    = {800,0,0,-90.04,0.12,0.27,1300, 0, 0, 0}; //碰钉准备位置
-    // QVector<double> Postion_Home_qv = {10,0,0,-90.04,-0.52,0,1210, 0, 0, 0}; //碰钉准备位置
-    // QVector<double> Postion_Prepare_qv = {800,0,0,-90.04,0.12,0.27,1300,0, 0, 0}; //碰钉准备位置
-
-//    double Postion_Home[7]    =    {650,-7,-54,-1.11,0.09,-0.05,1210}; //碰钉准备位置
-//    double Postion_Prepare[7]    = {816,-7,-54,-1.11,0.09,-0.05,1300}; //碰钉准备位置
-//    QVector<double> Postion_Home_qv = {650,-7,-54,-1.11,0.09,-0.05,1210}; //碰钉准备位置
-//    QVector<double> Postion_Prepare_qv = {816,-7,-54,-1.11,0.09,-0.05,1300}; //碰钉准备位置
-
     VisionResult vis_res; // 视觉检测结果
 
     static quint16 cnt_15 = 0;
@@ -905,6 +895,15 @@ EDetectionInParallelResult CTask::CheckParallelStateDecorator(QVector<double> la
 
     return result;
 }
+
+EDetectionInParallelResult CTask::CheckParallelStateDecorator(double laserDistance[4])
+{
+    int size = sizeof(laserDistance) / sizeof(laserDistance[0]);
+    QVector<double> LaserDistance(laserDistance, laserDistance + size);
+
+    return CheckParallelStateDecorator(LaserDistance);
+}
+
 /**
 ----------*0*--------------------*2*------------------
 ------------------------------------------------------

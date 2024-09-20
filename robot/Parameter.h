@@ -35,6 +35,7 @@ const double LINK_0_JOINT_LIMIT_POS[MAX_FREEDOM_LINK] = { 250,      // 0 升降
                                                           30,       // 7 筒旋转 
                                                           60,       // 8 腕俯仰 
                                                           1490,     // 9 末端升降 
+                                                                    // 10 末端旋转
                                                           MAX,MAX,MAX,MAX,MAX,MAX,MAX,MAX,MAX,MAX };
 const double LINK_0_JOINT_LIMIT_NEG[MAX_FREEDOM_LINK] = { 0,        // 0 升降 
                                                           -110,     // 1 前后 
@@ -46,6 +47,7 @@ const double LINK_0_JOINT_LIMIT_NEG[MAX_FREEDOM_LINK] = { 0,        // 0 升降
                                                           -30,      // 7 筒旋转 
                                                           -100,     // 8 腕俯仰 
                                                           1190,     // 9 末端升降 
+                                                                    // 10 末端旋转
                                                           -MIN,-MIN,-MIN,-MIN,-MIN,-MIN,-MIN,-MIN,-MIN,-MIN };
 
 //const double LINK_0_JOINT_LIMIT_POS[MAX_FREEDOM_LINK] = {  64,  144,  257,184, 14, 1147, 480, 150, 99,  250, MAX, MAX, MAX, MAX, MAX, MAX, MAX, MAX, MAX, MAX };

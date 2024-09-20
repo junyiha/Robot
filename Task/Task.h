@@ -193,6 +193,7 @@ private:
     */
     int CheckParallelState(QVector<double>  laserDistance);
     EDetectionInParallelResult CheckParallelStateDecorator(QVector<double>  laserDistance);
+    EDetectionInParallelResult CheckParallelStateDecorator(double laserDistance[4]);
 
     /**
      * @brief 定位检测函数，根据相机返回数据，判断是否具备定位条件或完成定位
@@ -385,6 +386,18 @@ private:
      */
     void terminateCommand();
 
+private:
+    /**
+     * @brief 贴合状态下计算调整量
+     * 
+     */
+    void CalculatedAdjustmentForFitBoard();
+       
+    /**
+     * @brief 更新雷达数据.
+     */
+    void UpdateLaserDistance();
+
 public:
     /**
      * @brief 更新第一层和第二层状态(线程安全)
@@ -436,6 +449,7 @@ private:
     std::mutex m_mutex;
     bool m_position_motion_flag{false};
     uint m_motion_index{ 0 };
+    std::vector<double> m_fit_board_target_pose{0, 0, 0, 0, 0, 0};
 
     std::map<ETopState, std::string> TopStateStringMap 
     {

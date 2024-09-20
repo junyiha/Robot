@@ -257,13 +257,11 @@ void CTask::readyToParallelExecutionCommand()
         }
         case EExecutionCommand::eParallel:
         {
-            log->info("调平指令触发，状态跳转至: 调平--检测");
             updateTopAndSubState(ETopState::eParallel, ESubState::eDetection);
             break;
         }
         case EExecutionCommand::eTerminate:
         {
-            log->info("待调平状态下的终止指令，进入手动状态");
             terminateCommand();
             break;
         }
@@ -297,19 +295,16 @@ void CTask::detectionInParallelExecutionCommand()
             {
                 case EDetectionInParallelResult::eDeviationIsLessThanThreshold:
                 {
-                    log->info("{}: 调平检测结果达到阈值，状态跳转至: 定位--待定位",__LINE__);
                     updateTopAndSubState(ETopState::ePositioning, ESubState::eReadyToPositioning);
                     break;
                 }
                 case EDetectionInParallelResult::eDistanceMeetsRequirement:
                 {
-                    log->info("{}: 调平检测结果满足调整条件，状态跳转至: 调平--运动",__LINE__);
                     updateTopAndSubState(ETopState::eParallel, ESubState::eMotion);
                     break;
                 }
                 case EDetectionInParallelResult::eNoWallDetected:
                 {
-                    log->info("{}: 调平检测结果不满足调整条件，状态跳转至: 手动--准备",__LINE__);
                     updateTopAndSubState(ETopState::eManual, ESubState::eReady);
                     break;
                 }
@@ -318,13 +313,11 @@ void CTask::detectionInParallelExecutionCommand()
         }
         case EExecutionCommand::eTerminate:
         {
-            log->info("待调平状态下的终止指令，进入手动状态");
             terminateCommand();
             break;
         }
         case EExecutionCommand::ePause:
         {
-            log->info("{}: 暂停指令，状态跳转至: 调平--待调平",__LINE__);
             updateTopAndSubState(ETopState::eParallel, ESubState::eReadyToParallel);
             break;
         }
@@ -351,19 +344,16 @@ void CTask::motionInParallelExecutionCommand()
             auto result = CheckParallelStateDecorator(LaserDistance);
             if (result == EDetectionInParallelResult::eNoWallDetected)
             {
-                log->warn("{} 反馈异常，末端激光偏差过大，状态跳转: 手动",__LINE__);
                 updateTopAndSubState(ETopState::eManual, ESubState::eReady);
             }
             else if (result == EDetectionInParallelResult::eDeviationIsLessThanThreshold)
             { 
-                log->info("{} 检测结果小于阈值，状态跳转: 调平--检测",__LINE__);
                 m_Robot->setLinkHalt();
                 updateTopAndSubState(ETopState::eParallel, ESubState::eDetection);
             }
             else
             {
                 log->warn("激光测量数据满足调整条件，控制机器人调平运动");
-            
 
                 // 计算偏差，控制机器人运动
                 QVector<Eigen::Matrix4d> Dev_RT =  CMeasure::calPoseDeviation(m_stMeasuredata);
@@ -382,13 +372,11 @@ void CTask::motionInParallelExecutionCommand()
         }
         case EExecutionCommand::eTerminate:
         {
-            log->info("{} 终止指令，状态跳转: 手动--准备", __LINE__);
             terminateCommand();
             break;
         }
         case EExecutionCommand::ePause:
         {
-            log->info("暂停指令，停止运动，状态跳转: 调平--待调平");
             m_Robot->setLinkHalt();
             updateTopAndSubState(ETopState::eParallel, ESubState::eReadyToParallel);
             break;
@@ -406,18 +394,15 @@ void CTask::readyToPositioningExecutionCommand()
     {
         case EExecutionCommand::eNULL:
         {
-            // log->info("定位--待定位状态下 空指令，不执行任何操作");
             break;
         }
         case EExecutionCommand::ePositioning:
         {
-            log->info("{} 定位指令，状态跳转: 定位--检测", __LINE__);
             updateTopAndSubState(ETopState::ePositioning, ESubState::eDetection);
             break;
         }
         case EExecutionCommand::eTerminate:
         {
-            log->info("{} 终止指令，状态跳转: 手动--准备", __LINE__);
             terminateCommand();
             break;
         }
@@ -477,7 +462,6 @@ void CTask::detectionInPositioningExecutionCommand()
         }
         case EExecutionCommand::eTerminate:
         {
-            log->info("{} 终止指令，状态跳转: 手动--准备", __LINE__);
             terminateCommand();
             break;
         }
@@ -500,19 +484,14 @@ void CTask::motionInPositioningExecutionCommand()
     {
         case EExecutionCommand::eNULL:
         {
-            QVector<double> LaserDistance = m_Comm->getLasersDistance();
-            m_stMeasuredata.m_LaserDistance[0] = LaserDistance[0];
-            m_stMeasuredata.m_LaserDistance[1] = LaserDistance[1];
-            m_stMeasuredata.m_LaserDistance[2] = LaserDistance[2];
-            m_stMeasuredata.m_LaserDistance[3] = LaserDistance[3];
-
-
-            if (CheckParallelStateDecorator(LaserDistance) == EDetectionInParallelResult::eNoWallDetected)
+            UpdateLaserDistance();
+            if (CheckParallelStateDecorator(m_stMeasuredata.m_LaserDistance) == EDetectionInParallelResult::eNoWallDetected)
             {
                 log->warn("{} 反馈异常，末端激光偏差过大，状态跳转: 手动--准备", __LINE__);
                 updateTopAndSubState(ETopState::eManual, ESubState::eReady);
                 break;
             }
+
             static QVector<double> tar_position{0,0,0,0,0,0};
             static double tar_pos[6] = {0,0,0,0,0,0};
             if (!m_position_motion_flag) {
@@ -522,7 +501,6 @@ void CTask::motionInPositioningExecutionCommand()
                           m_stMeasuredata.m_LineDistance[4], m_stMeasuredata.m_LineDistance[5]);
                 QVector<Eigen::Matrix4d> Dev_RT = CMeasure::calPoseDeviation(m_stMeasuredata);
                 tar_position = m_Robot->getTargetPose(Dev_RT[3]);  // 计算调整量
-
 
                 for (int i = 0; i < 6; i++) {
                     tar_pos[i] = tar_position[i];
@@ -559,7 +537,6 @@ void CTask::motionInPositioningExecutionCommand()
         }
         case EExecutionCommand::eTerminate:
         {
-        log->info("{} 终止指令，状态跳转: 手动--准备", __LINE__);
             m_position_motion_flag = false;
             terminateCommand();
             break;
@@ -567,7 +544,6 @@ void CTask::motionInPositioningExecutionCommand()
         case EExecutionCommand::ePause:
         {
             m_position_motion_flag = false;
-            log->info("{} 停止运动，状态跳转: 定位--待定位", __LINE__);
             updateTopAndSubState(ETopState::ePositioning, ESubState::eReadyToPositioning);
             break;
         }
@@ -591,7 +567,6 @@ void CTask::readyToMagentOnExecutionCommand()
                 if (doMagentOn())
                 {
                     magent = 0;
-                    log->warn("{} 吸合指令运行完成，状态跳转: 碰钉--待碰钉", __LINE__);
                     updateTopAndSubState(ETopState::eDoWeld, ESubState::eReadyToDoWeld);
                 }
             }
@@ -599,7 +574,6 @@ void CTask::readyToMagentOnExecutionCommand()
         }
         case EExecutionCommand::eParallel:
         {
-            log->info("调平指令，状态跳转: 调平--检测");
             updateTopAndSubState(ETopState::eParallel, ESubState::eDetection);
             break;
         }
@@ -612,13 +586,11 @@ void CTask::readyToMagentOnExecutionCommand()
         case EExecutionCommand::eQuit:
         {
             m_Comm->SetMagentAction(0,eMag_Off);
-            log->warn("{} 退出指令，状态跳转: 退出--退出中", __LINE__);
             updateTopAndSubState(ETopState::eQuit, ESubState::eQuiting);
             break;
         }
         case EExecutionCommand::eTerminate:
         {
-        log->info("{} 终止指令，状态跳转: 手动--准备", __LINE__);
             m_Comm->SetMagentAction(0,eMag_Off);
             terminateCommand();
             break;
@@ -637,13 +609,11 @@ void CTask::readyToWeldExecutionCommand()
     {
         case EExecutionCommand::eNULL:
         {
-            // log->info("碰钉-待碰钉状态下 空指令，不执行任何操作");
-             if (weld == -1)
+            if (weld == -1) 
             {
                 if (doMagentOff())
                 {
                     weld = 0;
-                    log->warn("{} 脱开指令运行完成，状态跳转: 待吸合--空", __LINE__);
                     updateTopAndSubState(ETopState::eReadToMagentOn, ESubState::eNULL);
                 }
             }
@@ -651,7 +621,6 @@ void CTask::readyToWeldExecutionCommand()
         }
         case EExecutionCommand::eAutoWeld:
         {
-            log->info("{} 自动碰钉指令，状态跳转: 碰钉-碰钉中", __LINE__);
             updateTopAndSubState(ETopState::eDoWeld, ESubState::eDoingWeld);
             break;
         }
@@ -664,7 +633,6 @@ void CTask::readyToWeldExecutionCommand()
         case EExecutionCommand::eTerminate:
         {
             m_Comm->SetMagentAction(0,eMag_Off);
-            log->info("{} 终止指令执行，磁铁脱开，状态跳转: 手动--准备", __LINE__);
             terminateCommand();
             break;
         }
@@ -682,20 +650,17 @@ void CTask::doingWeldExecutionCommand()
     {
         case EExecutionCommand::eNULL:
         {
-            // log->info("碰钉--碰钉中 空指令，执行自动碰钉，完成碰钉后状态跳转: 退出--退出中");
             if (weld == -1)
             {
                 if (doMagentOff())
                 {
                     weld = 0;
-            log->info("{} 终止指令执行，磁铁脱开，状态跳转: 手动--准备", __LINE__);
                     terminateCommand();
                 }
                 break;
             }
             if (doWeldAction(1))
             {
-            log->info("{} 碰钉结束，状态跳转: 碰钉--停止碰钉", __LINE__);
                 updateTopAndSubState(ETopState::eDoWeld, ESubState::eStopWeld);  // 碰钉结束，跳转到碰钉停止
             }
             break;
@@ -709,14 +674,12 @@ void CTask::doingWeldExecutionCommand()
         }
         case EExecutionCommand::eStopWeld:
         {
-            log->info("停止碰钉，状态跳转: 碰钉--停止");
             doWeldAction(-1);
             updateTopAndSubState(ETopState::eDoWeld, ESubState::eStopWeld);
             break;
         }
         case EExecutionCommand::ePause:
         {
-            log->info("暂停碰钉，状态跳转: 碰钉--待碰钉");
             doWeldAction(0);
             updateTopAndSubState(ETopState::eDoWeld, ESubState::eReadyToDoWeld);
             break;
@@ -740,16 +703,13 @@ void CTask::stopWeldExecutionCommand()
                 if (doMagentOff())
                 {
                     weld = 0;
-                    log->info("{} 脱开指令运行结束，状态跳转: 待吸合--空", __LINE__);
                     updateTopAndSubState(ETopState::eReadToMagentOn, ESubState::eNULL);
                 }
             }
-            // log->info("碰钉--停止状态下 空指令，不做任何操作");
             break;
         }
         case EExecutionCommand::eMagentOff:
         {
-            // log->info("磁铁脱开，状态跳转: 待吸合");
             doMagentOff();
             weld = -1;
             break;
@@ -757,7 +717,6 @@ void CTask::stopWeldExecutionCommand()
         case EExecutionCommand::eTerminate:
         {
             m_Comm->SetMagentAction(0,eMag_Off);
-            log->info("{} 终止指令执行，磁铁脱开，状态跳转: 手动--准备", __LINE__);
             terminateCommand();
             break;
         }
@@ -809,6 +768,24 @@ void CTask::detectionInFitBoardExecutionCommand()
     {
         case EExecutionCommand::eNULL:
         {
+            UpdateLaserDistance();
+            if (CheckParallelStateDecorator(m_stMeasuredata.m_LaserDistance) == EDetectionInParallelResult::eNoWallDetected)
+            {
+                log->warn("{} 反馈异常，末端激光偏差过大，状态跳转: 手动--准备", __LINE__);
+                updateTopAndSubState(ETopState::eManual, ESubState::eReady);
+                break;
+            }
+
+            //调用视觉函数
+            VisionResult vis_res = m_vision->getVisResult();
+            if (!vis_res.status)
+            { // 视觉检测无数据，等待下一个周期
+                break;
+            }
+
+            std::copy(std::begin(vis_res.stData.m_LineDistance), std::end(vis_res.stData.m_LineDistance), m_stMeasuredata.m_LineDistance);
+            std::copy(std::begin(vis_res.stData.m_bLineDistance), std::end(vis_res.stData.m_bLineDistance), m_stMeasuredata.m_bLineDistance);
+
             EDetectionInPositioningResult result = CheckBoardingStateDecorator();  // CheckBoarding
             switch (result)
             {
@@ -819,6 +796,7 @@ void CTask::detectionInFitBoardExecutionCommand()
                 }
                 case EDetectionInPositioningResult::eEndAdjustmentDataIsValid:
                 {
+                    CalculatedAdjustmentForFitBoard();
                     updateTopAndSubState(ETopState::eFitBoard, ESubState::eMotion);
                     break;
                 }
@@ -853,9 +831,18 @@ void CTask::motionInFitBoardExecutionCommand()
     {
         case EExecutionCommand::eNULL:
         {
-            // 运动-->完成运动
-            // m_Robot->moveAbs(pos, vel); if (isreachedendpos && standstill) 状态跳转: 贴合--检测
-            updateTopAndSubState(ETopState::eFitBoard, ESubState::eDetection);
+            QVector<double> tar_position{ 0,0,0,0,0,0 };
+            for (int i = 0; i < m_fit_board_target_pose.size(); i++)
+            {
+                tar_position[i] = m_fit_board_target_pose.at(i);
+            }
+            m_Robot->setLinkMoveAbs(m_fit_board_target_pose.data(), END_VEL_POSITION);
+
+            if (m_LinkStatus.eLinkActState == eLINK_STANDSTILL &&
+                m_Robot->isEndReached(tar_position))
+            {
+                updateTopAndSubState(ETopState::eFitBoard, ESubState::eDetection);
+            }
             break;
         }
         case EExecutionCommand::ePause:
@@ -881,7 +868,6 @@ void CTask::fitBoardFinishedExecutionCommand()
     {
         case EExecutionCommand::eNULL:
         {
-
             break;
         }
         case EExecutionCommand::eFitBoard:
@@ -917,26 +903,20 @@ void CTask::quitingExecutionCommand()
     {
         case EExecutionCommand::eNULL:
         {
-            // log->info("退出--退出中状态下 空指令，移动到退出点，到达退出点后状态跳转: 手动");
             m_Robot->setJointMoveAbs(9,1100,7);
-            //m_Robot->setJointGroupMoveAbs(Postion_Quit,JOINT_VEL_LIMIT);
-            //if(m_Robot->isJointReached(Postion_Quit_qv))
             if(m_JointGroupStatus[9].Position < 1110)
             {
-            log->info("{} 退出指令运行结束，状态跳转: 手动--准备", __LINE__);
                 updateTopAndSubState(ETopState::eManual, ESubState::eReady);
             }
             break;
         }
         case EExecutionCommand::eTerminate:
         {
-        log->info("{} 终止指令执行，磁铁脱开，状态跳转: 手动--准备", __LINE__);
             terminateCommand();
             break;
         }
         case EExecutionCommand::ePause:
         {
-            log->info("{} 停止运动，状态跳转: 退出--暂停", __LINE__);
             m_Robot->setLinkHalt();
             updateTopAndSubState(ETopState::eQuit, ESubState::ePause);
             break;
@@ -954,7 +934,6 @@ void CTask::pauseExecutionCommand()
     {
         case EExecutionCommand::eNULL:
         {
-            // log->info("退出-暂停状态下 空指令，不执行任何操作");
             break;
         }
         case EExecutionCommand::eQuit:
@@ -965,7 +944,6 @@ void CTask::pauseExecutionCommand()
         }
         case EExecutionCommand::eTerminate:
         {
-        log->info("{} 终止指令执行，状态跳转: 手动--准备", __LINE__);
             terminateCommand();
             break;
         }
@@ -980,18 +958,39 @@ void CTask::pauseExecutionCommand()
 
 void CTask::terminateCommand()
 {
-    log->warn("停止运行，并进行状态跳转\n");
-    
     TaskTerminate();
 
     updateTopAndSubState(ETopState::eManual, ESubState::eReady);
+}
+
+void CTask::CalculatedAdjustmentForFitBoard()
+{
+    //计算调整量
+    QVector<Eigen::Matrix4d> Dev_RT = CMeasure::calPoseDeviation(m_stMeasuredata, BOARDING_MOTION_QUE.at(m_motion_index));
+    QVector<double> tar_position{ 0,0,0,0,0,0 };
+    tar_position = m_Robot->getTargetPose(Dev_RT[6]);  // 计算调整量
+
+    for (int i = 0; i < m_fit_board_target_pose.size(); i++) 
+    {
+        m_fit_board_target_pose[i] = tar_position[i];
+    }
+}
+
+void CTask::UpdateLaserDistance()
+{
+    //取雷达数据
+    QVector<double> LaserDistance = m_Comm->getLasersDistance();
+
+    m_stMeasuredata.m_LaserDistance[0] = LaserDistance[0];
+    m_stMeasuredata.m_LaserDistance[1] = LaserDistance[1];
+    m_stMeasuredata.m_LaserDistance[2] = LaserDistance[2];
+    m_stMeasuredata.m_LaserDistance[3] = LaserDistance[3];
 }
 
 void CTask::updateTopAndSubState(ETopState topState, ESubState subState)
 {
     std::lock_guard<std::mutex> lock(m_mutex);
 
-    log->info("{} 状态转换: {}--{} ==> {}--{}", __LINE__, TopStateStringMap[m_etopState], SubStateStringMap[m_esubState], TopStateStringMap[topState], SubStateStringMap[subState]);
 
     m_etopState = topState;
     m_esubState = subState;
