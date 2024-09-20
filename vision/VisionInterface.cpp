@@ -93,17 +93,17 @@ VisionResult VisionInterface::getVisResult(){
 void VisionInterface::run() {
 
     while(this->isRunning){
-        if(this->is_Detected){
-            // 获取检测结果
-            memset(&this->vis_result,0,sizeof(this->vis_result));
-            getDetectResult(DetectType::LINE, &this->vis_result.stData);
-            this->vis_result.status = true;
-            // 结果拷贝
-            this->mutex.lock();
-            memset(&this->vis_result_,0,sizeof(this->vis_result_));
-            this->vis_result_ = this->vis_result;
-            this->mutex.unlock();
-        }
+        //if(this->is_Detected){
+        //    // 获取检测结果
+        //    memset(&this->vis_result,0,sizeof(this->vis_result));
+        //    getDetectResult(DetectType::LINE, &this->vis_result.stData);
+        //    this->vis_result.status = true;
+        //    // 结果拷贝
+        //    this->mutex.lock();
+        //    memset(&this->vis_result_,0,sizeof(this->vis_result_));
+        //    this->vis_result_ = this->vis_result;
+        //    this->mutex.unlock();
+        //}
         QThread::msleep(200);
     }
 }

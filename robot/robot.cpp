@@ -7,7 +7,7 @@ CRobot::CRobot(ComInterface* comm,QObject *parent)
     //修改827
     m_Index = 0; //link索引
     m_Freedom = 9;
-    m_ToolFreedom = 1;
+    m_ToolFreedom = 2;
 
 
     //运动学参数
@@ -156,6 +156,8 @@ void CRobot::UpdateStatus()
     //获取末端工具尺寸
     //修改827
     double len = m_JointGroupStatus[m_Freedom].Position;
+    double len2 = m_JointGroupStatus[m_Freedom+1].Position;
+    double rotate = 0;
 
     //单位换算degree => rad
     m_JointGroupStatus[3].Position *= 1.0/57.3;
@@ -166,7 +168,7 @@ void CRobot::UpdateStatus()
 
     //修改827
     //更新运动模型数据
-    if(m_JointGroupStatus.size() != m_Freedom+1) //机器人轴+工具轴
+    if(m_JointGroupStatus.size() != m_Freedom+2) //机器人轴+工具轴
     {
         log->error(" Statedata of axis is unmatch!");
         return;
@@ -182,8 +184,9 @@ void CRobot::UpdateStatus()
     vJointValue[4].second = false; // 腰俯仰不参与联动
 
     m_ActJoints[m_Freedom] = m_JointGroupStatus[m_Freedom].Position;
+    m_ActJoints[m_Freedom+1] = m_JointGroupStatus[m_Freedom+1].Position;
 
-    m_LinkModel->setToolPos(len, 0);//根据工装实际安装位置确定角度。弧度
+    m_LinkModel->setToolPos(len, rotate);//根据工装实际安装位置确定角度。弧度
     m_LinkModel->setJointPos(vJointValue);
     //修改827 end
 
@@ -423,7 +426,7 @@ void CRobot::StateMachineMove()
 
 }
 
-//tarpose:
+//弃用 tarpose:
 void CRobot::MoveLineAbsBase(Eigen::Matrix4d tarpose, double vel_max[])
 {
     m_LinkSta.stLinkActKin.bDone = false;
@@ -493,6 +496,7 @@ void CRobot::MoveLineAbsBase(Eigen::Matrix4d tarpose, double vel_max[])
         joint_pos[i] = joint_vel[i]+m_ActJoints[i];
 
     }
+
 
     //单位转化->下发速度
     joint_pos[3] *= 57.2957795;
@@ -628,8 +632,12 @@ void CRobot::MoveLineAbsBase(Eigen::VectorXd car_pos, Eigen::VectorXd vel_max)
 
  
     //工具轴保持动
-    joint_pos[9]     = m_ActJoints[9];
-    joint_vel_set[9] = 0;
+    //joint_pos[9]     = m_ActJoints[9];
+    //joint_vel_set[9] = 0;
+    joint_pos[m_Freedom] = m_ActJoints[m_Freedom];
+    joint_pos[m_Freedom + 1] = m_ActJoints[m_Freedom + 1];
+    joint_vel_set[m_Freedom] = 0;
+    joint_vel_set[m_Freedom + 1] = 0;
 
     //下发指令到设备
     m_Comm->setLinkJointMoveAbs(m_Index,joint_pos,joint_vel_set);
@@ -691,8 +699,9 @@ void CRobot::MoveLineVelTool(Eigen::VectorXd car_vel)
     joint_vel_set[8] *= 57.2957795;
 
     //工具轴保持动
-    joint_vel_set[9] = 0;
-
+    //joint_vel_set[9] = 0;
+    joint_vel_set[m_Freedom] = 0;
+    joint_vel_set[m_Freedom + 1] = 0;
 
     m_Comm->setLinkJointMoveVel(m_Index,joint_vel_set);
     log->info("MoveLineVelTool joint vel:{},{},{},{},{},{},{},{},{},{}",joint_vel_set[0],joint_vel_set[1],joint_vel_set[2],joint_vel_set[3],joint_vel_set[4],joint_vel_set[5],joint_vel_set[6],joint_vel_set[7],joint_vel_set[8],joint_vel_set[9]);

@@ -64,6 +64,13 @@ const QVector<double> Postion_Prepare_qv = {16.02,-30,0,10.23,76.01,1034.45,1177
 const double Postion_Quit[10]    =    {16.02,-30,0,10.23,76.01,900,1177.37, 0.8, -71.17, 1100.56};			
 const QVector<double> Postion_Quit_qv    =    {16.02,-30,0,10.23,76.01,900,1177.37, 0.8, -71.17, 1100.56};	
 
+// 装板机器人: 装板位
+const double ZB_Position_Home[10] = { 2.21, -0.25, 1.84, 0, 69.07, 817.17, 1069.94, -0.14, 14.87, 884.97 };
+const QVector<double> ZB_Position_Home_qv = {2.21, -0.25, 1.84, 0, 69.07, 817.17, 1069.94, -0.14, 14.87, 884.97};
+
+// 装板机器人: 举升位
+const double ZB_Position_Prepare[11] = { 2.21, -0.25, 1.84, 0, 93.74, 970.16, 1069.94, -0.16, 60, 884.97 , 566.8};
+const QVector<double> ZB_Position_Prepare_qv = { 2.21, -0.25, 1.84, 0, 93.74, 970.16, 1069.94, -0.16, 60, 884.97 , 566.8};
 
 //robotcomm的ip和端口"192.168.1.130" 5999
 const char g_str_robotip[] = "192.168.1.130";

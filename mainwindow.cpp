@@ -381,16 +381,16 @@ void MainWindow::on_btn_magent_crash_stop_clicked() {
 
 void MainWindow::slotUpdateUIAll() {
 
-    // 1.0 更新点激光测量值
-    updateLaserData();
+    //// 1.0 更新点激光测量值
+    //updateLaserData();
 
-    // 2.0 更新相机图像帧
-    updateCameraData();
+    //// 2.0 更新相机图像帧
+    //updateCameraData();
 
-    // 3.0 更新边线检测实时测量值
-    updateLineDetectResults();
+    //// 3.0 更新边线检测实时测量值
+    //updateLineDetectResults();
 
-    // 4.0 更新轴状态信息
+    //// 4.0 更新轴状态信息
     updateAxisStatus();
 
     // 5.0 更新机器人任务流程状态
@@ -406,22 +406,22 @@ void MainWindow::slotUpdateUIAll() {
 }
 
 void MainWindow::updataDeviceConnectState() {
-    // 相机连接状态显示
-    std::vector<bool> camera_open_sta = m_VisionInterface->camera_controls->getCameraOpenedInfo();
-    for(int i=0; i<camera_open_sta.size(); i++){
-        if(camera_open_sta[i]){
-            findChild<QLabel *>("label_camera_state" + QString::number(i + 1))->setStyleSheet(
-                    "image: url(:/img/images/icon_greenLight.png);");
-        }else{
-            findChild<QLabel *>("label_camera_state" + QString::number(i + 1))->setStyleSheet(
-                    "image: url(:/img/images/icon_redLight.png);");
-        }
-    }
+    //// 相机连接状态显示
+    //std::vector<bool> camera_open_sta = m_VisionInterface->camera_controls->getCameraOpenedInfo();
+    //for(int i=0; i<camera_open_sta.size(); i++){
+    //    if(camera_open_sta[i]){
+    //        findChild<QLabel *>("label_camera_state" + QString::number(i + 1))->setStyleSheet(
+    //                "image: url(:/img/images/icon_greenLight.png);");
+    //    }else{
+    //        findChild<QLabel *>("label_camera_state" + QString::number(i + 1))->setStyleSheet(
+    //                "image: url(:/img/images/icon_redLight.png);");
+    //    }
+    //}
     // 更新io板和机器人连接状态显示
     bool io_A_sta = m_Com->getCommState_IOA();
     bool io_B_sta = m_Com->getCommState_IOB();
     bool robot_sta = m_Com->getCommState_Robot();
-//    this->logger->info("ioA:{}, ioB:{}, robot:{}", io_A_sta, io_B_sta, robot_sta);
+    //this->logger->info("ioA:{}, ioB:{}, robot:{}", io_A_sta, io_B_sta, robot_sta);
 
     if(io_A_sta){
         ui->label_io_A->setStyleSheet("image: url(:/img/images/icon_greenLight.png);");
