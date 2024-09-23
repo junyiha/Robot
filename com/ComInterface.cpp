@@ -59,36 +59,33 @@ void ComInterface::run()
             }
         }
 
-        ////监测IO板连接状态
-        //if(m_cTools.m_cIOA.getCommState() == false)
-        //{
-        //    emit m_cTools.m_cIOA.sigDisconnected();
-        //    qDebug()<<"m_cIOA.StopLoop();";
-        //    qDebug()<<"尝试连接IO模块A。。。。"<<tryToConnectCount[1];
-        //    isIOConnected = m_cTools.m_cIOA.ConnectToServer(g_str_IOAip, g_i_IOAport);
-        //    if(tryToConnectCount[1] <= COUNT_LIMIT){
-        //        ++tryToConnectCount[1];
-        //    }else{
-        //        log->error("IO模块重连次数达到上限100次，放弃重连");
-        //        break;
-        //    }
-        //}
-        //if(m_cTools.m_cIOB.getCommState() == false)
-        //{
-        //    emit m_cTools.m_cIOB.sigDisconnected();
-        //    qDebug()<<"m_cIOB.StopLoop();";
-        //    qDebug()<<"尝试连接IO模块B。。。。"<<tryToConnectCount[2];
-        //    isIOConnected = m_cTools.m_cIOB.ConnectToServer(g_str_IOBip, g_i_IOBport);
-        //    if(tryToConnectCount[2] <= COUNT_LIMIT){
-        //        ++tryToConnectCount[2];
-        //    }else{
-        //        log->error("IO模块重连次数达到上限100次，放弃重连");
-        //        break;
-        //    }
-        //}
-
-
-
+        //监测IO板连接状态
+        if(m_cTools.m_cIOA.getCommState() == false)
+        {
+            emit m_cTools.m_cIOA.sigDisconnected();
+            qDebug()<<"m_cIOA.StopLoop();";
+            qDebug()<<"尝试连接IO模块A。。。。"<<tryToConnectCount[1];
+            isIOConnected = m_cTools.m_cIOA.ConnectToServer(g_str_IOAip, g_i_IOAport);
+            if(tryToConnectCount[1] <= COUNT_LIMIT){
+                ++tryToConnectCount[1];
+            }else{
+                log->error("IO模块重连次数达到上限100次，放弃重连");
+                break;
+            }
+        }
+        if(m_cTools.m_cIOB.getCommState() == false)
+        {
+            emit m_cTools.m_cIOB.sigDisconnected();
+            qDebug()<<"m_cIOB.StopLoop();";
+            qDebug()<<"尝试连接IO模块B。。。。"<<tryToConnectCount[2];
+            isIOConnected = m_cTools.m_cIOB.ConnectToServer(g_str_IOBip, g_i_IOBport);
+            if(tryToConnectCount[2] <= COUNT_LIMIT){
+                ++tryToConnectCount[2];
+            }else{
+                log->error("IO模块重连次数达到上限100次，放弃重连");
+                break;
+            }
+        }
 
        //启动遥控器com口 通过isOpen（）判断打开状态
        if(this->m_cManual.isOpen() == false){
