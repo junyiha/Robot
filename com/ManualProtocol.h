@@ -41,10 +41,11 @@ struct stManualOperator
     {
         None = 0,
         Parallel = 1,
-        Positioning = 4,
+        Positioning = 2,
+        FitBoard = 4,
         DoWeld     = 64,
         MagentOn = 16,
-        MagentOff = 2,
+        MagentOff = 222,
         Quit = 8,
         Pause = 32,
         Terminate = 128

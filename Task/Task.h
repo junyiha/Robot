@@ -13,6 +13,11 @@
 #include "../vision/VisionInterface.h"
 #include "TaskExternal.h"
 
+// 测试状态机的宏指令
+#ifndef TEST_TASK_STATEMACHINE_
+#define TEST_TASK_STATEMACHINE_
+#endif
+
 enum AutoProcessStage
 {
     eEnd= 0,
@@ -428,6 +433,7 @@ public:
      */
     std::string getCurrentExecutionCommandString();
 
+private:
     /**
      * @brief 将外界指令转换为内部指令
      * 
@@ -456,6 +462,7 @@ private:
         {ETopState::eManual, "手动"},
         {ETopState::eParallel, "调平"},
         {ETopState::ePositioning, "定位"},
+        {ETopState::eFitBoard, "贴合"},
         {ETopState::eReadToMagentOn, "待吸合"},
         {ETopState::eDoWeld, "碰钉"},
         {ETopState::eQuit, "退出"}
@@ -468,6 +475,8 @@ private:
         {ESubState::eMotion, "运动"},
         {ESubState::eReadyToParallel, "待调平"},
         {ESubState::eDetection, "检测"},
+        {ESubState::eReadyToFitBoard, "待贴合"},
+        {ESubState::eFitBoardFinished, "贴合完成"},
         {ESubState::eReadyToPositioning, "待定位"},
         {ESubState::eReadyToDoWeld, "待碰钉"},
         {ESubState::eDoingWeld, "碰钉中"},
@@ -483,6 +492,7 @@ private:
         {EExecutionCommand::eTerminate, "终止"},
         {EExecutionCommand::ePause, "暂停"},
         {EExecutionCommand::ePositioning, "定位"},
+        {EExecutionCommand::eFitBoard, "贴合"},
         {EExecutionCommand::eMagentOn, "吸合"},
         {EExecutionCommand::eQuit, "退出"},
         {EExecutionCommand::eAutoWeld, "自动碰钉"},

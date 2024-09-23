@@ -51,8 +51,13 @@ void CTask::stateTransition()
 void CTask::manualStateTransition()
 {
     //1. 判断机器人是否处于就绪状态 
-    bool robotReady = (m_LinkStatus.eLinkActState == eLINK_STANDSTILL);
-        if (robotReady)
+    bool robotReady;
+#ifdef TEST_TASK_STATEMACHINE_
+    robotReady = true;
+#else
+    robotReady = (m_LinkStatus.eLinkActState == eLINK_STANDSTILL);
+#endif
+    if (robotReady)
     {
         //2. 如果就绪，判断是否要执行调平指令
         if(m_eexecutionCommand == EExecutionCommand::eParallel)
@@ -267,6 +272,7 @@ void CTask::readyToParallelExecutionCommand()
         }
         case EExecutionCommand::ePause:
         {
+            log->info("{}: 暂停指令不执行任何操作", getCurrentStateString());
             break;
         }
         default:
@@ -282,15 +288,14 @@ void CTask::detectionInParallelExecutionCommand()
     {
         case EExecutionCommand::eNULL:
         {
-            log->info("调用函数，根据激光数值判断壁面状态");
-            QVector<double>  laserDistance = m_Comm->getLasersDistance();
-            m_stMeasuredata.m_LaserDistance[0] = laserDistance[0];
-            m_stMeasuredata.m_LaserDistance[1] = laserDistance[1];
-            m_stMeasuredata.m_LaserDistance[2] = laserDistance[2];
-            m_stMeasuredata.m_LaserDistance[3] = laserDistance[3];
-
-            auto detectionResult = CheckParallelStateDecorator(laserDistance);
-            log->info("laser distance: {},{},{},{}", laserDistance[0],laserDistance[1],laserDistance[2],laserDistance[3]);
+            log->info("{} 调用函数，根据激光数值判断壁面状态", __LINE__);
+            EDetectionInParallelResult detectionResult;
+#ifdef TEST_TASK_STATEMACHINE_
+            detectionResult = EDetectionInParallelResult::eDeviationIsLessThanThreshold;
+#else
+            UpdateLaserDistance();
+            detectionResult = CheckParallelStateDecorator(m_stMeasuredata.m_LaserDistance);
+#endif           
             switch (detectionResult)
             {
                 case EDetectionInParallelResult::eDeviationIsLessThanThreshold:
@@ -335,39 +340,36 @@ void CTask::motionInParallelExecutionCommand()
     {
         case EExecutionCommand::eNULL:
         {
-            QVector<double> LaserDistance = m_Comm->getLasersDistance();
-            m_stMeasuredata.m_LaserDistance[0] = LaserDistance[0];
-            m_stMeasuredata.m_LaserDistance[1] = LaserDistance[1];
-            m_stMeasuredata.m_LaserDistance[2] = LaserDistance[2];
-            m_stMeasuredata.m_LaserDistance[3] = LaserDistance[3];
+            UpdateLaserDistance();
 
-            auto result = CheckParallelStateDecorator(LaserDistance);
-            if (result == EDetectionInParallelResult::eNoWallDetected)
+            auto result = CheckParallelStateDecorator(m_stMeasuredata.m_LaserDistance);
+            switch (result)
+            {
+            case EDetectionInParallelResult::eNoWallDetected:
             {
                 updateTopAndSubState(ETopState::eManual, ESubState::eReady);
+                break;
             }
-            else if (result == EDetectionInParallelResult::eDeviationIsLessThanThreshold)
-            { 
+            case EDetectionInParallelResult::eDeviationIsLessThanThreshold:
+            {
                 m_Robot->setLinkHalt();
                 updateTopAndSubState(ETopState::eParallel, ESubState::eDetection);
+                break;
             }
-            else
+            case EDetectionInParallelResult::eDistanceMeetsRequirement:
             {
-                log->warn("激光测量数据满足调整条件，控制机器人调平运动");
-
                 // 计算偏差，控制机器人运动
-                QVector<Eigen::Matrix4d> Dev_RT =  CMeasure::calPoseDeviation(m_stMeasuredata);
+                QVector<Eigen::Matrix4d> Dev_RT = CMeasure::calPoseDeviation(m_stMeasuredata);
                 QVector<double> tar_position = m_Robot->getTargetPose(Dev_RT[0]);
+                double *tar_pos = tar_position.data();
 
-                double tar_pos[6] ;
-                for(int i=0;i<6;i++)
-                {
-                    tar_pos[i] = tar_position[i];
-                }
-                log->info("m_Robot->setLinkMoveAbs(tar_pos,END_VEL_LIMIT);\ntar_pos:{},{},{},{},{},{}", 
-                          tar_pos[0],tar_pos[1],tar_pos[2],tar_pos[3] * 57.3,tar_pos[4] * 57.3,tar_pos[5] * 57.3);
-                m_Robot->setLinkMoveAbs(tar_pos,END_VEL_LIMIT);
+                log->info("{} tar_pos:{},{},{},{},{},{}", __LINE__, tar_pos[0], tar_pos[1], tar_pos[2], 
+                    tar_pos[3] * 57.3, tar_pos[4] * 57.3, tar_pos[5] * 57.3);
+                m_Robot->setLinkMoveAbs(tar_pos, END_VEL_LIMIT);
+                break;
             }
+            }
+
             break;
         }
         case EExecutionCommand::eTerminate:
@@ -408,7 +410,7 @@ void CTask::readyToPositioningExecutionCommand()
         }
         case EExecutionCommand::ePause:
         {
-            log->info("定位--待定位状态下，暂停指令不执行任何操作");
+            log->info("{}: 暂停指令不执行任何操作", getCurrentStateString());
             break;
         }
         default:
@@ -425,7 +427,10 @@ void CTask::detectionInPositioningExecutionCommand()
         case EExecutionCommand::eNULL:
         {
             log->info("调用函数，计算边线偏差，根据偏差判断是否完成调整，继续调整，停止调整");
-
+            EDetectionInPositioningResult detectResult;
+#ifdef TEST_TASK_STATEMACHINE_
+            detectResult = EDetectionInPositioningResult::eDeviationIsLessThanThreshold;
+#elif
             //调用视觉函数
             VisionResult vis_res = m_vision->getVisResult();
             if(!vis_res.lineStatus)
@@ -437,23 +442,21 @@ void CTask::detectionInPositioningExecutionCommand()
             std::copy(std::begin(vis_res.stData.m_bLineDistance), std::end(vis_res.stData.m_bLineDistance), m_stMeasuredata.m_bLineDistance);
 
             auto detectResult = CheckBoardingStateDecorator();
+#endif
             switch (detectResult)
             {
                 case EDetectionInPositioningResult::eDeviationIsLessThanThreshold:
                 {
-                    log->warn("{} 定位检测结果小于阈值，状态跳转: 贴合--待贴合",__LINE__);
                     updateTopAndSubState(ETopState::eFitBoard, ESubState::eReadyToFitBoard);
                     break;
                 }
                 case EDetectionInPositioningResult::eEndAdjustmentDataIsValid:
                 {
-                    log->warn("{} 定位检测结果为有效数据，状态跳转: 定位--运动",__LINE__);
                     updateTopAndSubState(ETopState::ePositioning, ESubState::eMotion);
                     break;
                 }
                 case EDetectionInPositioningResult::eDataIsInvalid:
                 {
-                    log->warn("{} 定位检测结果为无效数据，状态跳转: 手动--准备",__LINE__);
                     updateTopAndSubState(ETopState::eManual, ESubState::eReady);
                     break;
                 }
@@ -467,7 +470,7 @@ void CTask::detectionInPositioningExecutionCommand()
         }
         case EExecutionCommand::ePause:
         {
-            log->info("定位--检测状态下，暂停指令不执行任何操作");
+            log->info("{}: 暂停指令不执行任何操作", getCurrentStateString());
             break;
         }
         default:
@@ -768,6 +771,10 @@ void CTask::detectionInFitBoardExecutionCommand()
     {
         case EExecutionCommand::eNULL:
         {
+            EDetectionInPositioningResult result;
+#ifdef TEST_TASK_STATEMACHINE_
+            result = EDetectionInPositioningResult::eDeviationIsLessThanThreshold;
+#else
             UpdateLaserDistance();
             if (CheckParallelStateDecorator(m_stMeasuredata.m_LaserDistance) == EDetectionInParallelResult::eNoWallDetected)
             {
@@ -785,8 +792,8 @@ void CTask::detectionInFitBoardExecutionCommand()
 
             std::copy(std::begin(vis_res.stData.m_LineDistance), std::end(vis_res.stData.m_LineDistance), m_stMeasuredata.m_LineDistance);
             std::copy(std::begin(vis_res.stData.m_bLineDistance), std::end(vis_res.stData.m_bLineDistance), m_stMeasuredata.m_bLineDistance);
-
-            EDetectionInPositioningResult result = CheckBoardingStateDecorator();  // CheckBoarding
+            result = CheckBoardingStateDecorator();  // CheckBoarding
+#endif
             switch (result)
             {
                 case EDetectionInPositioningResult::eDeviationIsLessThanThreshold:
@@ -882,7 +889,7 @@ void CTask::fitBoardFinishedExecutionCommand()
         }
         case EExecutionCommand::ePause:
         {
-
+            log->info("{}: 暂停指令不执行任何操作", getCurrentStateString());
             break;
         }
         case EExecutionCommand::eTerminate:
@@ -938,7 +945,6 @@ void CTask::pauseExecutionCommand()
         }
         case EExecutionCommand::eQuit:
         {
-            log->info("退出指令，状态跳转: 退出--退出中");
             updateTopAndSubState(ETopState::eQuit, ESubState::eQuiting);
             break;
         }
@@ -991,6 +997,8 @@ void CTask::updateTopAndSubState(ETopState topState, ESubState subState)
 {
     std::lock_guard<std::mutex> lock(m_mutex);
 
+    log->info("状态跳转: {}--{} ==> {}--{}", TopStateStringMap[m_etopState], SubStateStringMap[m_esubState],
+        TopStateStringMap[topState], SubStateStringMap[subState]);
 
     m_etopState = topState;
     m_esubState = subState;
@@ -999,6 +1007,11 @@ void CTask::updateTopAndSubState(ETopState topState, ESubState subState)
 void CTask::updateExecutionCommand(EExecutionCommand executionCommand)
 {
     std::lock_guard<std::mutex> lock(m_mutex);
+
+    if (executionCommand != EExecutionCommand::eNULL)
+    {
+        log->info("指令更新: {} ==> {}", ExecutionCommandStringMap[m_eexecutionCommand], ExecutionCommandStringMap[executionCommand]);
+    }
 
     m_eexecutionCommand = executionCommand;
 }
@@ -1099,6 +1112,11 @@ void CTask::TranslateManualTaskIndexNumberToCMD()
             updateExecutionCommand(EExecutionCommand::ePositioning);
             break;
         }
+        case stManualOperator::ETaskIndex::FitBoard:
+        {
+            updateExecutionCommand(EExecutionCommand::eFitBoard);
+            break;
+        }
         case stManualOperator::ETaskIndex::MagentOn:
         {
             updateExecutionCommand(EExecutionCommand::eMagentOn);
@@ -1128,6 +1146,10 @@ void CTask::TranslateManualTaskIndexNumberToCMD()
         {
             updateExecutionCommand(EExecutionCommand::eTerminate);
             break;
+        }
+        default:
+        {
+            log->error("{} invalid task index: {}", __LINE__, m_manualOperator.TaskIndex);
         }
     }
 }

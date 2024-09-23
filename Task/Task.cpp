@@ -55,13 +55,10 @@ void CTask::updateCmdandStatus()
     m_LinkStatus = m_Robot->getLinkSta();
     m_JointGroupStatus = m_Robot->getJointGroupSta();
 
-
     // 更新指令，遥控器+界面
     m_Comm->getManual(m_manualOperator);
 
     //根据界面指令修改遥控器指令
-    //m_manualOperator.Ready = 0;
-    //m_manualOperator.TaskIndex = 0;
     int tmp_val = static_cast<int>(ActionIndex.loadRelaxed());
     switch(ActionIndex.loadRelaxed())
     {
@@ -75,7 +72,7 @@ void CTask::updateCmdandStatus()
             m_manualOperator.TaskIndex = static_cast<int>(stManualOperator::ETaskIndex::MagentOn);
             break;
         case 4:
-            m_manualOperator.TaskIndex = static_cast<int>(stManualOperator::ETaskIndex::DoWeld);
+            m_manualOperator.TaskIndex = static_cast<int>(stManualOperator::ETaskIndex::FitBoard);
             break;
         case 5:
             m_manualOperator.TaskIndex = static_cast<int>(stManualOperator::ETaskIndex::MagentOff);
