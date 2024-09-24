@@ -433,6 +433,15 @@ public:
      */
     std::string getCurrentExecutionCommandString();
 
+    /**
+     * @brief 检测第二层状态.
+     * 
+     * @param subState
+     * 
+     * @return true | false
+     */
+    bool checkSubState(ESubState subState);
+
 private:
     /**
      * @brief 将外界指令转换为内部指令

@@ -1037,6 +1037,11 @@ std::string CTask::getCurrentExecutionCommandString()
     return it->second;
 }
 
+bool CTask::checkSubState(ESubState subState)
+{
+    return subState == m_esubState;
+}
+
 void CTask::TranslateNumberToCMD()
 {
     switch (m_manualOperator.TaskIndex)
