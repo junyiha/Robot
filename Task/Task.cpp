@@ -62,20 +62,14 @@ void CTask::updateCmdandStatus()
     int tmp_val = static_cast<int>(ActionIndex.loadRelaxed());
     switch(ActionIndex.loadRelaxed())
     {
-        case 1:
+        case 3:
             m_manualOperator.TaskIndex = static_cast<int>(stManualOperator::ETaskIndex::Parallel);
             break;
-        case 2:
+        case 4:
             m_manualOperator.TaskIndex = static_cast<int>(stManualOperator::ETaskIndex::Positioning);
             break;
-        case 3:
-            m_manualOperator.TaskIndex = static_cast<int>(stManualOperator::ETaskIndex::MagentOn);
-            break;
-        case 4:
-            m_manualOperator.TaskIndex = static_cast<int>(stManualOperator::ETaskIndex::FitBoard);
-            break;
         case 5:
-            m_manualOperator.TaskIndex = static_cast<int>(stManualOperator::ETaskIndex::MagentOff);
+            m_manualOperator.TaskIndex = static_cast<int>(stManualOperator::ETaskIndex::FitBoard);
             break;
         case 6:
             m_manualOperator.TaskIndex = static_cast<int>(stManualOperator::ETaskIndex::Quit);
@@ -87,12 +81,12 @@ void CTask::updateCmdandStatus()
             m_manualOperator.TaskIndex = static_cast<int>(stManualOperator::ETaskIndex::Terminate);
             break;
 
-        case 9: //举升
+        case 1: //举升
             m_manualOperator.Ready = 1;
             break;
-        case 10://放钉
+        case 2://放板
             m_manualOperator.Ready = 2;
-        case 11://停止
+        case 9://停止
             m_manualOperator.HaltCommand = true;
             break;
         case 12://急停
@@ -407,7 +401,7 @@ void CTask::Manual()
     if (m_manualOperator.HaltCommand)
     {
         log->info("{},{}: m_Robot->setLinkHalt();", __FILE__,__LINE__);
-         m_Robot->setLinkHalt();
+        m_Robot->setLinkHalt();
         m_preManualOperator = m_manualOperator ;
         return;
     }
@@ -439,7 +433,8 @@ void CTask::Manual()
          m_Robot->setJointMoveVel(WHEEL_LEFT_INDEX, -vel_left);
         log->info("{},{}: m_Robot->setJointMoveVel(WHEEL_RIGHT_INDEX, {});", __FILE__,__LINE__,vel_right);
          m_Robot->setJointMoveVel(WHEEL_RIGHT_INDEX, -vel_right);
-    }else
+    }
+    else
     {
         m_Robot->setJointMoveVel(WHEEL_LEFT_INDEX, 0);
         m_Robot->setJointMoveVel(WHEEL_RIGHT_INDEX, 0);
@@ -460,17 +455,23 @@ void CTask::Manual()
     {
         // 移动到举升位置
         log->info("{},{}: m_Robot->setLinkMoveAbs(Postion_Prepare,END_VEL_LIMIT);", __FILE__,__LINE__);
-        //std::vector<double> TEMP_LINK_0_JOINT_MAX_VEL_FOR_READY_POINT(MAX_FREEDOM_LINK, 0.0);
-        //TEMP_LINK_0_JOINT_MAX_VEL_FOR_READY_POINT = {1, 1, 1, 1, 0.3, 10, 5, 0.5, 4, 1};
-        //m_Robot->setJointGroupMoveAbs(Postion_Prepare,TEMP_LINK_0_JOINT_MAX_VEL_FOR_READY_POINT.data());
+#ifdef TEST_TASK_STATEMACHINE_
+#else
+        std::vector<double> TEMP_LINK_0_JOINT_MAX_VEL_FOR_READY_POINT(MAX_FREEDOM_LINK, 0.0);
+        TEMP_LINK_0_JOINT_MAX_VEL_FOR_READY_POINT = {1, 1, 1, 1, 0.3, 10, 5, 0.5, 4, 1};
+        m_Robot->setJointGroupMoveAbs(Postion_Prepare,TEMP_LINK_0_JOINT_MAX_VEL_FOR_READY_POINT.data());
+#endif
     }
     else if (m_manualOperator.Ready == 2)
     {
         // 移动到放钉位置
         log->info("{},{}: m_Robot->setLinkMoveAbs(Postion_Home,END_VEL_LIMIT);", __FILE__,__LINE__);
-        //std::vector<double> TEMP_LINK_0_JOINT_MAX_VEL_FOR_SET_POINT(MAX_FREEDOM_LINK, 0.0);
-        //TEMP_LINK_0_JOINT_MAX_VEL_FOR_SET_POINT = {1, 1, 1, 1, 0.3, 10, 5, 0.5, 2, 6};
-        //m_Robot->setJointGroupMoveAbs(Postion_Home,TEMP_LINK_0_JOINT_MAX_VEL_FOR_SET_POINT.data());
+#ifdef TEST_TASK_STATEMACHINE_
+#else
+        std::vector<double> TEMP_LINK_0_JOINT_MAX_VEL_FOR_SET_POINT(MAX_FREEDOM_LINK, 0.0);
+        TEMP_LINK_0_JOINT_MAX_VEL_FOR_SET_POINT = {1, 1, 1, 1, 0.3, 10, 5, 0.5, 2, 6};
+        m_Robot->setJointGroupMoveAbs(Postion_Home,TEMP_LINK_0_JOINT_MAX_VEL_FOR_SET_POINT.data());
+#endif
     }
     else if (m_manualOperator.bLinkMoveFlag)
     {
@@ -514,10 +515,6 @@ void CTask::Manual()
         m_Robot->setLinkHalt();
     }
 
-    if(m_manualOperator.TaskIndex != 0)
-    {
-        log->info("TaskIndex:{}",m_manualOperator.TaskIndex);
-    }
     switch (m_manualOperator.TaskIndex)
     {
         case stManualOperator::None:
@@ -527,49 +524,41 @@ void CTask::Manual()
         }
         case stManualOperator::Parallel:
         {
-            log->info("updateExecutionCommand(EExecutionCommand::eParallel);");
             updateExecutionCommand(EExecutionCommand::eParallel);
             break;
         }
         case stManualOperator::Positioning:
         {
-            log->info("updateExecutionCommand(EExecutionCommand::ePositioning);");
             updateExecutionCommand(EExecutionCommand::ePositioning);
             break;
         }
         case stManualOperator::DoWeld:
         {
-            log->info("updateExecutionCommand(EExecutionCommand::eAutoWeld);");
             updateExecutionCommand(EExecutionCommand::eAutoWeld);
             break;
         }
         case stManualOperator::MagentOn:
         {
-            log->info("updateExecutionCommand(EExecutionCommand::eMagentOn);");
             updateExecutionCommand(EExecutionCommand::eMagentOn);
             break;
         }
         case stManualOperator::MagentOff:
         {
-            log->info("updateExecutionCommand(EExecutionCommand::eMagentOff);");
             updateExecutionCommand(EExecutionCommand::eMagentOff);
             break;
         }
         case stManualOperator::Quit:
         {
-            log->info("updateExecutionCommand(EExecutionCommand::eQuit);");
             updateExecutionCommand(EExecutionCommand::eQuit);
             break;
         }
         case stManualOperator::Pause:
         {
-            log->info("updateExecutionCommand(EExecutionCommand::ePause);");
             updateExecutionCommand(EExecutionCommand::ePause);
             break;
         }
         case stManualOperator::Terminate:
         {
-            log->info("updateExecutionCommand(EExecutionCommand::eTerminate);");
             updateExecutionCommand(EExecutionCommand::eTerminate);
             break;
         }

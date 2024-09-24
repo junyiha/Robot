@@ -15,7 +15,7 @@
 
 // 测试状态机的宏指令
 #ifndef TEST_TASK_STATEMACHINE_
-#define TEST_TASK_STATEMACHINE_
+//#define TEST_TASK_STATEMACHINE_
 #endif
 
 enum AutoProcessStage
@@ -444,12 +444,6 @@ public:
 
 private:
     /**
-     * @brief 将外界指令转换为内部指令
-     * 
-     */
-    void TranslateNumberToCMD();
-
-    /**
      * @brief 将遥控器的命令转换为内部指令
      * 
      */
@@ -466,32 +460,32 @@ private:
     uint m_motion_index{ 0 };
     std::vector<double> m_fit_board_target_pose{0, 0, 0, 0, 0, 0};
 
-    std::map<ETopState, std::string> TopStateStringMap 
+    std::map<ETopState, std::pair<std::string, std::string>> TopStateStringMap 
     {
-        {ETopState::eManual, "手动"},
-        {ETopState::eParallel, "调平"},
-        {ETopState::ePositioning, "定位"},
-        {ETopState::eFitBoard, "贴合"},
-        {ETopState::eReadToMagentOn, "待吸合"},
-        {ETopState::eDoWeld, "碰钉"},
-        {ETopState::eQuit, "退出"}
+        {ETopState::eManual, {"手动", "Manual"}},
+        {ETopState::eParallel, {"调平", "Parallel"}},
+        {ETopState::ePositioning, {"定位", "Positioning"}},
+        {ETopState::eFitBoard, {"贴合", "FitBoard"}},
+        {ETopState::eReadToMagentOn, {"待吸合", "ReadToMagentOn"}},
+        {ETopState::eDoWeld, {"碰钉", "DoWeld"}},
+        {ETopState::eQuit, {"退出", "Quit"}}
     };
-    std::map<ESubState, std::string> SubStateStringMap
+    std::map<ESubState, std::pair<std::string, std::string>> SubStateStringMap
     {
-        {ESubState::eNULL, "空状态"},
-        {ESubState::eNotReady, "未就绪"},
-        {ESubState::eReady, "就绪"},
-        {ESubState::eMotion, "运动"},
-        {ESubState::eReadyToParallel, "待调平"},
-        {ESubState::eDetection, "检测"},
-        {ESubState::eReadyToFitBoard, "待贴合"},
-        {ESubState::eFitBoardFinished, "贴合完成"},
-        {ESubState::eReadyToPositioning, "待定位"},
-        {ESubState::eReadyToDoWeld, "待碰钉"},
-        {ESubState::eDoingWeld, "碰钉中"},
-        {ESubState::eStopWeld, "碰钉停止"},
-        {ESubState::eQuiting, "退出中"},
-        {ESubState::ePause, "暂停"}
+        {ESubState::eNULL, {"空状态", "NULL"}},
+        {ESubState::eNotReady, {"未就绪", "NotReady"}},
+        {ESubState::eReady, {"就绪", "Ready"}},
+        {ESubState::eMotion, {"运动", "Motion"}},
+        {ESubState::eReadyToParallel, {"待调平", "ReadyToParallel"}},
+        {ESubState::eDetection, {"检测", "Detection"}},
+        {ESubState::eReadyToFitBoard, {"待贴合", "ReadyToFitBoard"}},
+        {ESubState::eFitBoardFinished, {"贴合完成", "FitBoardFinished"}},
+        {ESubState::eReadyToPositioning, {"待定位", "ReadyToPositioning"}},
+        {ESubState::eReadyToDoWeld, {"待碰钉", "ReadyToDoWeld"}},
+        {ESubState::eDoingWeld, {"碰钉中", "DoingWeld"}},
+        {ESubState::eStopWeld, {"碰钉停止", "StopWeld"}},
+        {ESubState::eQuiting, {"退出中", "Quiting"}},
+        {ESubState::ePause, {"暂停", "Pause"}}
     };
     std::map<EExecutionCommand, std::string> ExecutionCommandStringMap
     {

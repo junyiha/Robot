@@ -329,17 +329,45 @@ void MainWindow::on_btn_lift_2clicked() {
 
 void MainWindow::on_btn_leveling_clicked() {
 
+    std::string currentState = "待调平";
     // 调平
     setButtonIndex();
-    setActionIndex();
-    this->logger->info("启动调平");
+    if(currentState=="待调平"){
+        setActionIndex();
+        ui->btn_leveling_->setStyleSheet("background-color: rgb(0, 255, 0);"
+                        "border: 2px solid blue;"
+                        "border-radius: 10px;"
+        );
+        this->logger->info("启动调平");
+    }else{
+        ui->btn_leveling_->setStyleSheet("background-color: rgb(255, 0, 0);"
+                                         "border: 2px solid blue;"
+                                         "border-radius: 10px;"
+        );
+        this->logger->info("不满足调平初始化状态,启动调平失败");
+    }
 }
 
 void MainWindow::on_btn_sideline_clicked() {
    // 对齐边线
+
+    std::string currentState = "待定位";
+    // 调平
     setButtonIndex();
-    setActionIndex();
-    this->logger->info(" 启动对齐边线");
+    if(currentState=="待定位"){
+        setActionIndex();
+        ui->btn_sideline_->setStyleSheet("background-color: rgb(0, 255, 0);"
+                                         "border: 2px solid blue;"
+                                         "border-radius: 10px;"
+        );
+        this->logger->info("启动对齐边线");
+    }else{
+        ui->btn_sideline_->setStyleSheet("background-color: rgb(255, 0, 0);"
+                                         "border: 2px solid blue;"
+                                         "border-radius: 10px;"
+        );
+        this->logger->info("不满足对齐边线初始化状态,启动对齐边线失败");
+    }
 }
 
 void MainWindow::on_btn_magnet_open_clicked() {
@@ -369,15 +397,59 @@ void MainWindow::on_btn_magnet_pause_clicked() {
    // 碰钉暂停
     setButtonIndex();
     setActionIndex();
-    this->logger->info("碰钉暂停 ");
+    ui->btn_magnet_pause_->setStyleSheet("background-color: rgb(0, 255, 0);"
+                                       "border: 2px solid blue;"
+                                       "border-radius: 10px;"
+    );
+    this->logger->info("装板暂停 ");
 }
 
 void MainWindow::on_btn_knock_suspend_clicked() {
    // 碰钉终止
     setButtonIndex();
     setActionIndex();
-    this->logger->info("按钮：碰钉中止");
+    ui->btn_knock_suspend_->setStyleSheet("background-color: rgb(0, 255, 0);"
+                                       "border: 2px solid blue;"
+                                       "border-radius: 10px;"
+    );
+    this->logger->info("按钮：装板中止");
+
+//    clearFlowButtonStyle(); // 清空所有按钮的样式
+
+
 }
+
+void MainWindow::clearFlowButtonStyle() {
+    std::vector<QString> btnNames = {"btn_leveling_",
+                                     "btn_sideline_",
+                                     "btn_auto_laminate",
+                                     "btn_magnet_exit",
+                                     "btn_magnet_pause_",
+                                     "btn_knock_suspend_"
+    };
+//    for (auto name: btnNames) {
+//        findChild<QLabel *>(name)->setStyleSheet(
+//                "border: 2px solid blue;"
+//                "border-radius: 10px;"
+//        );
+//
+//    }
+//
+      ui->btn_leveling_->setStyleSheet("border: 2px solid blue;"
+               "border-radius: 10px;");
+      ui->btn_sideline_->setStyleSheet("border: 2px solid blue;"
+               "border-radius: 10px;");
+      ui->btn_auto_laminate->setStyleSheet("border: 2px solid blue;"
+               "border-radius: 10px;");
+      ui->btn_magnet_exit->setStyleSheet("border: 2px solid blue;"
+               "border-radius: 10px;");
+      ui->btn_magnet_pause_->setStyleSheet("border: 2px solid blue;"
+                                     "border-radius: 10px;");
+      ui->btn_knock_suspend_->setStyleSheet("border: 2px solid blue;"
+                                     "border-radius: 10px;");
+
+}
+
 
 void MainWindow::on_btn_magnet_stop_clicked() {
    // 停止
@@ -1158,6 +1230,10 @@ void MainWindow::setActionIndex() {
 void MainWindow::slots_on_btn_magnet_exit_clicked() {
     setButtonIndex();
     setActionIndex();
+    ui->btn_magnet_exit->setStyleSheet("background-color: rgb(0, 255, 0);"
+                                     "border: 2px solid blue;"
+                                     "border-radius: 10px;"
+    );
     this->logger->info("退出");
 
 }
@@ -1259,6 +1335,8 @@ void MainWindow::on_btn_add_nail_released() {
 }
 
 void MainWindow::on_btn_preparation_pos_pressed() {
+    clearFlowButtonStyle();
+
     double vel_pre[10] = {0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1};
     for(int i = 0;i<10;i++){
         vel_pre[i] = LINK_0_JOINT_MAX_VEL[i]*0.1;
@@ -1402,7 +1480,22 @@ void MainWindow::slots_on_btn_putter_backward_released() {
 }
 
 void MainWindow::slots_on_btn_auto_laminate_clicked() {
+
+    std::string currentState = "待贴合";
+    // 调平
     setButtonIndex();
-    setActionIndex();
-    this->logger->info("自动贴合");
+    if(currentState=="待贴合"){
+        setActionIndex();
+        ui->btn_auto_laminate->setStyleSheet("background-color: rgb(0, 255, 0);"
+                                         "border: 2px solid blue;"
+                                         "border-radius: 10px;"
+        );
+        this->logger->info("启动待贴合");
+    }else{
+        ui->btn_auto_laminate->setStyleSheet("background-color: rgb(255, 0, 0);"
+                                         "border: 2px solid blue;"
+                                         "border-radius: 10px;"
+        );
+        this->logger->info("不满足待贴合初始化状态,启动待贴合失败");
+    }
 }
