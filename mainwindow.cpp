@@ -115,7 +115,9 @@ void MainWindow::connectSlotFunctions() {// 按钮时间绑定
     connect(ui->btn_leveling_, &QPushButton::clicked, this, &MainWindow::on_btn_leveling_clicked, Qt::UniqueConnection);
     connect(ui->btn_sideline_, &QPushButton::clicked, this, &MainWindow::on_btn_sideline_clicked, Qt::UniqueConnection);
 //    connect(ui->btn_magnet_open_, &QPushButton::clicked, this, &MainWindow::on_btn_magnet_open_clicked, Qt::UniqueConnection);
-    connect(ui->btn_auto_knock_, &QPushButton::clicked, this, &MainWindow::on_btn_auto_knock_clicked, Qt::UniqueConnection);
+//    connect(ui->btn_auto_knock_, &QPushButton::clicked, this, &MainWindow::on_btn_auto_knock_clicked, Qt::UniqueConnection);
+    connect(ui->btn_auto_laminate, &QPushButton::clicked, this, &MainWindow::slots_on_btn_auto_laminate_clicked, Qt::UniqueConnection);  // 贴合
+
 //    connect(ui->btn_magnet_close_, &QPushButton::clicked, this, &MainWindow::on_btn_magnet_close_clicked, Qt::UniqueConnection);
     connect(ui->btn_magnet_pause_, &QPushButton::clicked, this, &MainWindow::on_btn_magnet_pause_clicked, Qt::UniqueConnection);
     connect(ui->btn_knock_suspend_, &QPushButton::clicked, this, &MainWindow::on_btn_knock_suspend_clicked, Qt::UniqueConnection);
@@ -123,6 +125,7 @@ void MainWindow::connectSlotFunctions() {// 按钮时间绑定
     connect(ui->btn_magent_crash_stop_, &QPushButton::clicked, this, &MainWindow::on_btn_magent_crash_stop_clicked, Qt::UniqueConnection);
     connect(ui->btn_magnet_exit, &QPushButton::clicked, this, &MainWindow::slots_on_btn_magnet_exit_clicked, Qt::UniqueConnection);
     connect(ui->btn_add_nail, &QPushButton::clicked, this, &MainWindow::slots_on_btn_add_nail_clicked, Qt::UniqueConnection);
+
 
     //用于调试。临时加的btn_lift_2
 //    connect(ui->btn_lift_2, &QPushButton::clicked, this, &MainWindow::on_btn_lift_2clicked, Qt::UniqueConnection);
@@ -182,6 +185,17 @@ void MainWindow::connectSlotFunctions() {// 按钮时间绑定
     //准备位置
     connect(ui->btn_preparation_pos, &QPushButton::pressed, this, &MainWindow::on_btn_preparation_pos_pressed, Qt::UniqueConnection);
     connect(ui->btn_preparation_pos, &QPushButton::released, this, &MainWindow::on_btn_preparation_pos_released, Qt::UniqueConnection);
+
+    // 灯光控制
+    connect(ui->btn_camera_width_light, &QPushButton::clicked, this, &MainWindow::slots_on_btn_camera_width_light_clicked, Qt::UniqueConnection);
+    connect(ui->btn_camera_height_light, &QPushButton::clicked, this, &MainWindow::slots_on_btn_camera_height_light_clicked, Qt::UniqueConnection);
+    connect(ui->btn_camera_hole_light, &QPushButton::clicked, this, &MainWindow::slots_btn_camera_hole_light_clicked, Qt::UniqueConnection);
+    connect(ui->btn_laser_light, &QPushButton::clicked, this, &MainWindow::slots_btn_laser_light_clicked, Qt::UniqueConnection);
+    connect(ui->btn_putter_forward, &QPushButton::pressed, this, &MainWindow::slots_on_btn_putter_forward_pressed, Qt::UniqueConnection);
+    connect(ui->btn_putter_forward, &QPushButton::released, this, &MainWindow::slots_on_btn_putter_forward_released, Qt::UniqueConnection);
+    connect(ui->btn_putter_backward, &QPushButton::pressed, this, &MainWindow::slots_on_btn_putter_backward_pressed, Qt::UniqueConnection);
+    connect(ui->btn_putter_backward, &QPushButton::released, this, &MainWindow::slots_on_btn_putter_backward_released, Qt::UniqueConnection);
+
 
 }
 
@@ -314,6 +328,7 @@ void MainWindow::on_btn_lift_2clicked() {
 }
 
 void MainWindow::on_btn_leveling_clicked() {
+
     // 调平
     setButtonIndex();
     setActionIndex();
@@ -401,18 +416,24 @@ void MainWindow::slotUpdateUIAll() {
     // 7.0 更新硬件设备连接状态，并通过指示灯显示
     updataDeviceConnectState();
 
+    // 8.0 更新指令流转状态
+    std::string currentState =  m_Task->getCurrentStateString();
+    ui->label_state_transition->setText(QString::fromStdString(currentState));
+
 
 }
 
 void MainWindow::updataDeviceConnectState() {
+
+    QString labelPrefix = "label_camera_state";
     // 相机连接状态显示
     std::vector<bool> camera_open_sta = m_VisionInterface->camera_controls->getCameraOpenedInfo();
     for(int i=0; i<camera_open_sta.size(); i++){
         if(camera_open_sta[i]){
-            findChild<QLabel *>("label_camera_state" + QString::number(i + 1))->setStyleSheet(
+            findChild<QLabel *>(labelPrefix + QString::number(i))->setStyleSheet(
                     "image: url(:/img/images/icon_greenLight.png);");
         }else{
-            findChild<QLabel *>("label_camera_state" + QString::number(i + 1))->setStyleSheet(
+            findChild<QLabel *>(labelPrefix + QString::number(i))->setStyleSheet(
                     "image: url(:/img/images/icon_redLight.png);");
         }
     }
@@ -627,13 +648,12 @@ void MainWindow::updateCameraData() {
                     logger->info("相机{}数据为空", item.first);
                     continue;
                 }
-                size_t index = item.first.find("_")+1;
-                int number = item.first[index]-'0';
-                // 处理圆孔相机显示
-                if(item.first.find("hole") != std::string::npos){
-                    prefix = "label_hole_cam";
+                std::string prefix_ = item.first;
+                size_t index = prefix_.find("_")+1;
+                int number = prefix_[index]-'0';
+                if(index!=prefix_.size()-1){
+                    number = (prefix_[index]-'0')*10+(prefix_[index+1]-'0');
                 }
-
                 cv::Mat temp;
                 cv::resize(item.second,temp,imgSize);
                 QImage img = QImage((uchar*)temp.data, temp.cols, temp.rows, QImage::Format_RGB888);
@@ -1295,4 +1315,94 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event) {
 //        QMainWindow::mouseMoveEvent(event);
 //    }
 
+}
+
+void MainWindow::slots_on_btn_camera_width_light_clicked() {
+
+    if(this->lineCameraLightWidthEnable){
+        m_Com->SetLight(1, true);
+        this->lineCameraLightWidthEnable = false;
+        ui->btn_camera_width_light->setStyleSheet("background-color: rgb(0, 255, 0);"
+                                                  "border: 2px solid blue;"
+                                                  "border-radius: 10px;"
+                                                  );
+    }else{
+        m_Com->SetLight(1, false);
+        this->lineCameraLightWidthEnable = true;
+        ui->btn_camera_width_light->setStyleSheet("border: 2px solid blue;"
+                                                  "border-radius: 10px;");
+    }
+}
+
+void MainWindow::slots_on_btn_camera_height_light_clicked() {
+    if(this->lineCameraLightHeightEnable){
+        m_Com->SetLight(2, true);
+        this->lineCameraLightHeightEnable = false;
+        ui->btn_camera_height_light->setStyleSheet("background-color: rgb(0, 255, 0);"
+                                                  "border: 2px solid blue;"
+                                                  "border-radius: 10px;"
+        );
+    }else{
+        m_Com->SetLight(2, false);
+        this->lineCameraLightHeightEnable = true;
+        ui->btn_camera_height_light->setStyleSheet("border: 2px solid blue;"
+                                                  "border-radius: 10px;");
+    }
+
+}
+
+void MainWindow::slots_btn_camera_hole_light_clicked() {
+    if(this->holeCameraLightEnable){
+        m_Com->SetLight(3, true);
+        this->holeCameraLightEnable = false;
+        ui->btn_camera_hole_light->setStyleSheet("background-color: rgb(0, 255, 0);"
+                                                   "border: 2px solid blue;"
+                                                   "border-radius: 10px;"
+        );
+    }else{
+        m_Com->SetLight(3, false);
+        this->holeCameraLightEnable = true;
+        ui->btn_camera_hole_light->setStyleSheet("border: 2px solid blue;"
+                                                   "border-radius: 10px;");
+    }
+}
+
+void MainWindow::slots_on_btn_putter_forward_pressed() {
+    m_Com->SetCylinder(1);
+}
+
+void MainWindow::slots_btn_laser_light_clicked() {
+
+    if(this->laserLightEnable){
+        m_Com->SetLaserMarker(true);
+        this->laserLightEnable = false;
+        ui->btn_laser_light->setStyleSheet("background-color: rgb(0, 255, 0);"
+                                                 "border: 2px solid blue;"
+                                                 "border-radius: 10px;"
+        );
+    }else{
+        m_Com->SetLaserMarker(false);
+        this->laserLightEnable = true;
+        ui->btn_laser_light->setStyleSheet("border: 2px solid blue;"
+                                                 "border-radius: 10px;");
+    }
+
+}
+
+void MainWindow::slots_on_btn_putter_forward_released() {
+    m_Com->SetCylinder(0);
+}
+
+void MainWindow::slots_on_btn_putter_backward_pressed() {
+    m_Com->SetCylinder(-1);
+}
+
+void MainWindow::slots_on_btn_putter_backward_released() {
+    m_Com->SetCylinder(0);
+}
+
+void MainWindow::slots_on_btn_auto_laminate_clicked() {
+    setButtonIndex();
+    setActionIndex();
+    this->logger->info("自动贴合");
 }

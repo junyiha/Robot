@@ -30,13 +30,14 @@ CameraManager::CameraManager() {
     this->logger = spdlog::get("logger");
 
     this->serial2names = {
-            {"DA2720028", "LineCam_1"},  // ok
-            {"DA2720133", "LineCam_2"},  // ok
-            {"DA2720068", "LineCam_3"}, // ok
-            {"DA2720132", "LineCam_4"},  // ok
-            {"DA2720067", "LineCam_5"},  // ok
-            {"DA2720078", "LineCam_6"},  // ok
+            {"DA2603734", "LineCam_1"},  // ok
+            {"DA2720095", "LineCam_2"},  // ok
+            {"DA2461731", "LineCam_3"}, // ok
+            {"DA2720128", "LineCam_4"},  // ok
+            {"DA2720134", "LineCam_5"},  // ok
+            {"DA2461742", "LineCam_6"},  // ok
     };
+
     // this->cameraInfoMap ≥ı ºªØ
     MV_CC_DEVICE_INFO null_dev;
     memset(&null_dev, 0, sizeof(MV_CC_DEVICE_INFO));
@@ -184,6 +185,11 @@ void CameraManager::getDeviceList() {
         MV_CC_DEVICE_INFO stDevInfo;
         memcpy(&stDevInfo, m_stDevList.pDeviceInfo[i], sizeof(MV_CC_DEVICE_INFO));
         std::string serial_number =  reinterpret_cast<const char*>(m_stDevList.pDeviceInfo[i]->SpecialInfo.stGigEInfo.chSerialNumber);
+        if(this->serial2names.find(serial_number) == this->serial2names.end()){
+            this->logger->error("camera {} not in serial2names", serial_number);
+            continue;
+
+        }
         this->cameraInfoMap[this->serial2names[serial_number]] = stDevInfo;
    }
 
@@ -230,7 +236,7 @@ std::vector<bool> CameraManager::getCameraOpenedInfo() {
     for(const auto &camera : this->cameraList){
         size_t index = camera.first.find("_");
         int number = camera.first[index+1]-'0';
-        isOpened[number-1] = camera.second->open_status;
+        isOpened[number-1] = camera.second->getDeviceConnectStatus();
     }
     return isOpened;
 }

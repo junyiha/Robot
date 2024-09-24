@@ -27,7 +27,7 @@
 #include "robot/robot.h"
 #include "GVL.h"
 //--------------视觉部分--------------//
-//#include "vision/VisionControls.h"
+#include "vision/VisionControls.h"
 #include "vision/VisionInterface.h"
 
 //--------------任务部分--------------//
@@ -35,7 +35,7 @@
 #include <QAtomicInt>
 
 //--------------可视化----------------//
-//#include "vision/CameraDisplay.h"
+#include "vision/CameraDisplay.h"
 #include <bitset>
 
 //--------------日志文件----------------//
@@ -77,7 +77,7 @@ public:
     CTask* m_Task;
 
     //视觉模块
-    //VisionControls* m_Vision;
+    VisionControls* m_Vision;
     VisionInterface* m_VisionInterface;
 
     //控十字激光
@@ -105,7 +105,7 @@ public:
     // 操作按钮索引配置
     std::map<std::string, unsigned int> m_btnIndex = {
         //作业操作模块
-      {"btn_location_",     0},   // 位置准备
+      {"btn_preparation_pos",     0},   // 位置准备
       {"btn_lift_",         1},   // 举升
       {"btn_leveling_",     2},   //调平
       {"btn_lift_2",        3},   //举升对边
@@ -117,6 +117,8 @@ public:
       {"btn_knock_suspend_", 9}, // 碰钉终止
       {"btn_magnet_stop_", 10},  // 停止
       {"btn_magent_crash_stop_", 11},  // 急停
+
+
       // 顶部操作模块
       {"btn_enable_", 12}, // 上使能
       {"btn_disable_", 13}, // 下使能
@@ -227,6 +229,12 @@ private:
     void closeEvent(QCloseEvent *event);
     bool lineStatus = false; // 是否处于直线检测状态
 
+    // 灯光控制变量
+    bool lineCameraLightWidthEnable = true;
+    bool lineCameraLightHeightEnable = true;
+    bool holeCameraLightEnable = true;
+    bool laserLightEnable = true;
+
 protected:
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
@@ -261,6 +269,7 @@ private slots:
     void on_btn_SetMagent_clicked();
     void slots_on_btn_magnet_exit_clicked();
     void slots_on_btn_add_nail_clicked();
+    void slots_on_btn_auto_laminate_clicked();// 自动贴合
     //3.0 update the UI
     void slotUpdateUIAll();
 
@@ -307,6 +316,17 @@ private slots:
 
     void on_btn_preparation_pos_pressed();
     void on_btn_preparation_pos_released();
+
+    // 灯光
+    void slots_on_btn_camera_width_light_clicked();
+    void slots_on_btn_camera_height_light_clicked();
+    void slots_btn_camera_hole_light_clicked();
+    void slots_btn_laser_light_clicked();
+    void slots_on_btn_putter_forward_pressed();
+    void slots_on_btn_putter_forward_released();
+    void slots_on_btn_putter_backward_pressed();
+    void slots_on_btn_putter_backward_released();
+
 
 
 

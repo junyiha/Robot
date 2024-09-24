@@ -6,10 +6,10 @@
 #define PI acos(-1)
 
 
-// double calculateDistanceBetweenParallelLines(double slope, double intercept1, double intercept2) {
-//     double denominator = std::sqrt(1 + slope * slope);
-//     return std::abs(intercept2 - intercept1) / denominator;
-// }
+//double calculateDistanceBetweenParallelLines(double slope, double intercept1, double intercept2) {
+//    double denominator = std::sqrt(1 + slope * slope);
+//    return std::abs(intercept2 - intercept1) / denominator;
+//}
 
 LineHelper::LineHelper() {
     this->resize_h = 512;

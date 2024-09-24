@@ -17,6 +17,7 @@
 #include "Manual.h"
 #include "../GVL.h"
 #include "../Task/Measure.h"
+#include "BoardingTool.h"
 #include <spdlog/spdlog.h>
 #include <QMutex>
 
@@ -37,6 +38,7 @@ protected:
     //设备成员
     RobotCom	m_cRobot;
     CTools		m_cTools;
+    BoardingTool m_cToolsBoarding;
 
     std::shared_ptr<spdlog::logger> log;
 
@@ -96,7 +98,7 @@ public:
     * @param vel:   设定速度
     * @return
     */
-    void setLinkJointMoveAbs(uint index, const double pos[],double vel[]);
+    void setLinkJointMoveAbs(uint index, double pos[],double vel[]);
 
     /**
     * @brief 轴组关节速度
@@ -330,6 +332,35 @@ public:
      * @param index 焊枪编号，0表示关闭所有
      */
     void SetGunConnect(qint8 index);
+
+    /**
+    * @brief  灯光控制
+    * @param  index 灯光编号0，全部 1.长边，2.短边，3.孔位
+    * @param  On    开关量
+    */
+    void SetLight(quint8 index, bool On)
+    {
+        m_cToolsBoarding.SetLight(index, On);
+    }
+
+
+    /**
+   * @brief  激光标线控制
+   * @param  On    开关量
+   */
+    void SetLaserMarker(bool On)
+    {
+        m_cToolsBoarding.SetLaserMarker(On);
+    }
+
+    /**
+    * @brief  推杆控制
+    * @param  push  -1 推荐倒推，0 停止， 1推荐正推
+    **/
+    void SetCylinder(int push)
+    {
+        m_cToolsBoarding.SetCylinder(push);
+    }
 };
 
 #endif // COMINTERFACE_H

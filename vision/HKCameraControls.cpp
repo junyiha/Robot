@@ -166,6 +166,7 @@ int HKCameraControls::closeCamera() {
 }
 
 void HKCameraControls::run(){
+    static int maxNum = 0;
 
 
     //  开启数据流抓取
@@ -198,31 +199,26 @@ void HKCameraControls::run(){
                     pData = new unsigned char[stImageInfo.stFrameInfo.nFrameLen];
                 }
                 memcpy (pData, stImageInfo.pBufAddr, stImageInfo.stFrameInfo.nFrameLen);
-                if (pData == NULL)
-                {
-                    this->logger->info("Allocate memory failed.");
+                cv:: Mat srcImage = Convert2Mat(&stImageInfo.stFrameInfo, pData);  // 将数据转换为Mat格式
+
+                if(srcImage.empty()|| !srcImage.isContinuous()){
+                    this->logger->info("convert image failed {}", this->stHkDev.camName);
                     continue;
                 }
-                cv:: Mat srcImage = Convert2Mat(&stImageInfo.stFrameInfo, pData);  // 将数据转换为Mat格式
+
                 if(srcImage.channels() == 1){
                     cv::cvtColor(srcImage, srcImage, cv::COLOR_GRAY2RGB);
                 }
-//                std::string img_path = "E:/temp/";
-//                img_path += this->stHkDev.camName;
-                // 图像入对列
-                if(!srcImage.empty()||srcImage.channels() == 3){
-//                    cv::imwrite(img_path+".jpg", srcImage);
-                    this->data_mutex.lock();
-                    if(this->camera_queue.size() < 2){
-                        this->camera_queue.push(srcImage);
-                    }else{
-                        this->camera_queue.pop();
-                        this->camera_queue.push(srcImage);
-                    }
-                    this->data_mutex.unlock();
+
+                this->data_mutex.lock();
+                if(this->camera_queue.size() < 2){
+                    this->camera_queue.push(srcImage);
                 }else{
-                    this->logger->info(" HKCameraControls::  camName: {}, get image failed", this->stHkDev.camName);
+                    this->camera_queue.pop();
+                    this->camera_queue.push(srcImage);
                 }
+                this->data_mutex.unlock();
+
                 int res = this->pstMvCamera->FreeImageBuffer(&stImageInfo);  // 释放图像缓存
                 if(MV_OK!=res){
                     this->logger->info("FreeImageBuffer fail {}", this->stHkDev.camName);
@@ -233,8 +229,12 @@ void HKCameraControls::run(){
             else{
                 // 待处理   软触发模式处理策略
                 this->logger->info("GetImageBuffer fail {}", this->stHkDev.camName);
-                continue;
-                QThread::msleep(500);
+                maxNum++;
+                if(maxNum>10){
+                    // 开启重新连接
+                    reconnectCameraDevice();
+                    maxNum = 0;
+                }
             }
         }
         QThread::msleep(100);
@@ -243,6 +243,21 @@ void HKCameraControls::run(){
     delete[] pData;
     this->pstMvCamera->StopGrabbing();
     this->pstMvCamera->Close();
+}
+
+void HKCameraControls::reconnectCameraDevice() {
+
+    int num = 3;
+    while(num>0){
+        pstMvCamera->StopGrabbing();
+        pstMvCamera->Close();
+        openCamera();
+        if(open_status){
+            pstMvCamera->StartGrabbing();
+            break;
+        }
+        num--;
+    }
 }
 
 cv::Mat HKCameraControls::getFrame() {
@@ -256,6 +271,8 @@ cv::Mat HKCameraControls::getFrame() {
     this->data_mutex.unlock();
     return srcImage;
 }
+
+
 
 void HKCameraControls::getCameraConfigInfo() {
 
@@ -687,6 +704,15 @@ void HKCameraControls::closeThread() {
 
 bool HKCameraControls::cameraIsAccessible() {
     return  this->pstMvCamera->IsDeviceAccessible(&this->stHkDev.stDevInfo, 3);
+}
+
+bool HKCameraControls::getDeviceConnectStatus() {
+    bool status;
+    status  = this->pstMvCamera->IsDeviceConnected();
+    if(!status){
+        this->logger->info("Camrea {} is not connect!", this->stHkDev.camName);
+    }
+    return status;
 }
 
 

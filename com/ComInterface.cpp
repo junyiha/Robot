@@ -48,8 +48,8 @@ void ComInterface::run()
         //监测机器人连接状态
         if(m_cRobot.getCommState() == false){
             emit m_cRobot.sigDisconnected();
-            log->warn("m_cRobot.slotStopLoop();");
-            log->warn("尝试连接机器人。。。。{}", tryToConnectCount[0]);
+            qDebug()<<"m_cRobot.slotStopLoop();";
+            qDebug()<<"尝试连接机器人。。。。"<<tryToConnectCount[0];
             isRobotConnected = m_cRobot.ConnectToServer(g_str_robotip, g_i_robotport);
             if(tryToConnectCount[0] <= COUNT_LIMIT){
                 ++tryToConnectCount[0];
@@ -87,18 +87,21 @@ void ComInterface::run()
             }
         }
 
-       //启动遥控器com口 通过isOpen（）判断打开状态
-       if(this->m_cManual.isOpen() == false){
-           this->m_cManual.open("COM1");
-           qDebug()<<"reconnect manual...";
-       }
+
+
+
+//        //启动遥控器com口 通过isOpen（）判断打开状态
+//        if(this->m_cManual.isOpen() == false){
+//            m_cManual.open("COM2");
+//            qDebug()<<"重新连接遥控器";
+//        }
 
         Sleep(1000);
     }
     qDebug()<<"cominterface： run() stopped";
 }
 
-void ComInterface::setLinkJointMoveAbs(uint index, const double pos[],double vel[])
+void ComInterface::setLinkJointMoveAbs(uint index, double pos[],double vel[])
 {
     double end_vel[100], distance[100];
     m_cRobot.setLinkGroupMove(index,eMC_MOV_ABS,pos,vel,end_vel,distance);
@@ -273,4 +276,6 @@ bool ComInterface::getIOConnectSta(const uint index) {
     mutex_read.unlock();
     return re;
 }
+
+
 

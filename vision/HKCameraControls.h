@@ -39,6 +39,7 @@ public:
     void getCameraConfigInfo();
     void get_frame( );
     cv::Mat getFrame();
+    bool getDeviceConnectStatus();
     // start image acquisition
     void start_image_acquisition(std::string mode);
     bool cameraIsAccessible();
@@ -105,6 +106,8 @@ private:
     float GetGain();
 
     float getExposureTime();
+
+    void reconnectCameraDevice();
 };
 
 
