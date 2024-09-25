@@ -32,10 +32,12 @@ CameraManager::CameraManager() {
     this->serial2names = {
             {"DA2603734", "LineCam_1"},  // ok
             {"DA2720095", "LineCam_2"},  // ok
-            {"DA2461731", "LineCam_3"}, // ok
+            {"DA2720134", "LineCam_3"}, // ok
             {"DA2720128", "LineCam_4"},  // ok
-            {"DA2720134", "LineCam_5"},  // ok
+            {"DA2461731", "LineCam_5"},  // ok
             {"DA2461742", "LineCam_6"},  // ok
+//            {"DA2723075", "HoleCam_7"},  // ok
+//            {"DA3218690", "HoleCam_8"},  // ok
     };
 
     // this->cameraInfoMap ≥ı ºªØ

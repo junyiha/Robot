@@ -84,7 +84,9 @@ public:
      * @brief getLasersStatus 获取点激光的测距数据
      * @return 长度为5的double向量，前四个为高精度点激光,[4]为距离均值，[5],最大偏差
      */
-    QVector<double> getLasersDistance();
+    //QVector<double> getLasersDistance();
+
+    QVector<double> getLasersDistanceBoarding();
     /**
      * @brief getJointGroupStatus 读所有轴组数据
      * @return 轴组状态向量
@@ -98,7 +100,7 @@ public:
     * @param vel:   设定速度
     * @return
     */
-    void setLinkJointMoveAbs(uint index, const double pos[],double vel[]);
+    void setLinkJointMoveAbs(uint index, double pos[],double vel[]);
 
     /**
     * @brief 轴组关节速度
@@ -303,7 +305,7 @@ public:
      * @brief getCommState_IOA 获取IOA板子连接状态
      * @return 已连接则true
      */
-    bool getCommState_IOA(){return m_cTools.m_cIOA.getCommState();}
+    bool getCommState_IOA(){return m_cToolsBoarding.m_cIOA.getCommState();}
     bool getCommState_IOB(){return m_cTools.m_cIOB.getCommState();}
 
     /**

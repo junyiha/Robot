@@ -30,6 +30,8 @@ void MyBestfitLaserScaner::run() {
         if(m_threadQuit){
             break;
         }
+        // 清空缓存区数据
+        EthernetScanner_WriteData(m_hScanner,(char*)"SetClearCloudFifo\r", sizeof("SetClearCloudFifo\r"));
 
         int iPicCnt = 0;
         int dataLength = EthernetScanner_GetXZIExtended(m_hScanner,
@@ -96,8 +98,7 @@ void MyBestfitLaserScaner::run() {
             setDataValid(true);
         }
 
-        // 清空缓存区数据
-        EthernetScanner_WriteData(m_hScanner,(char*)"SetClearCloudFifo\r", sizeof("SetClearCloudFifo\r"));
+
         Sleep(200);
     }
 
@@ -421,7 +422,6 @@ void MyBestfitLaserScaner::startAcquisition() {
     }
 
 
-
 }
 void MyBestfitLaserScaner::laserOn() {
     if(m_hScanner == nullptr || !m_bScannerConnectStatus)
@@ -477,10 +477,11 @@ void MyBestfitLaserScaner::setDataValid(bool dataValid) {
 }
 
 void MyBestfitLaserScaner::startLaserScanTask() {
-    this->scannerConnect();
+    //this->scannerConnect();
     if(this->m_bScannerConnectStatus){
         this->laserOn();
         this->startAcquisition();
+        this->start(); // 启动线程
         std::cout<<"layser:"<<this->laser_name<< "start successed!"<<std::endl;
     }else{
         std::cout<<"layser:"<<this->laser_name<< "start failed!"<<std::endl;

@@ -246,17 +246,11 @@ QVector<double> CTools::getLaserDistance()
         tmp[i] = 80.0/(cfg_laser[i].y()-  cfg_laser[i].x()) * (tmp[i] -  cfg_laser[i].x());
     }
 
-    //调整点激光顺序 1,x+，y-； 2x+，y+；3：X-,Y+; 4X-,Y-
-    re[0] = tmp[1];
-    re[1] = tmp[0];
-    re[2] = tmp[2];
-    re[3] = tmp[3];
+    re[0] = tmp[2];
+    re[1] = tmp[3];
+    re[2] = tmp[1];
+    re[3] = tmp[0];
 
    //log->debug("测量距离：{} {} {} {} ",re[0],re[1],re[2],re[3]);
-   // test
-//    re[0] = 14;
-//    re[1] = 15;
-//    re[2] = 15;
-//    re[3] = 15;
     return re;
 }

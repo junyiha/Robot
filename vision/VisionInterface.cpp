@@ -112,6 +112,7 @@ void VisionInterface::parser_result(std::string paserType, stMeasureData *stm) {
                 if(index+1!=prefix.size()-1){
                     number = (prefix[index+1]-'0')*10+(prefix[index+2]-'0');
                 }
+
                 double dist = line.second.dist*this->scales_line[line.first];
                 if(dist<1 || dist>44){
                     stm->m_LineDistance[number-1] = 0;

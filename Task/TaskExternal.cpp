@@ -985,7 +985,7 @@ void CTask::CalculatedAdjustmentForFitBoard()
 void CTask::UpdateLaserDistance()
 {
     //取雷达数据
-    QVector<double> LaserDistance = m_Comm->getLasersDistance();
+    QVector<double> LaserDistance = m_Comm->getLasersDistanceBoarding();
 
     m_stMeasuredata.m_LaserDistance[0] = LaserDistance[0];
     m_stMeasuredata.m_LaserDistance[1] = LaserDistance[1];

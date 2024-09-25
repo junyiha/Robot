@@ -115,8 +115,8 @@ void MainWindow::connectSlotFunctions() {// 按钮时间绑定
     connect(ui->btn_leveling_, &QPushButton::clicked, this, &MainWindow::on_btn_leveling_clicked, Qt::UniqueConnection);
     connect(ui->btn_sideline_, &QPushButton::clicked, this, &MainWindow::on_btn_sideline_clicked, Qt::UniqueConnection);
 //    connect(ui->btn_magnet_open_, &QPushButton::clicked, this, &MainWindow::on_btn_magnet_open_clicked, Qt::UniqueConnection);
-//    connect(ui->btn_auto_knock_, &QPushButton::clicked, this, &MainWindow::on_btn_auto_knock_clicked, Qt::UniqueConnection);
-    connect(ui->btn_auto_laminate, &QPushButton::clicked, this, &MainWindow::slots_on_btn_auto_laminate_clicked, Qt::UniqueConnection);  // 贴合
+    connect(ui->btn_auto_knock_, &QPushButton::clicked, this, &MainWindow::on_btn_auto_knock_clicked, Qt::UniqueConnection);
+//    connect(ui->btn_auto_laminate, &QPushButton::clicked, this, &MainWindow::slots_on_btn_auto_laminate_clicked, Qt::UniqueConnection);  // 贴合
 
 //    connect(ui->btn_magnet_close_, &QPushButton::clicked, this, &MainWindow::on_btn_magnet_close_clicked, Qt::UniqueConnection);
     connect(ui->btn_magnet_pause_, &QPushButton::clicked, this, &MainWindow::on_btn_magnet_pause_clicked, Qt::UniqueConnection);
@@ -329,7 +329,7 @@ void MainWindow::on_btn_lift_2clicked() {
 
 void MainWindow::on_btn_leveling_clicked() {
 
-    std::string currentState = "待调平";
+    std::string currentState = "";
     // 调平
     setButtonIndex();
     if(currentState=="待调平"){
@@ -351,7 +351,7 @@ void MainWindow::on_btn_leveling_clicked() {
 void MainWindow::on_btn_sideline_clicked() {
    // 对齐边线
 
-    std::string currentState = "待定位";
+    std::string currentState = "";
     // 调平
     setButtonIndex();
     if(currentState=="待定位"){
@@ -380,9 +380,23 @@ void MainWindow::on_btn_magnet_open_clicked() {
 
 void MainWindow::on_btn_auto_knock_clicked() {
    // 自动碰钉
+    std::string currentState = "";
+    // 调平
     setButtonIndex();
-    setActionIndex();
-    this->logger->info("碰钉");
+    if(currentState=="待贴合"){
+        setActionIndex();
+        ui->btn_auto_knock_->setStyleSheet("background-color: rgb(0, 255, 0);"
+                                           "border: 2px solid blue;"
+                                           "border-radius: 10px;"
+        );
+        this->logger->info("启动待贴合");
+    }else{
+        ui->btn_auto_knock_->setStyleSheet("background-color: rgb(255, 0, 0);"
+                                           "border: 2px solid blue;"
+                                           "border-radius: 10px;"
+        );
+        this->logger->info("不满足待贴合初始化状态,启动待贴合失败");
+    }
 }
 
 void MainWindow::on_btn_magnet_close_clicked() {
@@ -439,7 +453,7 @@ void MainWindow::clearFlowButtonStyle() {
                "border-radius: 10px;");
       ui->btn_sideline_->setStyleSheet("border: 2px solid blue;"
                "border-radius: 10px;");
-      ui->btn_auto_laminate->setStyleSheet("border: 2px solid blue;"
+      ui->btn_auto_knock_->setStyleSheet("border: 2px solid blue;"
                "border-radius: 10px;");
       ui->btn_magnet_exit->setStyleSheet("border: 2px solid blue;"
                "border-radius: 10px;");
@@ -511,7 +525,7 @@ void MainWindow::updataDeviceConnectState() {
     }
     // 更新io板和机器人连接状态显示
     bool io_A_sta = m_Com->getCommState_IOA();
-    bool io_B_sta = m_Com->getCommState_IOB();
+//    bool io_B_sta = m_Com->getCommState_IOB();
     bool robot_sta = m_Com->getCommState_Robot();
 //    this->logger->info("ioA:{}, ioB:{}, robot:{}", io_A_sta, io_B_sta, robot_sta);
 
@@ -521,11 +535,11 @@ void MainWindow::updataDeviceConnectState() {
         ui->label_io_A->setStyleSheet("image: url(:/img/images/icon_redLight.png);");
     }
 
-    if(io_B_sta){
-        ui->label_io_B->setStyleSheet("image: url(:/img/images/icon_greenLight.png);");
-    }else{
-        ui->label_io_B->setStyleSheet("image: url(:/img/images/icon_redLight.png);");
-    }
+//    if(io_B_sta){
+//        ui->label_io_B->setStyleSheet("image: url(:/img/images/icon_greenLight.png);");
+//    }else{
+//        ui->label_io_B->setStyleSheet("image: url(:/img/images/icon_redLight.png);");
+//    }
 
     if(robot_sta){
         ui->label_robot_state->setStyleSheet("image: url(:/img/images/icon_greenLight.png);");
@@ -676,7 +690,7 @@ void MainWindow::updateLineDetectResults() {
 void MainWindow::updateLaserData() {
 
     // 更新点激光
-    QVector  laserdis = m_Com->getLasersDistance();
+    QVector  laserdis = m_Com->getLasersDistanceBoarding();
     if(laserdis.size() > 0){
         for(int i = 0; i < larserNum; i++){
             findChild<QLabel*>("label_laserDist" + QString::number(i))->setText("Laser "+QString::number(i)+" Value :"+QString::number(laserdis[i]));
@@ -1481,18 +1495,18 @@ void MainWindow::slots_on_btn_putter_backward_released() {
 
 void MainWindow::slots_on_btn_auto_laminate_clicked() {
 
-    std::string currentState = "待贴合";
+    std::string currentState = "";
     // 调平
     setButtonIndex();
     if(currentState=="待贴合"){
         setActionIndex();
-        ui->btn_auto_laminate->setStyleSheet("background-color: rgb(0, 255, 0);"
+        ui->btn_auto_knock_->setStyleSheet("background-color: rgb(0, 255, 0);"
                                          "border: 2px solid blue;"
                                          "border-radius: 10px;"
         );
         this->logger->info("启动待贴合");
     }else{
-        ui->btn_auto_laminate->setStyleSheet("background-color: rgb(255, 0, 0);"
+        ui->btn_auto_knock_->setStyleSheet("background-color: rgb(255, 0, 0);"
                                          "border: 2px solid blue;"
                                          "border-radius: 10px;"
         );

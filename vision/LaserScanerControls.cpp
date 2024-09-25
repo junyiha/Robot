@@ -11,11 +11,11 @@ LaserScanerControls::LaserScanerControls(){
 
     //创建雷达对象
     this->ip_config = {
-            {"lida_1" ,  "192.168.1.101"},
-            {"lida_2" ,  "192.168.1.102"},
-            {"lida_3" ,  "192.168.1.103"},
-            {"lida_4" ,  "192.168.1.104"},
-            {"lida_5" ,  "192.168.1.105"}
+            {"lida_1" ,  "192.168.1.90"},
+            {"lida_2" ,  "192.168.1.91"},
+            {"lida_3" ,  "192.168.1.93"},
+            {"lida_4" ,  "192.168.1.96"},
+//            {"lida_5" ,  "192.168.1.105"}
     };
 
 
@@ -24,7 +24,7 @@ LaserScanerControls::LaserScanerControls(){
             {"lida_2" ,  true},
             {"lida_3" ,  false},
             {"lida_4" ,  true},
-            {"lida_5" ,  false}
+//            {"lida_5" ,  false}
     };
 
 
@@ -58,12 +58,12 @@ void LaserScanerControls::closeAllLaserScaner() {
 
 void LaserScanerControls::run() {
 
-    bool CfgLidar[5][2] = {
+    bool CfgLidar[4][2] = {
             {false  ,   false},
             {true   ,   false},
             {true   ,   false},
             {false  ,   false},
-            {true   ,   false},
+//            {true   ,   false},
     };
 
     unsigned index = 0;

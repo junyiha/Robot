@@ -184,7 +184,7 @@ void CTask::SemiAutoProgrcess()
 
     case 15: //调平
         if(this->m_bMagnetOn){break;}
-        LaserDistance = m_Comm->getLasersDistance();
+        LaserDistance = m_Comm->getLasersDistanceBoarding();
 
         m_stMeasuredata.m_LaserDistance[0] = LaserDistance[0];
         m_stMeasuredata.m_LaserDistance[1] = LaserDistance[1];
@@ -234,7 +234,7 @@ void CTask::SemiAutoProgrcess()
 
     case 16: //举升到对边位置
         if(this->m_bMagnetOn){break;}
-        LaserDistance = m_Comm->getLasersDistance();
+        LaserDistance = m_Comm->getLasersDistanceBoarding();
 
         m_stMeasuredata.m_LaserDistance[0] = LaserDistance[0];
         m_stMeasuredata.m_LaserDistance[1] = LaserDistance[1];
@@ -260,7 +260,7 @@ void CTask::SemiAutoProgrcess()
             std::copy(std::begin(vis_res.stData.m_LineDistance) , std::end(vis_res.stData.m_LineDistance), m_stMeasuredata.m_LineDistance);
             std::copy(std::begin(vis_res.stData.m_bLineDistance), std::end(vis_res.stData.m_bLineDistance), m_stMeasuredata.m_bLineDistance);
 
-            LaserDistance = m_Comm->getLasersDistance();
+            LaserDistance = m_Comm->getLasersDistanceBoarding();
             m_stMeasuredata.m_LaserDistance[0] = LaserDistance[0];
             m_stMeasuredata.m_LaserDistance[1] = LaserDistance[1];
             m_stMeasuredata.m_LaserDistance[2] = LaserDistance[2];

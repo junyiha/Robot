@@ -23,7 +23,6 @@
 class BoardingTool {
 public:
     BoardingTool();
-    ~BoardingTool();
     IOCom		m_cIOA;
 
 //****************功能接口***************
@@ -45,6 +44,8 @@ public:
     * @param  push  -1 推荐倒推，0 停止， 1推荐正推
     **/
     void SetCylinder(int push);
+
+    QVector<double> getLaserDistance();
 
     //关闭通讯
     void close(){m_cIOA.close();}

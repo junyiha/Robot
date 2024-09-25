@@ -25,11 +25,18 @@ ComInterface::~ComInterface()
     qDebug("destruct commInterface");
 }
 
-QVector<double> ComInterface::getLasersDistance()//
+//QVector<double> ComInterface::getLasersDistance()//
+//{
+//    return m_cTools.getLaserDistance();
+//
+//}
+
+QVector<double> ComInterface::getLasersDistanceBoarding()//
 {
-    return m_cTools.getLaserDistance();
+    return m_cToolsBoarding.getLaserDistance();
 
 }
+
 
 QVector<st_ReadAxis> ComInterface::getJointGroupStatus()
 {
@@ -48,8 +55,8 @@ void ComInterface::run()
         //监测机器人连接状态
         if(m_cRobot.getCommState() == false){
             emit m_cRobot.sigDisconnected();
-            log->warn("m_cRobot.slotStopLoop();");
-            log->warn("尝试连接机器人。。。。{}", tryToConnectCount[0]);
+            qDebug()<<"m_cRobot.slotStopLoop();";
+            qDebug()<<"尝试连接机器人。。。。"<<tryToConnectCount[0];
             isRobotConnected = m_cRobot.ConnectToServer(g_str_robotip, g_i_robotport);
             if(tryToConnectCount[0] <= COUNT_LIMIT){
                 ++tryToConnectCount[0];
@@ -60,12 +67,12 @@ void ComInterface::run()
         }
 
         //监测IO板连接状态
-        if(m_cTools.m_cIOA.getCommState() == false)
+        if(m_cToolsBoarding.m_cIOA.getCommState() == false)
         {
-            emit m_cTools.m_cIOA.sigDisconnected();
-            log->warn("m_cIOA.StopLoop();");
-            log->warn("尝试连接IO模块A。。。。{}", tryToConnectCount[1]);
-            isIOConnected = m_cTools.m_cIOA.ConnectToServer(g_str_IOAip, g_i_IOAport);
+            emit m_cToolsBoarding.m_cIOA.sigDisconnected();
+            qDebug()<<"m_cToolsBoarding.m_cIOA.StopLoop();";
+            qDebug()<<"尝试连接IO模块A。。。。"<<tryToConnectCount[1];
+            isIOConnected = m_cToolsBoarding.m_cIOA.ConnectToServer(g_str_IOAip, g_i_IOAport);
             if(tryToConnectCount[1] <= COUNT_LIMIT){
                 ++tryToConnectCount[1];
             }else{
@@ -73,32 +80,35 @@ void ComInterface::run()
                 break;
             }
         }
-        if(m_cTools.m_cIOB.getCommState() == false)
-        {
-            emit m_cTools.m_cIOB.sigDisconnected();
-            log->warn("m_cIOB.StopLoop();");
-            log->warn("尝试连接IO模块B。。。。{}", tryToConnectCount[2]);
-            isIOConnected = m_cTools.m_cIOB.ConnectToServer(g_str_IOBip, g_i_IOBport);
-            if(tryToConnectCount[2] <= COUNT_LIMIT){
-                ++tryToConnectCount[2];
-            }else{
-                log->error("IO模块重连次数达到上限100次，放弃重连");
-                break;
-            }
-        }
+//        if(m_cTools.m_cIOB.getCommState() == false)
+//        {
+//            emit m_cTools.m_cIOB.sigDisconnected();
+//            qDebug()<<"m_cIOB.StopLoop();";
+//            qDebug()<<"尝试连接IO模块B。。。。"<<tryToConnectCount[2];
+//            isIOConnected = m_cTools.m_cIOB.ConnectToServer(g_str_IOBip, g_i_IOBport);
+//            if(tryToConnectCount[2] <= COUNT_LIMIT){
+//                ++tryToConnectCount[2];
+//            }else{
+//                log->error("IO模块重连次数达到上限100次，放弃重连");
+//                break;
+//            }
+//        }
 
-        //启动遥控器com口 通过isOpen（）判断打开状态
-        if(this->m_cManual.isOpen() == false){
-            m_cManual.open("COM2");
-            log->warn("重新连接遥控器");
-        }
+
+
+
+//        //启动遥控器com口 通过isOpen（）判断打开状态
+//        if(this->m_cManual.isOpen() == false){
+//            m_cManual.open("COM2");
+//            qDebug()<<"重新连接遥控器";
+//        }
 
         Sleep(1000);
     }
     qDebug()<<"cominterface： run() stopped";
 }
 
-void ComInterface::setLinkJointMoveAbs(uint index, const double pos[],double vel[])
+void ComInterface::setLinkJointMoveAbs(uint index, double pos[],double vel[])
 {
     double end_vel[100], distance[100];
     m_cRobot.setLinkGroupMove(index,eMC_MOV_ABS,pos,vel,end_vel,distance);
