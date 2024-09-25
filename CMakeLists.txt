@@ -46,6 +46,9 @@ file(COPY ${BaseDIR}/packages/GocatorSDK/bin/win64/GoSdk.dll DESTINATION ${CMAKE
 # BestfitLaserScanner
 file(COPY ${BaseDIR}/packages/BestfitLayserScaner/lib/bin/BestfitLaserScanerSDK.dll DESTINATION ${CMAKE_BINARY_DIR}/)
 
+# onnxruntime
+file(COPY ${BaseDIR}/packages/OnnxRuntime/Microsoft.ML.OnnxRuntime.1.7.0/runtimes/win-x64/native/onnxruntime.dll DESTINATION ${CMAKE_BINARY_DIR}/)
+
 # Opencv Setting
 include_directories(${BaseDIR}/packages/opencv4.55/build/include)
 link_directories(${BaseDIR}/packages/opencv4.55/build/x64/vc15/lib)
