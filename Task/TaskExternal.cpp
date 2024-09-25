@@ -419,7 +419,7 @@ void CTask::detectionInPositioningExecutionCommand()
         EDetectionInPositioningResult detectResult;
 #ifdef TEST_TASK_STATEMACHINE_
         detectResult = EDetectionInPositioningResult::eDeviationIsLessThanThreshold;
-#elif
+#else
         //调用视觉函数
         VisionResult vis_res = m_vision->getVisResult();
         if (!vis_res.lineStatus)
@@ -430,7 +430,7 @@ void CTask::detectionInPositioningExecutionCommand()
         std::copy(std::begin(vis_res.stData.m_LineDistance), std::end(vis_res.stData.m_LineDistance), m_stMeasuredata.m_LineDistance);
         std::copy(std::begin(vis_res.stData.m_bLineDistance), std::end(vis_res.stData.m_bLineDistance), m_stMeasuredata.m_bLineDistance);
 
-        auto detectResult = CheckBoardingStateDecorator();
+        detectResult = CheckBoardingStateDecorator();
 #endif
         switch (detectResult)
         {

@@ -62,39 +62,45 @@ void CTask::updateCmdandStatus()
     int tmp_val = static_cast<int>(ActionIndex.loadRelaxed());
     switch(ActionIndex.loadRelaxed())
     {
-        case 3:
-            m_manualOperator.TaskIndex = static_cast<int>(stManualOperator::ETaskIndex::Parallel);
-            break;
-        case 4:
-            m_manualOperator.TaskIndex = static_cast<int>(stManualOperator::ETaskIndex::Positioning);
-            break;
-        case 5:
-            m_manualOperator.TaskIndex = static_cast<int>(stManualOperator::ETaskIndex::FitBoard);
-            break;
-        case 6:
-            m_manualOperator.TaskIndex = static_cast<int>(stManualOperator::ETaskIndex::Quit);
-            break;
-        case 7: //暂停
-            m_manualOperator.TaskIndex = static_cast<int>(stManualOperator::ETaskIndex::Pause);
-            break;
-        case 8: //终止
-            m_manualOperator.TaskIndex = static_cast<int>(stManualOperator::ETaskIndex::Terminate);
-            break;
+    case 1:
+        m_manualOperator.TaskIndex = static_cast<int>(stManualOperator::ETaskIndex::Parallel);
+        break;
+    case 2:
+        m_manualOperator.TaskIndex = static_cast<int>(stManualOperator::ETaskIndex::Positioning);
+        break;
+    case 3:
+        m_manualOperator.TaskIndex = static_cast<int>(stManualOperator::ETaskIndex::MagentOn);
+        break;
+    case 4:
+        m_manualOperator.TaskIndex = static_cast<int>(stManualOperator::ETaskIndex::FitBoard);
+        break;
+    case 5:
+        m_manualOperator.TaskIndex = static_cast<int>(stManualOperator::ETaskIndex::MagentOff);
+        break;
+    case 6:
+        m_manualOperator.TaskIndex = static_cast<int>(stManualOperator::ETaskIndex::Quit);
+        break;
+    case 7: //暂停
+        m_manualOperator.TaskIndex = static_cast<int>(stManualOperator::ETaskIndex::Pause);
+        break;
+    case 8: //终止
+        m_manualOperator.TaskIndex = static_cast<int>(stManualOperator::ETaskIndex::Terminate);
+        break;
 
-        case 1: //举升
-            m_manualOperator.Ready = 1;
-            break;
-        case 2://放板
-            m_manualOperator.Ready = 2;
-        case 9://停止
-            m_manualOperator.HaltCommand = true;
-            break;
-        case 12://急停
-            m_manualOperator.TaskIndex = 128;
-            m_manualOperator.StopCommand = true;
-            break;
-        default:
-            break;
+    case 9: //举升
+        m_manualOperator.Ready = 1;
+        break;
+    case 10://放钉
+        m_manualOperator.Ready = 2;
+    case 11://停止
+        m_manualOperator.HaltCommand = true;
+        break;
+    case 12://急停
+        m_manualOperator.TaskIndex = 128;
+        m_manualOperator.StopCommand = true;
+        break;
+    default:
+        break;
     }
     ActionIndex.storeRelaxed(0);
 
