@@ -31,10 +31,11 @@ public:
     LineDetectorRunner(LineDetector* line_helper,CameraManager* cam_controls, SharedData* shared);
     ~LineDetectorRunner();
     void run() override;
-    bool is_running = false;
+    bool is_running = true;
 
     //结果保存
     std::map<std::string, LineDetectRes> results;
+    std::map<std::string, LineDetectRes> getDetectResults();
     //硬件设备类
     LineDetector* line_helper= nullptr;
     CameraManager* cam_controls = nullptr;

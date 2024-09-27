@@ -28,7 +28,7 @@ const double JOINT_VEL_MOVE = 3;      //单位degree
 const double POSITION_RESOLUTION = 0.5;    //单位mm
 const double ROTATE_RESOLUTION  = 0.05/57.3;      //单位°
 
-const double END_VEL_LIMIT[6] = {5,5,5,0.1,0.1,0.1}; //关节末端运动限速
+const double END_VEL_LIMIT[6] = {5,5,5,0.05,0.05,0.05}; //关节末端运动限速
 const double END_VEL_POSITION[6] = {1,1,1,0.05,0.05,0.05}; //关节末端运动限速
 
 const double JOINT_VEL_LIMIT[20] = {2,2,2,2,1,10,10,1,2,5,5,0,0,0,0,0,0,0,0,0};
@@ -65,12 +65,12 @@ const double Postion_Quit[10]    =    {16.02,-30,0,10.23,76.01,900,1177.37, 0.8,
 const QVector<double> Postion_Quit_qv    =    {16.02,-30,0,10.23,76.01,900,1177.37, 0.8, -71.17, 1100.56};	
 
 // 装板机器人: 装板位
-const double ZB_Position_Home[10] = { 2.21, -0.25, 1.84, 0, 69.07, 817.17, 1069.94, -0.14, 14.87, 884.97 };
-const QVector<double> ZB_Position_Home_qv = {2.21, -0.25, 1.84, 0, 69.07, 817.17, 1069.94, -0.14, 14.87, 884.97};
+const double ZB_Position_Home[11] = { 2.21, -0.25, 1.84, 10, 76.41, 817.17, 1142.71, 1.86, -4.23, 901.36 , 567};
+const QVector<double> ZB_Position_Home_qv = {2.21, -0.25, 1.84, 10, 76.41, 817.17, 1142.71, 1.86, -4.23, 901.36 , 567};
 
 // 装板机器人: 举升位
-const double ZB_Position_Prepare[11] = { 2.21, -0.25, 1.84, 0, 93.74, 970.16, 1069.94, -0.16, 60, 884.97 , 566.8};
-const QVector<double> ZB_Position_Prepare_qv = { 2.21, -0.25, 1.84, 0, 93.74, 970.16, 1069.94, -0.16, 60, 884.97 , 566.8};
+const double ZB_Position_Prepare[11] = { 97.45, 46.27, 11.63, 9.75, 78.81, 1043.36, 1194.38, 0.55, -62.84, 885.0 , 567};
+const QVector<double> ZB_Position_Prepare_qv = { 97.45, 46.27, 11.63, 9.75, 78.81, 1043.36, 1194.38, 0.55, -62.84, 885.0 , 567};
 
 //robotcomm的ip和端口"192.168.1.130" 5999
 const char g_str_robotip[] = "192.168.1.130";

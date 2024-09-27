@@ -9,6 +9,7 @@
 #include<iostream>
 #include<opencv2/opencv.hpp>
 #include<QThread>
+#include<spdlog/spdlog.h>
 
 
 
@@ -34,6 +35,7 @@ public:
     //创建雷达对象
     std::map<std::string, MyBestfitLaserScaner*> scaners;
     std::map<std::string, cv::Mat> pointCloudMasks;
+    std::shared_ptr<spdlog::logger> logger;
 
 
     LaserScanerControls();

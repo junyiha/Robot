@@ -16,6 +16,7 @@
 #include<QFile>
 #include<iostream>
 #include<opencv2/opencv.hpp>
+#include<spdlog/spdlog.h>
 //#include "cimage.h"
 #include <QTimer>
 #include<QMutex>
@@ -109,6 +110,9 @@ public:
     cv::Mat resultMask;
     QMutex maskMutex;
     QMutex dataValidMutex;
+
+    std::shared_ptr<spdlog::logger> logger;
+
 
     // 装板相关参数
     bool isleft;

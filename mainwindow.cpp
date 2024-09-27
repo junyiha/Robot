@@ -329,10 +329,10 @@ void MainWindow::on_btn_lift_2clicked() {
 
 void MainWindow::on_btn_leveling_clicked() {
 
-    std::string currentState = "";
+    bool isReadyLeveling = m_Task->checkSubState(ESubState::eReadyToParallel);
     // 调平
     setButtonIndex();
-    if(currentState=="待调平"){
+    if(isReadyLeveling){
         setActionIndex();
         ui->btn_leveling_->setStyleSheet("background-color: rgb(0, 255, 0);"
                         "border: 2px solid blue;"
@@ -351,10 +351,10 @@ void MainWindow::on_btn_leveling_clicked() {
 void MainWindow::on_btn_sideline_clicked() {
    // 对齐边线
 
-    std::string currentState = "";
+    bool isReadyPos = m_Task->checkSubState(ESubState::eReadyToPositioning);
     // 调平
     setButtonIndex();
-    if(currentState=="待定位"){
+    if(isReadyPos){
         setActionIndex();
         ui->btn_sideline_->setStyleSheet("background-color: rgb(0, 255, 0);"
                                          "border: 2px solid blue;"
@@ -381,9 +381,10 @@ void MainWindow::on_btn_magnet_open_clicked() {
 void MainWindow::on_btn_auto_knock_clicked() {
    // 自动碰钉
     std::string currentState = "";
+    bool isReadyClose = m_Task->checkSubState(ESubState::eReadyToFitBoard);
     // 调平
     setButtonIndex();
-    if(currentState=="待贴合"){
+    if(isReadyClose){
         setActionIndex();
         ui->btn_auto_knock_->setStyleSheet("background-color: rgb(0, 255, 0);"
                                            "border: 2px solid blue;"
@@ -624,12 +625,12 @@ void MainWindow::updateAxisStatus() {
 }
 
 void MainWindow::updateLineDetectResults() {
-
-    bool isEnable = m_VisionInterface->camera_controls->camerasIsOpened();
-    if(isEnable){
-//        this->logger->info("相机未全部开启成功,请检查相机连接！");
-        return;
-    }
+//
+//    bool isEnable = m_VisionInterface->camera_controls->camerasIsOpened();
+//    if(isEnable){
+////        this->logger->info("相机未全部开启成功,请检查相机连接！");
+//        return;
+//    }
     unsigned pageIndex = ui->stackedWidget_view->currentIndex();
     bool lineStatus = this->getLineStatus();
     if(!lineStatus) { // 实时相机实时检测结果显示
@@ -642,10 +643,19 @@ void MainWindow::updateLineDetectResults() {
 //            this->logger->info("相机页面选择错误");
             return ;
         }
+        //计算比例系数  结果待确认
+        double  laserDisAve = 0;
+        QVector  laserdis = m_Com->getLasersDistanceBoarding();
+        for(int i=0; i<laserdis.size();i++){
+            laserDisAve+=laserdis[i];
+        }
+        laserDisAve = laserDisAve/laserdis.size();
+        double scale = (laserDisAve+460)/470;
+
         VisionResult visResult = m_VisionInterface->getVisResult();
         if(visResult.lineStatus){
             for(int i = 0; i < cameraNum; i++){
-                float dist = visResult.stData.m_LineDistance[i];
+                float dist = visResult.stData.m_LineDistance[i]*scale;
                 dist = std::isinf(dist) ? 0 : dist;
                 findChild<QLabel*>(prefix + QString::number(i))->setText("Dist " + QString::number(i + 1) + ":" + QString::number(dist));
             }

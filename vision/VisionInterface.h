@@ -50,6 +50,8 @@ public:
     VisionResult vis_result;  // VisionInterface 返回格式解析好的检测结果, 提供于其他线程使用
     VisionResult vis_result_;  // 备份
     std::map<std::string, float> scales_line;  //相机与现实世界的比例系数
+    std::map<std::string, float> camera_offset;  //相机与现实世界的比例系数
+
     //核心功能类
     LineDetectorRunner*  line_handler = nullptr;
     LineDetector* line_helper = nullptr;

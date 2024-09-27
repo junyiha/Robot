@@ -198,7 +198,7 @@ private:
     */
     int CheckParallelState(QVector<double>  laserDistance);
     EDetectionInParallelResult CheckParallelStateDecorator(QVector<double>  laserDistance);
-    EDetectionInParallelResult CheckParallelStateDecorator(double laserDistance[4]);
+    EDetectionInParallelResult CheckParallelStateDecorator(double laserDistance[]);
 
     /**
      * @brief 定位检测函数，根据相机返回数据，判断是否具备定位条件或完成定位
@@ -403,6 +403,8 @@ private:
      */
     void UpdateLaserDistance();
 
+    void UpdateVisionResult(VisionResult &vis_res);
+
 public:
     /**
      * @brief 更新第一层和第二层状态(线程安全)
@@ -451,7 +453,7 @@ private:
 
 private:
     ETopState m_etopState{ETopState::eManual};
-    ESubState m_esubState{ESubState::eReady};
+    ESubState m_esubState{ESubState::eNotReady};
     EExecutionCommand m_eexecutionCommand{EExecutionCommand::eNULL};
     
 private:

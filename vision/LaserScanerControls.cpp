@@ -11,10 +11,10 @@ LaserScanerControls::LaserScanerControls(){
 
     //创建雷达对象
     this->ip_config = {
-            {"lida_1" ,  "192.168.1.90"},
-            {"lida_2" ,  "192.168.1.91"},
-            {"lida_3" ,  "192.168.1.93"},
-            {"lida_4" ,  "192.168.1.96"},
+            {"lida_1" ,  "192.168.1.91"},
+            {"lida_2" ,  "192.168.1.93"},
+            {"lida_3" ,  "192.168.1.96"},
+            {"lida_4" ,  "192.168.1.90"},
 //            {"lida_5" ,  "192.168.1.105"}
     };
 
@@ -26,6 +26,7 @@ LaserScanerControls::LaserScanerControls(){
             {"lida_4" ,  true},
 //            {"lida_5" ,  false}
     };
+    this->logger = spdlog::get("logger");
 
 
     this->start(); // 启动线程，开启轮廓激光

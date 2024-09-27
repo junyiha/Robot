@@ -17,27 +17,32 @@ VisionInterface::VisionInterface() {
 
 
 
-
-
     // 相机读取+边线检测 端到端处理类(线程)
     this->line_handler = new LineDetectorRunner(this->line_helper,this->camera_controls,this->sharedDataLine);
     this->lidar_handler = new LidarHandler(this->lidar_helper, this->laser_controls, this->sharedDataLaser);
+    this->line_handler->start();
 
 
     this->scales_line= {
-            {"LineCam_1", 0.153846153846153},
-            {"LineCam_2", 0.153061224489795},
-            {"LineCam_3", 0.153061224489795},
-            {"LineCam_4", 0.153061224489795},
-            {"LineCam_5", 0.153061224489795},
-            {"LineCam_6", 0.153061224489795},
+            {"LineCam_1", 0.275862069},
+            {"LineCam_2", 0.275229358},
+            {"LineCam_3", 0.275862069},
+            {"LineCam_4", 0.274914089},
+            {"LineCam_5", 0.274914089},
+            {"LineCam_6", 0.274509804},
     };
 
-    //
-
-
+    this->camera_offset = {
+            {"LineCam_1", 95},
+            {"LineCam_2", 113},
+            {"LineCam_3", 89},
+            {"LineCam_4", 113},
+            {"LineCam_5", 65},
+            {"LineCam_6", 98},
+    };
 
     this->logger = spdlog::get("logger");
+
 }
 
 VisionInterface::~VisionInterface() {
@@ -76,12 +81,10 @@ void VisionInterface::getDetectResult(VisionResult &vis_result){
 
     // 获取直线检测结果
     std::map<std::string, LineDetectRes> lineDetectRes;
-    this->imagesMutex.lock();
-    lineDetectRes = this->line_handler->results;
-    this->imagesMutex.unlock();
+    lineDetectRes = this->line_handler->getDetectResults();
     if(lineDetectRes.size()>0){
         this->line_res = lineDetectRes;
-        this->parser_result("Line", &vis_result.stData);
+        this->parser_result("line", &vis_result.stData);
         vis_result.lineStatus = true;
     }else{
         vis_result.lineStatus = false;
@@ -94,7 +97,7 @@ void VisionInterface::getDetectResult(VisionResult &vis_result){
     this->pointMaskMutex.unlock();
     if(lidarDetectRes.size()>0){
         this->lidar_res = lidarDetectRes;
-        this->parser_result("Laser", &vis_result.stData);
+        this->parser_result("laser", &vis_result.stData);
         vis_result.laserStatus = true;
     }else{
         vis_result.laserStatus = false;
@@ -113,8 +116,8 @@ void VisionInterface::parser_result(std::string paserType, stMeasureData *stm) {
                     number = (prefix[index+1]-'0')*10+(prefix[index+2]-'0');
                 }
 
-                double dist = line.second.dist*this->scales_line[line.first];
-                if(dist<1 || dist>44){
+                double dist = (line.second.dist-this->camera_offset[line.first])*this->scales_line[line.first] ;
+                if(dist<1){
                     stm->m_LineDistance[number-1] = 0;
                     stm->m_bLineDistance[number-1] = false;
                 }else{
@@ -161,7 +164,7 @@ void VisionInterface::run() {
             this->vis_result_ = this->vis_result;
             this->mutex.unlock();
         }
-        QThread::msleep(200);
+        QThread::msleep(100);
     }
 }
 

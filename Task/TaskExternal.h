@@ -26,7 +26,7 @@ enum class ETopState
 enum class ESubState
 {
     eNULL = 0,          // 空状态
-    eNotReady = 0,      // 未就绪
+    eNotReady,          // 未就绪
     eReady,             // 就绪
     eMotion,            // 运动
 

@@ -9,6 +9,7 @@ MyBestfitLaserScaner::MyBestfitLaserScaner( std::string scannerIP,  std::string 
     this->m_strScannerTimeOut = "3000";
     m_dwScanner_Frequency = 100;
     this->laser_name = laserName;
+    this->logger = spdlog::get("logger");
 
 }
 
@@ -86,7 +87,7 @@ void MyBestfitLaserScaner::run() {
         // data size=0
         if(dataLength == 0)
         {
-            qDebug() << "No Image Data, Cloud Data is NULL, Pic Counter:" << iPicCnt;
+//            qDebug() << "No Image Data, Cloud Data is NULL, Pic Counter:" << iPicCnt;
             setDataValid(false);
             continue;
         }
@@ -158,7 +159,7 @@ void MyBestfitLaserScaner::scannerConnect() {
                 m_bScannerConnectStatus = true;
             }
             //Detect the timeout
-            if( (GetTickCount()-time) > 5000 )
+            if( (GetTickCount()-time) > 8000 )
             {
                 m_hScanner = EthernetScanner_Disconnect(m_hScanner);
                 printf("Error: EthernetScanner_Connect: Error in connection");
@@ -195,35 +196,35 @@ void MyBestfitLaserScaner::getConnectDeviceInfo() {
     EthernetScanner_ReadData(m_hScanner, (char*)"GetZStart", retBuf, 100, -1);
     m_strZstart = std::string((char*)retBuf);
     m_dZstart = atoi(m_strZstart.data());
-    printf("The ZStart is %s\n", m_strZstart.data());
+//    printf("The ZStart is %s\n", m_strZstart.data());
 
     // 获取Z轴测量的范围值,单位毫米
     EthernetScanner_ReadData(m_hScanner, (char*)"GetZRange", retBuf, 100, -1);
     m_strZrange = std::string((char*)retBuf);
     m_dZrange = atoi(m_strZrange.data());
-    printf("The ZRange is %s\n", m_strZrange.data());
+//    printf("The ZRange is %s\n", m_strZrange.data());
 
     // 获取Z轴测量的最佳值,单位毫米
     EthernetScanner_ReadData(m_hScanner, (char*)"GetZBest", retBuf, 100, -1);
     m_dZbest = atoi(std::string((char*)retBuf).data());
-    printf("The ZBest is %s\n", std::string((char*)retBuf).data());
+//    printf("The ZBest is %s\n", std::string((char*)retBuf).data());
 
     // 获取X轴测量的起始值,单位毫米
     EthernetScanner_ReadData(m_hScanner, (char*)"GetXRangeAtStart", retBuf, 100, -1);
     m_strXRangeAtStart = std::string((char*)retBuf);
     m_dXRangeAtStart = atoi(m_strXRangeAtStart.data());
-    printf("The XRangeAtStart is %s\n", m_strXRangeAtStart.data());
+//    printf("The XRangeAtStart is %s\n", m_strXRangeAtStart.data());
 
     // 获取X轴测量的结束值,单位毫米
     EthernetScanner_ReadData(m_hScanner, (char*)"GetXRangeAtEnd", retBuf, 100, -1);
     m_strXRangeAtEnd = std::string((char*)retBuf);
     m_dXRangeAtEnd = atoi(m_strXRangeAtEnd.data());
-    printf("The XRangeAtEnd is %s\n", m_strXRangeAtEnd.data());
+//    printf("The XRangeAtEnd is %s\n", m_strXRangeAtEnd.data());
 
     // 获取X轴测量的最佳值,单位毫米
     EthernetScanner_ReadData(m_hScanner, (char*)"GetXRangeBest", retBuf, 100, -1);
     m_dXRangeBest = atoi(std::string((char*)retBuf).data());
-    printf("The XRangeBest is %s\n", std::string((char*)retBuf).data());
+//    printf("The XRangeBest is %s\n", std::string((char*)retBuf).data());
 
     // 获取传感器当前设置的采集激光线点云个数,单位个
     EthernetScanner_ReadData(m_hScanner,
@@ -232,7 +233,7 @@ void MyBestfitLaserScaner::getConnectDeviceInfo() {
                              100,
                              -1);
     std::string grabNum = std::string((char*)retBuf);
-    printf("The grabNum is %s\n", grabNum.c_str());
+//    printf("The grabNum is %s\n", grabNum.c_str());
 
     // 获取激光器的亮度值
     EthernetScanner_ReadData(m_hScanner,
@@ -241,7 +242,7 @@ void MyBestfitLaserScaner::getConnectDeviceInfo() {
                              100,
                              -1);
     std::string laserBrightness= std::string((char*)retBuf);
-    printf("The laserBrightness is %s\n", laserBrightness.c_str());
+//    printf("The laserBrightness is %s\n", laserBrightness.c_str());
 
 
     // 获取当前图像获取的触发源
@@ -251,7 +252,7 @@ void MyBestfitLaserScaner::getConnectDeviceInfo() {
                              100,
                              -1);
     std::string triggerSource= std::string((char*)retBuf);
-    printf("The triggerSource is %s\n", triggerSource.c_str());
+//    printf("The triggerSource is %s\n", triggerSource.c_str());
 
     // 获取当前图像的曝光时间
     EthernetScanner_ReadData(m_hScanner,
@@ -260,7 +261,7 @@ void MyBestfitLaserScaner::getConnectDeviceInfo() {
                              100,
                              -1);
     std::string exposureTime= std::string((char*)retBuf);
-    printf("The exposureTime is %s\n", exposureTime.c_str());
+//    printf("The exposureTime is %s\n", exposureTime.c_str());
 
     // 获取图像的帧速率
     EthernetScanner_ReadData(m_hScanner,
@@ -269,7 +270,7 @@ void MyBestfitLaserScaner::getConnectDeviceInfo() {
                              100,
                              -1);
     std::string frameRate= std::string((char*)retBuf);
-    printf("The frameRate is %s\n", frameRate.c_str());
+//    printf("The frameRate is %s\n", frameRate.c_str());
 
     // 获取设置的 ROI 左上角点在图像中相对于第一列的偏移
     EthernetScanner_ReadData(m_hScanner,
@@ -278,7 +279,7 @@ void MyBestfitLaserScaner::getConnectDeviceInfo() {
                              100,
                              -1);
     std::string ROI1OffsetX= std::string((char*)retBuf);
-    printf("The ROI1OffsetX is %s\n", ROI1OffsetX.c_str());
+//    printf("The ROI1OffsetX is %s\n", ROI1OffsetX.c_str());
 
 
     EthernetScanner_ReadData(m_hScanner,
@@ -287,7 +288,7 @@ void MyBestfitLaserScaner::getConnectDeviceInfo() {
                              100,
                              -1);
     std::string ROI1OffsetZ = std::string((char*)retBuf);
-    printf("The ROI1OffsetZ is %s\n", ROI1OffsetZ.c_str());
+//    printf("The ROI1OffsetZ is %s\n", ROI1OffsetZ.c_str());
 
 
     EthernetScanner_ReadData(m_hScanner,
@@ -296,7 +297,7 @@ void MyBestfitLaserScaner::getConnectDeviceInfo() {
                              100,
                              -1);
     std::string ROI1WidthX= std::string((char*)retBuf);
-    printf("The ROI1WidthX is %s\n", ROI1WidthX.c_str());
+//    printf("The ROI1WidthX is %s\n", ROI1WidthX.c_str());
 
 
     EthernetScanner_ReadData(m_hScanner,
@@ -305,7 +306,7 @@ void MyBestfitLaserScaner::getConnectDeviceInfo() {
                              100,
                              -1);
     std::string ROI1HeightZ= std::string((char*)retBuf);
-    printf("The ROI1HeightZ is %s\n", ROI1HeightZ.c_str());
+//    printf("The ROI1HeightZ is %s\n", ROI1HeightZ.c_str());
 }
 void MyBestfitLaserScaner::EnumScannerDevice() {
 
@@ -477,7 +478,7 @@ void MyBestfitLaserScaner::setDataValid(bool dataValid) {
 }
 
 void MyBestfitLaserScaner::startLaserScanTask() {
-    //this->scannerConnect();
+    this->scannerConnect();
     if(this->m_bScannerConnectStatus){
         this->laserOn();
         this->startAcquisition();

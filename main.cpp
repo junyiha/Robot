@@ -60,7 +60,8 @@ void vision_demo(){
 
 void line_detect_demo(){
 
-    std::string path = "F:\\cache PDRobot_碰钉积累数据\\cache\\cam_4_2024-07-22-16-14-57.png";
+    std::string path = "C:/Users/Administrator/MVS/Data/Image_20240927094216199.bmp";
+//    std::string path = "F:\\line_detect_train_data\\line_detect_train_data-20240906\\data\\wireframe_finue\\images\\34227_edge_7_20240528_21342721.png";
     cv::Mat img = cv::imread(path);
     LineDetector line_tool;
     auto start = std::chrono::high_resolution_clock::now();
@@ -80,6 +81,7 @@ void line_detect_demo(){
         std::cout<<res.errorInfo<<std::endl;
     }
 }
+
 
 int RunRobot(int argc, char *argv[])
 {
@@ -113,6 +115,8 @@ int main(int argc, char *argv[])
 
     spdlog::info("test program...");
     TestTask();
+//    line_detect_demo();
+
 
     return 0;
 }

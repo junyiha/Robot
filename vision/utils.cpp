@@ -415,6 +415,12 @@ bool check_is_border_line(cv::Mat img, cv::Vec4f line, float thr) {
         return false;  // 超出边界
     }
 
+    if((base_x+offset-10)>512){
+        return false;
+    }
+
+
+
     cv::Rect roi_img_1(base_x, base_up_y, offset-10,offset-10);
     cv::Rect roi_img_2(base_x, base_y+10, offset-10,offset-10);
 

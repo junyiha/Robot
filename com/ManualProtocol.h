@@ -40,15 +40,17 @@ struct stManualOperator
     enum ETaskIndex      // 任务: 执行任务
     {
         None = 0,
-        Parallel = 1,
-        Positioning = 4,
-        FitBoard = 64,
-        DoWeld = 65,  // 暂时保留，避免编译问题，后续删除
-        MagentOn = 16,
-        MagentOff = 2,
-        Quit = 8,
+        SecondPush = 1,
+        Quit = 2,
+        Parallel = 4,
+        SecondQuit = 8,
+        Positioning = 16,
         Pause = 32,
-        Terminate = 128
+        FitBoard = 64,
+        Terminate = 128,
+        MagentOff = 9,    // 暂时保留，避免编译问题，后续删除
+        DoWeld = 65,      // 暂时保留，避免编译问题，后续删除
+        MagentOn = 3      // 暂时保留，避免编译问题，后续删除
     };
 
     int TaskIndex; // = buff[7]

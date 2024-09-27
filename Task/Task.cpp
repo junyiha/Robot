@@ -58,6 +58,8 @@ void CTask::updateCmdandStatus()
     // 更新指令，遥控器+界面
     m_Comm->getManual(m_manualOperator);
 
+//    log->info("etManual(m_manualOperator):{}",m_manualOperator.TaskIndex);
+
     //根据界面指令修改遥控器指令
     int tmp_val = static_cast<int>(ActionIndex.loadRelaxed());
     switch(ActionIndex.loadRelaxed())
@@ -464,19 +466,19 @@ void CTask::Manual()
 #ifdef TEST_TASK_STATEMACHINE_
 #else
         std::vector<double> TEMP_LINK_0_JOINT_MAX_VEL_FOR_READY_POINT(MAX_FREEDOM_LINK, 0.0);
-        TEMP_LINK_0_JOINT_MAX_VEL_FOR_READY_POINT = {1, 1, 1, 1, 0.3, 10, 5, 0.5, 4, 1};
-        m_Robot->setJointGroupMoveAbs(Postion_Prepare,TEMP_LINK_0_JOINT_MAX_VEL_FOR_READY_POINT.data());
+        TEMP_LINK_0_JOINT_MAX_VEL_FOR_READY_POINT = {3, 3, 3, 1, 0.3, 10, 5, 0.5, 4, 1, 3};
+        m_Robot->setJointGroupMoveAbs(ZB_Position_Prepare,TEMP_LINK_0_JOINT_MAX_VEL_FOR_READY_POINT.data());
 #endif
     }
     else if (m_manualOperator.Ready == 2)
     {
-        // 移动到放钉位置
+        // 移动到装扮位置
         log->info("{},{}: m_Robot->setLinkMoveAbs(Postion_Home,END_VEL_LIMIT);", __FILE__,__LINE__);
 #ifdef TEST_TASK_STATEMACHINE_
 #else
         std::vector<double> TEMP_LINK_0_JOINT_MAX_VEL_FOR_SET_POINT(MAX_FREEDOM_LINK, 0.0);
-        TEMP_LINK_0_JOINT_MAX_VEL_FOR_SET_POINT = {1, 1, 1, 1, 0.3, 10, 5, 0.5, 2, 6};
-        m_Robot->setJointGroupMoveAbs(Postion_Home,TEMP_LINK_0_JOINT_MAX_VEL_FOR_SET_POINT.data());
+        TEMP_LINK_0_JOINT_MAX_VEL_FOR_SET_POINT = {3, 3, 3, 1, 0.3, 10, 5, 0.5, 2, 6, 3};
+        m_Robot->setJointGroupMoveAbs(ZB_Position_Home,TEMP_LINK_0_JOINT_MAX_VEL_FOR_SET_POINT.data());
 #endif
     }
     else if (m_manualOperator.bLinkMoveFlag)
@@ -521,11 +523,24 @@ void CTask::Manual()
         m_Robot->setLinkHalt();
     }
 
+    //log->info("m_manualOperator.TaskIndex{}",m_manualOperator.TaskIndex);
     switch (m_manualOperator.TaskIndex)
     {
         case stManualOperator::None:
         {
             updateExecutionCommand(EExecutionCommand::eNULL);
+            break;
+        }
+        case stManualOperator::SecondPush:
+        {
+            double second_push_point = 228.93;  // 底部升降位置
+            m_Robot->setJointMoveAbs(0, second_push_point, LINK_0_JOINT_MAX_VEL[0]);
+            break;
+        }
+        case stManualOperator::SecondQuit:
+        {
+            double second_push_point = 100.0;  // 底部升降位置
+            m_Robot->setJointMoveAbs(0, second_push_point, LINK_0_JOINT_MAX_VEL[0]);
             break;
         }
         case stManualOperator::Parallel:
@@ -888,10 +903,10 @@ EDetectionInParallelResult CTask::CheckParallelStateDecorator(QVector<double> la
     return result;
 }
 
-EDetectionInParallelResult CTask::CheckParallelStateDecorator(double laserDistance[4])
+EDetectionInParallelResult CTask::CheckParallelStateDecorator(double laserDistance[])
 {
-    int size = sizeof(laserDistance) / sizeof(laserDistance[0]);
-    QVector<double> LaserDistance(laserDistance, laserDistance + size);
+    //int size = sizeof(laserDistance) / sizeof(laserDistance[0]);
+    QVector<double> LaserDistance(laserDistance, laserDistance + 4);
 
     return CheckParallelStateDecorator(LaserDistance);
 }
@@ -1060,9 +1075,10 @@ int CTask::CheckBoardingState(uint& motion_index)
     }
 
     //根据板面距离确定目标贴合距离
+    motion_index = 6;
     for (int i = 0; i < BOARDING_MOTION_QUE.size(); ++i)
     {
-        if (BOARDING_MOTION_QUE[i] + 5 < minDistance)
+        if (BOARDING_MOTION_QUE[i] + 2 < minDistance)
         {
             motion_index = i;
             re_line = 0;

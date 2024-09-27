@@ -32,19 +32,21 @@ LineResult LineDetector::getLineDistance(cv::Mat img) {
     cv::threshold(img_gray, bin_img, 0, 255, cv::THRESH_BINARY|cv::THRESH_OTSU);
     res.imgDrawed = img_512;
 
+//    cv::imshow("bin_img", bin_img);
+//    cv::waitKey();
+
     // mlsd  算法检测所有可能的线段
-    auto start_poss = std::chrono::high_resolution_clock::now();
     std::vector<MLine> all_lines =  getAllPossibleLines(img_512);
-    auto end_poss = std::chrono::high_resolution_clock::now();
-    auto end_poss_total =  std::chrono::duration_cast<std::chrono::milliseconds>(end_poss - start_poss);
-    std::cout<<"get possible times:"<<end_poss_total.count()<<std::endl;
+
+
+//    for(auto &line:all_lines){
+//        cv::line(img_512, cv::Point2f(line.x1,line.y1), cv::Point2f(line.x2,line.y2), cv::Scalar(255,0,255),2 );
+//    }
+//    cv::imshow("test", img_512);
+//    cv::waitKey();
 
     // 2.0 获取参考线
-    auto start_refer = std::chrono::high_resolution_clock::now();
     MLine referenceLine = getReferenceLine(img_512, all_lines);
-    auto end_refer = std::chrono::high_resolution_clock::now();
-    auto end_refer_total =  std::chrono::duration_cast<std::chrono::milliseconds>(end_refer - start_refer);
-    std::cout<<"getReferenceLine:"<<end_refer_total.count()<<std::endl;
 
     if(referenceLine.x1!=referenceLine.x2){
         res.refResult = referenceLine;
@@ -53,18 +55,12 @@ LineResult LineDetector::getLineDistance(cv::Mat img) {
                  cv::Point2f(referenceLine.x2, referenceLine.y2), cv::Scalar(0, 0, 255), 1);
     }else{
         res.errorInfo = "Can not get reference line";
+        std::cout<< "reference line detect failed!"<<std::endl;
         return res;
     }
 
     // 3.0 获取墨水线
-    auto start_ink = std::chrono::high_resolution_clock::now();
     MLine inkLine = getInkLine(bin_img, all_lines, referenceLine);
-    auto end_ink = std::chrono::high_resolution_clock::now();
-    auto end_ink_total =  std::chrono::duration_cast<std::chrono::milliseconds>(end_ink - start_ink);
-    std::cout<<"getInkLine:"<<end_ink_total.count()<<std::endl;
-
-
-
     if(inkLine.x1!=inkLine.x2){
         res.inkResult = inkLine;
         res.inkLineStatus = true;
@@ -73,6 +69,8 @@ LineResult LineDetector::getLineDistance(cv::Mat img) {
         res.status = true;
         double distance = calculateDistanceBetweenParallelLines(referenceLine.slope, inkLine.y1*h_ratio, referenceLine.y1*h_ratio);
         res.lineDist = distance;
+    }else{
+        std::cout<< "ink line detect failed!"<<std::endl;
     }
     return res;
 }
@@ -124,9 +122,6 @@ MLine LineDetector::getReferenceLineLSD(cv::Mat img, cv::Mat bin_img){
         cv::Vec4f line = lines[i];
 
         float distance = calculatePointsDistance(cv::Point2f(line[0], line[1]), cv::Point2f(line[2], line[3]));
-        // 如何判别检测的线属于板线的范畴？
-        // 长度大小、外观纹理、位置特点
-
         bool isBoundary = check_is_border_line(bin_img, line);
         if ((distance > this->resize_w*0.1) && isBoundary) { //满足直线的长度要求，且直线上下区域像素相似度低
             points.push_back(cv::Point2f(line[0], line[1]));
@@ -160,8 +155,7 @@ MLine LineDetector::getReferenceLine(cv::Mat img, std::vector<MLine> lines) {
         img_gray = img;
     }
     cv::threshold(img_gray, bin_img, 0, 255, cv::THRESH_OTSU);
-
-//    cv::imshow("bin_image", bin_img);
+//    cv::imshow("bin_img",bin_img);
 //    cv::waitKey();
 
     // 传统图像处理算法获取结果
@@ -170,7 +164,9 @@ MLine LineDetector::getReferenceLine(cv::Mat img, std::vector<MLine> lines) {
     // 模型算法获取结果
     for (auto &line : lines) {
         cv::Vec4f line_ = { line.x1,line.y1, line.x2,line.y2 };
-        if(abs(line.x1 - line.x2)<50){ continue;}  // 参考线太短，不参与计算
+        if(abs(line.x1 - line.x2)<50){
+            continue;
+        }  // 参考线太短，不参与计算
         if(check_is_border_line(bin_img, line_)){
             std::vector<cv::Point2f> points;
             points.push_back( cv::Point2f(line.x1, line.y1));
@@ -181,22 +177,41 @@ MLine LineDetector::getReferenceLine(cv::Mat img, std::vector<MLine> lines) {
             break;
         }
     }
-
-    // 传统算法和模型算法相互矫正
-    if(refLine_model.x1!=refLine_model.x2){ // 模型预测结果有效
-        if(refLine_lsd.x1!=refLine_lsd.x2){ // 传统算法预测结果有效
-            if(abs(refLine_model.x1- refLine_lsd.x1)<50){ // 判断两条线是否近似相邻
-                refLine = refLine_lsd;
-            }else{
-                refLine = refLine_model;
-            }
-        }else{ //传统算法预测结果无效
-            refLine = refLine_model;
-        }
-    }else{
-        refLine = refLine_lsd;
+    if(refLine_lsd.x1 == refLine_lsd.x2){
+        refLine_lsd = refLine_model;
     }
-    return refLine;
+
+//    cv::line(img, cv::Point2f(refLine_lsd.x1, refLine_lsd.y1),cv::Point2f(refLine_lsd.x2, refLine_lsd.y2), cv::Scalar(255,0,0),2);
+//    cv::imshow("test",img);
+//    cv::waitKey();
+
+    // 寻找距离板线最近的线
+//    double minDist = 1000;
+//    int minDistIndex = 0;
+//    double minYLsd = std::min(refLine_lsd.y1, refLine_lsd.y2);
+//    for(int i =0; i<lines.size(); i++){
+//        if(abs(lines[i].x1 - lines[i].x2)<50){  // 过滤较短的直线
+//            continue;
+//        }
+//        double minY = std::min(lines[i].y1, lines[i].y2);
+//        if(minY>minYLsd){
+//            continue;
+//        }
+//        double lineDist = minYLsd-minY;
+//        if(lineDist<minDist && lineDist>20 ){
+//            minDist = (minYLsd-minY);
+//            minDistIndex = i;
+//        }
+//    }
+//    if(minDist<200){ // 间距过滤
+//        refLine = lines[minDistIndex];
+//    }
+
+//    cv::line(img, cv::Point2f(refLine.x1, refLine.y1),cv::Point2f(refLine.x2, refLine.y2), cv::Scalar(255,0,0),2);
+//    cv::imshow("test2",img);
+//    cv::waitKey();
+    return refLine_lsd;
+
 }
 
 std::vector<MLine> LineDetector::getAllPossibleLines(cv::Mat img) {
@@ -208,15 +223,8 @@ std::vector<MLine> LineDetector::getAllPossibleLines(cv::Mat img) {
     for(auto item: lines_mlsd){
         cv::line(line_mask, cv::Point(item[0], item[1]), cv::Point(item[2], item[3]), cv::Scalar(255), 1);
     }
-    auto start = std::chrono::high_resolution_clock::now();
+
     std::vector<std::vector<float>> lines = get_line_by_lsd(line_mask);
-    auto end = std::chrono::high_resolution_clock::now();
-
-    // 计算并输出运行时间
-    auto  elapsed_seconds = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-    std::cout << "get_line_by_lsd: " << elapsed_seconds.count() << " 秒" << std::endl;
-
-
     sort_lines(lines);
     std::vector<std::vector<float>> lines_new = linesAggregation(lines);
 

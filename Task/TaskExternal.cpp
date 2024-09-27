@@ -50,33 +50,23 @@ void CTask::stateTransition()
 
 void CTask::manualStateTransition()
 {
-    //1. 判断机器人是否处于就绪状态 
-    bool robotReady;
-#ifdef TEST_TASK_STATEMACHINE_
-    robotReady = true;
-#else
-    robotReady = (m_LinkStatus.eLinkActState == eLINK_STANDSTILL);
-#endif
-    if (robotReady)
+    switch (m_esubState)
     {
-        //2. 如果就绪，判断是否要执行调平指令
-        switch (m_eexecutionCommand)
+        case ESubState::eNotReady:
         {
-        case EExecutionCommand::eParallel:
-            updateTopAndSubState(ETopState::eParallel, ESubState::eDetection);
-            return;
-        case EExecutionCommand::eFitBoard:
-            updateTopAndSubState(ETopState::eFitBoard, ESubState::eDetection);
-            return;
+            notReadyExecutionCommand();
+            break;
+        }
+        case ESubState::eReady:
+        {
+            readyExecutionCommand();
+            break;
+        }
+        default:
+        {
+            log->warn("第二层状态数据无效!!!");
         }
     }
-    else
-    {
-        log->error("机器人未就绪，无法执行指令");
-    }
-
-    //3. 执行手动操作指令 -- 遥控器处理函数--》遥控器对接。
-    Manual();
 }
 
 void CTask::parallelStateTransition()
@@ -220,25 +210,51 @@ void CTask::readyExecutionCommand()
 {
     switch (m_eexecutionCommand)
     {
-        case EExecutionCommand::eManual:
+        case EExecutionCommand::eNULL:
         {
             break;
+        }
+        case EExecutionCommand::ePause:
+        {
+            m_Robot->setLinkHalt();
+            return;
+        }
+        case EExecutionCommand::eTerminate:
+        {
+            m_Robot->setLinkHalt();
+            return;
         }
         case EExecutionCommand::eParallel:
         {
             updateTopAndSubState(ETopState::eParallel, ESubState::eDetection);
-            break;
+            return;
+        }
+        case EExecutionCommand::eFitBoard:
+        {
+            updateTopAndSubState(ETopState::eFitBoard, ESubState::eDetection);
+            return;
         }
         default:
         {
             log->warn("{}: {} 执行指令不合法!指令: {}", __LINE__, getCurrentStateString(), ExecutionCommandStringMap.find(m_eexecutionCommand)->second);
         }
     }
+
+    Manual();
 }
 
 void CTask::notReadyExecutionCommand()
 {
-    log->warn("设备有错误，或机器人移动。此时执行 所有手动操作指令");
+    log->warn("机器人未就绪，离线状态！！！");
+
+    bool robotReady;
+#ifdef TEST_TASK_STATEMACHINE_
+    robotReady = true;
+#else
+    robotReady = (m_LinkStatus.eLinkActState == eLINK_STANDSTILL);
+#endif
+    if (robotReady)
+        updateTopAndSubState(ETopState::eManual, ESubState::eReady);
 }
 
 void CTask::readyToParallelExecutionCommand()
@@ -415,7 +431,7 @@ void CTask::detectionInPositioningExecutionCommand()
     {
     case EExecutionCommand::eNULL:
     {
-        log->info("调用函数，计算边线偏差，根据偏差判断是否完成调整，继续调整，停止调整");
+        //log->info("调用函数，计算边线偏差，根据偏差判断是否完成调整，继续调整，停止调整");
         EDetectionInPositioningResult detectResult;
 #ifdef TEST_TASK_STATEMACHINE_
         detectResult = EDetectionInPositioningResult::eDeviationIsLessThanThreshold;
@@ -426,11 +442,12 @@ void CTask::detectionInPositioningExecutionCommand()
         { // 视觉检测无数据，等待下一个周期
             break;
         }
-
-        std::copy(std::begin(vis_res.stData.m_LineDistance), std::end(vis_res.stData.m_LineDistance), m_stMeasuredata.m_LineDistance);
-        std::copy(std::begin(vis_res.stData.m_bLineDistance), std::end(vis_res.stData.m_bLineDistance), m_stMeasuredata.m_bLineDistance);
+        UpdateVisionResult(vis_res);
+        log->info("vis_res.lineDistance: {},{},{},{},{},{}", vis_res.stData.m_LineDistance[0],vis_res.stData.m_LineDistance[1],vis_res.stData.m_LineDistance[2],
+                  vis_res.stData.m_LineDistance[3],vis_res.stData.m_LineDistance[4],vis_res.stData.m_LineDistance[5]);
 
         detectResult = CheckBoardingStateDecorator();
+        log->info("check positioning state result: {}", static_cast<int>(detectResult));
 #endif
         switch (detectResult)
         {
@@ -772,27 +789,18 @@ void CTask::detectionInFitBoardExecutionCommand()
             break;
         }
 
-        double sum{ 0.0 };
-        for (int i = 0; i < 4; i++)
-            sum += m_stMeasuredata.m_LaserDistance[i];
-
-        double laser_average = sum / 4;
-
-        double k = (laser_average + 460) / 470;
-
         //调用视觉函数
         VisionResult vis_res = m_vision->getVisResult();
         if (!vis_res.lineStatus)
         { // 视觉检测无数据，等待下一个周期
             break;
         }
+        UpdateVisionResult(vis_res);
 
-        for (int i = 0; i < 6; i++)
-            vis_res.stData.m_LineDistance[i] *= k;
-
-        std::copy(std::begin(vis_res.stData.m_LineDistance), std::end(vis_res.stData.m_LineDistance), m_stMeasuredata.m_LineDistance);
-        std::copy(std::begin(vis_res.stData.m_bLineDistance), std::end(vis_res.stData.m_bLineDistance), m_stMeasuredata.m_bLineDistance);
+        log->info("vis_res.lineDistance: {},{},{},{},{},{}", vis_res.stData.m_LineDistance[0],vis_res.stData.m_LineDistance[1],vis_res.stData.m_LineDistance[2],
+                  vis_res.stData.m_LineDistance[3],vis_res.stData.m_LineDistance[4],vis_res.stData.m_LineDistance[5]);
         result = CheckBoardingStateDecorator();  // CheckBoarding
+        log->info("check boarding state result: {}", static_cast<int>(result));
 #endif
         switch (result)
         {
@@ -906,24 +914,33 @@ void CTask::fitBoardFinishedExecutionCommand()
 
 void CTask::quitingExecutionCommand()
 {
+    static int cnt{0};
     switch (m_eexecutionCommand)
     {
     case EExecutionCommand::eNULL:
     {
-        m_Robot->setJointMoveAbs(9, 1100, 7);
-        if (m_JointGroupStatus[9].Position < 1110)
+        // 推缸退出
+        m_Comm->SetCylinder(-1);
+        if (cnt > 200)  // 10s
         {
             updateTopAndSubState(ETopState::eManual, ESubState::eReady);
+            cnt = 0;
+            m_Comm->SetCylinder(0);
         }
+        cnt++;
         break;
     }
     case EExecutionCommand::eTerminate:
     {
+        cnt = 0;
+        m_Comm->SetCylinder(0);
         terminateCommand();
         break;
     }
     case EExecutionCommand::ePause:
     {
+        cnt = 0;
+        m_Comm->SetCylinder(0);
         m_Robot->setLinkHalt();
         updateTopAndSubState(ETopState::eQuit, ESubState::ePause);
         break;
@@ -991,6 +1008,23 @@ void CTask::UpdateLaserDistance()
     m_stMeasuredata.m_LaserDistance[1] = LaserDistance[1];
     m_stMeasuredata.m_LaserDistance[2] = LaserDistance[2];
     m_stMeasuredata.m_LaserDistance[3] = LaserDistance[3];
+}
+
+void CTask::UpdateVisionResult(VisionResult &vis_res)
+{
+    double sum{ 0.0 };
+    for (int i = 0; i < 4; i++)
+        sum += m_stMeasuredata.m_LaserDistance[i];
+
+    double laser_average = sum / 4;
+
+    double k = (laser_average + 460) / 470;
+
+    for (int i = 0; i < 6; i++)
+        vis_res.stData.m_LineDistance[i] *= k;
+
+    std::copy(std::begin(vis_res.stData.m_LineDistance), std::end(vis_res.stData.m_LineDistance), m_stMeasuredata.m_LineDistance);
+    std::copy(std::begin(vis_res.stData.m_bLineDistance), std::end(vis_res.stData.m_bLineDistance), m_stMeasuredata.m_bLineDistance);
 }
 
 void CTask::updateTopAndSubState(ETopState topState, ESubState subState)

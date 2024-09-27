@@ -36,7 +36,7 @@ const double LINK_0_JOINT_LIMIT_POS[MAX_FREEDOM_LINK] = { 250,      // 0 升降
                                                           60,       // 8 腕俯仰 
                                                           1490,     // 9 末端升降 
                                                                     // 10 末端旋转
-                                                          MAX,MAX,MAX,MAX,MAX,MAX,MAX,MAX,MAX,MAX };
+                                                          620,MAX,MAX,MAX,MAX,MAX,MAX,MAX,MAX,MAX };
 const double LINK_0_JOINT_LIMIT_NEG[MAX_FREEDOM_LINK] = { 0,        // 0 升降 
                                                           -110,     // 1 前后 
                                                           -110,     // 2 左右 
@@ -48,7 +48,7 @@ const double LINK_0_JOINT_LIMIT_NEG[MAX_FREEDOM_LINK] = { 0,        // 0 升降
                                                           -100,     // 8 腕俯仰 
                                                           1190,     // 9 末端升降 
                                                                     // 10 末端旋转
-                                                          -MIN,-MIN,-MIN,-MIN,-MIN,-MIN,-MIN,-MIN,-MIN,-MIN };
+                                                          520,-MIN,-MIN,-MIN,-MIN,-MIN,-MIN,-MIN,-MIN,-MIN };
 
 //const double LINK_0_JOINT_LIMIT_POS[MAX_FREEDOM_LINK] = {  64,  144,  257,184, 14, 1147, 480, 150, 99,  250, MAX, MAX, MAX, MAX, MAX, MAX, MAX, MAX, MAX, MAX };
 //const double LINK_0_JOINT_LIMIT_NEG[MAX_FREEDOM_LINK] = { -64, -144,   3, -4, -14, 834,   4, -150, -47,   3,-MIN,-MIN,-MIN,-MIN,-MIN,-MIN,-MIN,-MIN,-MIN,-MIN };
@@ -66,7 +66,7 @@ const double LINK_5_JOINT_LIMIT_NEG[MAX_FREEDOM_LINK] = { -MIN,-MIN,-MIN,-MIN,-M
 //------------------------------------------------------------------------------//
 //最大速度
 //------------------------------------------------------------------------------//
-const double LINK_0_JOINT_MAX_VEL[MAX_FREEDOM_LINK] = { 7, 20, 20, 10, 3, 30, 27, 5, 10, 6,MAX, MAX, MAX, MAX, MAX, MAX, MAX, MAX, MAX, MAX };
+const double LINK_0_JOINT_MAX_VEL[MAX_FREEDOM_LINK] = { 7, 20, 20, 10, 3, 30, 27, 5, 10, 6,3, MAX, MAX, MAX, MAX, MAX, MAX, MAX, MAX, MAX };
 //const double LINK_0_JOINT_MAX_VEL[MAX_FREEDOM_LINK] = { 40, 40, 10, 4, 10, 24, 5, 2, 2, MAX,MAX, MAX, MAX, MAX, MAX, MAX, MAX, MAX, MAX, MAX };
 const double LINK_1_JOINT_MAX_VEL[MAX_FREEDOM_LINK] = { 2, MAX, MAX, MAX, MAX, MAX, MAX, MAX, MAX, MAX,MAX, MAX, MAX, MAX, MAX, MAX, MAX, MAX, MAX, MAX };
 const double LINK_2_JOINT_MAX_VEL[MAX_FREEDOM_LINK] = { 100, 30, 100, 30, MAX, MAX, MAX, MAX, MAX, MAX,MAX, MAX, MAX, MAX, MAX, MAX, MAX, MAX, MAX, MAX };

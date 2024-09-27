@@ -20,11 +20,13 @@ LineDetectorRunner::~LineDetectorRunner() {
 
 void LineDetectorRunner::run() {
 
+
+
     while(this->is_running){
         if(this->detect_control_flag){
             // 先获取待检测图像
             std::map<std::string, LineDetectRes> temp_results;
-            this->cam_controls->getImageAll();
+            this->cam_controls->getImageAll("Line");
             std::map<std::string, cv::Mat> cameraData = this->cam_controls->getCameraImages("Line");
             if(cameraData.size() > 0){
                 for(auto &camera_data : cameraData)
@@ -33,7 +35,6 @@ void LineDetectorRunner::run() {
                     std::string camera_name = camera_data.first;
                     cv::Mat image = camera_data.second;
                     if(image.empty()){
-                        logger->info("Gets the image of camera {} is empty !",camera_name);
                         continue;
                     }
                     // 检测图像
@@ -52,6 +53,9 @@ void LineDetectorRunner::run() {
                     temp_results[camera_name] = vision_res;
                 }
 //                QMutexLocker locker(&this->sharedData->mutex);
+                if(temp_results.empty()){
+                    continue;
+                }
                 imagesLock.lock();
                 if(this->results.size()>0){
                     this->results.clear();
@@ -83,6 +87,16 @@ void LineDetectorRunner::pauseDetect() {
 
 void LineDetectorRunner::restartDetect() {
     this->detect_control_flag = true;
+}
+
+std::map<std::string, LineDetectRes> LineDetectorRunner::getDetectResults() {
+    std::map<std::string, LineDetectRes> detectRes;
+    imagesLock.lock();
+    if(this->results.size()>0){
+        detectRes = this->results;
+    }
+    imagesLock.unlock();
+    return detectRes;
 }
 
 

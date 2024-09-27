@@ -26,7 +26,7 @@ bool CameraManager::openCamera(std::string camera_name) {
 CameraManager::CameraManager() {
 
 
-    // ÈÕÖ¾ÎÄ¼þ
+    // ï¿½ï¿½Ö¾ï¿½Ä¼ï¿½
     this->logger = spdlog::get("logger");
 
     this->serial2names = {
@@ -36,11 +36,13 @@ CameraManager::CameraManager() {
             {"DA2720128", "LineCam_4"},  // ok
             {"DA2461731", "LineCam_5"},  // ok
             {"DA2461742", "LineCam_6"},  // ok
-//            {"DA2723075", "HoleCam_7"},  // ok
-//            {"DA3218690", "HoleCam_8"},  // ok
+            {"DA3218695", "HoleCam_7"},  // ok
+            {"DA3218718", "HoleCam_8"},  // ok
+            {"DA3218690", "HoleCam_9"},
+            {"DA2723075", "HoleCam_10"}
     };
 
-    // this->cameraInfoMap ³õÊ¼»¯
+    // this->cameraInfoMap ï¿½ï¿½Ê¼ï¿½ï¿½
     MV_CC_DEVICE_INFO null_dev;
     memset(&null_dev, 0, sizeof(MV_CC_DEVICE_INFO));
     this->cameraInfoMap = {
@@ -49,7 +51,11 @@ CameraManager::CameraManager() {
             {"LineCam_3",  null_dev},
             {"LineCam_4",  null_dev},
             {"LineCam_5",  null_dev},
-            {"LineCam_6",  null_dev}
+            {"LineCam_6",  null_dev},
+            {"HoleCam_7",  null_dev},
+            {"HoleCam_8",  null_dev},
+            {"HoleCam_9",  null_dev},
+            {"HoleCam_10",  null_dev},
     };
 
     this->camera_info = {
@@ -62,20 +68,20 @@ CameraManager::CameraManager() {
 //            {"cam_06",  "192.168.1.115"}
     };
 
-    //×Ô¶¯Ã¶¾Ù¾ÖÓòÍøÄÚµÄÏà»ú²¢¶ÔcameraInfoMap½øÐÐ¸³Öµ
+    //ï¿½Ô¶ï¿½Ã¶ï¿½Ù¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½cameraInfoMapï¿½ï¿½ï¿½Ð¸ï¿½Öµ
     this->getDeviceList();
 
     if(this->m_stDevList.nDeviceNum==0){
         this->logger->info("no device found");
 //        return ;
     }
-    // ³õÊ¼»¯Ïà»ú¶ÔÏó
+    // ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     for (auto &camera_info : this->cameraInfoMap) {
 //        this->cameraList[camera_info.first] = new HKCameraControls(camera_info.first.data(), camera_info.second.data(), this->ethIp);
         this->cameraList[camera_info.first] = new HKCameraControls(camera_info.second, camera_info.first.data());
 //        this->cameraList[camera_info.first]->start();
     }
-    // ¿ªÆôÏß³Ì, ´ò¿ªËùÓÐÏà»ú
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ß³ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     this->openCameraAll();
 
 }
@@ -111,7 +117,7 @@ CameraManager::~CameraManager() {
 }
 
 void CameraManager::getImageAll(std::string camType) {
-    // »ñÈ¡ËùÓÐÏà»úÍ¼Ïñ
+    // ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ï¿½
     this->dataMutex.lock();
     if(this->cameraImages.size()>0){
         this->cameraImages.clear();
@@ -120,13 +126,13 @@ void CameraManager::getImageAll(std::string camType) {
     for (auto &camera : this->cameraList) {
         cv::Mat image = this->cameraList[camera.first]->getFrame();
 
-        if(camType =="Line"){ // ÂË³ý¿×Î»Ïà»ú
+        if(camType =="Line"){ // ï¿½Ë³ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½
             if(camera.first.find("HoleCam") != std::string::npos){
                 continue;
             }
         }
 
-        if(camType =="Hole"){// ÂË³ýÏßÎ»Ïà»ú
+        if(camType =="Hole"){// ï¿½Ë³ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½
             if(camera.first.find("LineCam") != std::string::npos){
                 continue;
             }
@@ -135,9 +141,9 @@ void CameraManager::getImageAll(std::string camType) {
         if(!image.empty()){
             this->cameraImages[camera.first] = image;
         }else{
-            image = cv::imread("C:\\Users\\csh_i\\MVS\\Data\\Image_20240710150737081.bmp"); //ÊÇÒ»¸ö¿Ó
-            this->cameraImages[camera.first] = image;
-            this->logger->error("get image from camera {} failed", camera.first);
+            image = cv::imread("C:\\Users\\csh_i\\MVS\\Data\\Image_20240710150737081.bmp"); //ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½
+//            this->cameraImages[camera.first] = image;
+            this->logger->error("********************get image from camera {} failed**************************", camera.first);
         }
     }
     this->dataMutex.unlock();
@@ -156,13 +162,13 @@ std::map<std::string, cv::Mat> CameraManager::getCameraImages(std::string camTyp
     this->dataMutex.lock();
     if(this->cameraImages.size()>0){
         for(auto &item : this->cameraImages){
-            if(camType =="Line"){ // ÂË³ý¿×Î»Ïà»ú
+            if(camType =="Line"){ // ï¿½Ë³ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½
                 if(item.first.find("HoleCam") != std::string::npos){
                     continue;
                 }
             }
 
-            if(camType =="Hole"){// ÂË³ýÏßÎ»Ïà»ú
+            if(camType =="Hole"){// ï¿½Ë³ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½
                 if(item.first.find("LineCam") != std::string::npos){
                     continue;
                 }
@@ -182,7 +188,7 @@ void CameraManager::getDeviceList() {
         return ;
     }
     this->logger->info("find {} device", m_stDevList.nDeviceNum);
-    // ×Ô¶¯»¯ÅäÖÃ
+    // ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     for (int i = 0; i < m_stDevList.nDeviceNum; i++) {
         MV_CC_DEVICE_INFO stDevInfo;
         memcpy(&stDevInfo, m_stDevList.pDeviceInfo[i], sizeof(MV_CC_DEVICE_INFO));
@@ -208,7 +214,7 @@ void CameraManager::closeAllCameraThread() {
 
 void CameraManager::run() {
 
-    // ¿ªÆôÏß³Ì, ´ò¿ªËùÓÐÏà»ú
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ß³ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     for (auto &camera : this->cameraList) {
         this->cameraList[camera.first]->openCamera();
         if(!this->cameraList[camera.first]->open_status){
@@ -236,8 +242,20 @@ std::vector<bool> CameraManager::checkCameraIsAccessible() {
 std::vector<bool> CameraManager::getCameraOpenedInfo() {
     std::vector<bool> isOpened(this->cameraList.size());
     for(const auto &camera : this->cameraList){
-        size_t index = camera.first.find("_");
-        int number = camera.first[index+1]-'0';
+//        size_t index = camera.first.find("_");
+//        int number = camera.first[index+1]-'0';
+//        if(index!=prefix_.size()-1){
+//            number = (prefix_[index]-'0')*10+(prefix_[index+1]-'0');
+//        }
+
+        std::string prefix_ = camera.first;
+        size_t index = prefix_.find("_")+1;
+        int number = prefix_[index]-'0';
+        if(index!=prefix_.size()-1){
+            number = (prefix_[index]-'0')*10+(prefix_[index+1]-'0');
+        }
+
+
         isOpened[number-1] = camera.second->getDeviceConnectStatus();
     }
     return isOpened;

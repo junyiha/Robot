@@ -233,6 +233,7 @@ void HKCameraControls::run(){
                 if(maxNum>10){
                     // 开启重新连接
                     reconnectCameraDevice();
+                    this->logger->info("camera {} is reconnected");
                     maxNum = 0;
                 }
             }
@@ -710,7 +711,7 @@ bool HKCameraControls::getDeviceConnectStatus() {
     bool status;
     status  = this->pstMvCamera->IsDeviceConnected();
     if(!status){
-        this->logger->info("Camrea {} is not connect!", this->stHkDev.camName);
+//        this->logger->info("Camrea {} is not connect!", this->stHkDev.camName);
     }
     return status;
 }

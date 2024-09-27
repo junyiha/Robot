@@ -106,30 +106,25 @@ QVector<double> BoardingTool::getLaserDistance()
     tmp[2] = m_cIOA.getAIState()[6];
     tmp[3] = m_cIOA.getAIState()[7];
 
-    log->debug("*******************LaserDistance*************: {} {} {} {} ",tmp[0],tmp[1],tmp[2],tmp[3]);
+    //log->debug("*****LaserDistance**: {} {} {} {} ",tmp[0],tmp[1],tmp[2],tmp[3]);
+
+    double carb_A = 0;
+    double carb_B = -314;
 
     //视觉标定板上表面为激光零点
     std::vector<Eigen::Vector2f> cfg_laser ={
             //      k       b
-            // Eigen::Vector2f(1950,1545),//0mm对应的数值，95mm对应的数值
-            // Eigen::Vector2f(1957,1548),//2
-            // Eigen::Vector2f(1960,1545),//3
-            // Eigen::Vector2f(1950,1540),//4
 
-            Eigen::Vector2f( 1966,1545),//0mm对应的数值，80mm对应的数值
-            Eigen::Vector2f(1965,1548),//2    // 15mm( 1965, 1968,)
-            Eigen::Vector2f(1970,1545),//3
-            Eigen::Vector2f(1965,1540),//4
+            Eigen::Vector2f( 420,100),//carb_A对应的模拟量数值，carb_B对应的数值
+            Eigen::Vector2f(442,120),//2    // 15mm( 1965, 1968,)
+            Eigen::Vector2f(440,120),//3
+            Eigen::Vector2f(420,102),//4
     };
     for(int i=0;i<4;++i){
         //换算为真实距离，单位毫米
-        tmp[i] = 80.0/(cfg_laser[i].y()-  cfg_laser[i].x()) * (tmp[i] -  cfg_laser[i].x());
+        re[i] = (carb_A- carb_B)/(cfg_laser[i].x()-cfg_laser[i].y())*(tmp[i]-cfg_laser[i].x())+carb_A;
+        //tmp[i] = 80.0/(cfg_laser[i].y()-  cfg_laser[i].x()) * (tmp[i] -  cfg_laser[i].x());
     }
-
-    re[0] = tmp[2];
-    re[1] = tmp[3];
-    re[2] = tmp[1];
-    re[3] = tmp[0];
 
     //log->debug("测量距离：{} {} {} {} ",re[0],re[1],re[2],re[3]);
     return re;

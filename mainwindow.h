@@ -238,7 +238,7 @@ private:
 
     const unsigned int larserNum=4;
     const unsigned int cameraNum=6;
-    const unsigned int jointNum=10;
+    const unsigned int jointNum=11;
     const unsigned int freeJointNum=6;
 
     void updateCameraData();//更新相机数据
