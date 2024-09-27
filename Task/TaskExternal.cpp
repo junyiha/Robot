@@ -431,22 +431,21 @@ void CTask::detectionInPositioningExecutionCommand()
     {
     case EExecutionCommand::eNULL:
     {
-        //log->info("调用函数，计算边线偏差，根据偏差判断是否完成调整，继续调整，停止调整");
         EDetectionInPositioningResult detectResult;
 #ifdef TEST_TASK_STATEMACHINE_
         detectResult = EDetectionInPositioningResult::eDeviationIsLessThanThreshold;
 #else
-        //调用视觉函数
         VisionResult vis_res = m_vision->getVisResult();
         if (!vis_res.lineStatus)
-        { // 视觉检测无数据，等待下一个周期
+        { 
+            log->error("视觉检测无数据，等待下一个周期!!!");
             break;
         }
         UpdateVisionResult(vis_res);
+        detectResult = CheckBoardingStateDecorator();
+
         log->info("vis_res.lineDistance: {},{},{},{},{},{}", vis_res.stData.m_LineDistance[0],vis_res.stData.m_LineDistance[1],vis_res.stData.m_LineDistance[2],
                   vis_res.stData.m_LineDistance[3],vis_res.stData.m_LineDistance[4],vis_res.stData.m_LineDistance[5]);
-
-        detectResult = CheckBoardingStateDecorator();
         log->info("check positioning state result: {}", static_cast<int>(detectResult));
 #endif
         switch (detectResult)
@@ -796,10 +795,10 @@ void CTask::detectionInFitBoardExecutionCommand()
             break;
         }
         UpdateVisionResult(vis_res);
+        result = CheckBoardingStateDecorator();  // CheckBoarding
 
         log->info("vis_res.lineDistance: {},{},{},{},{},{}", vis_res.stData.m_LineDistance[0],vis_res.stData.m_LineDistance[1],vis_res.stData.m_LineDistance[2],
                   vis_res.stData.m_LineDistance[3],vis_res.stData.m_LineDistance[4],vis_res.stData.m_LineDistance[5]);
-        result = CheckBoardingStateDecorator();  // CheckBoarding
         log->info("check boarding state result: {}", static_cast<int>(result));
 #endif
         switch (result)
@@ -1050,7 +1049,7 @@ void CTask::updateExecutionCommand(EExecutionCommand executionCommand)
     m_eexecutionCommand = executionCommand;
 }
 
-std::string CTask::getCurrentStateString()
+std::string CTask::getCurrentStateString() const
 {
     std::string stateString;
     auto itTopState = TopStateStringMap.find(m_etopState);
@@ -1064,14 +1063,14 @@ std::string CTask::getCurrentStateString()
     return stateString;
 }
 
-std::string CTask::getCurrentExecutionCommandString()
+std::string CTask::getCurrentExecutionCommandString() const
 {
     auto it = ExecutionCommandStringMap.find(m_eexecutionCommand);
 
     return it->second;
 }
 
-bool CTask::checkSubState(ESubState subState)
+bool CTask::checkSubState(ESubState subState) const
 {
     return subState == m_esubState;
 }

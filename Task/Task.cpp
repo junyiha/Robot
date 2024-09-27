@@ -9,23 +9,15 @@ CTask::CTask(ComInterface* comm,CRobot* robot,VisionInterface* vision,QObject *p
     std::memset(&m_LinkStatus, 0, sizeof(m_LinkStatus));
     std::memset(&m_Manual, 0, sizeof(stManualData));
     std::memset(&m_preManual, 0, sizeof(stManualData));
-    //std::memset(&m_JointGroupStatus,0,sizeof(st_AxisGroupRead));
 
     for(int i = 0;i<7;i++)
     {
         m_TargetDeviation.push_back(Eigen::Matrix4d::Identity());
     }
 
-
-    m_AutoWorking = false;
-    m_Step = eEnd;
-
     log = spdlog::get("logger");
     m_bMagnetOn = false;
-
-    log->info("碰钉机器人--任务模块构造完成...");
 }
-
 
 void CTask::run()
 {
@@ -57,8 +49,6 @@ void CTask::updateCmdandStatus()
 
     // 更新指令，遥控器+界面
     m_Comm->getManual(m_manualOperator);
-
-//    log->info("etManual(m_manualOperator):{}",m_manualOperator.TaskIndex);
 
     //根据界面指令修改遥控器指令
     int tmp_val = static_cast<int>(ActionIndex.loadRelaxed());
@@ -94,6 +84,7 @@ void CTask::updateCmdandStatus()
         break;
     case 10://放钉
         m_manualOperator.Ready = 2;
+        break;
     case 11://停止
         m_manualOperator.HaltCommand = true;
         break;
@@ -106,294 +97,9 @@ void CTask::updateCmdandStatus()
     }
     ActionIndex.storeRelaxed(0);
 
-
     this->mutex_read.lock();
     _stMeasuredata = m_stMeasuredata;
     this->mutex_read.unlock();
-}
-
-
-
-void CTask::SemiAutoProgrcess()
-{
-    QVector<double> LaserDistance(4);
-    std::fill(LaserDistance.begin(), LaserDistance.end(), 0.0); // 初始化LaserDistance为0
-
-    QVector<Eigen::Matrix4d> Dev_RT(6);
-    for (auto& mat : Dev_RT) {
-        mat.setIdentity(); // 如果想要设置为单位矩阵
-        // 或者，如果你想要一个所有元素都为0的矩阵，你可以使用：
-        // mat.setZero();
-    }
-
-    QVector<double> tar_position(6);
-    std::fill(tar_position.begin(), tar_position.end(), 0.0); // 初始化tar_position为0
-
-    static double tar_pos[6] = {0};
-    double tool_tar = 0;
-
-    VisionResult vis_res; // 视觉检测结果
-
-    static quint16 cnt_15 = 0;
-    static quint16 cnt_25 = 0;
-
-    if(ActionIndex.loadRelaxed() != 15)
-    {
-        cnt_15 = 0;
-    }
-    //ActionIndex状态改变-日志输出
-    static int preActionIndex = 0;
-    if(preActionIndex != ActionIndex.loadRelaxed()){
-        log->info(("action_index changed from  " +  GetEnumName_action_index(preActionIndex) + "  ------->  " + GetEnumName_action_index(ActionIndex.loadRelaxed())).c_str());
-    }
-    preActionIndex = ActionIndex.loadRelaxed();
-
-    //action_index 按照枚举变量重新定义
-    switch(ActionIndex.loadRelaxed())
-    {
-    //=====================0~10 :空闲、急停、按暂停 等 ==========================
-    case 0:
-        break;
-    case 1: //急停
-        m_Robot->setLinkStop();
-        ActionIndex.storeRelaxed(0);
-
-    case 3: //停止
-        m_Robot->setLinkHalt();
-        ActionIndex.storeRelaxed(0);
-        break;
-
-    //=====================10~19 :举升调平 ==========================
-    case 10: //举升准备位置
-        if(this->m_bMagnetOn){break;}
-        m_Robot->setJointGroupMoveAbs(Postion_Home,JOINT_VEL_LIMIT);
-        if(m_Robot->isJointReached(Postion_Home_qv))
-        {
-            ActionIndex.storeRelaxed(0);
-        }
-        break;
-
-    case 12: //举升到调平位置
-        //检测高差
-        if(this->m_bMagnetOn){break;}
-        m_Robot->setJointGroupMoveAbs(Postion_Prepare,JOINT_VEL_LIMIT);
-        if(m_Robot->isJointReached(Postion_Prepare_qv))
-        {
-            ActionIndex.storeRelaxed(0);
-        }
-
-        break;
-
-    case 15: //调平
-        if(this->m_bMagnetOn){break;}
-        LaserDistance = m_Comm->getLasersDistanceBoarding();
-
-        m_stMeasuredata.m_LaserDistance[0] = LaserDistance[0];
-        m_stMeasuredata.m_LaserDistance[1] = LaserDistance[1];
-        m_stMeasuredata.m_LaserDistance[2] = LaserDistance[2];
-        m_stMeasuredata.m_LaserDistance[3] = LaserDistance[3];
-
-        Dev_RT =  CMeasure::calPoseDeviation(m_stMeasuredata);
-        if(Dev_RT[6](1,0) == false)break;
-        tar_position = m_Robot->getTargetPose(Dev_RT[0]);
-
-        for(int i=0;i<6;i++)
-        {
-            tar_pos[i] = tar_position[i];
-        }
-
-        if(Dev_RT[6](0,2) < 50) //点激光一致性小于50mm
-        {
-            if(Dev_RT[6](0,0)<Distance_Lift+10)
-            {
-                m_Robot->setLinkMoveAbs(tar_pos,END_VEL_LIMIT);
-
-                if(Dev_RT[6](0,2)<3) //四个点激光差值1mm
-                {
-                    ActionIndex.storeRelaxed(0);
-                    log->info("完成调平，偏差：{}",Dev_RT[6](0,2));
-                }
-
-            }else{
-               m_Robot->setLinkHalt();
-               ActionIndex.storeRelaxed(0);//
-               log->warn("末端距离过大，请检查设备和环境");
-            }
-        }
-        else//偏差过大
-        {
-            m_Robot->setLinkHalt();
-            ActionIndex.storeRelaxed(0);
-            log->warn("末端激光偏差过大，请检查设备和环境");
-        }
-        cnt_15 ++;
-        if(cnt_15 > 100)
-        {
-            log->warn("调平中止");
-            ActionIndex.storeRelaxed(0);
-        }
-        break;
-
-    case 16: //举升到对边位置
-        if(this->m_bMagnetOn){break;}
-        LaserDistance = m_Comm->getLasersDistanceBoarding();
-
-        m_stMeasuredata.m_LaserDistance[0] = LaserDistance[0];
-        m_stMeasuredata.m_LaserDistance[1] = LaserDistance[1];
-        m_stMeasuredata.m_LaserDistance[2] = LaserDistance[2];
-        m_stMeasuredata.m_LaserDistance[3] = LaserDistance[3];
-        Dev_RT =  CMeasure::calPoseDeviation(m_stMeasuredata);
-        if(Dev_RT[6](0,0) < 10 || Dev_RT[6](0,0)>50)
-        {
-            log->warn("距离有误，当前距离{}",Dev_RT[6](0,0));
-            ActionIndex.storeRelaxed(0);
-        }
-        tool_tar = Dev_RT[6](0,0) -Distance_work + m_JointGroupStatus[6].Position;
-
-        m_Robot->setJointMoveAbs(6,tool_tar,5); //末端举升， 5mm/s
-        ActionIndex.storeRelaxed(0);
-        break;
-
-    //=====================20~29:边线对齐=====================
-    case 20: //获取边线数据，并计算调整量
-        if(this->m_bMagnetOn){break;}
-        vis_res = m_vision->getVisResult();
-        if(vis_res.lineStatus) {  //调用视觉函数
-            std::copy(std::begin(vis_res.stData.m_LineDistance) , std::end(vis_res.stData.m_LineDistance), m_stMeasuredata.m_LineDistance);
-            std::copy(std::begin(vis_res.stData.m_bLineDistance), std::end(vis_res.stData.m_bLineDistance), m_stMeasuredata.m_bLineDistance);
-
-            LaserDistance = m_Comm->getLasersDistanceBoarding();
-            m_stMeasuredata.m_LaserDistance[0] = LaserDistance[0];
-            m_stMeasuredata.m_LaserDistance[1] = LaserDistance[1];
-            m_stMeasuredata.m_LaserDistance[2] = LaserDistance[2];
-            m_stMeasuredata.m_LaserDistance[3] = LaserDistance[3];
-
-
-            log->info("有效性 \nline1:{}\nline2:{}\nline3:{}\nline4{}",m_stMeasuredata.m_bLineDistance[0],m_stMeasuredata.m_bLineDistance[1],m_stMeasuredata.m_bLineDistance[2],m_stMeasuredata.m_bLineDistance[3]);
-            log->info("边线值 \nline1:{}\nline2:{}\nline3:{}\nline4{}",m_stMeasuredata.m_LineDistance[0],m_stMeasuredata.m_LineDistance[1],m_stMeasuredata.m_LineDistance[2],m_stMeasuredata.m_LineDistance[3]);
-
-            Dev_RT =  CMeasure::calPoseDeviation(m_stMeasuredata);
-            PrintTargetPos(3,Dev_RT);
-
-            //数据有效性检测
-            if(Dev_RT[6](1,3) == false){
-                log->warn("边线数据有误，请检查设备--The boundary line data is incorrect. Please check the device.");
-                ActionIndex.storeRelaxed(0);
-                break;
-            }
-
-            //计算调整量
-            tar_position = m_Robot->getTargetPose(Dev_RT[3]);
-            for(int i=0;i<6;i++)
-            {
-                tar_pos[i] = tar_position[i];
-            }
-            QVector<st_ReadAxis> stJointstatus = m_Comm->getLinkJointStatus(0); //link轴组数据
-
-            log->info("\n end_pos 1:{}\n end_pos 2:{}\n end_pos 3:{}\n end_pos 4:{}\n end_pos 5:{}\n end",stJointstatus[0].Position,stJointstatus[1].Position,stJointstatus[2].Position,stJointstatus[3].Position,stJointstatus[4].Position);
-            log->info("\n tar_pos 1:{}\n tar_pos 2:{}\n tar_pos 3:{}\n tar_pos 4:{}\n tar_pos 5:{}\n tar_pos 6:{}\n ",tar_pos[0],tar_pos[1],tar_pos[2],tar_pos[3],tar_pos[4],tar_pos[5]);
-            log->info("对边线调整量计算完毕--The calculation of the adjustment amount for the opposite sideline has been completed.");
-
-            ActionIndex.storeRelaxed(25);
-        }
-        break;
-
-    case 25: //调整偏差
-        if(this->m_bMagnetOn){break;}
-        m_Robot->setLinkMoveAbs(tar_pos,END_VEL_LIMIT);
-
-        cnt_25 ++;
-
-        log->info("机器人正在进行边线调整...");
-        if(m_LinkStatus.eLinkActState == eLINK_STANDSTILL && m_Robot->isEndReached(tar_position) == true )
-        {
-            log->info("完成边线调整");
-            cnt_25 = 0;
-            for(int i=0;i<6;i++)
-            {
-                tar_pos[i] = 0.0;
-            }
-            ActionIndex.storeRelaxed(28);
-        }
-
-        if(cnt_25 > 200){
-            log->warn("边线调整中止");
-            cnt_25 = 0;
-            for(int i=0;i<6;i++)
-            {
-                tar_pos[i] = 0.0;
-            }
-            ActionIndex.storeRelaxed(0);
-        }
-
-        break;
-
-    case 28: //检测调整结果
-    {
-        if(this->m_bMagnetOn){break;}
-        const double staLineDistance = 15;
-        const double deltaLineDistance = 1.5;
-        vis_res = m_vision->getVisResult();
-        if(vis_res.lineStatus) //调用视觉函数
-        {
-            //输出偏差 emit
-            bool b_line_error = false;
-            for(int i=0;i<4;i++){
-                if(!vis_res.stData.m_bLineDistance[i])
-                {
-                    b_line_error = false;
-                    log->warn("边线{}数据有误，请再次“对齐边线”",i);
-                }
-
-                if(vis_res.stData.m_LineDistance[i] < staLineDistance + deltaLineDistance && vis_res.stData.m_LineDistance[i] > staLineDistance - deltaLineDistance)
-                {
-                    b_line_error = false;
-                    log->info("边线{  }偏差合理，当前距离：{  }",i,vis_res.stData.m_LineDistance[i]);
-                }
-            }
-            ActionIndex.storeRelaxed(0);
-        }
-        break;
-    }
-        //=====================30~50:碰钉动作=====================
-    case 30: //磁铁吸合
-        if(doMagentOn() == true)
-        {
-            m_bMagnetOn = true;
-            ActionIndex.storeRelaxed(0);
-            log->info("完成磁铁吸合操作");
-            qDebug("确认磁铁吸合状况，及螺柱、磁环安装状态"); //弹窗提升
-        }
-        break;
-
-    case 32: //磁铁脱开
-        if(doMagentOff() == true)
-        {
-            m_bMagnetOn = false;
-            ActionIndex.storeRelaxed(0);
-            log->info("完成磁铁脱开操作");
-        }
-        break;
-
-    case 40: //自动碰钉
-        if (doWeldAction(1) == true)
-        {
-            ActionIndex.storeRelaxed(0);
-            log->info("完成自动碰钉作业");
-        }
-        break;
-
-    case 42: //自动碰钉暂停            
-        ActionIndex.storeRelaxed(0);
-        break;
-
-    case 44: //结束/中止碰钉
-        doWeldAction(-1);
-        ActionIndex.storeRelaxed(0);
-        break;
-    }
-
-
 }
 
 void CTask::Manual()
@@ -523,7 +229,6 @@ void CTask::Manual()
         m_Robot->setLinkHalt();
     }
 
-    //log->info("m_manualOperator.TaskIndex{}",m_manualOperator.TaskIndex);
     switch (m_manualOperator.TaskIndex)
     {
         case stManualOperator::None:
@@ -585,10 +290,10 @@ void CTask::Manual()
         }
         default:
         {
-            // 非法任务指令
             log->warn("invalid task index: {}", m_manualOperator.TaskIndex);
         }
     }
+
     m_preManualOperator = m_manualOperator;
 }
 
@@ -812,7 +517,6 @@ bool CTask::doMagentOn()
 
 }
 
-
 stMeasureData CTask::getStMeasureData()
 {
     stMeasureData re;
@@ -823,21 +527,11 @@ stMeasureData CTask::getStMeasureData()
     return re;
 }
 
-void CTask::PrintTargetPos(uint index,QVector<Eigen::Matrix4d> m_TargetDeviation)
-{
-    qDebug()<<"----------------------PrintTargetPos : [ "+QString::number(index)+" ]---------------------------";
-    for(int i=0;i<4;++i){
-        qDebug()<<m_TargetDeviation[index](i,0)<<" || "<<m_TargetDeviation[index](i,1)<<" || "<<m_TargetDeviation[index](i,2)<<" || "<<m_TargetDeviation[index](i,3)<<" || ";
-    }
-    qDebug()<<"\n\n";
-}
-
 void CTask::closeThread() {
     this->c_running = false;
     QThread::wait();
 
 }
-
 
 //修改827
 int CTask::CheckParallelState(QVector<double> laserDistance)

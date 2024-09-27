@@ -82,7 +82,6 @@ void line_detect_demo(){
     }
 }
 
-
 int RunRobot(int argc, char *argv[])
 {
     QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8")); // 设置中文编码
@@ -95,28 +94,12 @@ int RunRobot(int argc, char *argv[])
     return a.exec();
 }
 
-void TestTask()
-{
-    initLog();
-    CTask task(nullptr, nullptr, nullptr);
-
-    while (true)
-    {
-        task.TestStateMachine();
-    }
-}
-
 int main(int argc, char *argv[])
 {
-    if (argc < 2)
-    {
-        return RunRobot(argc, argv);
-    }
+    return RunRobot(argc, argv);
 
     spdlog::info("test program...");
-    TestTask();
 //    line_detect_demo();
-
 
     return 0;
 }

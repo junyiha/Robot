@@ -13,11 +13,6 @@
 #include "../vision/VisionInterface.h"
 #include "TaskExternal.h"
 
-// 测试状态机的宏指令
-#ifndef TEST_TASK_STATEMACHINE_
-//#define TEST_TASK_STATEMACHINE_
-#endif
-
 enum AutoProcessStage
 {
     eEnd= 0,
@@ -59,26 +54,26 @@ class CTask:public QThread
 public:
     explicit CTask(ComInterface* comm,CRobot* robot, VisionInterface* vision, QObject *parent = nullptr);
 
-    QAtomicInt      ActionIndex;//半自动、按钮测试用
-    QAtomicInt      ButtonIndex; //当前点击按钮索引
-    stMeasureData getStMeasureData();//传感器状态值 接口
+    /**
+     * @brief 传感器状态值.
+     */
+    stMeasureData getStMeasureData();
+
     /**
      * @brief 结束任务线程
      * 
      */
     void closeThread();
 
-    bool         m_bMagnetOn;        //磁铁吸合状态
+public:
+    bool m_bMagnetOn;  //磁铁吸合状态
+    QAtomicInt ActionIndex;  //半自动、按钮测试用
+    QAtomicInt ButtonIndex;  //当前点击按钮索引
 
 protected:
-    ComInterface*   m_Comm = NULL;
-    CRobot*         m_Robot = NULL;
-    VisionInterface* m_vision = NULL;
-
-    QLineEdit ** lineEdit_endRelMove;
-
-    bool             m_AutoWorking; //自动模式状态标志位，内部逻辑判断
-    AutoProcessStage m_Step;        //自动作业阶段状态，内部逻辑判断
+    CRobot* m_Robot{nullptr};
+    ComInterface* m_Comm{ nullptr };
+    VisionInterface* m_vision{nullptr};
 
     stLinkStatus     m_LinkStatus;               //机器人状态状态
     QVector<st_ReadAxis> m_JointGroupStatus;         //轴组状态
@@ -93,12 +88,11 @@ protected:
     stMeasureData _stMeasuredata;  //传感器状态反馈
 
     //  机器人
-    bool         c_running = true;
+    QMutex mutex_read;
+    bool c_running{ true };
     std::shared_ptr<spdlog::logger> log;
-    QMutex          mutex_cmd;
-    QMutex          mutex_read;
-    QMutex          mutex_write;
 
+protected:
     /**
     * @brief 运行函数
     */
@@ -109,11 +103,6 @@ protected:
     * @brief 更新机器人状态和外部指令
     */
     void updateCmdandStatus();
-
-    /**
-    * @brief 半自动作业过程
-    */
-    void SemiAutoProgrcess();
 
     /**
     * @brief 自动作业过程
@@ -141,54 +130,6 @@ protected:
     */
     bool doMagentOff();
 
-    //bool  DoAction(int stage);
-
-    /**
-     * @brief 磁铁下降
-     * @return
-     */
-    //bool doMagentDown();
-    /**
-     * @brief PrintTargetPos 利用qDebug()打印矩阵(替代cout)
-     * @param m_TargetDeviation
-     */
-    void PrintTargetPos(uint index,QVector<Eigen::Matrix4d> m_TargetDeviation);
-
-    /**
-     * 日志打印
-     */
-    //日志相关，【后续从这里分离出去，单独封装到一个类里】
-    std::map<int, std::string> enumToString_ActionIndex= {
-            //=====================0~10 :空闲、急停、按暂停 等 ==========================
-            {0, "[ 无----NULL ]"},
-            {1, "[ 急停----Halt]"},
-            {3, "[ 停止----Stop]"},
-            //=====================10~19 :举升调平 ==========================
-            {10, "[ 举升到准备位置----ready ]"},
-            {12, "[ 举升到调平位置----ready to parallel]"},
-            {15, "[ 调平----parallel]"},
-            {16, "[ 举升到对边位置----ready to line]"},
-            //=====================20~29:边线对齐=====================
-            {20, "[ 计算边线调整量----cal line adjustment]"},
-            {25, "[ 进行边线调整----line adjust]"},
-            {28, "[ 检测调整结果----check adjust result]"},
-            //=====================30~50:碰钉动作=====================
-            {30, "[ 磁铁吸合----Magnet On ]"},
-            {32, "[ 磁铁脱合----Magnet Off ]"},
-            {40, "[ 自动碰钉----Weld ]"},
-            {42, "[ 自动碰钉暂停----Weld Pause ]"},
-            {44, "[ 结束/中止碰钉----Weld End ]"},
-    };
-    // 函数，根据枚举值返回对应的字符串
-    std::string GetEnumName_action_index(const int value)
-    {
-        auto it = enumToString_ActionIndex.find(value);
-        if (it != enumToString_ActionIndex.end()) {
-            return it->second;
-        } else {
-            throw std::runtime_error("Unknown enum value");
-        }
-    }
 ///////////////////////////////////////////--0827新增函数--//////////////////////////////////////////////////////
 private:
     /**
@@ -223,9 +164,6 @@ private:
     void TaskTerminate();
 
 ///////////////////////////////////////////--状态机部分--//////////////////////////////////////////////////////
-public:
-    void TestStateMachine(){stateTransition();};
-
 private:
     /**
      * @brief 状态转换函数
@@ -403,6 +341,9 @@ private:
      */
     void UpdateLaserDistance();
 
+    /**
+     * @brief 更新视觉数据.
+     */
     void UpdateVisionResult(VisionResult &vis_res);
 
 public:
@@ -426,14 +367,14 @@ public:
      * 
      * @return std::string 
      */
-    std::string getCurrentStateString();
+    std::string getCurrentStateString() const;
 
     /**
      * @brief 获取当前执行指令字符串
      * 
      * @return std::string 
      */
-    std::string getCurrentExecutionCommandString();
+    std::string getCurrentExecutionCommandString() const;
 
     /**
      * @brief 检测第二层状态.
@@ -442,7 +383,7 @@ public:
      * 
      * @return true | false
      */
-    bool checkSubState(ESubState subState);
+    bool checkSubState(ESubState subState) const;
 
 private:
     /**
