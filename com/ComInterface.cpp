@@ -37,6 +37,16 @@ QVector<double> ComInterface::getLasersDistanceBoarding()//
 
 }
 
+QVector<double> ComInterface::getLasersDistanceBoardingByBojke()//
+{
+    QVector<double> res;
+    LaserMeasureData stData = m_cToolsBoardingLaser.getLaserMeasureData();
+    for(int i=0;i<4;++i){
+        res.push_back(stData.m_Laserdistance[i]);
+    }
+    return res;
+}
+
 
 QVector<st_ReadAxis> ComInterface::getJointGroupStatus()
 {
@@ -102,6 +112,12 @@ void ComInterface::run()
             m_cManual.open("COM1");
             qDebug()<<"重新连接遥控器";
         }
+
+        if(m_cToolsBoardingLaser.isOpen() == false){
+            m_cToolsBoardingLaser.open("COM2");
+            qDebug()<<"连接遥点激光开始";
+        }
+
 
         Sleep(1000);
     }

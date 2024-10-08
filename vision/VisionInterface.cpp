@@ -93,7 +93,7 @@ void VisionInterface::getDetectResult(VisionResult &vis_result){
     // 获取轮廓激光测量结果
     std::map<std::string, LidarData> lidarDetectRes;
     this->pointMaskMutex.lock();
-    lidarDetectRes = this->lidar_handler->results;
+    lidarDetectRes = this->lidar_handler->getLaserDetectResults();
     this->pointMaskMutex.unlock();
     if(lidarDetectRes.size()>0){
         this->lidar_res = lidarDetectRes;

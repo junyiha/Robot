@@ -58,4 +58,6 @@ std::string getCurrentTimestampString();
 double perpendicularDistance(double A, double B, double C, double x1, double y1);
 double computePointToLineDistance(std::vector<float> line_1, std::vector<float> line_2);
 
+void imageOpenedOrClosed(cv::Mat &src, int kernelSize=3, bool isOpened = false);
+
 #endif // UTILS_H

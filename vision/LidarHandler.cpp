@@ -70,6 +70,17 @@ void LidarHandler::closed(){
     this->thread_control_flag = false;
 }
 
+std::map<std::string, LidarData> LidarHandler::getLaserDetectResults() {
+
+    std::map<std::string, LidarData> results;
+    this->pointsMaskMutex.lock();
+    if(this->results.size()>0){
+        results = this->results;
+    }
+    this->pointsMaskMutex.unlock();
+    return results;
+}
+
 
 
 

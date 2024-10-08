@@ -20,6 +20,7 @@
 #include <QTextCodec>
 #include <clocale>
 #include <Eigen/Eigen>
+#include "com/LaserDistanceBojke.h"
 
 
 void initLog()
@@ -43,25 +44,9 @@ void initLog()
     std::shared_ptr<spdlog::logger> log = spdlog::get("logger");
 }
 
-void vision_demo(){
-    initLog();
-    VisionInterface vision;
-    vision.start();
-
-    VisionResult res = vision.getVisResult();
-    if(res.lineStatus){
-        for(int i=0;i<5;++i){
-            std::cout<<"cam:"<<i<<" :dist:"<<res.stData.m_LineDistance[i]<<std::endl;
-        }
-    }
-    QThread::sleep(1000*30);
-
-}
-
 void line_detect_demo(){
 
-    std::string path = "C:/Users/Administrator/MVS/Data/Image_20240927094216199.bmp";
-//    std::string path = "F:\\line_detect_train_data\\line_detect_train_data-20240906\\data\\wireframe_finue\\images\\34227_edge_7_20240528_21342721.png";
+    std::string path = "F:\\log_data-20240927\\line_data\\LineCam_4_2024-09-27-10-18-06.png";
     cv::Mat img = cv::imread(path);
     LineDetector line_tool;
     auto start = std::chrono::high_resolution_clock::now();
@@ -71,7 +56,6 @@ void line_detect_demo(){
     // 计算并输出运行时间
     std::chrono::duration<double> elapsed_seconds = end - start;
     std::cout << "程序运行时间: " << elapsed_seconds.count() << " 秒" << std::endl;
-
     if(res.status){
         cv::imshow("img", res.imgDrawed);
         cv::waitKey(0);
@@ -82,10 +66,38 @@ void line_detect_demo(){
     }
 }
 
+void laserDemo(){
+
+    const char *port = "COM5";
+    LaserDistanceBojke laserTool;
+    bool ret = laserTool.open(port);
+
+    while (true){
+        LaserMeasureData res = laserTool.getLaserMeasureData();
+        std::cout<<"*************************start*****"<<std::endl;
+        for(int i=0;i<4;i++){
+            std::cout<<"is vaild:"<<res.m_bLaserdistance[i]<<"  value:"<<res.m_Laserdistance[i]<<std::endl;
+        }
+        std::cout<<"*************************end*****"<<std::endl;
+    }
+
+
+
+
+    QThread::sleep(3000*10);
+
+
+
+
+
+
+
+}
+
+
 int RunRobot(int argc, char *argv[])
 {
     QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8")); // 设置中文编码
-
     QApplication a(argc, argv);
     MainWindow w;
     w.setWindowTitle("LNG Panel Loading Robot");

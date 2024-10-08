@@ -39,8 +39,10 @@ public:
 
     void is_start_detect(bool flag);
     void closed();
+    std::map<std::string, LidarData> getLaserDetectResults();
     LidarHandler(LidarHelper* lidarHelper, LaserScanerControls* laserControls, SharedData* sharedData);
     ~LidarHandler();
+
 
 };
 

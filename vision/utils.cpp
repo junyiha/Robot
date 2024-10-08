@@ -25,6 +25,7 @@ cv::Mat padding_hollow(cv::Mat mask, int ksize ) {
 
 std::vector<std::vector<float>> get_line_by_lsd(cv::Mat bin_img) {
 
+
     //基于LSD算法获取线检测点
     cv::Ptr<cv::LineSegmentDetector> detector = createLineSegmentDetector(cv::LSD_REFINE_STD);
 //    LSD_REFINE_STD
@@ -46,16 +47,18 @@ std::vector<std::vector<float>> get_line_by_lsd(cv::Mat bin_img) {
         // 过滤掉距离过小的线段
         if (dist <512*0.15) { continue;}   // 不过滤小线段的话，会导致预测的结果存在偏差，因为小线段拟合的直线可能不准确
 
-        //直线拟合
-        std::vector<cv::Point2f> points = {
-                cv::Point2f(line[0], line[1]),
-                cv::Point2f(line[2], line[3])
-        };
+//        //直线拟合
+//        std::vector<cv::Point2f> points = {
+//                cv::Point2f(line[0], line[1]),
+//                cv::Point2f(line[2], line[3])
+//        };
 
-        vector<float> line_fited = fiting_line(points);
-        if(line_fited.size()>0){
-            line_res.push_back(line_fited);
-        }
+//        vector<float> line_fited = fiting_line(points);
+//        if(line_fited.size()>0){
+//            line_res.push_back(line_fited);
+//        }
+        std::vector<float> line_fited = {line[0], line[1], line[2], line[3]};
+        line_res.push_back(line_fited);
     }
 
     return line_res;
@@ -502,4 +505,16 @@ std::string getCurrentTimestampString() {
 
     // 返回字符串
     return oss.str();
+}
+
+
+void imageOpenedOrClosed(cv::Mat &src, int kernelSize, bool isOpened) {
+
+    cv::GaussianBlur(src, src, cv::Size(kernelSize, kernelSize), 0);
+    cv::Mat kernel = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(kernelSize, kernelSize));
+    if(isOpened){
+        cv::morphologyEx(src, src, cv::MORPH_OPEN, kernel);
+    }else{
+        cv::morphologyEx(src, src, cv::MORPH_CLOSE, kernel);
+    }
 }

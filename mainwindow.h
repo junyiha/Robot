@@ -27,15 +27,12 @@
 #include "robot/robot.h"
 #include "GVL.h"
 //--------------视觉部分--------------//
-#include "vision/VisionControls.h"
 #include "vision/VisionInterface.h"
 
 //--------------任务部分--------------//
 #include "Task/Task.h"
 #include <QAtomicInt>
 
-//--------------可视化----------------//
-#include "vision/CameraDisplay.h"
 #include <bitset>
 
 //--------------日志文件----------------//
@@ -77,7 +74,6 @@ public:
     CTask* m_Task;
 
     //视觉模块
-    VisionControls* m_Vision;
     VisionInterface* m_VisionInterface;
 
     //控十字激光

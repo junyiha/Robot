@@ -20,6 +20,7 @@
 #include "BoardingTool.h"
 #include <spdlog/spdlog.h>
 #include <QMutex>
+#include "LaserDistanceBojke.h"
 
 class ComInterface : public QThread
 {
@@ -39,7 +40,7 @@ protected:
     RobotCom	m_cRobot;
     CTools		m_cTools;
     BoardingTool m_cToolsBoarding;
-
+    LaserDistanceBojke m_cToolsBoardingLaser;
     std::shared_ptr<spdlog::logger> log;
 
     void run();
@@ -85,6 +86,9 @@ public:
      * @return 长度为5的double向量，前四个为高精度点激光,[4]为距离均值，[5],最大偏差
      */
     //QVector<double> getLasersDistance();
+
+
+    QVector<double> getLasersDistanceBoardingByBojke();
 
     QVector<double> getLasersDistanceBoarding();
     /**

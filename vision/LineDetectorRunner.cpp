@@ -20,8 +20,6 @@ LineDetectorRunner::~LineDetectorRunner() {
 
 void LineDetectorRunner::run() {
 
-
-
     while(this->is_running){
         if(this->detect_control_flag){
             // 先获取待检测图像

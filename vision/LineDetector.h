@@ -41,6 +41,10 @@ public:
     // 获取参考线 LSD算法
     MLine LineDetector::getReferenceLineLSD(cv::Mat img, cv::Mat bin_img);
 
+    MLine getReferenceLineByContours(cv::Mat bin_img);
+
+
+
 
     unsigned  int  min_len_seg;
 
@@ -50,6 +54,8 @@ public:
     unsigned  int min_dist_lines ;
     unsigned  int max_dist_lines ;
     unsigned  int max_angle_degrees ;
+
+
 
 
 
