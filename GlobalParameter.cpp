@@ -14,6 +14,6 @@ namespace GP
 	std::string Robot_IP;
 	std::size_t Robot_Port;
 
-	std::string IO_IP;
-	std::size_t IO_Port;
+	std::string IOA_IP;
+	std::size_t IOA_Port;
 }

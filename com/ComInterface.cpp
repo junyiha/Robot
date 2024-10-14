@@ -71,7 +71,7 @@ void ComInterface::run()
             emit m_cRobot.sigDisconnected();
             qDebug()<<"m_cRobot.slotStopLoop();";
             qDebug()<<"尝试连接机器人。。。。"<<tryToConnectCount[0];
-            isRobotConnected = m_cRobot.ConnectToServer(g_str_robotip, g_i_robotport);
+            isRobotConnected = m_cRobot.ConnectToServer(GP::Robot_IP.c_str(), GP::Robot_Port);
             if(tryToConnectCount[0] <= COUNT_LIMIT){
                 ++tryToConnectCount[0];
             }else{
@@ -86,7 +86,7 @@ void ComInterface::run()
             emit m_cToolsBoarding.m_cIOA.sigDisconnected();
             qDebug()<<"m_cToolsBoarding.m_cIOA.StopLoop();";
             qDebug()<<"尝试连接IO模块A。。。。"<<tryToConnectCount[1];
-            isIOConnected = m_cToolsBoarding.m_cIOA.ConnectToServer(g_str_IOAip, g_i_IOAport);
+            isIOConnected = m_cToolsBoarding.m_cIOA.ConnectToServer(GP::IOA_IP.c_str(), GP::IOA_Port);
             if(tryToConnectCount[1] <= COUNT_LIMIT){
                 ++tryToConnectCount[1];
             }else{

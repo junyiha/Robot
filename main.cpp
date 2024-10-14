@@ -100,8 +100,8 @@ void TestYAML()
 {
     Config::ConfigManager config_manager;
 
-    std::clog << GP::IO_IP << "\n"
-              << GP::IO_Port << "\n"
+    std::clog << GP::IOA_IP << "\n"
+              << GP::IOA_Port << "\n"
               << GP::DOF << "\n";
 }
 

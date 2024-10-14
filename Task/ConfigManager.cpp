@@ -29,8 +29,8 @@ namespace Config
 		GP::Robot_IP = m_root["robot_ip"].as<std::string>();
 		GP::Robot_Port = m_root["robot_port"].as<std::size_t>();
 
-		GP::IO_IP = m_root["IO_ip"].as<std::string>();
-		GP::IO_Port = m_root["IO_port"].as<std::size_t>();
+		GP::IOA_IP = m_root["IOA_ip"].as<std::string>();
+		GP::IOA_Port = m_root["IOA_port"].as<std::size_t>();
 
 		auto home_point = m_root["home_point"].as<std::vector<double>>();
 		auto prepare_point = m_root["prepare_point"].as<std::vector<double>>();

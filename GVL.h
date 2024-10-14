@@ -39,36 +39,9 @@ const unsigned int STEER_RIGHT_INDEX = 13; //右舵轮索引
 const unsigned int WHEEL_LEFT_INDEX = 12; //左行走轮索引
 const unsigned int WHEEL_RIGHT_INDEX = 14; //右行走轮索引
 //const unsigned int TOOL_INDEX = 4; //
-const unsigned int PITCH_JOINT_INDEX = 4;//俯仰轴运动学模型索引
+//const unsigned int PITCH_JOINT_INDEX = 4;//俯仰轴运动学模型索引
 
-// 放钉位置
-const double Postion_Home[10]    =    {16.020,-90,0,10.23,76,801, 1095, 0, -12, 1109};						
-const QVector<double> Postion_Home_qv = {16.020,-90,0,10.23,76,801, 1095, 0, -12, 1109};					
-
-//碰钉准备位置
-const double Postion_Prepare[10]    = {16.02,-30,0,10.23,76.01,1034.45,1177.37, 0.8, -71.17, 1162.56};		
-const QVector<double> Postion_Prepare_qv = {16.02,-30,0,10.23,76.01,1034.45,1177.37, 0.8, -71.17, 1162.56}; 
-
-// 装板机器人: 装板位
-const double ZB_Position_Home[11] = { 2.21, -0.25, 1.84, 10, 76.41, 817.17, 1142.71, 1.86, -4.23, 901.36 , 561.06};
-const QVector<double> ZB_Position_Home_qv = {2.21, -0.25, 1.84, 10, 76.41, 817.17, 1142.71, 1.86, -4.23, 901.36 , 561.06};
-
-// 装板机器人: 举升位
-const double ZB_Position_Prepare[11] = { 97.45, 46.27, 11.63, 9.75, 78.81, 1043.36, 1194.38, 0.55, -62.84, 885.0 , 554.58};
-const QVector<double> ZB_Position_Prepare_qv = { 97.45, 46.27, 11.63, 9.75, 78.81, 1043.36, 1194.38, 0.55, -62.84, 885.0 , 554.58};
-
-//robotcomm的ip和端口"192.168.1.130" 5999
-const char g_str_robotip[] = "192.168.1.130";
-const int g_i_robotport = 6999;
-
-//IOAcomm的ip和端口"192.168.1.201" 5999
-const char g_str_IOAip[] = "192.168.1.201";
-const int g_i_IOAport = 5999;
-
-//IOAcomm的ip和端口"192.168.1.202" 5999
-const char g_str_IOBip[] = "192.168.1.202";
-const int g_i_IOBport = 5999;
-
+//
 #define DOBYTENUM 6
 
 enum eJointIndex
