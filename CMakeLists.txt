@@ -49,6 +49,9 @@ file(COPY ${BaseDIR}/packages/BestfitLayserScaner/lib/bin/BestfitLaserScanerSDK.
 # onnxruntime
 file(COPY ${BaseDIR}/packages/OnnxRuntime/Microsoft.ML.OnnxRuntime.1.7.0/runtimes/win-x64/native/onnxruntime.dll DESTINATION ${CMAKE_BINARY_DIR}/)
 
+# vision models
+file(COPY ${CMAKE_SOURCE_DIR}/models DESTINATION ${CMAKE_BINARY_DIR}/)
+
 # Opencv Setting
 include_directories(${BaseDIR}/packages/opencv4.55/build/include)
 link_directories(${BaseDIR}/packages/opencv4.55/build/x64/vc15/lib)
@@ -68,17 +71,13 @@ link_directories(${BaseDIR}/packages/ffmpeg/lib)
 include_directories(${BaseDIR}/packages/GocatorSDK/include)
 link_directories(${BaseDIR}/packages/GocatorSDK/lib/win64d)
 
-
 # onnxruntime setting
 include_directories(${BaseDIR}/packages/OnnxRuntime/Microsoft.ML.OnnxRuntime.1.7.0/build/native/include)
 link_directories(${BaseDIR}/packages/OnnxRuntime/Microsoft.ML.OnnxRuntime.1.7.0/runtimes/win-x64/native)
 
-
 #Bestfit laser setting
 include_directories(${BaseDIR}/packages/BestfitLayserScaner/lib/include)
 link_directories(${BaseDIR}/packages/BestfitLayserScaner/lib/lib)
-
-
 
 # eigen3
 include_directories(${BaseDIR}/packages/eigen3.4.0)
@@ -86,9 +85,7 @@ include_directories(${BaseDIR}/packages/eigen3.4.0)
 add_compile_options("$<$<C_COMPILER_ID:MSVC>:/source-charset:utf-8>")
 add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/source-charset:utf-8>")
 
-#add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
-#add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
-
+add_subdirectory(${CMAKE_SOURCE_DIR}/ThirdParty/yaml-cpp-0.8.0)
 
 find_package(Qt5 COMPONENTS
         Core
@@ -107,8 +104,6 @@ aux_source_directory(${CMAKE_SOURCE_DIR}/robot src)
 aux_source_directory(${CMAKE_SOURCE_DIR}/Task src)
 aux_source_directory(${CMAKE_SOURCE_DIR}/vision src)
 
-message(STATUS ${src})
-
 add_executable(${PROJECT_NAME} ${src} ${QRC_SOURCE_FILE})
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/
@@ -116,9 +111,14 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/
                                                   ${CMAKE_SOURCE_DIR}/robot
                                                   ${CMAKE_SOURCE_DIR}/Task
                                                   ${CMAKE_SOURCE_DIR}/vision
+                                                  ${CMAKE_SOURCE_DIR}/ThirdParty/yaml-cpp-0.8.0/include/
 ) 
 
-target_link_libraries(PDRobot-master
+# yaml-0.8.0
+target_link_libraries(${PROJECT_NAME} yaml-cpp::yaml-cpp)
+
+# qt5
+target_link_libraries(${PROJECT_NAME}
         Qt5::Core
         Qt5::Gui
         Qt5::Widgets
@@ -127,13 +127,13 @@ target_link_libraries(PDRobot-master
 )
 
 # opencv + hk sdk
-target_link_libraries(PDRobot-master
+target_link_libraries(${PROJECT_NAME}
         opencv_world455d.lib
         MvCameraControl.lib
 )
 
 # ffmpeg
-target_link_libraries(PDRobot-master
+target_link_libraries(${PROJECT_NAME}
         avcodec.lib
         avdevice.lib
         avfilter.lib
@@ -144,9 +144,9 @@ target_link_libraries(PDRobot-master
         swscale.lib
 )
 # onnxruntime
-target_link_libraries(PDRobot-master onnxruntime.dll)
+target_link_libraries(${PROJECT_NAME} onnxruntime.dll)
 
-target_link_libraries(PDRobot-master
+target_link_libraries(${PROJECT_NAME}
         GoSdk.lib
         kApi.lib
         BestfitLaserScanerSDK.lib

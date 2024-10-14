@@ -22,6 +22,7 @@
 #include <Eigen/Eigen>
 #include "com/LaserDistanceBojke.h"
 
+#include "Task/ConfigManager.hpp"
 
 void initLog()
 {
@@ -81,17 +82,7 @@ void laserDemo(){
         std::cout<<"*************************end*****"<<std::endl;
     }
 
-
-
-
     QThread::sleep(3000*10);
-
-
-
-
-
-
-
 }
 
 
@@ -105,8 +96,19 @@ int RunRobot(int argc, char *argv[])
     return a.exec();
 }
 
+void TestYAML()
+{
+    Config::ConfigManager config_manager;
+
+    std::clog << GP::IO_IP << "\n"
+              << GP::IO_Port << "\n"
+              << GP::DOF << "\n";
+}
+
+
 int main(int argc, char *argv[])
 {
+    //TestYAML();
     return RunRobot(argc, argv);
 
 //    spdlog::info("test program...");
