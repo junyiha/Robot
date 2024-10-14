@@ -36,7 +36,7 @@ enum ECommadforTask
 };
 
 const double PARRALLE_DISTANCE = 5.0; //调平允许偏差
-const double LINE_DEVIATION_THRESHOLD = 1.0;//边线调整允许偏差
+const double LINE_DEVIATION_THRESHOLD = 2.0;//边线调整允许偏差  1.0
 
 // 装板机器人
 const double LINE_DEVIATION_BOARDING_THRESHOLD = 5.0;//贴合允许偏差
@@ -157,6 +157,11 @@ private:
      */
     int CheckBoardingState(uint& motion_index);
     EDetectionInPositioningResult CheckBoardingStateDecorator();
+
+    int CheckBoardingStateForPositioning();
+    EDetectionInPositioningResult CheckBoardingStateForPositioningDecorator();
+    int CheckBoardingStateForFitBoard(uint& motion_index);
+    EDetectionInFitBoardResult CheckBoardingStateForFitBoardDecorator();
 
     /**
      * @brief 终止函数，停止自动过程，切换到手动模式

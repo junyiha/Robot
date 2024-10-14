@@ -183,6 +183,10 @@ void MainWindow::connectSlotFunctions() {// 按钮时间绑定
     connect(ui->btn_savePicture, &QPushButton::clicked, this, &MainWindow::on_btn_camera_save_clicked,
             Qt::UniqueConnection);
 
+    connect(ui->btn_line_results_dis, &QPushButton::clicked, this, &MainWindow::slots_on_line_results_dis_clicked,
+            Qt::UniqueConnection);
+
+
     // 底盘移动
     connect(ui->btn_wheel_forward, &QPushButton::pressed, this, &MainWindow::on_btn_wheel_forward_pressed,
             Qt::UniqueConnection);
@@ -680,12 +684,15 @@ void MainWindow::updateLineDetectResults() {
         }
         //计算比例系数  结果待确认
         double laserDisAve = 0;
-        QVector laserdis = m_Com->getLasersDistanceBoarding();
+        QVector laserdis = m_Com->getLasersDistanceBoardingByBojke();
         for (int i = 0; i < laserdis.size(); i++) {
             laserDisAve += laserdis[i];
         }
         laserDisAve = laserDisAve / laserdis.size();
+//        logger->info("********************ave:{}*************************:", laserDisAve);
         double scale = (laserDisAve + 460) / 470;
+//        double scale = (laserDisAve+465)/1677;
+//        logger->info("********************scale:{}*************************:", scale);
 
         VisionResult visResult = m_VisionInterface->getVisResult();
         if (visResult.lineStatus) {
@@ -736,7 +743,7 @@ void MainWindow::updateLineDetectResults() {
 void MainWindow::updateLaserData() {
 
     // 更新点激光
-    QVector laserdis = m_Com->getLasersDistanceBoarding();
+    QVector laserdis = m_Com->getLasersDistanceBoardingByBojke();
     if (laserdis.size() > 0) {
         for (int i = 0; i < larserNum; i++) {
             findChild<QLabel *>("label_laserDist" + QString::number(i))->setText(
@@ -786,6 +793,11 @@ void MainWindow::updateCameraData() {
                 int number = prefix_[index] - '0';
                 if (index != prefix_.size() - 1) {
                     number = (prefix_[index] - '0') * 10 + (prefix_[index + 1] - '0');
+                }
+                if(pageIndex==1){
+                    if(item.first.find("HoleCam")!=std::string::npos){
+                        continue;
+                    }
                 }
                 cv::Mat temp;
                 cv::resize(item.second, temp, imgSize);
@@ -1554,4 +1566,8 @@ void MainWindow::slots_on_btn_auto_laminate_clicked() {
         );
         this->logger->info("不满足待贴合初始化状态,启动待贴合失败");
     }
+}
+
+void MainWindow::slots_on_line_results_dis_clicked() {
+    ui->stackedWidget_view->setCurrentIndex(1);
 }

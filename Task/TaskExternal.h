@@ -15,7 +15,7 @@
 
 // 测试状态机的宏指令
 #ifndef TEST_TASK_STATEMACHINE_
-#define TEST_TASK_STATEMACHINE_
+//#define TEST_TASK_STATEMACHINE_
 #endif
 
 enum class ETopState
@@ -86,5 +86,7 @@ enum class EDetectionInPositioningResult
     eEndAdjustmentDataIsValid,             // 末端调整数据合法
     eDataIsInvalid,                        // 数据非法
 };
+
+using EDetectionInFitBoardResult = EDetectionInPositioningResult;
 
 #endif  // TASK_EXTERNAL_H

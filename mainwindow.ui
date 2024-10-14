@@ -3794,6 +3794,69 @@ QPushButton:pressed {
           </item>
          </layout>
         </widget>
+        <widget class="QPushButton" name="btn_line_results_dis">
+         <property name="geometry">
+          <rect>
+           <x>120</x>
+           <y>170</y>
+           <width>100</width>
+           <height>50</height>
+          </rect>
+         </property>
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>100</width>
+           <height>50</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>60</width>
+           <height>40</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <family>等线</family>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+         <property name="cursor">
+          <cursorShape>PointingHandCursor</cursorShape>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QPushButton {
+    border: 2px solid blue;
+    border-radius: 10px;
+}
+QPushButton:hover {
+    border: 2px solid red;
+    border-radius: 10px;
+}
+
+QPushButton:pressed {
+    border: 2px solid green;
+    border-radius: 10px;
+}
+
+
+
+
+
+
+
+</string>
+         </property>
+         <property name="text">
+          <string>直线检测</string>
+         </property>
+        </widget>
        </widget>
        <widget class="QLabel" name="label_state_transition">
         <property name="geometry">

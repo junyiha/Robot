@@ -33,16 +33,23 @@ VisionInterface::VisionInterface() {
     };
 
     this->camera_offset = {
-            {"LineCam_1", 95},
-            {"LineCam_2", 113},
-            {"LineCam_3", 89},
-            {"LineCam_4", 113},
-            {"LineCam_5", 65},
-            {"LineCam_6", 98},
+            {"LineCam_1", 83},
+            {"LineCam_2", 125},
+            {"LineCam_3", 88},
+            {"LineCam_4", 120},
+            {"LineCam_5", 132},
+            {"LineCam_6", 127},
     };
+//    this->camera_offset = {
+//            {"LineCam_1", 95},
+//            {"LineCam_2", 113},
+//            {"LineCam_3", 89},
+//            {"LineCam_4", 113},
+//            {"LineCam_5", 65},
+//            {"LineCam_6", 98},
+//    };
 
     this->logger = spdlog::get("logger");
-
 }
 
 VisionInterface::~VisionInterface() {
@@ -115,8 +122,13 @@ void VisionInterface::parser_result(std::string paserType, stMeasureData *stm) {
                 if(index+1!=prefix.size()-1){
                     number = (prefix[index+1]-'0')*10+(prefix[index+2]-'0');
                 }
+//                logger->info("********************{} pixel distance: {}**************************", line.first,line.second.dist);
 
-                double dist = (line.second.dist-this->camera_offset[line.first])*this->scales_line[line.first] ;
+                double dist = line.second.dist*this->scales_line[line.first] ;
+//                double dist = (line.second.dist-this->camera_offset[line.first]);
+//                if(number-1 == 4){
+//                    dist = 0;
+//                }
                 if(dist<1){
                     stm->m_LineDistance[number-1] = 0;
                     stm->m_bLineDistance[number-1] = false;

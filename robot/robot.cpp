@@ -399,7 +399,7 @@ void CRobot::StateMachineMove()
     Eigen::Map<Eigen::VectorXd> joint_pos(m_LinkCmd.stLinkKinPar.LinkPos,m_Freedom+1);
     Eigen::Map<Eigen::VectorXd> joint_vel(m_LinkCmd.stLinkKinPar.LinkVel,m_Freedom+1);
 
-    log->info(("m_LinkCmd.stLinkKinPar.eActMotionMode: " + std::to_string(m_LinkCmd.stLinkKinPar.eActMotionMode)).c_str());
+//    log->info(("m_LinkCmd.stLinkKinPar.eActMotionMode: " + std::to_string(m_LinkCmd.stLinkKinPar.eActMotionMode)).c_str());
 
 
     switch(m_LinkCmd.stLinkKinPar.eActMotionMode)

@@ -354,6 +354,8 @@ private slots:
 
     void updateLineDetectResults();
     void connectSlotFunctions();
+    void slots_on_line_results_dis_clicked();
+
 
 
     void initUiWiget();

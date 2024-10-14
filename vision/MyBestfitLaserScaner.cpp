@@ -478,7 +478,7 @@ void MyBestfitLaserScaner::setDataValid(bool dataValid) {
 }
 
 void MyBestfitLaserScaner::startLaserScanTask() {
-    this->scannerConnect();
+//    this->scannerConnect();
     if(this->m_bScannerConnectStatus){
         this->laserOn();
         this->startAcquisition();

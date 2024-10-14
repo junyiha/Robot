@@ -418,7 +418,7 @@ bool check_is_border_line(cv::Mat img, cv::Vec4f line, float thr) {
         return false;  // 超出边界
     }
 
-    if((base_x+offset-10)>512){
+    if((base_x+offset-10>512)|(base_y+offset>512)){
         return false;
     }
 

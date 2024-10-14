@@ -30,18 +30,20 @@ public:
     ~LineDetector();
 
 
-    // 获取参考线
+    // 锟斤拷取锟轿匡拷锟斤拷
     MLine getReferenceLine(cv::Mat img, std::vector<MLine> lines);
-    // 获取墨线
+    // 锟斤拷取墨锟斤拷
     MLine getInkLine(cv::Mat img, std::vector<MLine> lines, MLine refLine);
-    // 获取参考线与墨线的距离
+    // 锟斤拷取锟轿匡拷锟斤拷锟斤拷墨锟竭的撅拷锟斤拷
     LineResult getLineDistance(cv::Mat img);
-    // 获取所有可能的直线
+    // 锟斤拷取锟斤拷锟叫匡拷锟杰碉拷直锟斤拷
     std::vector<MLine> getAllPossibleLines(cv::Mat img);
-    // 获取参考线 LSD算法
+    // 锟斤拷取锟轿匡拷锟斤拷 LSD锟姐法
     MLine LineDetector::getReferenceLineLSD(cv::Mat img, cv::Mat bin_img);
 
     MLine getReferenceLineByContours(cv::Mat bin_img);
+
+    MLine getReferenceLineByHKCU60(cv::Mat img, std::vector<MLine> lines);
 
 
 

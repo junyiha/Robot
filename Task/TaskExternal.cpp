@@ -255,6 +255,8 @@ void CTask::notReadyExecutionCommand()
 #endif
     if (robotReady)
         updateTopAndSubState(ETopState::eManual, ESubState::eReady);
+
+    Manual();
 }
 
 void CTask::readyToParallelExecutionCommand()
@@ -442,7 +444,7 @@ void CTask::detectionInPositioningExecutionCommand()
             break;
         }
         UpdateVisionResult(vis_res);
-        detectResult = CheckBoardingStateDecorator();
+        detectResult = CheckBoardingStateForPositioningDecorator();
 
         log->info("vis_res.lineDistance: {},{},{},{},{},{}", vis_res.stData.m_LineDistance[0],vis_res.stData.m_LineDistance[1],vis_res.stData.m_LineDistance[2],
                   vis_res.stData.m_LineDistance[3],vis_res.stData.m_LineDistance[4],vis_res.stData.m_LineDistance[5]);
@@ -795,7 +797,7 @@ void CTask::detectionInFitBoardExecutionCommand()
             break;
         }
         UpdateVisionResult(vis_res);
-        result = CheckBoardingStateDecorator();  // CheckBoarding
+        result = CheckBoardingStateForFitBoardDecorator();  // Check Board status
 
         log->info("vis_res.lineDistance: {},{},{},{},{},{}", vis_res.stData.m_LineDistance[0],vis_res.stData.m_LineDistance[1],vis_res.stData.m_LineDistance[2],
                   vis_res.stData.m_LineDistance[3],vis_res.stData.m_LineDistance[4],vis_res.stData.m_LineDistance[5]);
@@ -803,18 +805,18 @@ void CTask::detectionInFitBoardExecutionCommand()
 #endif
         switch (result)
         {
-        case EDetectionInPositioningResult::eDeviationIsLessThanThreshold:
+        case EDetectionInFitBoardResult::eDeviationIsLessThanThreshold:
         {
             updateTopAndSubState(ETopState::eFitBoard, ESubState::eFitBoardFinished);
             break;
         }
-        case EDetectionInPositioningResult::eEndAdjustmentDataIsValid:
+        case EDetectionInFitBoardResult::eEndAdjustmentDataIsValid:
         {
             CalculatedAdjustmentForFitBoard();
             updateTopAndSubState(ETopState::eFitBoard, ESubState::eMotion);
             break;
         }
-        case EDetectionInPositioningResult::eDataIsInvalid:
+        case EDetectionInFitBoardResult::eDataIsInvalid:
         {
             updateTopAndSubState(ETopState::eManual, ESubState::eReady);
             break;
@@ -850,6 +852,15 @@ void CTask::motionInFitBoardExecutionCommand()
         {
             tar_position[i] = m_fit_board_target_pose.at(i);
         }
+        log->info("m_fit_board_target_pose: {}, {}, {}, {}, {}, {}", m_fit_board_target_pose[0], m_fit_board_target_pose[1],
+                  m_fit_board_target_pose[2], m_fit_board_target_pose[3],
+                  m_fit_board_target_pose[4], m_fit_board_target_pose[5]);
+        stLinkStatus linkstatus = m_Robot->getLinkSta();
+        log->info("m_Robot->setLinkMoveAbs(m_fit_board_target_pose,END_VEL_LIMIT);\ndifference:{},{},{},{},{},{}",
+                  m_fit_board_target_pose[0] - linkstatus.stLinkActKin.LinkPos[0], m_fit_board_target_pose[1] - linkstatus.stLinkActKin.LinkPos[1],
+                  m_fit_board_target_pose[2] - linkstatus.stLinkActKin.LinkPos[2], m_fit_board_target_pose[3] * 57.3 - linkstatus.stLinkActKin.LinkPos[3] * 57.3,
+                  m_fit_board_target_pose[4] * 57.3 - linkstatus.stLinkActKin.LinkPos[4] * 57.3, m_fit_board_target_pose[5] * 57.3 - linkstatus.stLinkActKin.LinkPos[5] * 57.3);
+
         m_Robot->setLinkMoveAbs(m_fit_board_target_pose.data(), END_VEL_POSITION);
 
         if (m_LinkStatus.eLinkActState == eLINK_STANDSTILL &&
@@ -990,7 +1001,8 @@ void CTask::CalculatedAdjustmentForFitBoard()
     //计算调整量
     QVector<Eigen::Matrix4d> Dev_RT = CMeasure::calPoseDeviation(m_stMeasuredata, BOARDING_MOTION_QUE.at(m_motion_index));
     QVector<double> tar_position{ 0,0,0,0,0,0 };
-    tar_position = m_Robot->getTargetPose(Dev_RT[6]);  // 计算调整量
+    tar_position = m_Robot->getTargetPose(Dev_RT[5]);  // 计算调整量
+    log->info("motion index: {}", m_motion_index);
 
     for (int i = 0; i < m_fit_board_target_pose.size(); i++) 
     {
@@ -1001,7 +1013,7 @@ void CTask::CalculatedAdjustmentForFitBoard()
 void CTask::UpdateLaserDistance()
 {
     //取雷达数据
-    QVector<double> LaserDistance = m_Comm->getLasersDistanceBoarding();
+    QVector<double> LaserDistance = m_Comm->getLasersDistanceBoardingByBojke();
 
     m_stMeasuredata.m_LaserDistance[0] = LaserDistance[0];
     m_stMeasuredata.m_LaserDistance[1] = LaserDistance[1];

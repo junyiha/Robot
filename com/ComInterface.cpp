@@ -41,9 +41,13 @@ QVector<double> ComInterface::getLasersDistanceBoardingByBojke()//
 {
     QVector<double> res;
     LaserMeasureData stData = m_cToolsBoardingLaser.getLaserMeasureData();
+    double layserOffset[4] = { 423, 425, 429, 431};
+
     for(int i=0;i<4;++i){
-        res.push_back(stData.m_Laserdistance[i]);
+        res.push_back(stData.m_Laserdistance[i] * 1000.0 - layserOffset[i]);
     }
+
+
     return res;
 }
 

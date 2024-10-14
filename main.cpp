@@ -46,7 +46,7 @@ void initLog()
 
 void line_detect_demo(){
 
-    std::string path = "F:\\log_data-20240927\\line_data\\LineCam_4_2024-09-27-10-18-06.png";
+    std::string path = "E:\\ZBRobot\\Robot\\cache\\Image_20241011110413922.bmp";
     cv::Mat img = cv::imread(path);
     LineDetector line_tool;
     auto start = std::chrono::high_resolution_clock::now();
@@ -68,7 +68,7 @@ void line_detect_demo(){
 
 void laserDemo(){
 
-    const char *port = "COM5";
+    const char *port = "COM2";
     LaserDistanceBojke laserTool;
     bool ret = laserTool.open(port);
 
@@ -102,7 +102,6 @@ int RunRobot(int argc, char *argv[])
     MainWindow w;
     w.setWindowTitle("LNG Panel Loading Robot");
     w.show();
-
     return a.exec();
 }
 
@@ -110,8 +109,11 @@ int main(int argc, char *argv[])
 {
     return RunRobot(argc, argv);
 
-    spdlog::info("test program...");
+//    spdlog::info("test program...");
 //    line_detect_demo();
+
+
+//   laserDemo();
 
     return 0;
 }
