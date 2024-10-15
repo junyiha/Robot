@@ -120,14 +120,14 @@ void CTask::Manual()
         return;
     }
 
-    if (std::fabs(m_manualOperator.VechDirect -  m_JointGroupStatus[STEER_LEFT_INDEX].Position) > 3)
+    if (std::fabs(m_manualOperator.VechDirect -  m_JointGroupStatus[GP::STEER_LEFT_INDEX].Position) > 3)
     {
         // 当前指令和上一个指令的VechDirect都为零，判断条件始终成立
-         m_Robot->setJointMoveAbs(STEER_LEFT_INDEX, m_manualOperator.VechDirect,10);//速度需改为参数
-        log->info("m_Robot->setJointMoveAbs(STEER_LEFT_INDEX, {}", m_manualOperator.VechDirect);
+         m_Robot->setJointMoveAbs(GP::STEER_LEFT_INDEX, m_manualOperator.VechDirect,10);//速度需改为参数
+        log->info("m_Robot->setJointMoveAbs(GP::STEER_LEFT_INDEX, {}", m_manualOperator.VechDirect);
 
-         m_Robot->setJointMoveAbs(STEER_RIGHT_INDEX,m_manualOperator.VechDirect,10);//速度需改为参数
-        log->info("m_Robot->setJointMoveAbs(STEER_RIGHT_INDEX, {}", m_manualOperator.VechDirect);
+         m_Robot->setJointMoveAbs(GP::STEER_RIGHT_INDEX,m_manualOperator.VechDirect,10);//速度需改为参数
+        log->info("m_Robot->setJointMoveAbs(GP::STEER_RIGHT_INDEX, {}", m_manualOperator.VechDirect);
     }
 
     double vel_left,vel_right ;
@@ -143,15 +143,15 @@ void CTask::Manual()
         vel_left = m_manualOperator.VechVel * 100 - m_manualOperator.RotateVel * 30; //正转为逆时针
         vel_right = m_manualOperator.VechVel * 100 + m_manualOperator.RotateVel * 30;
 
-        log->info("{},{}: m_Robot->setJointMoveVel(WHEEL_LEFT_INDEX, {});", __FILE__,__LINE__,vel_left);
-         m_Robot->setJointMoveVel(WHEEL_LEFT_INDEX, -vel_left);
-        log->info("{},{}: m_Robot->setJointMoveVel(WHEEL_RIGHT_INDEX, {});", __FILE__,__LINE__,vel_right);
-         m_Robot->setJointMoveVel(WHEEL_RIGHT_INDEX, -vel_right);
+        log->info("{},{}: m_Robot->setJointMoveVel(GP::WHEEL_LEFT_INDEX, {});", __FILE__,__LINE__,vel_left);
+         m_Robot->setJointMoveVel(GP::WHEEL_LEFT_INDEX, -vel_left);
+        log->info("{},{}: m_Robot->setJointMoveVel(GP::WHEEL_RIGHT_INDEX, {});", __FILE__,__LINE__,vel_right);
+         m_Robot->setJointMoveVel(GP::WHEEL_RIGHT_INDEX, -vel_right);
     }
     else
     {
-        m_Robot->setJointMoveVel(WHEEL_LEFT_INDEX, 0);
-        m_Robot->setJointMoveVel(WHEEL_RIGHT_INDEX, 0);
+        m_Robot->setJointMoveVel(GP::WHEEL_LEFT_INDEX, 0);
+        m_Robot->setJointMoveVel(GP::WHEEL_RIGHT_INDEX, 0);
     }
 
     std::vector<double> TEMP_LINK_0_JOINT_MAX_VEL(MAX_FREEDOM_LINK, 0.0);
@@ -168,23 +168,23 @@ void CTask::Manual()
     else if (m_manualOperator.Ready == 1)
     {
         // 移动到举升位置
-        log->info("{},{}: m_Robot->setLinkMoveAbs(Postion_Prepare,END_VEL_LIMIT);", __FILE__,__LINE__);
+        log->info("{},{}: m_Robot->setLinkMoveAbs(Postion_Prepare,GP::End_Vel_Limit.data());", __FILE__,__LINE__);
 #ifdef TEST_TASK_STATEMACHINE_
 #else
         std::vector<double> TEMP_LINK_0_JOINT_MAX_VEL_FOR_READY_POINT(MAX_FREEDOM_LINK, 0.0);
         TEMP_LINK_0_JOINT_MAX_VEL_FOR_READY_POINT = {3, 3, 3, 1, 0.3, 10, 5, 0.5, 4, 1, 3};
-        m_Robot->setJointGroupMoveAbs(GP::Prepare_Position,TEMP_LINK_0_JOINT_MAX_VEL_FOR_READY_POINT.data());
+        m_Robot->setJointGroupMoveAbs(GP::Prepare_Position.data(), TEMP_LINK_0_JOINT_MAX_VEL_FOR_READY_POINT.data());
 #endif
     }
     else if (m_manualOperator.Ready == 2)
     {
         // 移动到装扮位置
-        log->info("{},{}: m_Robot->setLinkMoveAbs(Postion_Home,END_VEL_LIMIT);", __FILE__,__LINE__);
+        log->info("{},{}: m_Robot->setLinkMoveAbs(Postion_Home,GP::End_Vel_Limit.data());", __FILE__,__LINE__);
 #ifdef TEST_TASK_STATEMACHINE_
 #else
         std::vector<double> TEMP_LINK_0_JOINT_MAX_VEL_FOR_SET_POINT(MAX_FREEDOM_LINK, 0.0);
         TEMP_LINK_0_JOINT_MAX_VEL_FOR_SET_POINT = {3, 3, 3, 1, 0.3, 10, 5, 0.5, 2, 6, 3};
-        m_Robot->setJointGroupMoveAbs(GP::Home_Position, TEMP_LINK_0_JOINT_MAX_VEL_FOR_SET_POINT.data());
+        m_Robot->setJointGroupMoveAbs(GP::Home_Position.data(), TEMP_LINK_0_JOINT_MAX_VEL_FOR_SET_POINT.data());
 #endif
     }
     else if (m_manualOperator.bLinkMoveFlag)
@@ -203,7 +203,7 @@ void CTask::Manual()
                 // 末端运动
                 for(int i= 0;i<6;i++)
                 {
-                    endvel[i] = m_manualOperator.LinkMove[i]*END_VEL_LIMIT[i];
+                    endvel[i] = m_manualOperator.LinkMove[i]* GP::End_Vel_Limit.at(i);
                 }
                 log->info("{},{}: m_Robot->setLinkMoveVel(endvel): {},{},{},{},{},{}", __FILE__,__LINE__,
                 endvel[0],endvel[1],endvel[2],endvel[3],endvel[4],endvel[5]);

@@ -372,7 +372,7 @@ void CTask::motionInParallelExecutionCommand()
 
             log->info("{} tar_pos:{},{},{},{},{},{}", __LINE__, tar_pos[0], tar_pos[1], tar_pos[2],
                 tar_pos[3] * 57.3, tar_pos[4] * 57.3, tar_pos[5] * 57.3);
-            m_Robot->setLinkMoveAbs(tar_pos, END_VEL_LIMIT);
+            m_Robot->setLinkMoveAbs(tar_pos, GP::End_Vel_Limit.data());
             break;
         }
         }
@@ -515,12 +515,12 @@ void CTask::motionInPositioningExecutionCommand()
             for (int i = 0; i < 6; i++) {
                 tar_pos[i] = tar_position[i];
             }
-            log->info("m_Robot->setLinkMoveAbs(tar_pos,END_VEL_LIMIT);\ntar_pos:{},{},{},{},{},{}",
+            log->info("m_Robot->setLinkMoveAbs(tar_pos,GP::End_Vel_Limit.data());\ntar_pos:{},{},{},{},{},{}",
                 tar_pos[0], tar_pos[1], tar_pos[2], tar_pos[3] * 57.3, tar_pos[4] * 57.3, tar_pos[5] * 57.3);
 
-            m_Robot->setLinkMoveAbs(tar_pos, END_VEL_POSITION);
+            m_Robot->setLinkMoveAbs(tar_pos, GP::End_Vel_Position.data());
             stLinkStatus linkstatus = m_Robot->getLinkSta();
-            log->info("m_Robot->setLinkMoveAbs(tar_pos,END_VEL_LIMIT);\nact_pos:{},{},{},{},{},{}",
+            log->info("m_Robot->setLinkMoveAbs(tar_pos,GP::End_Vel_Limit.data());\nact_pos:{},{},{},{},{},{}",
                 tar_pos[0] - linkstatus.stLinkActKin.LinkPos[0], tar_pos[1] - linkstatus.stLinkActKin.LinkPos[1],
                 tar_pos[2] - linkstatus.stLinkActKin.LinkPos[2], tar_pos[3] * 57.3 - linkstatus.stLinkActKin.LinkPos[3] * 57.3,
                 tar_pos[4] * 57.3 - linkstatus.stLinkActKin.LinkPos[4] * 57.3, tar_pos[5] * 57.3 - linkstatus.stLinkActKin.LinkPos[5] * 57.3);
@@ -540,7 +540,7 @@ void CTask::motionInPositioningExecutionCommand()
         }
         else
         {
-            m_Robot->setLinkMoveAbs(tar_pos, END_VEL_LIMIT);
+            m_Robot->setLinkMoveAbs(tar_pos, GP::End_Vel_Limit.data());
         }
 
         break;
@@ -856,12 +856,12 @@ void CTask::motionInFitBoardExecutionCommand()
                   m_fit_board_target_pose[2], m_fit_board_target_pose[3],
                   m_fit_board_target_pose[4], m_fit_board_target_pose[5]);
         stLinkStatus linkstatus = m_Robot->getLinkSta();
-        log->info("m_Robot->setLinkMoveAbs(m_fit_board_target_pose,END_VEL_LIMIT);\ndifference:{},{},{},{},{},{}",
+        log->info("m_Robot->setLinkMoveAbs(m_fit_board_target_pose,GP::End_Vel_Limit.data());\ndifference:{},{},{},{},{},{}",
                   m_fit_board_target_pose[0] - linkstatus.stLinkActKin.LinkPos[0], m_fit_board_target_pose[1] - linkstatus.stLinkActKin.LinkPos[1],
                   m_fit_board_target_pose[2] - linkstatus.stLinkActKin.LinkPos[2], m_fit_board_target_pose[3] * 57.3 - linkstatus.stLinkActKin.LinkPos[3] * 57.3,
                   m_fit_board_target_pose[4] * 57.3 - linkstatus.stLinkActKin.LinkPos[4] * 57.3, m_fit_board_target_pose[5] * 57.3 - linkstatus.stLinkActKin.LinkPos[5] * 57.3);
 
-        m_Robot->setLinkMoveAbs(m_fit_board_target_pose.data(), END_VEL_POSITION);
+        m_Robot->setLinkMoveAbs(m_fit_board_target_pose.data(), GP::End_Vel_Position.data());
 
         if (m_LinkStatus.eLinkActState == eLINK_STANDSTILL &&
             m_Robot->isEndReached(tar_position))

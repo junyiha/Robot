@@ -1,6 +1,15 @@
 # 机器人配置文件
 #################################
 
+velLine : 5           # 界面点动限速：平移(毫米)
+velRotate : 0.5		  # 界面点动限速：旋转(度)
+
+CYLINDER_INDEX : 5		# 推杆关节轴号索引
+STEER_LEFT_INDEX : 11	# 左舵轮索引
+STEER_RIGHT_INDEX : 13	# 右舵轮索引
+WHEEL_LEFT_INDEX : 12	# 左行走轮索引
+WHEEL_RIGHT_INDEX : 14	# 右行走轮索引
+
 # 关节末端运动限速
 end_vel_limit: [5,5,5,0.05,0.05,0.05]
 end_vel_position: [1,1,1,0.05,0.05,0.05]

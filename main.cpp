@@ -96,7 +96,7 @@ int RunRobot(int argc, char *argv[])
     return a.exec();
 }
 
-void TestYAML()
+void LoadYAMLConfig()
 {
     Config::ConfigManager config_manager;
 
@@ -108,7 +108,7 @@ void TestYAML()
 
 int main(int argc, char *argv[])
 {
-    //TestYAML();
+    LoadYAMLConfig();
     return RunRobot(argc, argv);
 
 //    spdlog::info("test program...");

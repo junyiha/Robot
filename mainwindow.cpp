@@ -658,7 +658,7 @@ void MainWindow::updateAxisStatus() {
 
     // 更新舵轮位置
     QVector<st_ReadAxis> jointStatus = m_Com->getJointGroupStatus();
-    findChild<QLabel *>("label_steering_pos")->setText(QString::number(jointStatus[STEER_LEFT_INDEX].Position));
+    findChild<QLabel *>("label_steering_pos")->setText(QString::number(jointStatus[GP::STEER_LEFT_INDEX].Position));
 
 
 }
@@ -1008,9 +1008,9 @@ void MainWindow::btn_moveFwd_end_pressed() {
 
     if (index >= 0 && index <= 5) {
         if (index <= 2) {
-            vel[index] = velLine;
+            vel[index] = GP::velLine;
         } else {
-            vel[index] = velRotate;
+            vel[index] = GP::velRotate;
         }
         logger->info(("[ btn_moveFwd_end_pressed ]  index : " + std::to_string(index) + " vel:" +
                       std::to_string(vel[index])).c_str());
@@ -1041,9 +1041,9 @@ void MainWindow::btn_moveBwd_end_pressed() {
 
     if (index >= 0 && index <= 5) {
         if (index <= 2) {
-            vel[index] = -velLine;
+            vel[index] = -GP::velLine;
         } else {
-            vel[index] = -velRotate;
+            vel[index] = -GP::velRotate;
         }
         m_Robot->setLinkMoveVel(vel);
         logger->info(("[ btn_moveBwd_end_pressed ]  index : " + std::to_string(index) + " vel:" +
@@ -1088,8 +1088,8 @@ void MainWindow::on_moveRel_end_clicked() {
                       std::to_string(pos[i])).c_str());
     }
 
-    m_Robot->setLinkMoveAbs(pos, END_VEL_LIMIT);
-    logger->info("[ on_moveRel_end_clicked ]  m_Robot->setLinkMoveAbs(pos,END_VEL_LIMIT);");
+    m_Robot->setLinkMoveAbs(pos, GP::End_Vel_Limit.data());
+    logger->info("[ on_moveRel_end_clicked ]  m_Robot->setLinkMoveAbs(pos,GP::End_Vel_Limit.data());");
 
     for (int i = 0; i < 6; i++) {
         findChild<QLineEdit *>("lineEdit_setPos_end" + QString::number(i))->setText("0");
@@ -1317,56 +1317,56 @@ void MainWindow::slots_on_btn_add_nail_clicked() {
 void MainWindow::on_btn_wheel_forward_pressed() {
 
     // 底盘前进
-    m_Robot->setJointMoveVel(WHEEL_LEFT_INDEX, m_wheelVel);
-    m_Robot->setJointMoveVel(WHEEL_RIGHT_INDEX, m_wheelVel);
+    m_Robot->setJointMoveVel(GP::WHEEL_LEFT_INDEX, m_wheelVel);
+    m_Robot->setJointMoveVel(GP::WHEEL_RIGHT_INDEX, m_wheelVel);
     this->logger->info("******前进*******");
 
 }
 
 void MainWindow::on_btn_wheel_backward_released() {
     // 停止前进
-    m_Com->JointHalt(WHEEL_LEFT_INDEX);
-    m_Com->JointHalt(WHEEL_RIGHT_INDEX);
+    m_Com->JointHalt(GP::WHEEL_LEFT_INDEX);
+    m_Com->JointHalt(GP::WHEEL_RIGHT_INDEX);
 }
 
 void MainWindow::on_btn_wheel_left_pressed() {
-    m_Robot->setJointMoveVel(WHEEL_LEFT_INDEX, -10);
-    m_Robot->setJointMoveVel(WHEEL_RIGHT_INDEX, 10);
+    m_Robot->setJointMoveVel(GP::WHEEL_LEFT_INDEX, -10);
+    m_Robot->setJointMoveVel(GP::WHEEL_RIGHT_INDEX, 10);
     this->logger->info("******左转*******");
 }
 
 void MainWindow::on_btn_wheel_right_released() {
-    m_Com->JointHalt(WHEEL_LEFT_INDEX);
-    m_Com->JointHalt(WHEEL_RIGHT_INDEX);
+    m_Com->JointHalt(GP::WHEEL_LEFT_INDEX);
+    m_Com->JointHalt(GP::WHEEL_RIGHT_INDEX);
 }
 
 void MainWindow::on_btn_wheel_forward_released() {
-    m_Com->JointHalt(WHEEL_LEFT_INDEX);
-    m_Com->JointHalt(WHEEL_RIGHT_INDEX);
+    m_Com->JointHalt(GP::WHEEL_LEFT_INDEX);
+    m_Com->JointHalt(GP::WHEEL_RIGHT_INDEX);
 }
 
 void MainWindow::on_btn_wheel_backward_pressed() {
-    m_Robot->setJointMoveVel(WHEEL_LEFT_INDEX, -m_wheelVel);
-    m_Robot->setJointMoveVel(WHEEL_RIGHT_INDEX, -m_wheelVel);
+    m_Robot->setJointMoveVel(GP::WHEEL_LEFT_INDEX, -m_wheelVel);
+    m_Robot->setJointMoveVel(GP::WHEEL_RIGHT_INDEX, -m_wheelVel);
     this->logger->info("******后退*******");
 }
 
 void MainWindow::on_btn_wheel_left_released() {
-    m_Com->JointHalt(WHEEL_LEFT_INDEX);
-    m_Com->JointHalt(WHEEL_RIGHT_INDEX);
+    m_Com->JointHalt(GP::WHEEL_LEFT_INDEX);
+    m_Com->JointHalt(GP::WHEEL_RIGHT_INDEX);
 }
 
 void MainWindow::on_btn_wheel_right_pressed() {
-    m_Robot->setJointMoveVel(WHEEL_LEFT_INDEX, 10);
-    m_Robot->setJointMoveVel(WHEEL_RIGHT_INDEX, -10);
+    m_Robot->setJointMoveVel(GP::WHEEL_LEFT_INDEX, 10);
+    m_Robot->setJointMoveVel(GP::WHEEL_RIGHT_INDEX, -10);
     this->logger->info("******右转*******");
 }
 
 void MainWindow::on_btn_steering_left_pressed() {
     double angle = findChild<QLabel *>("label_steering_pos")->text().toDouble() + 5;
     angle = angle > 90 ? 90 : angle;
-    m_Robot->setJointMoveAbs(STEER_LEFT_INDEX, angle, 5);
-    m_Robot->setJointMoveAbs(STEER_RIGHT_INDEX, angle, 5);
+    m_Robot->setJointMoveAbs(GP::STEER_LEFT_INDEX, angle, 5);
+    m_Robot->setJointMoveAbs(GP::STEER_RIGHT_INDEX, angle, 5);
 
 
 }
@@ -1379,8 +1379,8 @@ void MainWindow::on_btn_steering_left_released() {
 void MainWindow::on_btn_steering_right_pressed() {
     double angle = findChild<QLabel *>("label_steering_pos")->text().toDouble() - 5;
     angle = angle < -90 ? -90 : angle;
-    m_Robot->setJointMoveAbs(STEER_LEFT_INDEX, angle, 5);
-    m_Robot->setJointMoveAbs(STEER_RIGHT_INDEX, angle, 5);
+    m_Robot->setJointMoveAbs(GP::STEER_LEFT_INDEX, angle, 5);
+    m_Robot->setJointMoveAbs(GP::STEER_RIGHT_INDEX, angle, 5);
 }
 
 void MainWindow::on_btn_steering_right_released() {
@@ -1394,7 +1394,7 @@ void MainWindow::on_btn_add_nail_pressed() {
     for (int i = 0; i < 10; i++) {
         vel_Home[i] = LINK_0_JOINT_MAX_VEL[i] * 0.1;
     }
-    m_Robot->setJointGroupMoveAbs(GP::Home_Position, vel_Home);
+    m_Robot->setJointGroupMoveAbs(GP::Home_Position.data(), vel_Home);
 
 }
 
@@ -1409,7 +1409,7 @@ void MainWindow::on_btn_preparation_pos_pressed() {
     for (int i = 0; i < 10; i++) {
         vel_pre[i] = LINK_0_JOINT_MAX_VEL[i] * 0.1;
     }
-    m_Robot->setJointGroupMoveAbs(GP::Prepare_Position, vel_pre);
+    m_Robot->setJointGroupMoveAbs(GP::Prepare_Position.data(), vel_pre);
 }
 
 void MainWindow::on_btn_preparation_pos_released() {
