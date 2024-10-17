@@ -46,6 +46,8 @@ enum class ESubState
     eStopWeld,          // 碰钉停止
 
     eReadyToFitBoard,   // 待贴合
+    eSidelineMotion,    // 对边运动
+    eLiftMotion,        // 举升运动
     eFitBoardFinished,  // 贴合完成
 
     eQuiting,           // 退出中

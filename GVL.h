@@ -4,9 +4,17 @@
 #include "robot/Parameter.h"
 #include "GlobalParameter.hpp"
 
-const double Distance_Lift = 90; //调平位置
+const double Lift_Distance_In_Parallel = 90.0;  // 调平状态下举升的位置
+const double Max_Deviation_In_Parallel = 50.0;  // 调平允许最大偏差
+const double Min_Deviation_In_Parallel = 5.0;   // 调平允许最小偏差
+
 const double Distance_work = 90; //位置
 
+const double Lift_Distance_In_FitBoard = 6.0;    // 贴合状态下举升的位置
+const double Max_Deviation_In_FitBoard = 20.0;   // 贴合允许偏差
+const double Min_Deviation_In_FitBoard = 6.0;    // 贴合允许偏差
+
+const double LINE_DEVIATION_THRESHOLD = 2.0;    //边线调整允许偏差  1.0
 
 const double DistanceB = 80;//2024年5月17日20点20分 修改，原始为80
 const double DistanceC = 30;

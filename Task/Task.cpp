@@ -534,75 +534,65 @@ void CTask::closeThread() {
 }
 
 //修改827
-int CTask::CheckParallelState(QVector<double> laserDistance)
+int CTask::CheckParallelState(std::vector<double> laserDistance, int max_deviation, int min_deviation, int lift_distance)
 {
     //检查输入数据
-    if(laserDistance.size() < 4) {
+    if(laserDistance.size() < 4) 
+    {
         log->error("激光数据数量输入有误");
         return -1;
     }
-    for(int i=0;i<4;++i) {
-        if(laserDistance[i] > 300 || laserDistance[i] < -3) {
+    for(int i=0;i<4;++i) 
+    {
+        if(laserDistance[i] > 300 || laserDistance[i] < -3) 
+        {
             log->error("{}激光数据有误,或壁面距离太远",i);
             return -1;
         }
     }
 
     //计算激光距离最大偏差
-    double maxDistance = 0;
-    double minDistance = 1000;
-    for(int i=0;i<4;++i) {
-        maxDistance = maxDistance>laserDistance[i]?maxDistance:laserDistance[i];
-        minDistance = minDistance<laserDistance[i]?minDistance:laserDistance[i];
-    }
-    if(maxDistance - minDistance>50 && minDistance/maxDistance < 0.5)
+    auto max_res = std::max_element(laserDistance.begin(), laserDistance.end());
+    auto min_res = std::min_element(laserDistance.begin(), laserDistance.end());
+
+    if(*max_res - *min_res > max_deviation && *min_res / *max_res < 0.5)
     {
-        log->error("激光距离最大偏差大于50mm");
+        log->error("激光距离最大偏差大于{}mm", max_deviation);
         return -1;
     }
     //判断是否完成调平
-    if(maxDistance - minDistance< PARRALLE_DISTANCE && minDistance < Distance_Lift)  //最大偏差小于阈值
-    {
-        //log->info("激光距离{},最大偏差小于{}，完成调平", Distance_Lift, PARRALLE_DISTANCE);
+    if (*max_res - *min_res< min_deviation && *min_res < lift_distance)  //最大偏差小于阈值
         return 1;
-    }else
-    {
+    else
         return 0;
-    }
 }
 
-EDetectionInParallelResult CTask::CheckParallelStateDecorator(QVector<double> laserDistance)
+EDetectionInParallelResult CTask::CheckParallelStateDecorator()
 {
-    EDetectionInParallelResult result;
-    int res = CheckParallelState(laserDistance);
+    EDetectionInParallelResult result{ EDetectionInParallelResult::eNoWallDetected };
+    std::vector<double> laserDistance(std::begin(m_stMeasuredata.m_LaserDistance), std::end(m_stMeasuredata.m_LaserDistance));
+
+    int res = CheckParallelState(laserDistance, Max_Deviation_In_Parallel, Min_Deviation_In_Parallel, Lift_Distance_In_Parallel);
     switch (res)
     {
-        case -1:
-        {
-            result = EDetectionInParallelResult::eNoWallDetected;
-            break;
-        }
-        case 0:
-        {
-            result = EDetectionInParallelResult::eDistanceMeetsRequirement;
-            break;
-        }
-        case 1:
-        {
-            result = EDetectionInParallelResult::eDeviationIsLessThanThreshold;
-            break;
-        }
+    case -1:
+    {
+        result = EDetectionInParallelResult::eNoWallDetected;
+        break;
+    }
+    case 0:
+    {
+        result = EDetectionInParallelResult::eDistanceMeetsRequirement;
+        break;
+    }
+    case 1:
+    {
+        result = EDetectionInParallelResult::eDeviationIsLessThanThreshold;
+        break;
+    }
     }
 
     return result;
-}
-
-EDetectionInParallelResult CTask::CheckParallelStateDecorator(double laserDistance[])
-{
-    //int size = sizeof(laserDistance) / sizeof(laserDistance[0]);
-    QVector<double> LaserDistance(laserDistance, laserDistance + 4);
-
-    return CheckParallelStateDecorator(LaserDistance);
 }
 
 /**
@@ -613,206 +603,7 @@ EDetectionInParallelResult CTask::CheckParallelStateDecorator(double laserDistan
 ----------*1*---------------------*3*-----------------
 ------------------------------------------------------
  */
-int CTask::CheckPositionState()
-{
-    //视觉检测结果有效性检测
-    if((m_stMeasuredata.m_bLineDistance[0]||m_stMeasuredata.m_bLineDistance[1])  == false
-    || (m_stMeasuredata.m_bLineDistance[2]||m_stMeasuredata.m_bLineDistance[3] ) == false
-    || (m_stMeasuredata.m_bLineDistance[4]||m_stMeasuredata.m_bLineDistance[5] )== false)
-    {
-        log->error("line918检测到的边线数据不满足调整需求");
-        return -1;
-    }
-
-    double Ref_Distance = 15;
-
-    //边线偏差是否小于阈值
-    double line_dis_1 = ((m_stMeasuredata.m_LineDistance[0]-15) * m_stMeasuredata.m_bLineDistance[0] -
-                         (m_stMeasuredata.m_LineDistance[1]-15) * m_stMeasuredata.m_bLineDistance[1]) /
-                         (static_cast<int>(m_stMeasuredata.m_bLineDistance[0]) + static_cast<int>(m_stMeasuredata.m_bLineDistance[1]));
-
-    double line_dis_2 = ((m_stMeasuredata.m_LineDistance[2]-15) * m_stMeasuredata.m_bLineDistance[2] -
-                         (m_stMeasuredata.m_LineDistance[3]-15)*m_stMeasuredata.m_bLineDistance[3]) /
-                         (static_cast<int>(m_stMeasuredata.m_bLineDistance[2]) + static_cast<int>(m_stMeasuredata.m_bLineDistance[3]));
-
-//    double line_dis_3 = (m_stMeasuredata.m_LineDistance[4] * m_stMeasuredata.m_bLineDistance[4] -
-//                         m_stMeasuredata.m_LineDistance[5] * m_stMeasuredata.m_bLineDistance[5]) /
-//                         (static_cast<int>(m_stMeasuredata.m_bLineDistance[4]) + static_cast<int>(m_stMeasuredata.m_bLineDistance[5]));
-    double line_dis_3 = 0 ;
-    if(m_stMeasuredata.m_bLineDistance[4])
-    {
-         line_dis_3 = m_stMeasuredata.m_LineDistance[4];
-    }
-
-
-
-    log->info("line_dis:{},{},{}",line_dis_1,line_dis_2,line_dis_3);
-    if(fabs(line_dis_1) < LINE_DEVIATION_THRESHOLD
-    && fabs(line_dis_2) < LINE_DEVIATION_THRESHOLD
-    && fabs(line_dis_3-41) < LINE_DEVIATION_THRESHOLD)
-    {
-        log->info("完成对边，边线距离为：{},{},{},{},{},{}",m_stMeasuredata.m_LineDistance[0],m_stMeasuredata.m_LineDistance[1],m_stMeasuredata.m_LineDistance[2],m_stMeasuredata.m_LineDistance[3],m_stMeasuredata.m_LineDistance[4],m_stMeasuredata.m_LineDistance[5]);
-        return 1;
-    }
-    else
-    {
-        log->error("边线距离不满足碰钉要求，边线距离为：{},{},{},{},{},{}",m_stMeasuredata.m_LineDistance[0],m_stMeasuredata.m_LineDistance[1],m_stMeasuredata.m_LineDistance[2],m_stMeasuredata.m_LineDistance[3],m_stMeasuredata.m_LineDistance[4],m_stMeasuredata.m_LineDistance[5]);
-        return 0;
-    }
-
-}
-
-EDetectionInPositioningResult CTask::CheckPositionStateDecorator()
-{
-    EDetectionInPositioningResult result;
-    int res = CheckPositionState();
-
-    switch (res)
-    {
-        case -1:
-        {
-            result = EDetectionInPositioningResult::eDataIsInvalid;
-            break;
-        }
-        case 0:
-        {
-            result = EDetectionInPositioningResult::eEndAdjustmentDataIsValid;
-            break;            
-        }
-        case 1:
-        {
-            result = EDetectionInPositioningResult::eDeviationIsLessThanThreshold;
-            break;
-        }
-    }
-
-    return result;
-}
-
-void CTask::TaskTerminate()
-{
-    // 停止机器人运动
-    m_Robot->setLinkHalt();
-
-    // 磁铁脱开
-    m_Comm->SetMagentAction(0,eMag_Off);
-}
-
-int CTask::CheckBoardingState(uint& motion_index)
-{
-
-    int re_line = -1;
-    int re_laser = -1;
-
-    // 判断长边合法性
-    if((m_stMeasuredata.m_bLineDistance[0]==false && m_stMeasuredata.m_bLineDistance[2]==false) |
-       (m_stMeasuredata.m_bLineDistance[1]==false && m_stMeasuredata.m_bLineDistance[3]==false)
-    ){
-        log->error("检测到的边线数据长边不满足调整需求");
-        return -1;
-    }
-    // 判断短边合法性
-    if((m_stMeasuredata.m_bLineDistance[4]==false && m_stMeasuredata.m_bLineDistance[5]==false)){
-        log->error("检测到的边线数据短边不满足调整需求");
-        return -1;
-    }
-
-//    bool tmp1 = m_stMeasuredata.m_bLineDistance[0] || (m_stMeasuredata.m_bLineDistance[1] == false);
-//    bool tmp2 = m_stMeasuredata.m_bLineDistance[2] || (m_stMeasuredata.m_bLineDistance[3] == false);
-//    bool tmp3 = m_stMeasuredata.m_bLineDistance[5] || (m_stMeasuredata.m_bLineDistance[4] == false);
-//    if (tmp1 || tmp2 || tmp3)
-//    {
-//        log->error("检测到的边线数据不满足调整需求");
-//        return -1;
-//    }
-    //视觉检测结果有效性检测
-//    if ((m_stMeasuredata.m_bLineDistance[0] || (m_stMeasuredata.m_bLineDistance[1] == false))  //
-//        || (m_stMeasuredata.m_bLineDistance[2] || (m_stMeasuredata.m_bLineDistance[3] == false))
-//        || (m_stMeasuredata.m_bLineDistance[5] || (m_stMeasuredata.m_bLineDistance[4] == false)))  //
-//    {
-//        log->error("检测到的边线数据不满足调整需求");
-//        return -1;
-//    }
-
-    //计算边线偏差
-    double line_dis_1 = ((m_stMeasuredata.m_bLineDistance[0] - 15) * m_stMeasuredata.m_bLineDistance[0] - (m_stMeasuredata.m_bLineDistance[1] - 15) * m_stMeasuredata.m_bLineDistance[1]) / (static_cast<int>(m_stMeasuredata.m_bLineDistance[0] )+ static_cast<int>(m_stMeasuredata.m_bLineDistance[1]));
-    double line_dis_2 = ((m_stMeasuredata.m_bLineDistance[2] - 15) * m_stMeasuredata.m_bLineDistance[2] - (m_stMeasuredata.m_bLineDistance[3] - 15) * m_stMeasuredata.m_bLineDistance[3]) / (static_cast<int>(m_stMeasuredata.m_bLineDistance[2] )+ static_cast<int>(m_stMeasuredata.m_bLineDistance[3]));
-    double line_dis_3 = ((m_stMeasuredata.m_bLineDistance[4] - 15) * m_stMeasuredata.m_bLineDistance[4] - (m_stMeasuredata.m_bLineDistance[5] - 15) * m_stMeasuredata.m_bLineDistance[5]) / (static_cast<int>(m_stMeasuredata.m_bLineDistance[4] )+ static_cast<int>(m_stMeasuredata.m_bLineDistance[5]));
-
-    if (fabs(line_dis_1) < LINE_DEVIATION_THRESHOLD
-        && fabs(line_dis_2) < LINE_DEVIATION_THRESHOLD
-        && fabs(line_dis_3) < LINE_DEVIATION_THRESHOLD)
-    {
-        log->info("完成贴合定位，边线距离为：{},{},{},{},{},{}", m_stMeasuredata.m_LineDistance[0], m_stMeasuredata.m_LineDistance[1], m_stMeasuredata.m_LineDistance[2], m_stMeasuredata.m_LineDistance[3], m_stMeasuredata.m_LineDistance[4], m_stMeasuredata.m_LineDistance[5]);
-        re_line = 1;
-    }
-    else if (fabs(line_dis_1) < LINE_DEVIATION_BOARDING_THRESHOLD
-        && fabs(line_dis_2) < LINE_DEVIATION_BOARDING_THRESHOLD
-        && fabs(line_dis_3) < LINE_DEVIATION_BOARDING_THRESHOLD)
-    {
-        log->error("边线距离需要继续调整，边线距离为：{},{},{},{},{},{}", m_stMeasuredata.m_LineDistance[0], m_stMeasuredata.m_LineDistance[1], m_stMeasuredata.m_LineDistance[2], m_stMeasuredata.m_LineDistance[3], m_stMeasuredata.m_LineDistance[4], m_stMeasuredata.m_LineDistance[5]);
-        re_line = 0;
-    }
-
-//    //计算激光距离最大偏差
-//    double laser[4] = { 0,0,0,0 };
-//    for (int i = 0; i < 4; ++i)
-//    {
-//        if (m_stMeasuredata.m_bLaserProfile[0] == true)
-//        {
-//            laser[i] = m_stMeasuredata.m_LaserGapHeight[i];
-//        }
-//        else if (m_stMeasuredata.m_bLaserDistance[1] == true)
-//        {
-//            laser[i] = m_stMeasuredata.m_LaserDistance[i];
-//        }
-//        else
-//        {
-//            log->error("激光{}距离缺失,停止贴合", i);
-//            return -1;
-//        }
-//
-//    }
-    double maxDistance = 0;
-    double minDistance = 1000;
-    for (int i = 0; i < 4; ++i) {
-        maxDistance = maxDistance > m_stMeasuredata.m_LaserDistance[i] ? maxDistance : m_stMeasuredata.m_LaserDistance[i];
-        minDistance = minDistance < m_stMeasuredata.m_LaserDistance[i] ? minDistance : m_stMeasuredata.m_LaserDistance[i];
-    }
-    if (maxDistance - minDistance > 20)
-    {
-        log->error("激光距离最大偏差大于20mm,停止贴合");
-        return -1;
-    }
-    else if (maxDistance - minDistance < 2 && maxDistance < 2)
-    {
-        log->info("激光距离满足贴合要求");
-        re_laser = 1;
-    }
-
-    //根据板面距离确定目标贴合距离
-    motion_index = 6;
-    for (int i = 0; i < BOARDING_MOTION_QUE.size(); ++i)
-    {
-        if (BOARDING_MOTION_QUE[i] + 2 < minDistance)
-        {
-            motion_index = i;
-            re_line = 0;
-            log->info("贴合调整目标距离为：{}", BOARDING_MOTION_QUE[i]);
-            break;
-        }
-    }
-
-    if (re_line == 1 && re_laser == 1)
-    {
-        log->info("完成贴合作业，可以进行拧螺丝作业");
-        return 1;
-    }
-
-    return 0;
-}
-
-int CTask::CheckBoardingStateForPositioning()
+int CTask::CheckSidelineState()
 {
     int re_line = -1;
 
@@ -852,10 +643,10 @@ int CTask::CheckBoardingStateForPositioning()
     return re_line;
 }
 
-EDetectionInPositioningResult CTask::CheckBoardingStateForPositioningDecorator()
+EDetectionInPositioningResult CTask::CheckSidelineStateDecorator()
 {
     EDetectionInPositioningResult result;
-    int res = CheckBoardingStateForPositioning();
+    int res = CheckSidelineState();
 
     switch (res)
     {
@@ -874,107 +665,54 @@ EDetectionInPositioningResult CTask::CheckBoardingStateForPositioningDecorator()
             result = EDetectionInPositioningResult::eDeviationIsLessThanThreshold;
             break;
         }
-    }
-
-    return result;
-}
-
-int CTask::CheckBoardingStateForFitBoard(uint &motion_index)
-{
-    int exit_flag = 1;
-    int re_laser = -1;
-
-    double maxDistance = 0;
-    double minDistance = 1000;
-    for (int i = 0; i < 4; ++i) {
-        maxDistance = maxDistance > m_stMeasuredata.m_LaserDistance[i] ? maxDistance : m_stMeasuredata.m_LaserDistance[i];
-        minDistance = minDistance < m_stMeasuredata.m_LaserDistance[i] ? minDistance : m_stMeasuredata.m_LaserDistance[i];
-    }
-    if (maxDistance - minDistance > 20)
-    {
-        log->error("激光距离最大偏差大于20mm,停止贴合");
-        return -1;
-    }
-    else if (maxDistance - minDistance < 6 && maxDistance < 6)  // 5
-    {
-        log->info("激光距离满足贴合要求");
-        re_laser = 1;
-    }
-
-    //根据板面距离确定目标贴合距离
-    motion_index = 6;
-    for (int i = 0; i < BOARDING_MOTION_QUE.size(); ++i)
-    {
-        if (BOARDING_MOTION_QUE[i] + 2 < minDistance)
+        default:
         {
-            motion_index = i;
-            exit_flag = 0;
-            log->info("贴合调整目标距离为：{}", BOARDING_MOTION_QUE[i]);
-            break;
-        }
-    }
-
-    log->info("motion index: {}, min distance: {}", motion_index, minDistance);
-
-    if (exit_flag == 1 && re_laser == 1)
-    {
-        log->info("完成贴合作业，可以进行拧螺丝作业");
-        return 1;
-    }
-
-    return 0;
-}
-
-EDetectionInFitBoardResult CTask::CheckBoardingStateForFitBoardDecorator()
-{
-    EDetectionInFitBoardResult result;
-    int res = CheckBoardingStateForFitBoard(m_motion_index);
-
-    switch (res)
-    {
-        case -1:
-        {
-            result = EDetectionInFitBoardResult::eDataIsInvalid;
-            break;
-        }
-        case 0:
-        {
-            result = EDetectionInFitBoardResult::eEndAdjustmentDataIsValid;
-            break;
-        }
-        case 1:
-        {
-            result = EDetectionInFitBoardResult::eDeviationIsLessThanThreshold;
-            break;
+            result = EDetectionInPositioningResult::eDataIsInvalid;
+            log->error("{} invalid value: {} ", __LINE__, res);
         }
     }
 
     return result;
 }
 
-EDetectionInPositioningResult CTask::CheckBoardingStateDecorator()
+EDetectionInFitBoardResult CTask::CheckFitBoardState()
 {
-    EDetectionInPositioningResult result;
-    int res = CheckBoardingState(m_motion_index);
+    EDetectionInFitBoardResult result{ EDetectionInFitBoardResult::eDataIsInvalid };
+    std::vector<double> laserDistance(std::begin(m_stMeasuredata.m_LaserDistance), std::end(m_stMeasuredata.m_LaserDistance));
 
+    int res = CheckParallelState(laserDistance, Max_Deviation_In_FitBoard, Min_Deviation_In_FitBoard, Lift_Distance_In_FitBoard);
     switch (res)
     {
     case -1:
     {
-        result = EDetectionInPositioningResult::eDataIsInvalid;
+        result = EDetectionInFitBoardResult::eDataIsInvalid;
         break;
     }
     case 0:
     {
-        result = EDetectionInPositioningResult::eEndAdjustmentDataIsValid;
+        result = EDetectionInFitBoardResult::eEndAdjustmentDataIsValid;
         break;
     }
     case 1:
     {
-        result = EDetectionInPositioningResult::eDeviationIsLessThanThreshold;
+        result = EDetectionInFitBoardResult::eDeviationIsLessThanThreshold;
         break;
+    }
+    default:
+    {
+        result = EDetectionInFitBoardResult::eDataIsInvalid;
+        log->error("{} invalid value: {} ", __LINE__, res);
     }
     }
 
     return result;
+}
+
+void CTask::TaskTerminate()
+{
+    // 停止机器人运动
+    m_Robot->setLinkHalt();
+
+    // 磁铁脱开
+    m_Comm->SetMagentAction(0, eMag_Off);
 }

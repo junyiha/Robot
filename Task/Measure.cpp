@@ -24,10 +24,10 @@ QVector<Eigen::Matrix4d> CMeasure::calPoseDeviation(stMeasureData data, double t
 
     if(data.m_bLaserDistance[0]&&data.m_bLaserDistance[1]&&data.m_bLaserDistance[2]&&data.m_bLaserDistance[3])//4个点激光均有效
     {
-            laserDistance[0] << x_Laser,-y_Laser  , data.m_LaserDistance[0]-Distance_Lift;
-            laserDistance[1] << x_Laser,y_Laser   , data.m_LaserDistance[1]-Distance_Lift;
-            laserDistance[2] << -x_Laser,y_Laser  , data.m_LaserDistance[2]-Distance_Lift;
-            laserDistance[3] << -x_Laser,-y_Laser , data.m_LaserDistance[3]-Distance_Lift;
+            laserDistance[0] << x_Laser,-y_Laser  , data.m_LaserDistance[0]-Lift_Distance_In_Parallel;
+            laserDistance[1] << x_Laser,y_Laser   , data.m_LaserDistance[1]-Lift_Distance_In_Parallel;
+            laserDistance[2] << -x_Laser,y_Laser  , data.m_LaserDistance[2]-Lift_Distance_In_Parallel;
+            laserDistance[3] << -x_Laser,-y_Laser , data.m_LaserDistance[3]-Lift_Distance_In_Parallel;
 
             Result[0] = calPoseforSquare(laserDistance);
             stepValid[0] = true;

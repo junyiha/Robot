@@ -9,6 +9,7 @@ STEER_LEFT_INDEX : 11	# 左舵轮索引
 STEER_RIGHT_INDEX : 13	# 右舵轮索引
 WHEEL_LEFT_INDEX : 12	# 左行走轮索引
 WHEEL_RIGHT_INDEX : 14	# 右行走轮索引
+TOOL_LIFTING: 9			# 工具升降索引
 
 # 关节末端运动限速
 end_vel_limit: [5,5,5,0.05,0.05,0.05]

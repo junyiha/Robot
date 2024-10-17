@@ -10,6 +10,7 @@ namespace GP
 	std::size_t STEER_RIGHT_INDEX{0};
 	std::size_t WHEEL_LEFT_INDEX{0};
 	std::size_t WHEEL_RIGHT_INDEX{0};
+	std::size_t TOOL_LIFTING{ 0 };
 
 	std::vector<double> Home_Position(DOF, 0.0);
 	QVector<double> Home_Position_QV = QVector<double>(DOF, 0.0);

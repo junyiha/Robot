@@ -121,37 +121,6 @@ void CTask::positioningStateTransition()
     }
 }
 
-void CTask::readyToMagentOnStateTransition()
-{
-    readyToMagentOnExecutionCommand();
-}
-
-void CTask::doWeldStateTransition()
-{
-    switch (m_esubState)
-    {
-        case ESubState::eReadyToDoWeld:
-        {
-            readyToWeldExecutionCommand();
-            break;
-        }
-        case ESubState::eDoingWeld:
-        {
-            doingWeldExecutionCommand();
-            break;
-        }
-        case ESubState::eStopWeld:
-        {
-            stopWeldExecutionCommand();
-            break;
-        }
-        default:
-        {
-            log->warn("第二层状态数据无效!!!");
-        }
-    }
-}
-
 void CTask::fitBoardStateTransition()
 {
     switch (m_esubState)
@@ -166,9 +135,14 @@ void CTask::fitBoardStateTransition()
             detectionInFitBoardExecutionCommand();
             break;
         }
-        case ESubState::eMotion:
+        case ESubState::eSidelineMotion:
         {
-            motionInFitBoardExecutionCommand();
+            sidelineMotionInFitBoardExecutionCommand();
+            break;
+        }
+        case ESubState::eLiftMotion:
+        {
+            liftMotionInFitBoardExecutionCommand();
             break;
         }
         case ESubState::eFitBoardFinished:
@@ -301,7 +275,7 @@ void CTask::detectionInParallelExecutionCommand()
         detectionResult = EDetectionInParallelResult::eDeviationIsLessThanThreshold;
 #else
         UpdateLaserDistance();
-        detectionResult = CheckParallelStateDecorator(m_stMeasuredata.m_LaserDistance);
+        detectionResult = CheckParallelStateDecorator();
 #endif           
         switch (detectionResult)
         {
@@ -349,7 +323,7 @@ void CTask::motionInParallelExecutionCommand()
     {
         UpdateLaserDistance();
 
-        auto result = CheckParallelStateDecorator(m_stMeasuredata.m_LaserDistance);
+        auto result = CheckParallelStateDecorator();
         switch (result)
         {
         case EDetectionInParallelResult::eNoWallDetected:
@@ -444,7 +418,7 @@ void CTask::detectionInPositioningExecutionCommand()
             break;
         }
         UpdateVisionResult(vis_res);
-        detectResult = CheckBoardingStateForPositioningDecorator();
+        detectResult = CheckSidelineStateDecorator();
 
         log->info("vis_res.lineDistance: {},{},{},{},{},{}", vis_res.stData.m_LineDistance[0],vis_res.stData.m_LineDistance[1],vis_res.stData.m_LineDistance[2],
                   vis_res.stData.m_LineDistance[3],vis_res.stData.m_LineDistance[4],vis_res.stData.m_LineDistance[5]);
@@ -495,7 +469,7 @@ void CTask::motionInPositioningExecutionCommand()
     case EExecutionCommand::eNULL:
     {
         UpdateLaserDistance();
-        if (CheckParallelStateDecorator(m_stMeasuredata.m_LaserDistance) == EDetectionInParallelResult::eNoWallDetected)
+        if (CheckParallelStateDecorator() == EDetectionInParallelResult::eNoWallDetected)
         {
             log->warn("{} 反馈异常，末端激光偏差过大，状态跳转: 手动--准备", __LINE__);
             updateTopAndSubState(ETopState::eManual, ESubState::eReady);
@@ -565,178 +539,6 @@ void CTask::motionInPositioningExecutionCommand()
     }
 }
 
-void CTask::readyToMagentOnExecutionCommand()
-{
-    static int magent{ 0 };
-    switch (m_eexecutionCommand)
-    {
-    case EExecutionCommand::eNULL:
-    {
-        if (magent == 1)
-        {
-            if (doMagentOn())
-            {
-                magent = 0;
-                updateTopAndSubState(ETopState::eDoWeld, ESubState::eReadyToDoWeld);
-            }
-        }
-        break;
-    }
-    case EExecutionCommand::eParallel:
-    {
-        updateTopAndSubState(ETopState::eParallel, ESubState::eDetection);
-        break;
-    }
-    case EExecutionCommand::eMagentOn:
-    {
-        doMagentOn();
-        magent = 1;
-        break;
-    }
-    case EExecutionCommand::eQuit:
-    {
-        m_Comm->SetMagentAction(0, eMag_Off);
-        updateTopAndSubState(ETopState::eQuit, ESubState::eQuiting);
-        break;
-    }
-    case EExecutionCommand::eTerminate:
-    {
-        m_Comm->SetMagentAction(0, eMag_Off);
-        terminateCommand();
-        break;
-    }
-    default:
-    {
-        log->warn("{}: {} 执行指令不合法!指令: {}", __LINE__, getCurrentStateString(), ExecutionCommandStringMap.find(m_eexecutionCommand)->second);
-    }
-    }
-}
-
-void CTask::readyToWeldExecutionCommand()
-{
-    static int weld{ 0 };
-    switch (m_eexecutionCommand)
-    {
-    case EExecutionCommand::eNULL:
-    {
-        if (weld == -1)
-        {
-            if (doMagentOff())
-            {
-                weld = 0;
-                updateTopAndSubState(ETopState::eReadToMagentOn, ESubState::eNULL);
-            }
-        }
-        break;
-    }
-    case EExecutionCommand::eAutoWeld:
-    {
-        updateTopAndSubState(ETopState::eDoWeld, ESubState::eDoingWeld);
-        break;
-    }
-    case EExecutionCommand::eMagentOff:
-    {
-        doMagentOff();
-        weld = -1;
-        break;
-    }
-    case EExecutionCommand::eTerminate:
-    {
-        m_Comm->SetMagentAction(0, eMag_Off);
-        terminateCommand();
-        break;
-    }
-    default:
-    {
-        log->warn("{}: {} 执行指令不合法!指令: {}", __LINE__, getCurrentStateString(), ExecutionCommandStringMap.find(m_eexecutionCommand)->second);
-    }
-    }
-}
-
-void CTask::doingWeldExecutionCommand()
-{
-    static int weld{ 0 };
-    switch (m_eexecutionCommand)
-    {
-    case EExecutionCommand::eNULL:
-    {
-        if (weld == -1)
-        {
-            if (doMagentOff())
-            {
-                weld = 0;
-                terminateCommand();
-            }
-            break;
-        }
-        if (doWeldAction(1))
-        {
-            updateTopAndSubState(ETopState::eDoWeld, ESubState::eStopWeld);  // 碰钉结束，跳转到碰钉停止
-        }
-        break;
-    }
-    case EExecutionCommand::eTerminate:
-    {
-        doWeldAction(-1);
-        doMagentOff();
-        weld = -1;
-        break;
-    }
-    case EExecutionCommand::eStopWeld:
-    {
-        doWeldAction(-1);
-        updateTopAndSubState(ETopState::eDoWeld, ESubState::eStopWeld);
-        break;
-    }
-    case EExecutionCommand::ePause:
-    {
-        doWeldAction(0);
-        updateTopAndSubState(ETopState::eDoWeld, ESubState::eReadyToDoWeld);
-        break;
-    }
-    default:
-    {
-        log->warn("{}: {} 执行指令不合法!指令: {}", __LINE__, getCurrentStateString(), ExecutionCommandStringMap.find(m_eexecutionCommand)->second);
-    }
-    }
-}
-
-void CTask::stopWeldExecutionCommand()
-{
-    static int weld{ 0 };
-    switch (m_eexecutionCommand)
-    {
-    case EExecutionCommand::eNULL:
-    {
-        if (weld == -1)
-        {
-            if (doMagentOff())
-            {
-                weld = 0;
-                updateTopAndSubState(ETopState::eReadToMagentOn, ESubState::eNULL);
-            }
-        }
-        break;
-    }
-    case EExecutionCommand::eMagentOff:
-    {
-        doMagentOff();
-        weld = -1;
-        break;
-    }
-    case EExecutionCommand::eTerminate:
-    {
-        m_Comm->SetMagentAction(0, eMag_Off);
-        terminateCommand();
-        break;
-    }
-    default:
-    {
-        log->warn("{}: {} 执行指令不合法!指令: {}", __LINE__, getCurrentStateString(), ExecutionCommandStringMap.find(m_eexecutionCommand)->second);
-    }
-    }
-}
-
 void CTask::readyToFitBoardExecutionCommand()
 {
     switch (m_eexecutionCommand)
@@ -783,40 +585,42 @@ void CTask::detectionInFitBoardExecutionCommand()
         result = EDetectionInPositioningResult::eDeviationIsLessThanThreshold;
 #else
         UpdateLaserDistance();
-        if (CheckParallelStateDecorator(m_stMeasuredata.m_LaserDistance) == EDetectionInParallelResult::eNoWallDetected)
+        if (CheckParallelStateDecorator() == EDetectionInParallelResult::eNoWallDetected)
         {
             log->warn("{} 反馈异常，末端激光偏差过大，状态跳转: 手动--准备", __LINE__);
             updateTopAndSubState(ETopState::eManual, ESubState::eReady);
             break;
         }
 
-        //调用视觉函数
-        VisionResult vis_res = m_vision->getVisResult();
-        if (!vis_res.lineStatus)
-        { // 视觉检测无数据，等待下一个周期
-            break;
-        }
-        UpdateVisionResult(vis_res);
-        result = CheckBoardingStateForFitBoardDecorator();  // Check Board status
-
-        log->info("vis_res.lineDistance: {},{},{},{},{},{}", vis_res.stData.m_LineDistance[0],vis_res.stData.m_LineDistance[1],vis_res.stData.m_LineDistance[2],
-                  vis_res.stData.m_LineDistance[3],vis_res.stData.m_LineDistance[4],vis_res.stData.m_LineDistance[5]);
-        log->info("check boarding state result: {}", static_cast<int>(result));
-#endif
-        switch (result)
-        {
-        case EDetectionInFitBoardResult::eDeviationIsLessThanThreshold:
+        // 判断板壁距离
+        if (CheckFitBoardState() == EDetectionInFitBoardResult::eDeviationIsLessThanThreshold)
         {
             updateTopAndSubState(ETopState::eFitBoard, ESubState::eFitBoardFinished);
             break;
         }
-        case EDetectionInFitBoardResult::eEndAdjustmentDataIsValid:
+
+        VisionResult vis_res = m_vision->getVisResult();
+        if (!vis_res.lineStatus)
+            break;
+        UpdateVisionResult(vis_res);
+
+        result = CheckSidelineStateDecorator();
+#endif
+        switch (result)
         {
-            CalculatedAdjustmentForFitBoard();
-            updateTopAndSubState(ETopState::eFitBoard, ESubState::eMotion);
+        case EDetectionInPositioningResult::eDeviationIsLessThanThreshold:
+        {
+            CalculatedAdjustmentOfLift();
+            updateTopAndSubState(ETopState::eFitBoard, ESubState::eLiftMotion);
             break;
         }
-        case EDetectionInFitBoardResult::eDataIsInvalid:
+        case EDetectionInPositioningResult::eEndAdjustmentDataIsValid:
+        {
+            CalculatedAdjustmentOfSideline();
+            updateTopAndSubState(ETopState::eFitBoard, ESubState::eSidelineMotion);
+            break;
+        }
+        case EDetectionInPositioningResult::eDataIsInvalid:
         {
             updateTopAndSubState(ETopState::eManual, ESubState::eReady);
             break;
@@ -841,7 +645,7 @@ void CTask::detectionInFitBoardExecutionCommand()
     }
 }
 
-void CTask::motionInFitBoardExecutionCommand()
+void CTask::sidelineMotionInFitBoardExecutionCommand()
 {
     switch (m_eexecutionCommand)
     {
@@ -852,15 +656,6 @@ void CTask::motionInFitBoardExecutionCommand()
         {
             tar_position[i] = m_fit_board_target_pose.at(i);
         }
-        log->info("m_fit_board_target_pose: {}, {}, {}, {}, {}, {}", m_fit_board_target_pose[0], m_fit_board_target_pose[1],
-                  m_fit_board_target_pose[2], m_fit_board_target_pose[3],
-                  m_fit_board_target_pose[4], m_fit_board_target_pose[5]);
-        stLinkStatus linkstatus = m_Robot->getLinkSta();
-        log->info("m_Robot->setLinkMoveAbs(m_fit_board_target_pose,GP::End_Vel_Limit.data());\ndifference:{},{},{},{},{},{}",
-                  m_fit_board_target_pose[0] - linkstatus.stLinkActKin.LinkPos[0], m_fit_board_target_pose[1] - linkstatus.stLinkActKin.LinkPos[1],
-                  m_fit_board_target_pose[2] - linkstatus.stLinkActKin.LinkPos[2], m_fit_board_target_pose[3] * 57.3 - linkstatus.stLinkActKin.LinkPos[3] * 57.3,
-                  m_fit_board_target_pose[4] * 57.3 - linkstatus.stLinkActKin.LinkPos[4] * 57.3, m_fit_board_target_pose[5] * 57.3 - linkstatus.stLinkActKin.LinkPos[5] * 57.3);
-
         m_Robot->setLinkMoveAbs(m_fit_board_target_pose.data(), GP::End_Vel_Position.data());
 
         if (m_LinkStatus.eLinkActState == eLINK_STANDSTILL &&
@@ -868,6 +663,35 @@ void CTask::motionInFitBoardExecutionCommand()
         {
             updateTopAndSubState(ETopState::eFitBoard, ESubState::eDetection);
         }
+        break;
+    }
+    case EExecutionCommand::ePause:
+    {
+        updateTopAndSubState(ETopState::eFitBoard, ESubState::eReadyToFitBoard);
+        break;
+    }
+    case EExecutionCommand::eTerminate:
+    {
+        updateTopAndSubState(ETopState::eManual, ESubState::eReady);
+        break;
+    }
+    default:
+    {
+        log->warn("{}: {} 执行指令不合法!指令: {}", __LINE__, getCurrentStateString(), ExecutionCommandStringMap.find(m_eexecutionCommand)->second);
+    }
+    }
+}
+
+void CTask::liftMotionInFitBoardExecutionCommand()
+{
+    switch (m_eexecutionCommand)
+    {
+    case EExecutionCommand::eNULL:
+    {
+        m_Robot->setJointMoveAbs(GP::TOOL_LIFTING, m_lift_tool, LINK_0_JOINT_MAX_VEL[GP::TOOL_LIFTING]);
+
+        // 判断是否运动结束？
+        updateTopAndSubState(ETopState::eFitBoard, ESubState::eDetection);
         break;
     }
     case EExecutionCommand::ePause:
@@ -996,10 +820,13 @@ void CTask::terminateCommand()
     updateTopAndSubState(ETopState::eManual, ESubState::eReady);
 }
 
-void CTask::CalculatedAdjustmentForFitBoard()
+void CTask::CalculatedAdjustmentOfSideline()
 {
     //计算调整量
-    QVector<Eigen::Matrix4d> Dev_RT = CMeasure::calPoseDeviation(m_stMeasuredata, BOARDING_MOTION_QUE.at(m_motion_index));
+    std::vector<double> laserDistance(std::begin(m_stMeasuredata.m_LaserDistance), std::end(m_stMeasuredata.m_LaserDistance));
+    double average_distance = std::accumulate(laserDistance.begin(), laserDistance.end(), 0.0) / laserDistance.size();
+
+    QVector<Eigen::Matrix4d> Dev_RT = CMeasure::calPoseDeviation(m_stMeasuredata, average_distance);
     QVector<double> tar_position{ 0,0,0,0,0,0 };
     tar_position = m_Robot->getTargetPose(Dev_RT[5]);  // 计算调整量
     log->info("motion index: {}", m_motion_index);
@@ -1008,6 +835,29 @@ void CTask::CalculatedAdjustmentForFitBoard()
     {
         m_fit_board_target_pose[i] = tar_position[i];
     }
+}
+
+void CTask::CalculatedAdjustmentOfLift()
+{
+    int motion_index = BOARDING_MOTION_QUE.size();
+
+    // 计算运动索引
+    std::vector<double> laserDistance(std::begin(m_stMeasuredata.m_LaserDistance), std::end(m_stMeasuredata.m_LaserDistance));
+    auto minDistance = std::min_element(laserDistance.begin(), laserDistance.end());
+    for (int i = 0; i < BOARDING_MOTION_QUE.size(); ++i)
+    {
+        if (BOARDING_MOTION_QUE[i] + 2 < *minDistance)
+        {
+            motion_index = i;
+            log->info("贴合调整目标距离为：{}", BOARDING_MOTION_QUE[i]);
+            break;
+        }
+    }
+
+    // 计算调整量
+    double average_distance = std::accumulate(laserDistance.begin(), laserDistance.end(), 0.0) / laserDistance.size();
+    m_lift_tool = average_distance - BOARDING_MOTION_QUE.at(motion_index);
+    m_lift_tool += m_JointGroupStatus[GP::TOOL_LIFTING].Position;
 }
 
 void CTask::UpdateLaserDistance()

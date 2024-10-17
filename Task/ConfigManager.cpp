@@ -46,6 +46,7 @@ namespace Config
 		GP::STEER_RIGHT_INDEX = m_root["STEER_RIGHT_INDEX"].as<std::size_t>();
 		GP::WHEEL_LEFT_INDEX = m_root["WHEEL_LEFT_INDEX"].as<std::size_t>();
 		GP::WHEEL_RIGHT_INDEX = m_root["WHEEL_RIGHT_INDEX"].as<std::size_t>();
+		GP::TOOL_LIFTING = m_root["TOOL_LIFTING"].as<std::size_t>();
 
 		GP::velLine = m_root["velLine"].as<double>();
 		GP::velRotate = m_root["velRotate"].as<double>() / 57.3;
