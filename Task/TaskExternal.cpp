@@ -690,8 +690,11 @@ void CTask::liftMotionInFitBoardExecutionCommand()
     {
         m_Robot->setJointMoveAbs(GP::TOOL_LIFTING, m_lift_tool, LINK_0_JOINT_MAX_VEL[GP::TOOL_LIFTING]);
 
-        // 判断是否运动结束？
-        updateTopAndSubState(ETopState::eFitBoard, ESubState::eDetection);
+        // 判断是否运动结束
+        auto status = m_Robot->getJointGroupSta();
+        if (status[GP::TOOL_LIFTING].eState == eAxis_STANDSTILL && std::fabs(status[GP::TOOL_LIFTING].Position - m_lift_tool) < 1)
+            updateTopAndSubState(ETopState::eFitBoard, ESubState::eDetection);
+
         break;
     }
     case EExecutionCommand::ePause:
