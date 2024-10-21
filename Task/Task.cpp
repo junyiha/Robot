@@ -572,7 +572,7 @@ EDetectionInParallelResult CTask::CheckParallelStateDecorator()
     EDetectionInParallelResult result{ EDetectionInParallelResult::eNoWallDetected };
     std::vector<double> laserDistance(std::begin(m_stMeasuredata.m_LaserDistance), std::end(m_stMeasuredata.m_LaserDistance));
 
-    int res = CheckParallelState(laserDistance, Max_Deviation_In_Parallel, Min_Deviation_In_Parallel, Lift_Distance_In_Parallel);
+    int res = CheckParallelState(laserDistance, GP::Max_Deviation_In_Parallel, GP::Min_Deviation_In_Parallel, GP::Lift_Distance_In_Parallel);
     switch (res)
     {
     case -1:
@@ -627,9 +627,9 @@ int CTask::CheckSidelineState()
 
     log->info("{} line_dis_1: {}, line_dis_2: {}, line_dis_3: {}", __LINE__, line_dis_1, line_dis_2, line_dis_3);
 
-    if (fabs(line_dis_1) < LINE_DEVIATION_THRESHOLD
-        && fabs(line_dis_2) < LINE_DEVIATION_THRESHOLD
-        && fabs(line_dis_3) < LINE_DEVIATION_THRESHOLD)
+    if (fabs(line_dis_1) < GP::Line_Deviation_Threshold
+        && fabs(line_dis_2) < GP::Line_Deviation_Threshold
+        && fabs(line_dis_3) < GP::Line_Deviation_Threshold)
     {
         log->info("完成装板定位，边线距离为：{},{},{},{},{},{}", m_stMeasuredata.m_LineDistance[0], m_stMeasuredata.m_LineDistance[1], m_stMeasuredata.m_LineDistance[2], m_stMeasuredata.m_LineDistance[3], m_stMeasuredata.m_LineDistance[4], m_stMeasuredata.m_LineDistance[5]);
         re_line = 1;
@@ -680,7 +680,7 @@ EDetectionInFitBoardResult CTask::CheckFitBoardState()
     EDetectionInFitBoardResult result{ EDetectionInFitBoardResult::eDataIsInvalid };
     std::vector<double> laserDistance(std::begin(m_stMeasuredata.m_LaserDistance), std::end(m_stMeasuredata.m_LaserDistance));
 
-    int res = CheckParallelState(laserDistance, Max_Deviation_In_FitBoard, Min_Deviation_In_FitBoard, Lift_Distance_In_FitBoard);
+    int res = CheckParallelState(laserDistance, GP::Max_Deviation_In_FitBoard, GP::Min_Deviation_In_FitBoard, GP::Lift_Distance_In_FitBoard);
     switch (res)
     {
     case -1:

@@ -31,6 +31,7 @@
 
 //--------------任务部分--------------//
 #include "Task/Task.h"
+#include "ConfigManager.hpp"
 #include <QAtomicInt>
 
 #include <bitset>
@@ -72,6 +73,8 @@ public:
     CRobot* m_Robot;
     //任务
     CTask* m_Task;
+
+    std::unique_ptr<Config::ConfigManager> m_config_ptr;
 
     //视觉模块
     VisionInterface* m_VisionInterface;
@@ -345,8 +348,8 @@ private slots:
     void slots_on_btn_putter_backward_pressed();
     void slots_on_btn_putter_backward_released();
 
-
-
+    // 参数配置文件
+    void slots_btn_load_configuration_clicked();
 
     void on_comboBox_tools_currentIndexChanged();
     void on_comboBox_magents_currentIndexChanged();

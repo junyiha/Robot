@@ -22,8 +22,6 @@
 #include <Eigen/Eigen>
 #include "com/LaserDistanceBojke.h"
 
-#include "Task/ConfigManager.hpp"
-
 void initLog()
 {
     //创建控制台日志记录器
@@ -96,19 +94,8 @@ int RunRobot(int argc, char *argv[])
     return a.exec();
 }
 
-void LoadYAMLConfig()
-{
-    Config::ConfigManager config_manager;
-
-    std::clog << GP::IOA_IP << "\n"
-              << GP::IOA_Port << "\n"
-              << GP::DOF << "\n";
-}
-
-
 int main(int argc, char *argv[])
 {
-    LoadYAMLConfig();
     return RunRobot(argc, argv);
 
 //    spdlog::info("test program...");

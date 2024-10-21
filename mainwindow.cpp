@@ -25,6 +25,7 @@ MainWindow::MainWindow(QWidget *parent)
     m_Robot = new CRobot(m_Com);
     m_VisionInterface = new VisionInterface();
     m_Task = new CTask(m_Com, m_Robot, m_VisionInterface);
+    m_config_ptr = std::make_unique<Config::ConfigManager>();
 
     //5.0 计时器界面实时更新 (100ms更新一次)
     this->logger->trace("启动界面实时更新");
@@ -247,6 +248,7 @@ void MainWindow::connectSlotFunctions() {// 按钮时间绑定
     connect(ui->btn_putter_backward, &QPushButton::released, this, &MainWindow::slots_on_btn_putter_backward_released,
             Qt::UniqueConnection);
 
+    connect(ui->btn_load_configuration, &QPushButton::clicked, this, &MainWindow::slots_btn_load_configuration_clicked, Qt::UniqueConnection);
 
 }
 
@@ -1546,6 +1548,18 @@ void MainWindow::slots_on_btn_putter_backward_pressed() {
 void MainWindow::slots_on_btn_putter_backward_released() {
     m_Com->SetCylinder(0);
 }
+
+void MainWindow::slots_btn_load_configuration_clicked()
+{
+    if (m_config_ptr->ReloadConfiguration())
+    {
+        ui->btn_load_configuration->setStyleSheet("background-color: rgb(0, 255, 0);"
+            "border: 2px solid blue;"
+            "border-radius: 10px;"
+        );
+    }
+}
+
 
 void MainWindow::slots_on_btn_auto_laminate_clicked() {
 

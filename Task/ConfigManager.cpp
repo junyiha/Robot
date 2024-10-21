@@ -4,21 +4,34 @@ namespace Config
 {
 	ConfigManager::ConfigManager()
 	{
-		m_root = YAML::LoadFile(m_path);
-		try
-		{
-			ParseConfiguration();
-		}
-		catch (...)
-		{
-			std::cerr << "parse config.yaml failed, please check the config.yaml file!!!\n";
-			abort();
-		}
+		assert(LoadConfiguration());
 	}
 
 	ConfigManager::~ConfigManager()
 	{
 
+	}
+
+	bool ConfigManager::LoadConfiguration()
+	{
+		bool res{ true };
+		try
+		{
+			m_root = YAML::LoadFile(m_path);
+			ParseConfiguration();
+		}
+		catch (YAML::BadFile)
+		{
+			std::cerr << "Invalid configuration file path: " << m_path << "\n";
+			res = false;
+		}
+		catch (...)
+		{
+			std::cerr << "parse config.yaml failed, please check the config.yaml file!!!\n";
+			res = false;
+		}
+
+		return res;
 	}
 
 	void ConfigManager::ParseConfiguration()
@@ -50,5 +63,19 @@ namespace Config
 
 		GP::velLine = m_root["velLine"].as<double>();
 		GP::velRotate = m_root["velRotate"].as<double>() / 57.3;
+
+		GP::Lift_Distance_In_Parallel = m_root["Lift_Distance_In_Parallel"].as<double>();
+		GP::Max_Deviation_In_Parallel = m_root["Max_Deviation_In_Parallel"].as<double>();
+		GP::Min_Deviation_In_Parallel = m_root["Min_Deviation_In_Parallel"].as<double>();
+		GP::Distance_work = m_root["Distance_work"].as<double>();
+		GP::Lift_Distance_In_FitBoard = m_root["Lift_Distance_In_FitBoard"].as<double>();
+		GP::Max_Deviation_In_FitBoard = m_root["Max_Deviation_In_FitBoard"].as<double>();
+		GP::Min_Deviation_In_FitBoard = m_root["Min_Deviation_In_FitBoard"].as<double>();
+		GP::Line_Deviation_Threshold = m_root["Line_Deviation_Threshold"].as<double>();
+	}
+
+	bool ConfigManager::ReloadConfiguration()
+	{
+		return LoadConfiguration();
 	}
 }
