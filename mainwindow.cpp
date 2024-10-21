@@ -248,8 +248,10 @@ void MainWindow::connectSlotFunctions() {// 按钮时间绑定
     connect(ui->btn_putter_backward, &QPushButton::released, this, &MainWindow::slots_on_btn_putter_backward_released,
             Qt::UniqueConnection);
 
+    // 参数配置文件
     connect(ui->btn_load_configuration, &QPushButton::clicked, this, &MainWindow::slots_btn_load_configuration_clicked, Qt::UniqueConnection);
-
+    connect(ui->btn_save_home_position, &QPushButton::clicked, this, &MainWindow::slots_btn_save_home_position_clicked, Qt::UniqueConnection);
+    connect(ui->btn_save_prepare_position, &QPushButton::clicked, this, &MainWindow::slots_btn_save_prepare_position_clicked, Qt::UniqueConnection);
 }
 
 MainWindow::~MainWindow() {
@@ -1554,6 +1556,93 @@ void MainWindow::slots_btn_load_configuration_clicked()
     if (m_config_ptr->ReloadConfiguration())
     {
         ui->btn_load_configuration->setStyleSheet("background-color: rgb(0, 255, 0);"
+            "border: 2px solid blue;"
+            "border-radius: 10px;"
+        );
+    }
+    else
+    {
+        ui->btn_load_configuration->setStyleSheet("background-color: rgb(255, 0, 0);"
+            "border: 2px solid blue;"
+            "border-radius: 10px;"
+        );
+    }
+}
+
+void MainWindow::slots_btn_save_home_position_clicked()
+{
+    bool res{ true };
+    auto status = m_Robot->getJointGroupSta();
+    std::vector<double> data;
+    for (auto& i : status)
+    {
+        //if (i.eState != eAxis_STANDSTILL)
+        //{
+        //    res = false;
+        //    break;
+        //}
+        data.push_back(i.Position);
+    }
+    //if (!res)
+    //{
+    //    ui->btn_save_home_position->setStyleSheet("background-color: rgb(255, 0, 0);"
+    //        "border: 2px solid blue;"
+    //        "border-radius: 10px;"
+    //    );
+    //    return;
+    //}
+    res = m_config_ptr->UpdateValue("home_point", data);
+
+    if (res)
+    {
+        ui->btn_save_home_position->setStyleSheet("background-color: rgb(0, 255, 0);"
+            "border: 2px solid blue;"
+            "border-radius: 10px;"
+        );
+    }
+    else
+    {
+        ui->btn_save_home_position->setStyleSheet("background-color: rgb(255, 0, 0);"
+            "border: 2px solid blue;"
+            "border-radius: 10px;"
+        );
+    }
+}
+
+void MainWindow::slots_btn_save_prepare_position_clicked()
+{
+    bool res{ true };
+    auto status = m_Robot->getJointGroupSta();
+    std::vector<double> data;
+    for (auto& i : status)
+    {
+        if (i.eState != eAxis_STANDSTILL)
+        {
+            res = false;
+            break;
+        }
+        data.push_back(i.Position);
+    }
+    if (!res)
+    {
+        ui->btn_save_prepare_position->setStyleSheet("background-color: rgb(255, 0, 0);"
+            "border: 2px solid blue;"
+            "border-radius: 10px;"
+        );
+        return;
+    }
+    res = m_config_ptr->UpdateValue("prepare_point", data);
+
+    if (res)
+    {
+        ui->btn_save_prepare_position->setStyleSheet("background-color: rgb(0, 255, 0);"
+            "border: 2px solid blue;"
+            "border-radius: 10px;"
+        );
+    }
+    else
+    {
+        ui->btn_save_prepare_position->setStyleSheet("background-color: rgb(255, 0, 0);"
             "border: 2px solid blue;"
             "border-radius: 10px;"
         );

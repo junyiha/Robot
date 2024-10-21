@@ -3857,34 +3857,6 @@ QPushButton:pressed {
           <string>直线检测</string>
          </property>
         </widget>
-        <widget class="QPushButton" name="btn_load_configuration">
-         <property name="geometry">
-          <rect>
-           <x>220</x>
-           <y>120</y>
-           <width>91</width>
-           <height>41</height>
-          </rect>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">QPushButton {
-    border: 2px solid blue;
-    border-radius: 10px;
-}
-QPushButton:hover {
-    border: 2px solid red;
-    border-radius: 10px;
-}
-
-QPushButton:pressed {
-    border: 2px solid green;
-    border-radius: 10px;
-}</string>
-         </property>
-         <property name="text">
-          <string>加载配置</string>
-         </property>
-        </widget>
        </widget>
        <widget class="QLabel" name="label_state_transition">
         <property name="geometry">
@@ -12820,6 +12792,90 @@ QPushButton:hover {
        </property>
        <property name="text">
         <string>直线检测可视化</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="btn_load_configuration">
+       <property name="geometry">
+        <rect>
+         <x>30</x>
+         <y>380</y>
+         <width>91</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton {
+    border: 2px solid blue;
+    border-radius: 10px;
+}
+QPushButton:hover {
+    border: 2px solid red;
+    border-radius: 10px;
+}
+
+QPushButton:pressed {
+    border: 2px solid green;
+    border-radius: 10px;
+}</string>
+       </property>
+       <property name="text">
+        <string>加载配置</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="btn_save_home_position">
+       <property name="geometry">
+        <rect>
+         <x>150</x>
+         <y>380</y>
+         <width>91</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton {
+    border: 2px solid blue;
+    border-radius: 10px;
+}
+QPushButton:hover {
+    border: 2px solid red;
+    border-radius: 10px;
+}
+
+QPushButton:pressed {
+    border: 2px solid green;
+    border-radius: 10px;
+}</string>
+       </property>
+       <property name="text">
+        <string>保存准备位</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="btn_save_prepare_position">
+       <property name="geometry">
+        <rect>
+         <x>270</x>
+         <y>380</y>
+         <width>91</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton {
+    border: 2px solid blue;
+    border-radius: 10px;
+}
+QPushButton:hover {
+    border: 2px solid red;
+    border-radius: 10px;
+}
+
+QPushButton:pressed {
+    border: 2px solid green;
+    border-radius: 10px;
+}</string>
+       </property>
+       <property name="text">
+        <string>保存举升位</string>
        </property>
       </widget>
      </widget>

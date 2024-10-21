@@ -350,6 +350,8 @@ private slots:
 
     // 参数配置文件
     void slots_btn_load_configuration_clicked();
+    void slots_btn_save_home_position_clicked();
+    void slots_btn_save_prepare_position_clicked();
 
     void on_comboBox_tools_currentIndexChanged();
     void on_comboBox_magents_currentIndexChanged();

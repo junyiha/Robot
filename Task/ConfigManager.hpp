@@ -32,11 +32,23 @@ namespace Config
 		 */
 		void ParseConfiguration();
 
+		bool WriteToFile();
+
 	public:
 		/**
-		 * 重新加载参数配置文件.
+		 * @brief 重新加载参数配置文件.
 		 */
 		bool ReloadConfiguration();
+
+		/**
+		 * @brief 更新指定参数(浮点数).
+		 */
+		bool UpdateValue(const std::string key, const double value);
+
+		/**
+		 * @brief 更新指定参数(数组).
+		 */
+		bool UpdateValue(const std::string key, const std::vector<double> value);
 
 	private:
 		YAML::Node m_root;
