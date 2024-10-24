@@ -568,6 +568,21 @@ void MainWindow::updataDeviceConnectState() {
                     "image: url(:/img/images/icon_redLight.png);");
         }
     }
+
+    // 更新轮廓激光的连接状态
+    QString laser_label = "label_laser_state_";
+    std::vector<bool> laser_open_sta = m_VisionInterface->laser_controls->getLayserScannerConnectStates();
+    for (int i = 0; i < laser_open_sta.size(); i++) {
+        if (laser_open_sta[i]) {
+            findChild<QLabel *>(laser_label + QString::number(i + 1))->setStyleSheet(
+                    "image: url(:/img/images/icon_greenLight.png);");
+        } else {
+            findChild<QLabel *>(laser_label + QString::number(i + 1))->setStyleSheet(
+                    "image: url(:/img/images/icon_redLight.png);");
+        }
+    }
+
+
     // 更新io板和机器人连接状态显示
     bool io_A_sta = m_Com->getCommState_IOA();
 //    bool io_B_sta = m_Com->getCommState_IOB();
@@ -599,6 +614,10 @@ void MainWindow::updataDeviceConnectState() {
     } else {
         ui->label_controller_state->setStyleSheet("image: url(:/img/images/icon_redLight.png);");
     }
+
+
+
+
 }
 
 void MainWindow::updateAxisStatus() {

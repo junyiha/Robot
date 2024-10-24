@@ -1668,7 +1668,7 @@ QPushButton::pressed{
           <x>10</x>
           <y>10</y>
           <width>331</width>
-          <height>191</height>
+          <height>221</height>
          </rect>
         </property>
         <property name="styleSheet">
@@ -1689,7 +1689,7 @@ QPushButton::pressed{
          <property name="geometry">
           <rect>
            <x>10</x>
-           <y>110</y>
+           <y>140</y>
            <width>98</width>
            <height>32</height>
           </rect>
@@ -1732,7 +1732,7 @@ image: url(:/img/images/icon_redLight.png);
          <property name="geometry">
           <rect>
            <x>10</x>
-           <y>140</y>
+           <y>170</y>
            <width>98</width>
            <height>32</height>
           </rect>
@@ -2035,7 +2035,7 @@ image: url(:/img/images/icon_redLight.png);
          <property name="geometry">
           <rect>
            <x>10</x>
-           <y>80</y>
+           <y>110</y>
            <width>134</width>
            <height>32</height>
           </rect>
@@ -2113,12 +2113,139 @@ image: url(:/img/images/icon_redLight.png);
           </item>
          </layout>
         </widget>
+        <widget class="QWidget" name="layoutWidget_8">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>80</y>
+           <width>206</width>
+           <height>32</height>
+          </rect>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_69">
+          <item row="0" column="4">
+           <widget class="QLabel" name="label_laser_state_4">
+            <property name="minimumSize">
+             <size>
+              <width>30</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>30</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QLabel{
+image: url(:/img/images/icon_redLight.png);
+}</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLabel" name="label_laser_state_1">
+            <property name="minimumSize">
+             <size>
+              <width>30</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>30</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QLabel{
+image: url(:/img/images/icon_redLight.png);
+}</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="3">
+           <widget class="QLabel" name="label_laser_state_3">
+            <property name="minimumSize">
+             <size>
+              <width>30</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>30</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QLabel{
+image: url(:/img/images/icon_redLight.png);
+}</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QLabel" name="label_laser_state_2">
+            <property name="minimumSize">
+             <size>
+              <width>30</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>30</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QLabel{
+image: url(:/img/images/icon_redLight.png);
+}</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_28">
+            <property name="minimumSize">
+             <size>
+              <width>60</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>60</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>轮廓激光</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
        </widget>
        <widget class="QGroupBox" name="groupBox_14">
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>210</y>
+          <y>240</y>
           <width>341</width>
           <height>341</height>
          </rect>
@@ -2968,7 +3095,7 @@ QPushButton:pressed {
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>570</y>
+          <y>590</y>
           <width>341</width>
           <height>231</height>
          </rect>
@@ -3862,7 +3989,7 @@ QPushButton:pressed {
         <property name="geometry">
          <rect>
           <x>20</x>
-          <y>820</y>
+          <y>840</y>
           <width>311</width>
           <height>61</height>
          </rect>

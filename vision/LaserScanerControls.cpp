@@ -27,8 +27,6 @@ LaserScanerControls::LaserScanerControls(){
 //            {"lida_5" ,  false}
     };
     this->logger = spdlog::get("logger");
-
-
     this->start(); // 启动线程，开启轮廓激光
 
  }
@@ -78,4 +76,13 @@ void LaserScanerControls::run() {
         layserScaner->startLaserScanTask();
     }
 
+}
+
+std::vector<bool> LaserScanerControls::getLayserScannerConnectStates() {
+
+    std::vector<bool> con_states;
+    for( auto &item : this->scaners){
+        con_states.push_back(item.second->getConnectState());
+    }
+    return con_states;
 }

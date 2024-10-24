@@ -134,6 +134,7 @@ public:
     // 连接点激光
     void scannerConnect();
     void scanerDisConnect();
+    bool getConnectState();
 
     // 开启图像预览
     void startImagePreview();
@@ -143,7 +144,6 @@ public:
     void startAcquisition();
     void laserOn(); // 打开激光
     void laserOff(); // 关闭激光
-
     void startLaserScanTask();
 
 private:

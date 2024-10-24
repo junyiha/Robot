@@ -28,6 +28,10 @@ void MyBestfitLaserScaner::run() {
 
     while(m_isRunning){
 
+        if(!m_bScannerConnectStatus){
+            continue;
+        }
+
         if(m_threadQuit){
             break;
         }
@@ -478,7 +482,7 @@ void MyBestfitLaserScaner::setDataValid(bool dataValid) {
 }
 
 void MyBestfitLaserScaner::startLaserScanTask() {
-//    this->scannerConnect();
+    this->scannerConnect();
     if(this->m_bScannerConnectStatus){
         this->laserOn();
         this->startAcquisition();
@@ -488,3 +492,22 @@ void MyBestfitLaserScaner::startLaserScanTask() {
         std::cout<<"layser:"<<this->laser_name<< "start failed!"<<std::endl;
     }
 }
+bool MyBestfitLaserScaner::getConnectState() {
+    bool state = false;
+    int ConnectionStatus = 0;
+    if(this->m_hScanner == nullptr){
+
+        return state;
+    }
+    EthernetScanner_GetConnectStatus(m_hScanner, &ConnectionStatus);
+    if(ConnectionStatus == ETHERNETSCANNER_TCPSCANNERCONNECTED)
+    {
+        state = true;
+        m_bScannerConnectStatus = true;
+    }else{
+        m_bScannerConnectStatus = false;
+    }
+    return state;
+}
+
+

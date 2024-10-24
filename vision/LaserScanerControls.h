@@ -44,6 +44,8 @@ public:
     void run() override;
 
     void closeAllLaserScaner();
+    std::vector<bool> getLayserScannerConnectStates();
+
 
 };
 #endif PDROBOT_LASERSCANERCONTROLS_H
