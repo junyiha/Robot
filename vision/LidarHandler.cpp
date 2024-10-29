@@ -13,7 +13,7 @@ LidarHandler::~LidarHandler(){
 
 
 void LidarHandler::run(){
-
+    static int cout = 0;
     while(this->thread_control_flag){
 
         if(this->detect_control_flag){
@@ -35,6 +35,11 @@ void LidarHandler::run(){
                    MyBestfitLaserScaner *scaner_ = this->laser_controls->scaners[item.first];
                    this->lidar_helper->lidarDetecter(item.second, scaner_->isleft, scaner_->revAngle,scaner_->minX, scaner_->minY, this->laser_controls->direct_config[item.first]); //雷达成像检测
                    this->lidar_helper->shrink();
+//                   if(this->lidar_helper->resultFlag){
+//                        std::string img_path = "E:\\projects\\zjy\\Robot-zb\\out\\" + std::to_string(cout)+".png";
+//                       cv::imwrite(img_path, item.second);
+//                       cout++;
+//                   }
                    lidar_res.flag = this->lidar_helper->resultFlag;
                    lidar_res.dist = this->lidar_helper->lidarDist;
                    lidar_res.gap = this->lidar_helper->gap;

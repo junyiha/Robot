@@ -46,6 +46,11 @@ public:
     void closeAllLaserScaner();
     std::vector<bool> getLayserScannerConnectStates();
 
+    //open Layser scaner;
+    void setLaserOn(std::vector<std::string> laser_name);
+    void setLaserOff(std::vector<std::string> laser_name);
+    void reconnectLaser(std::string laser_name);
+
 
 };
 #endif PDROBOT_LASERSCANERCONTROLS_H

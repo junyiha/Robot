@@ -22,6 +22,8 @@
 #include <Eigen/Eigen>
 #include "com/LaserDistanceBojke.h"
 
+#include "cxxopts.hpp"
+
 void initLog()
 {
     //创建控制台日志记录器
@@ -49,19 +51,19 @@ void line_detect_demo(){
     cv::Mat img = cv::imread(path);
     LineDetector line_tool;
     auto start = std::chrono::high_resolution_clock::now();
-    LineResult res = line_tool.getLineDistance(img);
+    LineSpaceResult res = line_tool.getLinesDistance(img);
     auto end = std::chrono::high_resolution_clock::now();
 
     // 计算并输出运行时间
     std::chrono::duration<double> elapsed_seconds = end - start;
     std::cout << "程序运行时间: " << elapsed_seconds.count() << " 秒" << std::endl;
     if(res.status){
-        cv::imshow("img", res.imgDrawed);
+        cv::imshow("img", res.img_drawed);
         cv::waitKey(0);
     }else{
-        cv::imshow("img", res.imgDrawed);
+        cv::imshow("img", res.img_drawed);
         cv::waitKey(0);
-        std::cout<<res.errorInfo<<std::endl;
+        std::cout<<res.error_info<<std::endl;
     }
 }
 
@@ -98,11 +100,7 @@ int main(int argc, char *argv[])
 {
     return RunRobot(argc, argv);
 
-//    spdlog::info("test program...");
-//    line_detect_demo();
-
-
-//   laserDemo();
-
-    return 0;
+    //line_detect_demo();
+    //laserDemo();
+    //return 0;
 }

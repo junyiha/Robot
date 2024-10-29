@@ -41,7 +41,6 @@ void LaserScanerControls::getDataAll(){
     if(this->pointCloudMasks.size()>0){
         this->pointCloudMasks.clear();
     }
-
     //获取雷达数据Mat
     for(auto &item : this->scaners){
         this->pointCloudMasks[item.first]=item.second->getResultMask();
@@ -60,8 +59,8 @@ void LaserScanerControls::run() {
     bool CfgLidar[4][2] = {
             {false  ,   false},
             {true   ,   false},
-            {true   ,   false},
-            {false  ,   false},
+            {false   ,   false},
+            {true  ,   false},
 //            {true   ,   false},
     };
 
@@ -86,3 +85,20 @@ std::vector<bool> LaserScanerControls::getLayserScannerConnectStates() {
     }
     return con_states;
 }
+
+void LaserScanerControls::setLaserOn(std::vector<std::string> laser_name) {
+    for(auto &item : laser_name) {
+        this->scaners[item]->laserOn();
+    }
+}
+
+void LaserScanerControls::setLaserOff(std::vector<std::string> laser_name) {
+    for(auto &item : laser_name) {
+        this->scaners[item]->laserOff();
+    }
+}
+
+void LaserScanerControls::reconnectLaser(std::string laser_name) {
+    this->scaners[laser_name]->reconnectScanner();
+}
+

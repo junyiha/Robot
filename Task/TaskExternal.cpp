@@ -219,7 +219,7 @@ void CTask::readyExecutionCommand()
 
 void CTask::notReadyExecutionCommand()
 {
-    log->warn("机器人未就绪，离线状态！！！");
+    //log->warn("机器人未就绪，离线状态！！！");
 
     bool robotReady;
 #ifdef TEST_TASK_STATEMACHINE_
@@ -346,6 +346,12 @@ void CTask::motionInParallelExecutionCommand()
 
             log->info("{} tar_pos:{},{},{},{},{},{}", __LINE__, tar_pos[0], tar_pos[1], tar_pos[2],
                 tar_pos[3] * 57.3, tar_pos[4] * 57.3, tar_pos[5] * 57.3);
+
+            stLinkStatus linkstatus = m_Robot->getLinkSta();
+            log->info("m_Robot->setLinkMoveAbs(tar_pos_differ:{},{},{},{},{},{}",
+                      tar_pos[0] - linkstatus.stLinkActKin.LinkPos[0], tar_pos[1] - linkstatus.stLinkActKin.LinkPos[1],
+                      tar_pos[2] - linkstatus.stLinkActKin.LinkPos[2], tar_pos[3] * 57.3 - linkstatus.stLinkActKin.LinkPos[3] * 57.3,
+                      tar_pos[4] * 57.3 - linkstatus.stLinkActKin.LinkPos[4] * 57.3, tar_pos[5] * 57.3 - linkstatus.stLinkActKin.LinkPos[5] * 57.3);
             m_Robot->setLinkMoveAbs(tar_pos, GP::End_Vel_Limit.data());
             break;
         }
@@ -419,10 +425,6 @@ void CTask::detectionInPositioningExecutionCommand()
         }
         UpdateVisionResult(vis_res);
         detectResult = CheckSidelineStateDecorator();
-
-        log->info("vis_res.lineDistance: {},{},{},{},{},{}", vis_res.stData.m_LineDistance[0],vis_res.stData.m_LineDistance[1],vis_res.stData.m_LineDistance[2],
-                  vis_res.stData.m_LineDistance[3],vis_res.stData.m_LineDistance[4],vis_res.stData.m_LineDistance[5]);
-        log->info("check positioning state result: {}", static_cast<int>(detectResult));
 #endif
         switch (detectResult)
         {
@@ -479,22 +481,21 @@ void CTask::motionInPositioningExecutionCommand()
         static QVector<double> tar_position{ 0,0,0,0,0,0 };
         static double tar_pos[6] = { 0,0,0,0,0,0 };
         if (!m_position_motion_flag) {
-            log->info("m_stMeasuredata.m_LineDistance:{},{},{},{},{},{}",
-                m_stMeasuredata.m_LineDistance[0], m_stMeasuredata.m_LineDistance[1],
-                m_stMeasuredata.m_LineDistance[2], m_stMeasuredata.m_LineDistance[3],
-                m_stMeasuredata.m_LineDistance[4], m_stMeasuredata.m_LineDistance[5]);
             QVector<Eigen::Matrix4d> Dev_RT = CMeasure::calPoseDeviation(m_stMeasuredata);
             tar_position = m_Robot->getTargetPose(Dev_RT[3]);  // 计算调整量
 
             for (int i = 0; i < 6; i++) {
                 tar_pos[i] = tar_position[i];
             }
-            log->info("m_Robot->setLinkMoveAbs(tar_pos,GP::End_Vel_Limit.data());\ntar_pos:{},{},{},{},{},{}",
-                tar_pos[0], tar_pos[1], tar_pos[2], tar_pos[3] * 57.3, tar_pos[4] * 57.3, tar_pos[5] * 57.3);
 
             m_Robot->setLinkMoveAbs(tar_pos, GP::End_Vel_Position.data());
             stLinkStatus linkstatus = m_Robot->getLinkSta();
-            log->info("m_Robot->setLinkMoveAbs(tar_pos,GP::End_Vel_Limit.data());\nact_pos:{},{},{},{},{},{}",
+            log->info("{} tar_pos:{}, {}, {}, {}, {}, {}\ncurrent_pos: {}, {}, {}, {}, {}, {}", __LINE__,
+                tar_pos[0], tar_pos[1], tar_pos[2], tar_pos[3] * 57.3, tar_pos[4] * 57.3, tar_pos[5] * 57.3,
+                linkstatus.stLinkActKin.LinkPos[0],linkstatus.stLinkActKin.LinkPos[1],linkstatus.stLinkActKin.LinkPos[2],
+                linkstatus.stLinkActKin.LinkPos[3] * 57.3,linkstatus.stLinkActKin.LinkPos[4] * 57.3,linkstatus.stLinkActKin.LinkPos[5] * 57.3
+            );
+            log->info("{} tar_pos - current_pos:{},{},{},{},{},{}", __LINE__, 
                 tar_pos[0] - linkstatus.stLinkActKin.LinkPos[0], tar_pos[1] - linkstatus.stLinkActKin.LinkPos[1],
                 tar_pos[2] - linkstatus.stLinkActKin.LinkPos[2], tar_pos[3] * 57.3 - linkstatus.stLinkActKin.LinkPos[3] * 57.3,
                 tar_pos[4] * 57.3 - linkstatus.stLinkActKin.LinkPos[4] * 57.3, tar_pos[5] * 57.3 - linkstatus.stLinkActKin.LinkPos[5] * 57.3);
@@ -684,26 +685,53 @@ void CTask::sidelineMotionInFitBoardExecutionCommand()
 
 void CTask::liftMotionInFitBoardExecutionCommand()
 {
+    static bool lift_motion_flag = false;
     switch (m_eexecutionCommand)
     {
     case EExecutionCommand::eNULL:
     {
-        m_Robot->setJointMoveAbs(GP::TOOL_LIFTING, m_lift_tool, LINK_0_JOINT_MAX_VEL[GP::TOOL_LIFTING]);
+        if (!lift_motion_flag)
+        {
+            double velocity = LINK_0_JOINT_MAX_VEL[GP::TOOL_LIFTING] * 0.5;
+            m_Robot->setJointMoveAbs(GP::TOOL_LIFTING, m_lift_tool, velocity);
+            log->info("{} joint: {}, target position: {}, velocity: {}", __LINE__, GP::TOOL_LIFTING, m_lift_tool, velocity);
+            lift_motion_flag = true;
+            break;
+        }
 
-        // 判断是否运动结束
-        auto status = m_Robot->getJointGroupSta();
-        if (status[GP::TOOL_LIFTING].eState == eAxis_STANDSTILL && std::fabs(status[GP::TOOL_LIFTING].Position - m_lift_tool) < 1)
-            updateTopAndSubState(ETopState::eFitBoard, ESubState::eDetection);
+        if (lift_motion_flag)
+        {
+            // 判断是否运动结束
+            auto status = m_Robot->getJointGroupSta();
+            bool flag_state = status[GP::TOOL_LIFTING].eState == eAxis_STANDSTILL;
+            bool flag_motion = std::fabs(status[GP::TOOL_LIFTING].Position - m_lift_tool) < 1;
+            log->info("{} state: {}, position: {}", __LINE__, static_cast<int>(status[GP::TOOL_LIFTING].eState), status[GP::TOOL_LIFTING].Position);
+            if (flag_motion && flag_state)
+            {
+                updateTopAndSubState(ETopState::eFitBoard, ESubState::eDetection);
+                lift_motion_flag = false;
+            }
+        }
 
         break;
     }
     case EExecutionCommand::ePause:
     {
+        if (lift_motion_flag)
+        {
+            m_Robot->setRobotHalt();
+            lift_motion_flag = false;
+        }
         updateTopAndSubState(ETopState::eFitBoard, ESubState::eReadyToFitBoard);
         break;
     }
     case EExecutionCommand::eTerminate:
     {
+        if (lift_motion_flag)
+        {
+            m_Robot->setRobotHalt();
+            lift_motion_flag = false;
+        }
         updateTopAndSubState(ETopState::eManual, ESubState::eReady);
         break;
     }
@@ -889,6 +917,23 @@ void CTask::UpdateVisionResult(VisionResult &vis_res)
 
     std::copy(std::begin(vis_res.stData.m_LineDistance), std::end(vis_res.stData.m_LineDistance), m_stMeasuredata.m_LineDistance);
     std::copy(std::begin(vis_res.stData.m_bLineDistance), std::end(vis_res.stData.m_bLineDistance), m_stMeasuredata.m_bLineDistance);
+
+    // change camera position
+    std::vector<double> temp_vec(std::begin(m_stMeasuredata.m_LineDistance), std::end(m_stMeasuredata.m_LineDistance));
+    std::vector<double> temp_flag_vec(std::begin(m_stMeasuredata.m_bLineDistance), std::end(m_stMeasuredata.m_bLineDistance));
+    m_stMeasuredata.m_LineDistance[0] = temp_vec.at(3);
+    m_stMeasuredata.m_LineDistance[1] = temp_vec.at(2);
+    m_stMeasuredata.m_LineDistance[2] = temp_vec.at(1);
+    m_stMeasuredata.m_LineDistance[3] = temp_vec.at(0);
+    m_stMeasuredata.m_LineDistance[4] = temp_vec.at(5);
+    m_stMeasuredata.m_LineDistance[5] = temp_vec.at(4);
+
+    m_stMeasuredata.m_bLineDistance[0] = temp_flag_vec.at(3);
+    m_stMeasuredata.m_bLineDistance[1] = temp_flag_vec.at(2);
+    m_stMeasuredata.m_bLineDistance[2] = temp_flag_vec.at(1);
+    m_stMeasuredata.m_bLineDistance[3] = temp_flag_vec.at(0);
+    m_stMeasuredata.m_bLineDistance[4] = temp_flag_vec.at(5);
+    m_stMeasuredata.m_bLineDistance[5] = temp_flag_vec.at(4);
 }
 
 void CTask::updateTopAndSubState(ETopState topState, ESubState subState)

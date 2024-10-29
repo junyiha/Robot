@@ -256,6 +256,10 @@ private:
     bool holeCameraLightEnable = true;
     bool laserLightEnable = true;
 
+    // 轮廓激光控制
+    bool laserOnUpperEnable = true;
+    bool laserOnLowerEnable = true;
+
 protected:
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
@@ -347,6 +351,10 @@ private slots:
     void slots_on_btn_putter_forward_released();
     void slots_on_btn_putter_backward_pressed();
     void slots_on_btn_putter_backward_released();
+
+    // 轮廓激光打开
+    void slots_btn_laser_upper_enable_clicked();
+    void slots_btn_laser_lower_enable_clicked();
 
     // 参数配置文件
     void slots_btn_load_configuration_clicked();

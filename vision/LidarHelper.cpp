@@ -75,7 +75,7 @@ void get_connected_components_info(cv::Mat imageBW, cv::Mat &outImage, cv::Mat &
         //Íâ½Ó¾ØÐÎ
         cv::Rect rect(x, y, w, h);
         cv::rectangle(show_rect, rect, cv::Scalar(255,255,0), 2, 8, 0);
-        std::cout << "count:" << i << "  area:" << area << std::endl;
+        //std::cout << "count:" << i << "  area:" << area << std::endl;
     }
 
 
@@ -304,9 +304,9 @@ void LidarHelper::lidarDetecter(cv::Mat img,bool isleft,bool revAngle, \
             }
         }
     }
-    std::cout<<"----------------------------------"<<std::endl;
-    std::cout<<"x"<<board_point.x<<ref_point.x<<std::endl;
-    std::cout<<refAngle<<std::endl;
+    //std::cout<<"----------------------------------"<<std::endl;
+    //std::cout<<"x"<<board_point.x<<ref_point.x<<std::endl;
+    //std::cout<<refAngle<<std::endl;
 
     lidarDist = (board_point.y-ref_point.y)*cos(refAngle/57.3)/10.0;
     gap = fabs(board_point.x-ref_point.x)/10.0;

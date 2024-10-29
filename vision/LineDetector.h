@@ -1,68 +1,41 @@
 //
-// Created by csh_i on 2024/7/5.
+// Created by csh_i on 2024/10/21.
 //
 
-#ifndef CMAKE_TEST_LINEDETECTOR_H
-#define CMAKE_TEST_LINEDETECTOR_H
-#include <iostream>
-#include <vector>
-#include <opencv2/opencv.hpp>
-#include "mlsd.h"
+#ifndef MLSD_TEST_LINEDETECTOR_H
+#define MLSD_TEST_LINEDETECTOR_H
+#include "LineSegmenationBase.h"
 #include "utils.h"
-#include "Parameters.h"
 
-
-
-
-
+struct LineSpaceResult {
+    float dist;
+    bool status;
+    bool ink_line_status;
+    bool border_line_status;
+    std::string error_info; //错误信息
+    std::vector<float> ink_res;
+    std::vector<float> border_res;
+    cv::Mat img_drawed;
+};
 
 
 class LineDetector {
-
 public:
-
-    unsigned int resize_w = 512;
-    unsigned int resize_h = 512;
-
-
-    MLSD mlsd;
+    LineSegmenationBase lineSegModel;
     LineDetector();
     ~LineDetector();
 
+    int imgInputW = 768;
+    int imgInputH = 768;
 
-    // ��ȡ�ο���
-    MLine getReferenceLine(cv::Mat img, std::vector<MLine> lines);
-    // ��ȡī��
-    MLine getInkLine(cv::Mat img, std::vector<MLine> lines, MLine refLine);
-    // ��ȡ�ο�����ī�ߵľ���
-    LineResult getLineDistance(cv::Mat img);
-    // ��ȡ���п��ܵ�ֱ��
-    std::vector<MLine> getAllPossibleLines(cv::Mat img);
-    // ��ȡ�ο��� LSD�㷨
-    MLine LineDetector::getReferenceLineLSD(cv::Mat img, cv::Mat bin_img);
-
-    MLine getReferenceLineByContours(cv::Mat bin_img);
-
-    MLine getReferenceLineByHKCU60(cv::Mat img, std::vector<MLine> lines);
-
-
-
-
-    unsigned  int  min_len_seg;
-
-    unsigned  int min_pos_valid;
-    unsigned  int max_pos_valid ;
-
-    unsigned  int min_dist_lines ;
-    unsigned  int max_dist_lines ;
-    unsigned  int max_angle_degrees ;
-
-
-
-
-
+    // get masks of ink and border
+    std::vector<cv::Mat> getMasks(cv::Mat img);
+    std::vector<float> getRerferenceLine(cv::Mat refImg, cv::Mat inputImage);
+    std::vector<float> getInkLine(cv::Mat img, std::vector<float> referenceLine);
+    LineSpaceResult getLinesDistance(cv::Mat img);
+    void getPossibleLinesFromMask(cv::Mat mask, vector<std::vector<cv::Point2f>> &possibleLines);
 
 };
 
 
-#endif //CMAKE_TEST_LINEDETECTOR_H
+#endif //MLSD_TEST_LINEDETECTOR_H

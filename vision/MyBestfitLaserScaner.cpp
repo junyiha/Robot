@@ -29,10 +29,16 @@ void MyBestfitLaserScaner::run() {
     while(m_isRunning){
 
         if(!m_bScannerConnectStatus){
+            setDataValid(false);
+            continue;
+        }
+        if(!getLaserState()){
+            setDataValid(false);
             continue;
         }
 
         if(m_threadQuit){
+            setDataValid(false);
             break;
         }
         // 清空缓存区数据
@@ -103,7 +109,6 @@ void MyBestfitLaserScaner::run() {
             setDataValid(true);
         }
 
-
         Sleep(200);
     }
 
@@ -121,6 +126,12 @@ cv::Mat MyBestfitLaserScaner::pointCloud2Image(std::vector<cv::Point2f> pointClo
 
     for(int i=0;i<pointClouds.size();i++)
     {
+        if(pointClouds[i].x <-300 || pointClouds[i].x >300){
+            continue;
+        }
+        if(pointClouds[i].y >500){
+            continue;
+        }
         minY=std::min(pointClouds[i].y,minY); //这里的y就是z
         maxY=std::max(pointClouds[i].y,maxY);
         minX=std::min(pointClouds[i].x,minX);
@@ -136,6 +147,13 @@ cv::Mat MyBestfitLaserScaner::pointCloud2Image(std::vector<cv::Point2f> pointClo
     cv::Mat m(rows,cols,CV_8UC1,cv::Scalar(0));
     int bias = 50;
     for(int i=0;i<pointClouds.size();i++){
+
+        if(pointClouds[i].x <-300 || pointClouds[i].x >300){
+            continue;
+        }
+        if(pointClouds[i].y >500){
+            continue;
+        }
         m.at<char>((pointClouds[i].y-minY)*10+bias,(pointClouds[i].x-minX)*10+bias)=255; //at <类型> (行,列) [通道(如果有通道的话)]
     }
     return m;
@@ -320,20 +338,20 @@ void MyBestfitLaserScaner::EnumScannerDevice() {
     {
         QString infos(info);
         QStringList deviceList = infos.split(";");
-        foreach (QString device, deviceList)
-        {
-            LaserScanerDeviceInfo l_info;
-            l_info.Laser_name = laser_name;
-            QStringList dInfo = device.split(",");
-            if (dInfo.size() >= 4)
+                foreach (QString device, deviceList)
             {
-                l_info.Ip = dInfo.at(1).toStdString();
-                l_info.Mask = dInfo.at(2).toStdString();
-                l_info.Gateway = dInfo.at(3).toStdString();
-                l_info.SN = dInfo.at(0).toStdString();
+                LaserScanerDeviceInfo l_info;
+                l_info.Laser_name = laser_name;
+                QStringList dInfo = device.split(",");
+                if (dInfo.size() >= 4)
+                {
+                    l_info.Ip = dInfo.at(1).toStdString();
+                    l_info.Mask = dInfo.at(2).toStdString();
+                    l_info.Gateway = dInfo.at(3).toStdString();
+                    l_info.SN = dInfo.at(0).toStdString();
+                }
+                m_vecScannerDeviceInfo.push_back(l_info);
             }
-            m_vecScannerDeviceInfo.push_back(l_info);
-        }
     }
     else
     {
@@ -435,6 +453,7 @@ void MyBestfitLaserScaner::laserOn() {
         return;
     }
     EthernetScanner_WriteData(m_hScanner, (char*) "SetLaserOn\r", sizeof("SetLaserOn\r"));
+    setLaserState(true);
 }
 void MyBestfitLaserScaner::laserOff() {
 
@@ -446,8 +465,10 @@ void MyBestfitLaserScaner::laserOff() {
 
     startTimeCnt();
     EthernetScanner_WriteData(m_hScanner, (char*) "SetLaserOff\r", sizeof("SetLaserOff\r"));
+    setLaserState(false);
 }
- cv::Mat MyBestfitLaserScaner::getResultMask()  {
+cv::Mat MyBestfitLaserScaner::getResultMask()  {
+//    std::cout<<"********************get result mask**********************************"<<std::endl;
     if(isDataValid()){
         std::vector<cv::Point_<float>> pointClouds;
         pointCloudsMutex.lock();
@@ -480,9 +501,8 @@ void MyBestfitLaserScaner::setDataValid(bool dataValid) {
     MyBestfitLaserScaner::dataValid = dataValid;
     dataValidMutex.unlock();
 }
-
 void MyBestfitLaserScaner::startLaserScanTask() {
-    this->scannerConnect();
+    //this->scannerConnect();
     if(this->m_bScannerConnectStatus){
         this->laserOn();
         this->startAcquisition();
@@ -508,6 +528,72 @@ bool MyBestfitLaserScaner::getConnectState() {
         m_bScannerConnectStatus = false;
     }
     return state;
+}
+void MyBestfitLaserScaner::getPointsMaskOnce() {
+
+    if(!m_hScanner || !m_bScannerConnectStatus || !m_laserState){
+        return;
+    }
+
+    // 清空缓存区数据
+    EthernetScanner_WriteData(m_hScanner,(char*)"SetClearCloudFifo\r", sizeof("SetClearCloudFifo\r"));
+
+    int iPicCnt = 0;
+    int dataLength = EthernetScanner_GetXZIExtended(m_hScanner,
+                                                    m_dScannerBufferX,
+                                                    m_dScannerBufferZ,
+                                                    m_iScannerBufferI, // 实际没有使用
+                                                    m_iScannerBufferPeakWidth, // 实际没有使用
+                                                    ETHERNETSCANNER_SCANXMAX * ETHERNETSCANNER_PEAKSPERCMOSSCANLINEMAX, // 缓存区的大小
+                                                    &m_uScannerEncoder,
+                                                    &m_ucScannerDigitalInputs,
+                                                    1000, //等待新测量轮廓的阻塞时间值， 阻塞式
+                                                    nullptr,
+                                                    0,
+                                                    &iPicCnt); //返回当前测量轮廓的图片计数器，该值用于控制接收到的轮廓的顺序。
+
+
+    if(dataLength>0){
+        // 清空原始原始数据
+        if(this->m_vecPointClouds.size() > 0)
+        {
+            this->m_vecPointClouds.clear();
+        }
+
+        for(int i = 0; i < dataLength; i++ )
+        {
+            m_vecPointClouds.push_back(cv::Point2f(m_dScannerBufferX[i], m_dScannerBufferZ[i]));
+        }
+    }else{
+        printf("No Data\n");
+        setDataValid(false);
+    }
+
+    if(this->m_vecPointClouds.size()>0){
+        pointCloudsMutex.lock();
+        this->m_vecPointClouds_ = this->m_vecPointClouds;
+        pointCloudsMutex.unlock();
+        setDataValid(true);
+    }
+}
+void MyBestfitLaserScaner::setLaserState(bool state) {
+    this->laserStateMutex.lock();
+    this->m_laserState = state;
+    this->laserStateMutex.unlock();
+}
+
+bool MyBestfitLaserScaner::getLaserState() {
+    bool state;
+    this->laserStateMutex.lock();
+    state = this->m_laserState;
+    this->laserStateMutex.unlock();
+    return state;
+}
+
+void MyBestfitLaserScaner::reconnectScanner() {
+    scanerDisConnect();
+    scannerConnect();
+    this->logger->info("{} : reconnect scanner", this->laser_name);
 }
 
 

@@ -393,6 +393,8 @@ private:
         {ESubState::eReadyToParallel, {"待调平", "ReadyToParallel"}},
         {ESubState::eDetection, {"检测", "Detection"}},
         {ESubState::eReadyToFitBoard, {"待贴合", "ReadyToFitBoard"}},
+        {ESubState::eSidelineMotion, {"对边运动","SidelineMotion"}},
+        {ESubState::eLiftMotion, {"举升运动","LiftMotion"}},
         {ESubState::eFitBoardFinished, {"贴合完成", "FitBoardFinished"}},
         {ESubState::eReadyToPositioning, {"待定位", "ReadyToPositioning"}},
         {ESubState::eReadyToDoWeld, {"待碰钉", "ReadyToDoWeld"}},

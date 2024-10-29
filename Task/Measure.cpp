@@ -19,8 +19,8 @@ QVector<Eigen::Matrix4d> CMeasure::calPoseDeviation(stMeasureData data, double t
     /* TarPose0 轮廓激光虚拟平面计算 ************************************************************/
     //输入：4个轮廓激光数据+测距激光(近似使用)，无轮廓激光时仅调平
 
-    qDebug()<<"m_bLaserDistance:  "<<data.m_bLaserDistance[0]<<"   "<<data.m_bLaserDistance[1]<<"   "<<data.m_bLaserDistance[2]<<"   "<<data.m_bLaserDistance[3]<<"   "<<"\n\n";
-    qDebug()<<"m_LaserDistance:  "<<data.m_LaserDistance[0]<<"   "<<data.m_LaserDistance[1]<<"   "<<data.m_LaserDistance[2]<<"   "<<data.m_LaserDistance[3]<<"   "<<"\n\n";
+    //qDebug()<<"m_bLaserDistance:  "<<data.m_bLaserDistance[0]<<"   "<<data.m_bLaserDistance[1]<<"   "<<data.m_bLaserDistance[2]<<"   "<<data.m_bLaserDistance[3]<<"   "<<"\n\n";
+    //qDebug()<<"m_LaserDistance:  "<<data.m_LaserDistance[0]<<"   "<<data.m_LaserDistance[1]<<"   "<<data.m_LaserDistance[2]<<"   "<<data.m_LaserDistance[3]<<"   "<<"\n\n";
 
     if(data.m_bLaserDistance[0]&&data.m_bLaserDistance[1]&&data.m_bLaserDistance[2]&&data.m_bLaserDistance[3])//4个点激光均有效
     {

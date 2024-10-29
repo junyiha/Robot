@@ -4,3 +4,7 @@
 build
 cmake-build-debug
 logs
+images
+cache
+out
+models

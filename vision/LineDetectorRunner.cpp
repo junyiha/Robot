@@ -10,7 +10,6 @@ LineDetectorRunner::LineDetectorRunner(LineDetector *line_helper, CameraManager 
     this->line_helper = line_helper;
     this->cam_controls = cam_controls;
     this->sharedData = shared;
-
 }
 
 LineDetectorRunner::~LineDetectorRunner() {
@@ -27,6 +26,7 @@ void LineDetectorRunner::run() {
             this->cam_controls->getImageAll("Line");
             std::map<std::string, cv::Mat> cameraData = this->cam_controls->getCameraImages("Line");
             if(cameraData.size() > 0){
+                auto start_time = std::chrono::high_resolution_clock::now();
                 for(auto &camera_data : cameraData)
                 {
                     LineDetectRes vision_res;
@@ -36,20 +36,26 @@ void LineDetectorRunner::run() {
                         continue;
                     }
                     // 检测图像
-                    LineResult line_res = this->line_helper->getLineDistance(image);
+//                    LineResult line_res = this->line_helper->getLineDistance(image);
+                    LineSpaceResult line_res = this->line_helper->getLinesDistance(image);
                     if(line_res.status){ //检测成功
                         vision_res.status = true;
-                        vision_res.dist = line_res.lineDist;
-                        vision_res.img_drawed = line_res.imgDrawed;
+                        vision_res.dist = line_res.dist;
+                        vision_res.img_drawed = line_res.img_drawed;
 //                        this->logger->info("Camera {} get line distance is {}",camera_name,line_res.lineDist);
                     }
                     else{
                         vision_res.status = false;
                         vision_res.dist = -1;
-                        vision_res.img_drawed =line_res.imgDrawed;
+                        vision_res.img_drawed =line_res.img_drawed;
                     }
                     temp_results[camera_name] = vision_res;
                 }
+
+                auto end_time = std::chrono::high_resolution_clock::now();
+                 auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
+//                double time_cost = std::chrono::duration<double,std::milli>(end_time-start_time).count();
+               // this->logger->info("Line detect cost {} ms",duration.count());
 //                QMutexLocker locker(&this->sharedData->mutex);
                 if(temp_results.empty()){
                     continue;

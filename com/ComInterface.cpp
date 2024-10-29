@@ -47,6 +47,11 @@ QVector<double> ComInterface::getLasersDistanceBoardingByBojke()//
         res.push_back(stData.m_Laserdistance[i] * 1000.0 - layserOffset[i]);
     }
 
+    QVector<double> temp{res};
+    res[0] = temp[2];
+    res[1] = temp[3];
+    res[2] = temp[0];
+    res[3] = temp[1];
 
     return res;
 }
@@ -80,7 +85,7 @@ void ComInterface::run()
             }
         }
 
-        //监测IO板连接状态
+//        //监测IO板连接状态
         if(m_cToolsBoarding.m_cIOA.getCommState() == false)
         {
             emit m_cToolsBoarding.m_cIOA.sigDisconnected();

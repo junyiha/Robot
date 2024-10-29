@@ -21,6 +21,7 @@ VisionInterface::VisionInterface() {
     this->line_handler = new LineDetectorRunner(this->line_helper,this->camera_controls,this->sharedDataLine);
     this->lidar_handler = new LidarHandler(this->lidar_helper, this->laser_controls, this->sharedDataLaser);
     this->line_handler->start();
+    this->lidar_handler->start();
 
 
     this->scales_line= {

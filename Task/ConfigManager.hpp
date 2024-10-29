@@ -10,6 +10,7 @@
 #include <vector>
 #include <fstream>
 #include <iostream>
+#include "spdlog/spdlog.h"
 #include "yaml-cpp/yaml.h"
 #include "GVL.h"
 
@@ -53,5 +54,6 @@ namespace Config
 	private:
 		YAML::Node m_root;
 		std::string m_path{ "D:/Robot/config.yaml" };
+		std::shared_ptr<spdlog::logger> log;
 	};
 }

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.28)
+cmake_minimum_required(VERSION 3.8)
 project(PDRobot-master)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -6,6 +6,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
+# set(CMAKE_PREFIX_PATH "D:/soft/Qt5.14.0/5.14.0/msvc2017_64")
 set(CMAKE_PREFIX_PATH "D:/Qt514/5.14.0/msvc2017_64")
 set(BaseDIR D:/)
 #set(CMAKE_PREFIX_PATH "D:/soft/qt5.14/5.14.0/msvc2017_64")
@@ -18,10 +19,10 @@ set(QRC_SOURCE_FILE ${CMAKE_SOURCE_DIR}/res.qrc)
 # add_definitions(-DSTATE_MACHINE_TEST=1)
 
 # ffmpeg
-file(COPY ${BaseDIR}/packages/ffmpeg/bin/avcodec-59.dll DESTINATION ${CMAKE_BINARY_DIR})
-file(COPY ${BaseDIR}/packages/ffmpeg/bin/avformat-59.dll DESTINATION ${CMAKE_BINARY_DIR})
-file(COPY ${BaseDIR}/packages/ffmpeg/bin/avformat-59.dll DESTINATION ${CMAKE_BINARY_DIR})
-file(COPY ${BaseDIR}/packages/ffmpeg/bin/swresample-4.dll DESTINATION ${CMAKE_BINARY_DIR})
+#file(COPY ${BaseDIR}/packages/ffmpeg/bin/avcodec-59.dll DESTINATION ${CMAKE_BINARY_DIR})
+#file(COPY ${BaseDIR}/packages/ffmpeg/bin/avformat-59.dll DESTINATION ${CMAKE_BINARY_DIR})
+#file(COPY ${BaseDIR}/packages/ffmpeg/bin/avformat-59.dll DESTINATION ${CMAKE_BINARY_DIR})
+#file(COPY ${BaseDIR}/packages/ffmpeg/bin/swresample-4.dll DESTINATION ${CMAKE_BINARY_DIR})
 
 # opencv
 file(COPY ${BaseDIR}/packages/opencv4.55/build/x64/vc15/bin/opencv_world455d.dll DESTINATION ${CMAKE_BINARY_DIR})
@@ -40,14 +41,16 @@ file(COPY ${CMAKE_PREFIX_PATH}/plugins/platforms DESTINATION ${CMAKE_BINARY_DIR}
 file(COPY ${BaseDIR}/packages/HK_SDK/Libraries/win64/MvCameraControl.lib DESTINATION ${CMAKE_BINARY_DIR}/)
 
 # GoSdk
-file(COPY ${BaseDIR}/packages/GocatorSDK/bin/win64/kApi.dll DESTINATION ${CMAKE_BINARY_DIR}/)
-file(COPY ${BaseDIR}/packages/GocatorSDK/bin/win64/GoSdk.dll DESTINATION ${CMAKE_BINARY_DIR}/)
+#file(COPY ${BaseDIR}/packages/GocatorSDK/bin/win64/kApi.dll DESTINATION ${CMAKE_BINARY_DIR}/)
+#file(COPY ${BaseDIR}/packages/GocatorSDK/bin/win64/GoSdk.dll DESTINATION ${CMAKE_BINARY_DIR}/)
 
 # BestfitLaserScanner
 file(COPY ${BaseDIR}/packages/BestfitLayserScaner/lib/bin/BestfitLaserScanerSDK.dll DESTINATION ${CMAKE_BINARY_DIR}/)
 
 # onnxruntime
-file(COPY ${BaseDIR}/packages/OnnxRuntime/Microsoft.ML.OnnxRuntime.1.7.0/runtimes/win-x64/native/onnxruntime.dll DESTINATION ${CMAKE_BINARY_DIR}/)
+file(COPY ${BaseDIR}/packages/OnnxRuntime/Microsoft.ML.OnnxRuntime.Gpu.1.8.0/runtimes/win-x64/native/onnxruntime.dll DESTINATION ${CMAKE_BINARY_DIR}/)
+file(COPY ${BaseDIR}/packages/OnnxRuntime/Microsoft.ML.OnnxRuntime.Gpu.1.8.0/runtimes/win-x64/native/onnxruntime_providers_cuda.dll DESTINATION ${CMAKE_BINARY_DIR}/)
+file(COPY ${BaseDIR}/packages/OnnxRuntime/Microsoft.ML.OnnxRuntime.Gpu.1.8.0/runtimes/win-x64/native/onnxruntime_providers_shared.dll DESTINATION ${CMAKE_BINARY_DIR}/)
 
 # vision models
 file(COPY ${CMAKE_SOURCE_DIR}/models DESTINATION ${CMAKE_BINARY_DIR}/)
@@ -63,17 +66,17 @@ include_directories(${BaseDIR}/packages)
 include_directories(${BaseDIR}/packages/HK_SDK/Includes)
 link_directories(${BaseDIR}/packages/HK_SDK/Libraries/win64)
 
-# ffmpeg setting
-include_directories(${BaseDIR}/packages/ffmpeg/include)
-link_directories(${BaseDIR}/packages/ffmpeg/lib)
-
-# Gocator setting
-include_directories(${BaseDIR}/packages/GocatorSDK/include)
-link_directories(${BaseDIR}/packages/GocatorSDK/lib/win64d)
+## ffmpeg setting
+#include_directories(${BaseDIR}/packages/ffmpeg/include)
+#link_directories(${BaseDIR}/packages/ffmpeg/lib)
+#
+## Gocator setting
+#include_directories(${BaseDIR}/packages/GocatorSDK/include)
+#link_directories(${BaseDIR}/packages/GocatorSDK/lib/win64d)
 
 # onnxruntime setting
-include_directories(${BaseDIR}/packages/OnnxRuntime/Microsoft.ML.OnnxRuntime.1.7.0/build/native/include)
-link_directories(${BaseDIR}/packages/OnnxRuntime/Microsoft.ML.OnnxRuntime.1.7.0/runtimes/win-x64/native)
+include_directories(${BaseDIR}/packages/OnnxRuntime/Microsoft.ML.OnnxRuntime.Gpu.1.8.0/build/native/include)
+link_directories(${BaseDIR}/packages/OnnxRuntime/Microsoft.ML.OnnxRuntime.Gpu.1.8.0/runtimes/win-x64/native)
 
 #Bestfit laser setting
 include_directories(${BaseDIR}/packages/BestfitLayserScaner/lib/include)
@@ -112,6 +115,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/
                                                   ${CMAKE_SOURCE_DIR}/Task
                                                   ${CMAKE_SOURCE_DIR}/vision
                                                   ${CMAKE_SOURCE_DIR}/ThirdParty/yaml-cpp-0.8.0/include/
+                                                  ${CMAKE_SOURCE_DIR}/ThirdParty/cxxopts-3.2.0/include/
 ) 
 
 # yaml-0.8.0
@@ -133,22 +137,22 @@ target_link_libraries(${PROJECT_NAME}
 )
 
 # ffmpeg
-target_link_libraries(${PROJECT_NAME}
-        avcodec.lib
-        avdevice.lib
-        avfilter.lib
-        avformat.lib
-        avutil.lib
-        postproc.lib
-        swresample.lib
-        swscale.lib
-)
+#target_link_libraries(${PROJECT_NAME}
+#        avcodec.lib
+#        avdevice.lib
+#        avfilter.lib
+#        avformat.lib
+#        avutil.lib
+#        postproc.lib
+#        swresample.lib
+#        swscale.lib
+#)
 # onnxruntime
-target_link_libraries(${PROJECT_NAME} onnxruntime.dll)
+target_link_libraries(${PROJECT_NAME}
+        onnxruntime.dll
+)
 
 target_link_libraries(${PROJECT_NAME}
-        GoSdk.lib
-        kApi.lib
         BestfitLaserScanerSDK.lib
 )
 

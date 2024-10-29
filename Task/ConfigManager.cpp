@@ -4,7 +4,12 @@ namespace Config
 {
 	ConfigManager::ConfigManager()
 	{
-		assert(LoadConfiguration());
+		log = spdlog::get("logger");
+
+		if (!LoadConfiguration())
+		{
+			throw std::bad_exception();
+		}
 	}
 
 	ConfigManager::~ConfigManager()
@@ -22,12 +27,12 @@ namespace Config
 		}
 		catch (YAML::BadFile)
 		{
-			std::cerr << "Invalid configuration file path: " << m_path << "\n";
+			log->error("Invalid configuration file path: {}", m_path);
 			res = false;
 		}
 		catch (...)
 		{
-			std::cerr << "parse config.yaml failed, please check the config.yaml file!!!\n";
+			log->error("parse config.yaml failed, please check the config.yaml file!!!");
 			res = false;
 		}
 

@@ -248,6 +248,9 @@ void MainWindow::connectSlotFunctions() {// 按钮时间绑定
     connect(ui->btn_putter_backward, &QPushButton::released, this, &MainWindow::slots_on_btn_putter_backward_released,
             Qt::UniqueConnection);
 
+    // 轮廓激光开关控制
+    connect(ui->btn_laser_upper_enable, &QPushButton::clicked, this, &MainWindow::slots_btn_laser_upper_enable_clicked, Qt::UniqueConnection);
+    connect(ui->btn_laser_lower_enable, &QPushButton::clicked, this, &MainWindow::slots_btn_laser_lower_enable_clicked, Qt::UniqueConnection);
     // 参数配置文件
     connect(ui->btn_load_configuration, &QPushButton::clicked, this, &MainWindow::slots_btn_load_configuration_clicked, Qt::UniqueConnection);
     connect(ui->btn_save_home_position, &QPushButton::clicked, this, &MainWindow::slots_btn_save_home_position_clicked, Qt::UniqueConnection);
@@ -373,7 +376,7 @@ void MainWindow::on_btn_lift_2clicked() {
 
 void MainWindow::on_btn_leveling_clicked() {
 
-    bool isReadyLeveling = m_Task->checkSubState(ESubState::eReadyToParallel);
+    bool isReadyLeveling = m_Task->checkSubState(ESubState::eReady);
     // 调平
     setButtonIndex();
     if (isReadyLeveling) {
@@ -425,7 +428,7 @@ void MainWindow::on_btn_magnet_open_clicked() {
 void MainWindow::on_btn_auto_knock_clicked() {
     // 自动碰钉
     std::string currentState = "";
-    bool isReadyClose = m_Task->checkSubState(ESubState::eReadyToFitBoard);
+    bool isReadyClose = m_Task->checkSubState(ESubState::eReadyToFitBoard) || m_Task->checkSubState(ESubState::eReady);
     // 调平
     setButtonIndex();
     if (isReadyClose) {
@@ -579,6 +582,8 @@ void MainWindow::updataDeviceConnectState() {
         } else {
             findChild<QLabel *>(laser_label + QString::number(i + 1))->setStyleSheet(
                     "image: url(:/img/images/icon_redLight.png);");
+            // 重新连接
+            m_VisionInterface->laser_controls->reconnectLaser("lida_"+std::to_string(i+1));
         }
     }
 
@@ -723,7 +728,7 @@ void MainWindow::updateLineDetectResults() {
                 float dist = visResult.stData.m_LineDistance[i] * scale;
                 dist = std::isinf(dist) ? 0 : dist;
                 findChild<QLabel *>(prefix + QString::number(i))->setText(
-                        "Dist " + QString::number(i + 1) + ":" + QString::number(dist));
+                        "Dist" + QString::number(i + 1) + ":   " + QString::number(dist));
             }
         }
 
@@ -769,8 +774,7 @@ void MainWindow::updateLaserData() {
     QVector laserdis = m_Com->getLasersDistanceBoardingByBojke();
     if (laserdis.size() > 0) {
         for (int i = 0; i < larserNum; i++) {
-            findChild<QLabel *>("label_laserDist" + QString::number(i))->setText(
-                    "Laser " + QString::number(i) + " Value :" + QString::number(laserdis[i]));
+            findChild<QLabel *>("label_laserDist" + QString::number(i))->setText(QString::number(std::round(laserdis[i])*100/100.0));
         }
     } else {
         logger->info("获取点激光值为空!");
@@ -817,13 +821,30 @@ void MainWindow::updateCameraData() {
                 if (index != prefix_.size() - 1) {
                     number = (prefix_[index] - '0') * 10 + (prefix_[index + 1] - '0');
                 }
+
+                cv::Mat inputImage;
+                inputImage = item.second;
                 if(pageIndex==1){
                     if(item.first.find("HoleCam")!=std::string::npos){
                         continue;
                     }
                 }
+                 // 画面方向矫正
+                if(item.first.find("LineCam")!=std::string::npos){
+                    if(number==5){
+                        image_correction(inputImage,3);
+                    }
+                    if(number==6){
+                        image_correction(inputImage,1);
+                    }
+                    if(number == 2 || number == 4){
+                        image_correction(inputImage,2);
+                    }
+
+                }
+
                 cv::Mat temp;
-                cv::resize(item.second, temp, imgSize);
+                cv::resize(inputImage, temp, imgSize);
                 QImage img = QImage((uchar *) temp.data, temp.cols, temp.rows, QImage::Format_RGB888);
                 findChild<QLabel *>(prefix + QString::number(number - 1))->setPixmap(QPixmap::fromImage(img));
 //                this->logger->info("相机{}数据获取成功**************************************", item.first);
@@ -1692,4 +1713,45 @@ void MainWindow::slots_on_btn_auto_laminate_clicked() {
 
 void MainWindow::slots_on_line_results_dis_clicked() {
     ui->stackedWidget_view->setCurrentIndex(1);
+}
+
+void MainWindow::slots_btn_laser_upper_enable_clicked() {
+
+    std::vector<std::string> laser_name_upper = {
+            "lidar_1",
+            "lidar_2"
+    };
+    if(this->laserOnUpperEnable){
+        m_VisionInterface->laser_controls->setLaserOn(laser_name_upper);
+        this->laserOnUpperEnable = false;
+        ui->btn_laser_upper_enable->setStyleSheet("background-color: rgb(0, 255, 0);"
+                                                  "border: 2px solid blue;"
+                                                  "border-radius: 10px;");
+    }else{
+        m_VisionInterface->laser_controls->setLaserOff(laser_name_upper);
+        this->laserOnUpperEnable = true;
+        ui->btn_laser_upper_enable->setStyleSheet("border: 2px solid blue;"
+                                                  "border-radius: 10px;");
+    }
+}
+
+void MainWindow::slots_btn_laser_lower_enable_clicked() {
+
+    std::vector<std::string> laser_name_lower = {
+            "lidar_3",
+            "lidar_4"
+    };
+    if(this->laserOnLowerEnable){
+        m_VisionInterface->laser_controls->setLaserOn(laser_name_lower);
+        this->laserOnLowerEnable = false;
+        ui->btn_laser_lower_enable->setStyleSheet("background-color: rgb(0, 255, 0);"
+                                                  "border: 2px solid blue;"
+                                                  "border-radius: 10px;");
+    }else{
+        m_VisionInterface->laser_controls->setLaserOff(laser_name_lower);
+        this->laserOnLowerEnable = true;
+        ui->btn_laser_lower_enable->setStyleSheet("border: 2px solid blue;"
+                                                  "border-radius: 10px;");
+    }
+
 }

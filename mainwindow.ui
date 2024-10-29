@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1920</width>
+    <width>1931</width>
     <height>1080</height>
    </rect>
   </property>
@@ -458,21 +458,21 @@ QPushButton::pressed{
        <property name="minimumSize">
         <size>
          <width>400</width>
-         <height>40</height>
+         <height>35</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
          <width>600</width>
-         <height>40</height>
+         <height>35</height>
         </size>
        </property>
        <property name="font">
         <font>
-         <family>Agency FB</family>
-         <pointsize>14</pointsize>
-         <weight>75</weight>
-         <bold>true</bold>
+         <family>Arial</family>
+         <pointsize>12</pointsize>
+         <weight>50</weight>
+         <bold>false</bold>
         </font>
        </property>
        <property name="styleSheet">
@@ -492,9 +492,9 @@ QPushButton::pressed{
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>80</y>
-      <width>1891</width>
-      <height>951</height>
+      <y>100</y>
+      <width>1881</width>
+      <height>931</height>
      </rect>
     </property>
     <property name="maximumSize">
@@ -518,9 +518,9 @@ QPushButton::pressed{
      <widget class="QGroupBox" name="groupBox_2">
       <property name="geometry">
        <rect>
-        <x>-10</x>
-        <y>-10</y>
-        <width>1911</width>
+        <x>0</x>
+        <y>0</y>
+        <width>1861</width>
         <height>941</height>
        </rect>
       </property>
@@ -591,7 +591,7 @@ QPushButton::pressed{
                <number>1</number>
               </property>
               <item row="0" column="0">
-               <widget class="QLabel" name="label_laserDist3">
+               <widget class="QLabel" name="label_laserDist3_">
                 <property name="minimumSize">
                  <size>
                   <width>200</width>
@@ -606,7 +606,7 @@ QPushButton::pressed{
 }</string>
                 </property>
                 <property name="text">
-                 <string>点激光4: 0.0</string>
+                 <string/>
                 </property>
                </widget>
               </item>
@@ -655,6 +655,12 @@ QPushButton::pressed{
                   <height>35</height>
                  </size>
                 </property>
+                <property name="font">
+                 <font>
+                  <family>Arial</family>
+                  <pointsize>10</pointsize>
+                 </font>
+                </property>
                 <property name="styleSheet">
                  <string notr="true">QLabel {
     border: 2px solid black;
@@ -701,6 +707,12 @@ QPushButton::pressed{
                   <height>35</height>
                  </size>
                 </property>
+                <property name="font">
+                 <font>
+                  <family>Arial</family>
+                  <pointsize>10</pointsize>
+                 </font>
+                </property>
                 <property name="styleSheet">
                  <string notr="true">QLabel {
     border: 2px solid black;
@@ -740,7 +752,7 @@ QPushButton::pressed{
                <number>1</number>
               </property>
               <item row="0" column="0">
-               <widget class="QLabel" name="label_laserDist2">
+               <widget class="QLabel" name="label_laserDist2_">
                 <property name="minimumSize">
                  <size>
                   <width>200</width>
@@ -755,7 +767,7 @@ QPushButton::pressed{
 }</string>
                 </property>
                 <property name="text">
-                 <string>点激光3: 0.0</string>
+                 <string/>
                 </property>
                </widget>
               </item>
@@ -826,6 +838,12 @@ QPushButton::pressed{
                   <height>35</height>
                  </size>
                 </property>
+                <property name="font">
+                 <font>
+                  <family>Arial</family>
+                  <pointsize>10</pointsize>
+                 </font>
+                </property>
                 <property name="styleSheet">
                  <string notr="true">QLabel {
 	background-color: rgb(85, 170, 255);
@@ -840,35 +858,6 @@ QPushButton::pressed{
               </item>
              </layout>
             </item>
-            <item row="0" column="1">
-             <widget class="QLabel" name="label">
-              <property name="minimumSize">
-               <size>
-                <width>412</width>
-                <height>238</height>
-               </size>
-              </property>
-              <property name="font">
-               <font>
-                <family>Agency FB</family>
-                <pointsize>16</pointsize>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
-              <property name="styleSheet">
-               <string notr="true">QLabel {
-	image: url(:/img/images/icon_layout.png);
-}</string>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-             </widget>
-            </item>
             <item row="0" column="2">
              <layout class="QGridLayout" name="gridLayout_9">
               <property name="verticalSpacing">
@@ -881,6 +870,12 @@ QPushButton::pressed{
                   <width>200</width>
                   <height>35</height>
                  </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <family>Arial</family>
+                  <pointsize>10</pointsize>
+                 </font>
                 </property>
                 <property name="styleSheet">
                  <string notr="true">QLabel {
@@ -915,6 +910,35 @@ QPushButton::pressed{
               </item>
              </layout>
             </item>
+            <item row="0" column="1">
+             <widget class="QLabel" name="label">
+              <property name="minimumSize">
+               <size>
+                <width>412</width>
+                <height>238</height>
+               </size>
+              </property>
+              <property name="font">
+               <font>
+                <family>Agency FB</family>
+                <pointsize>16</pointsize>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">QLabel {
+	image: url(:/img/images/icon_layout.png);
+}</string>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
            </layout>
           </item>
           <item row="0" column="0">
@@ -925,7 +949,7 @@ QPushButton::pressed{
                <number>1</number>
               </property>
               <item row="0" column="0">
-               <widget class="QLabel" name="label_laserDist0">
+               <widget class="QLabel" name="label_laserDist0_">
                 <property name="minimumSize">
                  <size>
                   <width>200</width>
@@ -940,7 +964,7 @@ QPushButton::pressed{
 }</string>
                 </property>
                 <property name="text">
-                 <string>点激光1: 0.0</string>
+                 <string/>
                 </property>
                </widget>
               </item>
@@ -988,6 +1012,12 @@ QPushButton::pressed{
                   <height>35</height>
                  </size>
                 </property>
+                <property name="font">
+                 <font>
+                  <family>Arial</family>
+                  <pointsize>10</pointsize>
+                 </font>
+                </property>
                 <property name="styleSheet">
                  <string notr="true">QLabel {
     border: 2px solid black;
@@ -1034,6 +1064,12 @@ QPushButton::pressed{
                   <height>35</height>
                  </size>
                 </property>
+                <property name="font">
+                 <font>
+                  <family>Arial</family>
+                  <pointsize>10</pointsize>
+                 </font>
+                </property>
                 <property name="styleSheet">
                  <string notr="true">QLabel {
     border: 2px solid black;
@@ -1073,7 +1109,7 @@ QPushButton::pressed{
                <number>1</number>
               </property>
               <item row="0" column="0">
-               <widget class="QLabel" name="label_laserDist1">
+               <widget class="QLabel" name="label_laserDist1_">
                 <property name="minimumSize">
                  <size>
                   <width>200</width>
@@ -1088,7 +1124,7 @@ QPushButton::pressed{
 }</string>
                 </property>
                 <property name="text">
-                 <string>点激光2: 0.0</string>
+                 <string/>
                 </property>
                </widget>
               </item>
@@ -1132,7 +1168,7 @@ QPushButton::pressed{
         <property name="geometry">
          <rect>
           <x>20</x>
-          <y>10</y>
+          <y>20</y>
           <width>851</width>
           <height>61</height>
          </rect>
@@ -1148,7 +1184,7 @@ QPushButton::pressed{
         <widget class="QLabel" name="label_heightDist_1">
          <property name="geometry">
           <rect>
-           <x>664</x>
+           <x>520</x>
            <y>4</y>
            <width>62</width>
            <height>25</height>
@@ -1159,6 +1195,12 @@ QPushButton::pressed{
            <width>60</width>
            <height>20</height>
           </size>
+         </property>
+         <property name="font">
+          <font>
+           <family>Arial</family>
+           <pointsize>10</pointsize>
+          </font>
          </property>
          <property name="styleSheet">
           <string notr="true">QLabel {
@@ -1175,7 +1217,7 @@ QPushButton::pressed{
         <widget class="QLabel" name="label_20">
          <property name="geometry">
           <rect>
-           <x>600</x>
+           <x>456</x>
            <y>4</y>
            <width>63</width>
            <height>25</height>
@@ -1189,7 +1231,7 @@ QPushButton::pressed{
          </property>
          <property name="font">
           <font>
-           <family>Agency FB</family>
+           <family>Arial</family>
            <pointsize>10</pointsize>
           </font>
          </property>
@@ -1210,7 +1252,7 @@ QPushButton::pressed{
         <widget class="QLabel" name="label_gap_1">
          <property name="geometry">
           <rect>
-           <x>664</x>
+           <x>520</x>
            <y>30</y>
            <width>62</width>
            <height>24</height>
@@ -1221,6 +1263,12 @@ QPushButton::pressed{
            <width>60</width>
            <height>20</height>
           </size>
+         </property>
+         <property name="font">
+          <font>
+           <family>Arial</family>
+           <pointsize>10</pointsize>
+          </font>
          </property>
          <property name="styleSheet">
           <string notr="true">QLabel {
@@ -1237,7 +1285,7 @@ QPushButton::pressed{
         <widget class="QLabel" name="label_30">
          <property name="geometry">
           <rect>
-           <x>600</x>
+           <x>456</x>
            <y>30</y>
            <width>63</width>
            <height>24</height>
@@ -1251,7 +1299,7 @@ QPushButton::pressed{
          </property>
          <property name="font">
           <font>
-           <family>Agency FB</family>
+           <family>Arial</family>
            <pointsize>10</pointsize>
           </font>
          </property>
@@ -1268,13 +1316,148 @@ QPushButton::pressed{
           <set>Qt::AlignCenter</set>
          </property>
         </widget>
+        <widget class="QLabel" name="label_heightDist_0">
+         <property name="geometry">
+          <rect>
+           <x>320</x>
+           <y>4</y>
+           <width>62</width>
+           <height>25</height>
+          </rect>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>60</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <family>Arial</family>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QLabel {
+ border: 1px solid black;
+ }</string>
+         </property>
+         <property name="text">
+          <string>0.00</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_31">
+         <property name="geometry">
+          <rect>
+           <x>256</x>
+           <y>30</y>
+           <width>63</width>
+           <height>24</height>
+          </rect>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>60</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <family>Arial</family>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QLabel {
+ border: 1px solid black;
+	background-color: rgb(85, 170, 255);
+ }</string>
+         </property>
+         <property name="text">
+          <string>间隙1:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_29">
+         <property name="geometry">
+          <rect>
+           <x>256</x>
+           <y>4</y>
+           <width>63</width>
+           <height>25</height>
+          </rect>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>60</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <family>Arial</family>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QLabel {
+	border:1px solid black; 
+	background-color: rgb(170, 85, 0);
+   
+ }</string>
+         </property>
+         <property name="text">
+          <string>阶差1:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_gap_0">
+         <property name="geometry">
+          <rect>
+           <x>320</x>
+           <y>30</y>
+           <width>62</width>
+           <height>24</height>
+          </rect>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>60</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <family>Arial</family>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QLabel {
+ border: 1px solid black;
+ }</string>
+         </property>
+         <property name="text">
+          <string>0.00</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
         <widget class="QWidget" name="layoutWidget">
          <property name="geometry">
           <rect>
-           <x>96</x>
-           <y>3</y>
-           <width>128</width>
-           <height>52</height>
+           <x>30</x>
+           <y>10</y>
+           <width>158</width>
+           <height>32</height>
           </rect>
          </property>
          <layout class="QGridLayout" name="gridLayout_60">
@@ -1285,87 +1468,133 @@ QPushButton::pressed{
            <widget class="QLabel" name="label_18">
             <property name="minimumSize">
              <size>
-              <width>60</width>
-              <height>20</height>
+              <width>80</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>80</width>
+              <height>30</height>
              </size>
             </property>
             <property name="font">
              <font>
-              <family>Agency FB</family>
+              <family>Arial</family>
               <pointsize>10</pointsize>
              </font>
             </property>
             <property name="styleSheet">
              <string notr="true">QLabel {
 	border:1px solid black; 
-	background-color: rgb(170, 85, 0);
+	background-color: rgb(255, 255, 0);
    
  }</string>
             </property>
             <property name="text">
-             <string>阶差1:</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignCenter</set>
+             <string>点激光1:</string>
             </property>
            </widget>
           </item>
           <item row="0" column="1">
-           <widget class="QLabel" name="label_heightDist_0">
+           <widget class="QLabel" name="label_laserDist0">
             <property name="minimumSize">
              <size>
-              <width>60</width>
-              <height>20</height>
+              <width>70</width>
+              <height>30</height>
              </size>
             </property>
-            <property name="styleSheet">
-             <string notr="true">QLabel {
- border: 1px solid black;
- }</string>
-            </property>
-            <property name="text">
-             <string>0.00</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignCenter</set>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QLabel" name="label_10">
-            <property name="minimumSize">
+            <property name="maximumSize">
              <size>
-              <width>60</width>
-              <height>20</height>
+              <width>70</width>
+              <height>30</height>
              </size>
             </property>
             <property name="font">
              <font>
-              <family>Agency FB</family>
+              <family>Arial</family>
               <pointsize>10</pointsize>
              </font>
             </property>
             <property name="styleSheet">
              <string notr="true">QLabel {
  border: 1px solid black;
-	background-color: rgb(85, 170, 255);
  }</string>
             </property>
             <property name="text">
-             <string>间隙1:</string>
+             <string>0.0</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
             </property>
            </widget>
           </item>
-          <item row="1" column="1">
-           <widget class="QLabel" name="label_gap_0">
+         </layout>
+        </widget>
+        <widget class="QWidget" name="layoutWidget">
+         <property name="geometry">
+          <rect>
+           <x>650</x>
+           <y>10</y>
+           <width>158</width>
+           <height>32</height>
+          </rect>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_62">
+          <property name="spacing">
+           <number>1</number>
+          </property>
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_37">
             <property name="minimumSize">
              <size>
-              <width>60</width>
-              <height>20</height>
+              <width>80</width>
+              <height>30</height>
              </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>80</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <family>Arial</family>
+              <pointsize>10</pointsize>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QLabel {
+	border:1px solid black; 
+	background-color: rgb(255, 255, 0);
+   
+ }</string>
+            </property>
+            <property name="text">
+             <string>点激光2:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLabel" name="label_laserDist1">
+            <property name="minimumSize">
+             <size>
+              <width>70</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>70</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <family>Arial</family>
+              <pointsize>10</pointsize>
+             </font>
             </property>
             <property name="styleSheet">
              <string notr="true">QLabel {
@@ -1373,7 +1602,7 @@ QPushButton::pressed{
  }</string>
             </property>
             <property name="text">
-             <string>0.00</string>
+             <string>0.0</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
@@ -1387,9 +1616,9 @@ QPushButton::pressed{
         <property name="geometry">
          <rect>
           <x>20</x>
-          <y>840</y>
+          <y>830</y>
           <width>851</width>
-          <height>61</height>
+          <height>71</height>
          </rect>
         </property>
         <property name="styleSheet">
@@ -1403,8 +1632,8 @@ QPushButton::pressed{
         <widget class="QLabel" name="label_heightDist_3">
          <property name="geometry">
           <rect>
-           <x>664</x>
-           <y>4</y>
+           <x>540</x>
+           <y>14</y>
            <width>62</width>
            <height>25</height>
           </rect>
@@ -1414,6 +1643,12 @@ QPushButton::pressed{
            <width>60</width>
            <height>20</height>
           </size>
+         </property>
+         <property name="font">
+          <font>
+           <family>Arial</family>
+           <pointsize>10</pointsize>
+          </font>
          </property>
          <property name="styleSheet">
           <string notr="true">QLabel {
@@ -1430,8 +1665,8 @@ QPushButton::pressed{
         <widget class="QLabel" name="label_39">
          <property name="geometry">
           <rect>
-           <x>600</x>
-           <y>4</y>
+           <x>476</x>
+           <y>14</y>
            <width>63</width>
            <height>25</height>
           </rect>
@@ -1444,7 +1679,7 @@ QPushButton::pressed{
          </property>
          <property name="font">
           <font>
-           <family>Agency FB</family>
+           <family>Arial</family>
            <pointsize>10</pointsize>
           </font>
          </property>
@@ -1465,8 +1700,8 @@ QPushButton::pressed{
         <widget class="QLabel" name="label_gap_3">
          <property name="geometry">
           <rect>
-           <x>664</x>
-           <y>30</y>
+           <x>540</x>
+           <y>40</y>
            <width>62</width>
            <height>24</height>
           </rect>
@@ -1476,6 +1711,12 @@ QPushButton::pressed{
            <width>60</width>
            <height>20</height>
           </size>
+         </property>
+         <property name="font">
+          <font>
+           <family>Arial</family>
+           <pointsize>10</pointsize>
+          </font>
          </property>
          <property name="styleSheet">
           <string notr="true">QLabel {
@@ -1492,8 +1733,8 @@ QPushButton::pressed{
         <widget class="QLabel" name="label_40">
          <property name="geometry">
           <rect>
-           <x>600</x>
-           <y>30</y>
+           <x>476</x>
+           <y>40</y>
            <width>63</width>
            <height>24</height>
           </rect>
@@ -1506,7 +1747,7 @@ QPushButton::pressed{
          </property>
          <property name="font">
           <font>
-           <family>Agency FB</family>
+           <family>Arial</family>
            <pointsize>10</pointsize>
           </font>
          </property>
@@ -1523,104 +1764,285 @@ QPushButton::pressed{
           <set>Qt::AlignCenter</set>
          </property>
         </widget>
-        <widget class="QWidget" name="layoutWidget_4">
+        <widget class="QLabel" name="label_41">
          <property name="geometry">
           <rect>
-           <x>96</x>
-           <y>3</y>
-           <width>128</width>
-           <height>52</height>
+           <x>256</x>
+           <y>40</y>
+           <width>63</width>
+           <height>24</height>
           </rect>
          </property>
-         <layout class="QGridLayout" name="gridLayout_62">
+         <property name="minimumSize">
+          <size>
+           <width>60</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <family>Arial</family>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QLabel {
+ border: 1px solid black;
+	background-color: rgb(85, 170, 255);
+ }</string>
+         </property>
+         <property name="text">
+          <string>间隙3:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_gap_2">
+         <property name="geometry">
+          <rect>
+           <x>320</x>
+           <y>40</y>
+           <width>62</width>
+           <height>24</height>
+          </rect>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>60</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <family>Arial</family>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QLabel {
+ border: 1px solid black;
+ }</string>
+         </property>
+         <property name="text">
+          <string>0.00</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_42">
+         <property name="geometry">
+          <rect>
+           <x>256</x>
+           <y>14</y>
+           <width>63</width>
+           <height>25</height>
+          </rect>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>60</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <family>Arial</family>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QLabel {
+	border:1px solid black; 
+	background-color: rgb(170, 85, 0);
+   
+ }</string>
+         </property>
+         <property name="text">
+          <string>阶差3:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label_heightDist_2">
+         <property name="geometry">
+          <rect>
+           <x>320</x>
+           <y>14</y>
+           <width>62</width>
+           <height>25</height>
+          </rect>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>60</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <family>Arial</family>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QLabel {
+ border: 1px solid black;
+ }</string>
+         </property>
+         <property name="text">
+          <string>0.00</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+        <widget class="QWidget" name="layoutWidget">
+         <property name="geometry">
+          <rect>
+           <x>27</x>
+           <y>25</y>
+           <width>158</width>
+           <height>32</height>
+          </rect>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_53">
           <property name="spacing">
            <number>1</number>
           </property>
           <item row="0" column="0">
-           <widget class="QLabel" name="label_41">
+           <widget class="QLabel" name="label_14">
             <property name="minimumSize">
              <size>
-              <width>60</width>
-              <height>20</height>
+              <width>80</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>80</width>
+              <height>30</height>
              </size>
             </property>
             <property name="font">
              <font>
-              <family>Agency FB</family>
+              <family>Arial</family>
               <pointsize>10</pointsize>
              </font>
             </property>
             <property name="styleSheet">
              <string notr="true">QLabel {
 	border:1px solid black; 
-	background-color: rgb(170, 85, 0);
+	background-color: rgb(255, 255, 0);
    
  }</string>
             </property>
             <property name="text">
-             <string>阶差3:</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignCenter</set>
+             <string>点激光4:</string>
             </property>
            </widget>
           </item>
           <item row="0" column="1">
-           <widget class="QLabel" name="label_heightDist_2">
+           <widget class="QLabel" name="label_laserDist3">
             <property name="minimumSize">
              <size>
-              <width>60</width>
-              <height>20</height>
+              <width>70</width>
+              <height>30</height>
              </size>
             </property>
-            <property name="styleSheet">
-             <string notr="true">QLabel {
- border: 1px solid black;
- }</string>
-            </property>
-            <property name="text">
-             <string>0.00</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignCenter</set>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QLabel" name="label_42">
-            <property name="minimumSize">
+            <property name="maximumSize">
              <size>
-              <width>60</width>
-              <height>20</height>
+              <width>70</width>
+              <height>30</height>
              </size>
             </property>
             <property name="font">
              <font>
-              <family>Agency FB</family>
+              <family>Arial</family>
               <pointsize>10</pointsize>
              </font>
             </property>
             <property name="styleSheet">
              <string notr="true">QLabel {
  border: 1px solid black;
-	background-color: rgb(85, 170, 255);
  }</string>
             </property>
             <property name="text">
-             <string>间隙3:</string>
+             <string>0.0</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
             </property>
            </widget>
           </item>
-          <item row="1" column="1">
-           <widget class="QLabel" name="label_gap_2">
+         </layout>
+        </widget>
+        <widget class="QWidget" name="layoutWidget">
+         <property name="geometry">
+          <rect>
+           <x>660</x>
+           <y>25</y>
+           <width>158</width>
+           <height>32</height>
+          </rect>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_54">
+          <property name="spacing">
+           <number>1</number>
+          </property>
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_16">
             <property name="minimumSize">
              <size>
-              <width>60</width>
-              <height>20</height>
+              <width>80</width>
+              <height>30</height>
              </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>80</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <family>Arial</family>
+              <pointsize>10</pointsize>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QLabel {
+	border:1px solid black; 
+	background-color: rgb(255, 255, 0);
+   
+ }</string>
+            </property>
+            <property name="text">
+             <string>点激光3:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLabel" name="label_laserDist2">
+            <property name="minimumSize">
+             <size>
+              <width>70</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>70</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <family>Arial</family>
+              <pointsize>10</pointsize>
+             </font>
             </property>
             <property name="styleSheet">
              <string notr="true">QLabel {
@@ -1628,7 +2050,7 @@ QPushButton::pressed{
  }</string>
             </property>
             <property name="text">
-             <string>0.00</string>
+             <string>0.0</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
@@ -1644,7 +2066,7 @@ QPushButton::pressed{
         <rect>
          <x>1510</x>
          <y>20</y>
-         <width>361</width>
+         <width>351</width>
          <height>911</height>
         </rect>
        </property>
@@ -2246,8 +2668,8 @@ image: url(:/img/images/icon_redLight.png);
          <rect>
           <x>10</x>
           <y>240</y>
-          <width>341</width>
-          <height>341</height>
+          <width>331</width>
+          <height>291</height>
          </rect>
         </property>
         <property name="styleSheet">
@@ -2265,7 +2687,7 @@ image: url(:/img/images/icon_redLight.png);
          <property name="geometry">
           <rect>
            <x>120</x>
-           <y>270</y>
+           <y>230</y>
            <width>208</width>
            <height>52</height>
           </rect>
@@ -3095,9 +3517,9 @@ QPushButton:pressed {
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>590</y>
+          <y>550</y>
           <width>341</width>
-          <height>231</height>
+          <height>271</height>
          </rect>
         </property>
         <property name="styleSheet">
@@ -3609,8 +4031,8 @@ QPushButton:pressed {
         <widget class="QPushButton" name="btn_laser_light">
          <property name="geometry">
           <rect>
-           <x>10</x>
-           <y>140</y>
+           <x>220</x>
+           <y>80</y>
            <width>103</width>
            <height>50</height>
           </rect>
@@ -3651,8 +4073,8 @@ QPushButton:pressed {
         <widget class="QPushButton" name="btn_savePicture">
          <property name="geometry">
           <rect>
-           <x>220</x>
-           <y>170</y>
+           <x>110</x>
+           <y>220</y>
            <width>100</width>
            <height>50</height>
           </rect>
@@ -3924,8 +4346,8 @@ QPushButton:pressed {
         <widget class="QPushButton" name="btn_line_results_dis">
          <property name="geometry">
           <rect>
-           <x>120</x>
-           <y>170</y>
+           <x>10</x>
+           <y>220</y>
            <width>100</width>
            <height>50</height>
           </rect>
@@ -3984,6 +4406,90 @@ QPushButton:pressed {
           <string>直线检测</string>
          </property>
         </widget>
+        <widget class="QPushButton" name="btn_laser_upper_enable">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>140</y>
+           <width>102</width>
+           <height>50</height>
+          </rect>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>100</width>
+           <height>50</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <family>Agency FB</family>
+           <pointsize>10</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QPushButton {
+    border: 2px solid blue;
+    border-radius: 10px;
+}
+QPushButton:hover {
+    border: 2px solid red;
+    border-radius: 10px;
+}
+
+QPushButton:pressed {
+    border: 2px solid green;
+    border-radius: 10px;
+}</string>
+         </property>
+         <property name="text">
+          <string>轮廓激光上</string>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="btn_laser_lower_enable">
+         <property name="geometry">
+          <rect>
+           <x>120</x>
+           <y>140</y>
+           <width>102</width>
+           <height>50</height>
+          </rect>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>100</width>
+           <height>50</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <family>Agency FB</family>
+           <pointsize>10</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QPushButton {
+    border: 2px solid blue;
+    border-radius: 10px;
+}
+QPushButton:hover {
+    border: 2px solid red;
+    border-radius: 10px;
+}
+
+QPushButton:pressed {
+    border: 2px solid green;
+    border-radius: 10px;
+}</string>
+         </property>
+         <property name="text">
+          <string>轮廓激光下</string>
+         </property>
+        </widget>
        </widget>
        <widget class="QLabel" name="label_state_transition">
         <property name="geometry">
@@ -4014,9 +4520,15 @@ border-radius: 10px;
         <rect>
          <x>910</x>
          <y>20</y>
-         <width>581</width>
+         <width>571</width>
          <height>911</height>
         </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>10</pointsize>
+        </font>
        </property>
        <property name="styleSheet">
         <string notr="true">QGroupBox {

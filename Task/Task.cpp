@@ -122,12 +122,12 @@ void CTask::Manual()
 
     if (std::fabs(m_manualOperator.VechDirect -  m_JointGroupStatus[GP::STEER_LEFT_INDEX].Position) > 3)
     {
+        const double velocity{ 8.0 };
         // 当前指令和上一个指令的VechDirect都为零，判断条件始终成立
-         m_Robot->setJointMoveAbs(GP::STEER_LEFT_INDEX, m_manualOperator.VechDirect,10);//速度需改为参数
-        log->info("m_Robot->setJointMoveAbs(GP::STEER_LEFT_INDEX, {}", m_manualOperator.VechDirect);
+         m_Robot->setJointMoveAbs(GP::STEER_LEFT_INDEX, m_manualOperator.VechDirect, velocity);//速度需改为参数
+         m_Robot->setJointMoveAbs(GP::STEER_RIGHT_INDEX, m_manualOperator.VechDirect, velocity);//速度需改为参数
 
-         m_Robot->setJointMoveAbs(GP::STEER_RIGHT_INDEX,m_manualOperator.VechDirect,10);//速度需改为参数
-        log->info("m_Robot->setJointMoveAbs(GP::STEER_RIGHT_INDEX, {}", m_manualOperator.VechDirect);
+         log->info("舵轮旋转目标位置: {}, 速度{}", m_manualOperator.VechDirect, velocity);
     }
 
     double vel_left,vel_right ;
@@ -544,7 +544,7 @@ int CTask::CheckParallelState(std::vector<double> laserDistance, int max_deviati
     }
     for(int i=0;i<4;++i) 
     {
-        if(laserDistance[i] > 300 || laserDistance[i] < -3) 
+        if(laserDistance[i] > 450 || laserDistance[i] < -3)
         {
             log->error("{}激光数据有误,或壁面距离太远",i);
             return -1;
@@ -624,8 +624,6 @@ int CTask::CheckSidelineState()
     double line_dis_1 = ((m_stMeasuredata.m_LineDistance[0] - 15) * m_stMeasuredata.m_bLineDistance[0] - (m_stMeasuredata.m_LineDistance[1] - 15) * m_stMeasuredata.m_bLineDistance[1]) / (static_cast<int>(m_stMeasuredata.m_bLineDistance[0] )+ static_cast<int>(m_stMeasuredata.m_bLineDistance[1]));
     double line_dis_2 = ((m_stMeasuredata.m_LineDistance[2] - 15) * m_stMeasuredata.m_bLineDistance[2] - (m_stMeasuredata.m_LineDistance[3] - 15) * m_stMeasuredata.m_bLineDistance[3]) / (static_cast<int>(m_stMeasuredata.m_bLineDistance[2] )+ static_cast<int>(m_stMeasuredata.m_bLineDistance[3]));
     double line_dis_3 = ((m_stMeasuredata.m_LineDistance[4] - 15) * m_stMeasuredata.m_bLineDistance[4] - (m_stMeasuredata.m_LineDistance[5] - 15) * m_stMeasuredata.m_bLineDistance[5]) / (static_cast<int>(m_stMeasuredata.m_bLineDistance[4] )+ static_cast<int>(m_stMeasuredata.m_bLineDistance[5]));
-
-    log->info("{} line_dis_1: {}, line_dis_2: {}, line_dis_3: {}", __LINE__, line_dis_1, line_dis_2, line_dis_3);
 
     if (fabs(line_dis_1) < GP::Line_Deviation_Threshold
         && fabs(line_dis_2) < GP::Line_Deviation_Threshold

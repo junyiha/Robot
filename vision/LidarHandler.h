@@ -27,7 +27,7 @@ class LidarHandler: public QThread
 public:
 
 
-    bool detect_control_flag = false;
+    bool detect_control_flag = true;
     bool thread_control_flag = true;
     std::map<std::string, LidarData> results;
     LidarHelper* lidar_helper = nullptr;
