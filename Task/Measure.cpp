@@ -24,10 +24,10 @@ QVector<Eigen::Matrix4d> CMeasure::calPoseDeviation(stMeasureData data)
 
     if(data.m_bLaserDistance[0]&&data.m_bLaserDistance[1]&&data.m_bLaserDistance[2]&&data.m_bLaserDistance[3])//4个点激光均有效
     {
-            laserDistance[0] << x_Laser,-y_Laser  , data.m_LaserDistance[0]-Distance_Lift;
-            laserDistance[1] << x_Laser,y_Laser   , data.m_LaserDistance[1]-Distance_Lift;
-            laserDistance[2] << -x_Laser,y_Laser  , data.m_LaserDistance[2]-Distance_Lift;
-            laserDistance[3] << -x_Laser,-y_Laser , data.m_LaserDistance[3]-Distance_Lift;
+            laserDistance[0] << x_Laser,-y_Laser  , data.m_LaserDistance[0]-GP::Lift_Distance_In_Parallel;
+            laserDistance[1] << x_Laser,y_Laser   , data.m_LaserDistance[1]-GP::Lift_Distance_In_Parallel;
+            laserDistance[2] << -x_Laser,y_Laser  , data.m_LaserDistance[2]-GP::Lift_Distance_In_Parallel;
+            laserDistance[3] << -x_Laser,-y_Laser , data.m_LaserDistance[3]-GP::Lift_Distance_In_Parallel;
 
             Result[0] = calPoseforSquare(laserDistance);
             stepValid[0] = true;
@@ -135,10 +135,10 @@ QVector<Eigen::Matrix4d> CMeasure::calPoseDeviation(stMeasureData data)
 
     std::vector<Eigen::Vector3d>  linePosition(4); //边线虚拟面;
     if(stepValid[3] == true){
-        linePosition[0]<<  x_camera + distance[0],   delatY - y_camera + distance[2] , data.m_LaserDistance[0]-Distance_work;
-        linePosition[1]<<  x_camera + distance[1],   delatY + y_camera + distance[2] , data.m_LaserDistance[1]-Distance_work;
-        linePosition[2]<< -x_camera + distance[1],  -delatY + y_camera + distance[2] , data.m_LaserDistance[2]-Distance_work;
-        linePosition[3]<< -x_camera + distance[0],  -delatY - y_camera + distance[2] , data.m_LaserDistance[3]-Distance_work;
+        linePosition[0]<<  x_camera + distance[0],   delatY - y_camera + distance[2] , data.m_LaserDistance[0]-GP::Distance_work;
+        linePosition[1]<<  x_camera + distance[1],   delatY + y_camera + distance[2] , data.m_LaserDistance[1]-GP::Distance_work;
+        linePosition[2]<< -x_camera + distance[1],  -delatY + y_camera + distance[2] , data.m_LaserDistance[2]-GP::Distance_work;
+        linePosition[3]<< -x_camera + distance[0],  -delatY - y_camera + distance[2] , data.m_LaserDistance[3]-GP::Distance_work;
         Result[3] = calPoseforSquare(linePosition);
         Result[3](1,3) = Result[3](1,3)+27;//让工具向着y负方向偏离框中心24mm，让3号相机边线距39
         //Result[3](0,3) = Result[3](0,3) + 1;

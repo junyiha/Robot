@@ -11,85 +11,7 @@
 #include <QLineEdit>
 #include <spdlog/spdlog.h>
 #include "../vision/VisionInterface.h"
-
-enum class ETopState
-{
-    eManual = 0,        // 手动
-    eParallel,          // 调平
-    ePositioning,       // 定位
-    eReadToMagentOn,    // 待吸合
-    eDoWeld,            // 碰钉
-    eQuit               // 退出
-};
-
-enum class ESubState
-{
-    eNULL = 0,          // 空状态
-    eNotReady = 0,      // 未就绪
-    eReady,             // 就绪
-    eMotion,            // 运动
-
-    eReadyToParallel,   // 待调平
-    eDetection,         // 检测
-
-    eReadyToPositioning,// 待定位
-    
-    eReadyToDoWeld,     // 待碰钉
-    eDoingWeld,         // 碰钉中
-    eStopWeld,          // 碰钉停止
-
-    eQuiting,           // 退出中
-    ePause              // 暂停
-};
-
-enum class EExecutionCommand
-{
-    eNULL = 0,          // 空指令
-    eManual,            // 手动指令
-    eParallel,          // 调平
-    eTerminate,         // 终止
-    ePause,             // 暂停
-    ePositioning,       // 定位
-    eMagentOn,          // 吸合
-    eQuit,              // 退出
-    eAutoWeld,          // 自动碰钉
-    eMagentOff,         // 脱开
-    eStopWeld,          // 停止碰钉
-    eSideline,          // 对齐边线 == 定位(ePositioning)
-    eLift,              // 举升 (手动指令中的)
-    eAddNail,           // 放钉 (手动指令中的)
-    eStop,              // 停止 (手动指令中的)
-    eCrashStop,         // 急停 (手动指令中的)
-};
-
-enum class EDetectionInParallelResult
-{
-    eDeviationIsLessThanThreshold = 0,     // 激光传感器偏差小于阈值
-    eDistanceMeetsRequirement,             // 板壁距离满足调整要求
-    eNoWallDetected                        // 未检测到壁面
-};
-
-enum class EDetectionInPositioningResult
-{
-    eDeviationIsLessThanThreshold = 0,     // 边线偏差小于阈值
-    eEndAdjustmentDataIsValid,             // 末端调整数据合法
-    eDataIsInvalid,                         // 数据非法
-
-};
-
-/////////////////////////////////////////////////////////////////
-
-enum AutoProcessStage
-{
-    eEnd= 0,
-    eA  = 1,
-    eB1 = 2,
-    eB2 = 3,
-    eC1 = 4,
-    eC2 = 5,
-    eD1 = 6,
-    eD2 = 7,
-};
+#include "TaskExternal.hpp"
 
 enum ECommadforTask
 {
@@ -133,9 +55,6 @@ protected:
 
     QLineEdit ** lineEdit_endRelMove;
 
-    bool             m_AutoWorking; //自动模式状态标志位，内部逻辑判断
-    AutoProcessStage m_Step;        //自动作业阶段状态，内部逻辑判断
-
     stLinkStatus     m_LinkStatus;               //机器人状态状态
     QVector<st_ReadAxis> m_JointGroupStatus;         //轴组状态
     QVector<Eigen::Matrix4d> m_TargetDeviation;  //目标位姿（工具系下）
@@ -167,16 +86,6 @@ protected:
     void updateCmdandStatus();
 
     /**
-    * @brief 半自动作业过程
-    */
-    void SemiAutoProgrcess();
-
-    /**
-    * @brief 自动作业过程
-    */
-    //void AutoProgrcess();
-
-    /**
     * @brief 手动操作指令处理
     */
     void Manual();
@@ -204,11 +113,6 @@ protected:
      * @return
      */
     bool doMagentDown();
-    /**
-     * @brief PrintTargetPos 利用qDebug()打印矩阵(替代cout)
-     * @param m_TargetDeviation
-     */
-    void PrintTargetPos(uint index,QVector<Eigen::Matrix4d> m_TargetDeviation);
 
     /**
      * 日志打印

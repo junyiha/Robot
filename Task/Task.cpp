@@ -17,9 +17,6 @@ CTask::CTask(ComInterface* comm,CRobot* robot,VisionInterface* vision,QObject *p
     }
 
 
-    m_AutoWorking = false;
-    m_Step = eEnd;
-
     log = spdlog::get("logger");
     m_bMagnetOn = false;
 }
@@ -123,300 +120,6 @@ void CTask::updateCmdandStatus()
     this->mutex_read.unlock();
 }
 
-
-
-void CTask::SemiAutoProgrcess()
-{
-    QVector<double> LaserDistance(4);
-    std::fill(LaserDistance.begin(), LaserDistance.end(), 0.0); // 初始化LaserDistance为0
-
-    QVector<Eigen::Matrix4d> Dev_RT(6);
-    for (auto& mat : Dev_RT) {
-        mat.setIdentity(); // 如果想要设置为单位矩阵
-        // 或者，如果你想要一个所有元素都为0的矩阵，你可以使用：
-        // mat.setZero();
-    }
-
-    QVector<double> tar_position(6);
-    std::fill(tar_position.begin(), tar_position.end(), 0.0); // 初始化tar_position为0
-
-    static double tar_pos[6] = {0};
-    double tool_tar = 0;
-
-    // double Postion_Home[10]    =    {10,0,0,-90.04,-0.52,0,1210, 0, 0, 0}; //碰钉准备位置
-    // double Postion_Prepare[10]    = {800,0,0,-90.04,0.12,0.27,1300, 0, 0, 0}; //碰钉准备位置
-    // QVector<double> Postion_Home_qv = {10,0,0,-90.04,-0.52,0,1210, 0, 0, 0}; //碰钉准备位置
-    // QVector<double> Postion_Prepare_qv = {800,0,0,-90.04,0.12,0.27,1300,0, 0, 0}; //碰钉准备位置
-
-//    double Postion_Home[7]    =    {650,-7,-54,-1.11,0.09,-0.05,1210}; //碰钉准备位置
-//    double Postion_Prepare[7]    = {816,-7,-54,-1.11,0.09,-0.05,1300}; //碰钉准备位置
-//    QVector<double> Postion_Home_qv = {650,-7,-54,-1.11,0.09,-0.05,1210}; //碰钉准备位置
-//    QVector<double> Postion_Prepare_qv = {816,-7,-54,-1.11,0.09,-0.05,1300}; //碰钉准备位置
-
-    VisionResult vis_res; // 视觉检测结果
-
-    static quint16 cnt_15 = 0;
-    static quint16 cnt_25 = 0;
-
-    if(ActionIndex.loadRelaxed() != 15)
-    {
-        cnt_15 = 0;
-    }
-    //ActionIndex状态改变-日志输出
-    static int preActionIndex = 0;
-    if(preActionIndex != ActionIndex.loadRelaxed()){
-        log->info(("action_index changed from  " +  GetEnumName_action_index(preActionIndex) + "  ------->  " + GetEnumName_action_index(ActionIndex.loadRelaxed())).c_str());
-    }
-    preActionIndex = ActionIndex.loadRelaxed();
-
-    //action_index 按照枚举变量重新定义
-    switch(ActionIndex.loadRelaxed())
-    {
-    //=====================0~10 :空闲、急停、按暂停 等 ==========================
-    case 0:
-        break;
-    case 1: //急停
-        m_Robot->setLinkStop();
-        ActionIndex.storeRelaxed(0);
-
-    case 3: //停止
-        m_Robot->setLinkHalt();
-        ActionIndex.storeRelaxed(0);
-        break;
-
-    //=====================10~19 :举升调平 ==========================
-    case 10: //举升准备位置
-        if(this->m_bMagnetOn){break;}
-        m_Robot->setJointGroupMoveAbs(Postion_Home,JOINT_VEL_LIMIT);
-        if(m_Robot->isJointReached(Postion_Home_qv))
-        {
-            ActionIndex.storeRelaxed(0);
-        }
-        break;
-
-    case 12: //举升到调平位置
-        //检测高差
-        if(this->m_bMagnetOn){break;}
-        m_Robot->setJointGroupMoveAbs(Postion_Prepare,JOINT_VEL_LIMIT);
-        if(m_Robot->isJointReached(Postion_Prepare_qv))
-        {
-            ActionIndex.storeRelaxed(0);
-        }
-
-        break;
-
-    case 15: //调平
-        if(this->m_bMagnetOn){break;}
-        LaserDistance = m_Comm->getLasersDistance();
-
-        m_stMeasuredata.m_LaserDistance[0] = LaserDistance[0];
-        m_stMeasuredata.m_LaserDistance[1] = LaserDistance[1];
-        m_stMeasuredata.m_LaserDistance[2] = LaserDistance[2];
-        m_stMeasuredata.m_LaserDistance[3] = LaserDistance[3];
-
-        Dev_RT =  CMeasure::calPoseDeviation(m_stMeasuredata);
-        if(Dev_RT[6](1,0) == false)break;
-        tar_position = m_Robot->getTargetPose(Dev_RT[0]);
-
-        for(int i=0;i<6;i++)
-        {
-            tar_pos[i] = tar_position[i];
-        }
-
-        if(Dev_RT[6](0,2) < 50) //点激光一致性小于50mm
-        {
-            if(Dev_RT[6](0,0)<Distance_Lift+10)
-            {
-                m_Robot->setLinkMoveAbs(tar_pos,END_VEL_LIMIT);
-
-                if(Dev_RT[6](0,2)<3) //四个点激光差值1mm
-                {
-                    ActionIndex.storeRelaxed(0);
-                    log->info("完成调平，偏差：{}",Dev_RT[6](0,2));
-                }
-
-            }else{
-               m_Robot->setLinkHalt();
-               ActionIndex.storeRelaxed(0);//
-               log->warn("末端距离过大，请检查设备和环境");
-            }
-        }
-        else//偏差过大
-        {
-            m_Robot->setLinkHalt();
-            ActionIndex.storeRelaxed(0);
-            log->warn("末端激光偏差过大，请检查设备和环境");
-        }
-        cnt_15 ++;
-        if(cnt_15 > 100)
-        {
-            log->warn("调平中止");
-            ActionIndex.storeRelaxed(0);
-        }
-        break;
-
-    case 16: //举升到对边位置
-        if(this->m_bMagnetOn){break;}
-        LaserDistance = m_Comm->getLasersDistance();
-
-        m_stMeasuredata.m_LaserDistance[0] = LaserDistance[0];
-        m_stMeasuredata.m_LaserDistance[1] = LaserDistance[1];
-        m_stMeasuredata.m_LaserDistance[2] = LaserDistance[2];
-        m_stMeasuredata.m_LaserDistance[3] = LaserDistance[3];
-        Dev_RT =  CMeasure::calPoseDeviation(m_stMeasuredata);
-        if(Dev_RT[6](0,0) < 10 || Dev_RT[6](0,0)>50)
-        {
-            log->warn("距离有误，当前距离{}",Dev_RT[6](0,0));
-            ActionIndex.storeRelaxed(0);
-        }
-        tool_tar = Dev_RT[6](0,0) -Distance_work + m_JointGroupStatus[6].Position;
-
-        m_Robot->setJointMoveAbs(6,tool_tar,5); //末端举升， 5mm/s
-        ActionIndex.storeRelaxed(0);
-        break;
-
-    //=====================20~29:边线对齐=====================
-    case 20: //获取边线数据，并计算调整量
-        if(this->m_bMagnetOn){break;}
-        vis_res = m_vision->getVisResult();
-        if(vis_res.status) {  //调用视觉函数
-            std::copy(std::begin(vis_res.stData.m_LineDistance) , std::end(vis_res.stData.m_LineDistance), m_stMeasuredata.m_LineDistance);
-            std::copy(std::begin(vis_res.stData.m_bLineDistance), std::end(vis_res.stData.m_bLineDistance), m_stMeasuredata.m_bLineDistance);
-
-            LaserDistance = m_Comm->getLasersDistance();
-            m_stMeasuredata.m_LaserDistance[0] = LaserDistance[0];
-            m_stMeasuredata.m_LaserDistance[1] = LaserDistance[1];
-            m_stMeasuredata.m_LaserDistance[2] = LaserDistance[2];
-            m_stMeasuredata.m_LaserDistance[3] = LaserDistance[3];
-
-
-            log->info("有效性 \nline1:{}\nline2:{}\nline3:{}\nline4{}",m_stMeasuredata.m_bLineDistance[0],m_stMeasuredata.m_bLineDistance[1],m_stMeasuredata.m_bLineDistance[2],m_stMeasuredata.m_bLineDistance[3]);
-            log->info("边线值 \nline1:{}\nline2:{}\nline3:{}\nline4{}",m_stMeasuredata.m_LineDistance[0],m_stMeasuredata.m_LineDistance[1],m_stMeasuredata.m_LineDistance[2],m_stMeasuredata.m_LineDistance[3]);
-
-            Dev_RT =  CMeasure::calPoseDeviation(m_stMeasuredata);
-            PrintTargetPos(3,Dev_RT);
-
-            //数据有效性检测
-            if(Dev_RT[6](1,3) == false){
-                log->warn("边线数据有误，请检查设备--The boundary line data is incorrect. Please check the device.");
-                ActionIndex.storeRelaxed(0);
-                break;
-            }
-
-            //计算调整量
-            tar_position = m_Robot->getTargetPose(Dev_RT[3]);
-            for(int i=0;i<6;i++)
-            {
-                tar_pos[i] = tar_position[i];
-            }
-            QVector<st_ReadAxis> stJointstatus = m_Comm->getLinkJointStatus(0); //link轴组数据
-
-            log->info("\n end_pos 1:{}\n end_pos 2:{}\n end_pos 3:{}\n end_pos 4:{}\n end_pos 5:{}\n end",stJointstatus[0].Position,stJointstatus[1].Position,stJointstatus[2].Position,stJointstatus[3].Position,stJointstatus[4].Position);
-            log->info("\n tar_pos 1:{}\n tar_pos 2:{}\n tar_pos 3:{}\n tar_pos 4:{}\n tar_pos 5:{}\n tar_pos 6:{}\n ",tar_pos[0],tar_pos[1],tar_pos[2],tar_pos[3],tar_pos[4],tar_pos[5]);
-            log->info("对边线调整量计算完毕--The calculation of the adjustment amount for the opposite sideline has been completed.");
-
-            ActionIndex.storeRelaxed(25);
-        }
-        break;
-
-    case 25: //调整偏差
-        if(this->m_bMagnetOn){break;}
-        m_Robot->setLinkMoveAbs(tar_pos,END_VEL_LIMIT);
-
-        cnt_25 ++;
-
-        log->info("机器人正在进行边线调整...");
-        if(m_LinkStatus.eLinkActState == eLINK_STANDSTILL && m_Robot->isEndReached(tar_position) == true )
-        {
-            log->info("完成边线调整");
-            cnt_25 = 0;
-            for(int i=0;i<6;i++)
-            {
-                tar_pos[i] = 0.0;
-            }
-            ActionIndex.storeRelaxed(28);
-        }
-
-        if(cnt_25 > 200){
-            log->warn("边线调整中止");
-            cnt_25 = 0;
-            for(int i=0;i<6;i++)
-            {
-                tar_pos[i] = 0.0;
-            }
-            ActionIndex.storeRelaxed(0);
-        }
-
-        break;
-
-    case 28: //检测调整结果
-    {
-        if(this->m_bMagnetOn){break;}
-        const double staLineDistance = 15;
-        const double deltaLineDistance = 1.5;
-        vis_res = m_vision->getVisResult();
-        if(vis_res.status) //调用视觉函数
-        {
-            //输出偏差 emit
-            bool b_line_error = false;
-            for(int i=0;i<4;i++){
-                if(!vis_res.stData.m_bLineDistance[i])
-                {
-                    b_line_error = false;
-                    log->warn("边线{}数据有误，请再次“对齐边线”",i);
-                }
-
-                if(vis_res.stData.m_LineDistance[i] < staLineDistance + deltaLineDistance && vis_res.stData.m_LineDistance[i] > staLineDistance - deltaLineDistance)
-                {
-                    b_line_error = false;
-                    log->info("边线{  }偏差合理，当前距离：{  }",i,vis_res.stData.m_LineDistance[i]);
-                }
-            }
-            ActionIndex.storeRelaxed(0);
-        }
-        break;
-    }
-        //=====================30~50:碰钉动作=====================
-    case 30: //磁铁吸合
-        if(doMagentOn() == true)
-        {
-            m_bMagnetOn = true;
-            ActionIndex.storeRelaxed(0);
-            log->info("完成磁铁吸合操作");
-            qDebug("确认磁铁吸合状况，及螺柱、磁环安装状态"); //弹窗提升
-        }
-        break;
-
-    case 32: //磁铁脱开
-        if(doMagentOff() == true)
-        {
-            m_bMagnetOn = false;
-            ActionIndex.storeRelaxed(0);
-            log->info("完成磁铁脱开操作");
-        }
-        break;
-
-    case 40: //自动碰钉
-        if (doWeldAction(1) == true)
-        {
-            ActionIndex.storeRelaxed(0);
-            log->info("完成自动碰钉作业");
-        }
-        break;
-
-    case 42: //自动碰钉暂停            
-        ActionIndex.storeRelaxed(0);
-        break;
-
-    case 44: //结束/中止碰钉
-        doWeldAction(-1);
-        ActionIndex.storeRelaxed(0);
-        break;
-    }
-
-
-}
-
 void CTask::Manual()
 {
     if (m_manualOperator.StopCommand)
@@ -435,14 +138,14 @@ void CTask::Manual()
         return;
     }
 
-    if (std::fabs(m_manualOperator.VechDirect -  m_JointGroupStatus[STEER_LEFT_INDEX].Position) > 3)
+    if (std::fabs(m_manualOperator.VechDirect -  m_JointGroupStatus[GP::STEER_LEFT_INDEX].Position) > 3)
     {
         // 当前指令和上一个指令的VechDirect都为零，判断条件始终成立
-         m_Robot->setJointMoveAbs(STEER_LEFT_INDEX, m_manualOperator.VechDirect,10);//速度需改为参数
-        log->info("m_Robot->setJointMoveAbs(STEER_LEFT_INDEX, {}", m_manualOperator.VechDirect);
+         m_Robot->setJointMoveAbs(GP::STEER_LEFT_INDEX, m_manualOperator.VechDirect,10);//速度需改为参数
+        log->info("m_Robot->setJointMoveAbs(GP::STEER_LEFT_INDEX, {}", m_manualOperator.VechDirect);
 
-         m_Robot->setJointMoveAbs(STEER_RIGHT_INDEX,m_manualOperator.VechDirect,10);//速度需改为参数
-        log->info("m_Robot->setJointMoveAbs(STEER_RIGHT_INDEX, {}", m_manualOperator.VechDirect);
+         m_Robot->setJointMoveAbs(GP::STEER_RIGHT_INDEX,m_manualOperator.VechDirect,10);//速度需改为参数
+        log->info("m_Robot->setJointMoveAbs(GP::STEER_RIGHT_INDEX, {}", m_manualOperator.VechDirect);
     }
 
     double vel_left,vel_right ;
@@ -458,14 +161,14 @@ void CTask::Manual()
         vel_left = m_manualOperator.VechVel * 100 - m_manualOperator.RotateVel * 30; //正转为逆时针
         vel_right = m_manualOperator.VechVel * 100 + m_manualOperator.RotateVel * 30;
 
-        log->info("{},{}: m_Robot->setJointMoveVel(WHEEL_LEFT_INDEX, {});", __FILE__,__LINE__,vel_left);
-         m_Robot->setJointMoveVel(WHEEL_LEFT_INDEX, -vel_left);
-        log->info("{},{}: m_Robot->setJointMoveVel(WHEEL_RIGHT_INDEX, {});", __FILE__,__LINE__,vel_right);
-         m_Robot->setJointMoveVel(WHEEL_RIGHT_INDEX, -vel_right);
+        log->info("{},{}: m_Robot->setJointMoveVel(GP::WHEEL_LEFT_INDEX, {});", __FILE__,__LINE__,vel_left);
+         m_Robot->setJointMoveVel(GP::WHEEL_LEFT_INDEX, -vel_left);
+        log->info("{},{}: m_Robot->setJointMoveVel(GP::WHEEL_RIGHT_INDEX, {});", __FILE__,__LINE__,vel_right);
+         m_Robot->setJointMoveVel(GP::WHEEL_RIGHT_INDEX, -vel_right);
     }else
     {
-        m_Robot->setJointMoveVel(WHEEL_LEFT_INDEX, 0);
-        m_Robot->setJointMoveVel(WHEEL_RIGHT_INDEX, 0);
+        m_Robot->setJointMoveVel(GP::WHEEL_LEFT_INDEX, 0);
+        m_Robot->setJointMoveVel(GP::WHEEL_RIGHT_INDEX, 0);
     }
 
     std::vector<double> TEMP_LINK_0_JOINT_MAX_VEL(MAX_FREEDOM_LINK, 0.0);
@@ -482,23 +185,18 @@ void CTask::Manual()
     else if (m_manualOperator.Ready == 1)
     {
         // 移动到举升位置
-        log->info("{},{}: m_Robot->setLinkMoveAbs(Postion_Home,END_VEL_LIMIT);", __FILE__,__LINE__);
+        log->info("{},{}: m_Robot->setLinkMoveAbs(GP::Home_Position,GP::End_Vel_Limit);", __FILE__,__LINE__);
         std::vector<double> TEMP_LINK_0_JOINT_MAX_VEL_FOR_READY_POINT(MAX_FREEDOM_LINK, 0.0);
         TEMP_LINK_0_JOINT_MAX_VEL_FOR_READY_POINT = {1, 1, 1, 1, 0.3, 10, 5, 0.5, 4, 1};
-        //m_Comm->setLinkJointMoveAbs(0, Postion_Prepare,TEMP_LINK_0_JOINT_MAX_VEL.data());
-//        log->info("Postion_Prepare: {},{},{},{},{},{},{},{},{},{}\nTEMP_LINK_0_JOINT_MAX_VEL: {},{},{},{},{},{},{},{},{},{}",
-//                  Postion_Prepare[0],Postion_Prepare[1],Postion_Prepare[2],Postion_Prepare[3],Postion_Prepare[4],Postion_Prepare[5],Postion_Prepare[6],Postion_Prepare[7],Postion_Prepare[8],Postion_Prepare[9],
-//                  TEMP_LINK_0_JOINT_MAX_VEL[1],TEMP_LINK_0_JOINT_MAX_VEL[2],TEMP_LINK_0_JOINT_MAX_VEL[3],TEMP_LINK_0_JOINT_MAX_VEL[4],TEMP_LINK_0_JOINT_MAX_VEL[5],TEMP_LINK_0_JOINT_MAX_VEL[6],TEMP_LINK_0_JOINT_MAX_VEL[7],TEMP_LINK_0_JOINT_MAX_VEL[8],TEMP_LINK_0_JOINT_MAX_VEL[9]);
-        m_Robot->setJointGroupMoveAbs(Postion_Prepare,TEMP_LINK_0_JOINT_MAX_VEL_FOR_READY_POINT.data());
+        m_Robot->setJointGroupMoveAbs(GP::Prepare_Position.data(), TEMP_LINK_0_JOINT_MAX_VEL_FOR_READY_POINT.data());
     }
     else if (m_manualOperator.Ready == 2)
     {
         // 移动到放钉位置
-        log->info("{},{}: m_Robot->setLinkMoveAbs(Postion_Prepare,END_VEL_LIMIT);", __FILE__,__LINE__);
+        log->info("{},{}: m_Robot->setLinkMoveAbs(GP::Prepare_Position,GP::End_Vel_Limit);", __FILE__,__LINE__);
         std::vector<double> TEMP_LINK_0_JOINT_MAX_VEL_FOR_SET_POINT(MAX_FREEDOM_LINK, 0.0);
         TEMP_LINK_0_JOINT_MAX_VEL_FOR_SET_POINT = {1, 1, 1, 1, 0.3, 10, 5, 0.5, 2, 6};
-        //m_Comm->setLinkJointMoveAbs(0, Postion_Home,TEMP_LINK_0_JOINT_MAX_VEL.data());
-        m_Robot->setJointGroupMoveAbs(Postion_Home,TEMP_LINK_0_JOINT_MAX_VEL_FOR_SET_POINT.data());
+        m_Robot->setJointGroupMoveAbs(GP::Home_Position.data(), TEMP_LINK_0_JOINT_MAX_VEL_FOR_SET_POINT.data());
     }
     else if (m_manualOperator.bLinkMoveFlag)
     {
@@ -516,7 +214,7 @@ void CTask::Manual()
                 // 末端运动
                 for(int i= 0;i<6;i++)
                 {
-                    endvel[i] = m_manualOperator.LinkMove[i]*END_VEL_LIMIT[i];
+                    endvel[i] = m_manualOperator.LinkMove[i]*GP::End_Vel_Limit[i];
                 }
                 log->info("{},{}: m_Robot->setLinkMoveVel(endvel): {},{},{},{},{},{}", __FILE__,__LINE__,
                 endvel[0],endvel[1],endvel[2],endvel[3],endvel[4],endvel[5]);
@@ -841,15 +539,6 @@ stMeasureData CTask::getStMeasureData()
     return re;
 }
 
-void CTask::PrintTargetPos(uint index,QVector<Eigen::Matrix4d> m_TargetDeviation)
-{
-    qDebug()<<"----------------------PrintTargetPos : [ "+QString::number(index)+" ]---------------------------";
-    for(int i=0;i<4;++i){
-        qDebug()<<m_TargetDeviation[index](i,0)<<" || "<<m_TargetDeviation[index](i,1)<<" || "<<m_TargetDeviation[index](i,2)<<" || "<<m_TargetDeviation[index](i,3)<<" || ";
-    }
-    qDebug()<<"\n\n";
-}
-
 void CTask::closeThread() {
     this->c_running = false;
     QThread::wait();
@@ -885,9 +574,8 @@ int CTask::CheckParallelState(QVector<double> laserDistance)
         return -1;
     }
     //判断是否完成调平
-    if(maxDistance - minDistance< PARRALLE_DISTANCE && minDistance < Distance_Lift)  //最大偏差小于阈值
+    if(maxDistance - minDistance< PARRALLE_DISTANCE && minDistance < GP::Lift_Distance_In_Parallel)  //最大偏差小于阈值
     {
-        //log->info("激光距离{},最大偏差小于{}，完成调平", Distance_Lift, PARRALLE_DISTANCE);
         return 1;
     }else
     {

@@ -15,8 +15,8 @@ void CRobotKinectModel::setJointPos(std:: vector<std::pair<double, bool>> Joint_
 
     //修改827
     //推缸行程转为旋转角度
-    m_CylinderLen = Joint_Value[CYLINDER_INDEX].first;
-    Joint_Value[CYLINDER_INDEX].first =Joint2Fkine(Joint_Value[CYLINDER_INDEX].first);
+    m_CylinderLen = Joint_Value[GP::CYLINDER_INDEX].first;
+    Joint_Value[GP::CYLINDER_INDEX].first =Joint2Fkine(Joint_Value[GP::CYLINDER_INDEX].first);
 
 
     if (Joint_Value.size() != m_SerialLink.size())
@@ -66,7 +66,7 @@ Eigen::VectorXd CRobotKinectModel::getJointVel_nolimit(Eigen::VectorXd Tar_Speed
 
     //修改827
     //推缸关节速度
-    Full_Joint_Speed[CYLINDER_INDEX] = Joint2InvKine(Full_Joint_Speed[CYLINDER_INDEX],m_CylinderLen);
+    Full_Joint_Speed[GP::CYLINDER_INDEX] = Joint2InvKine(Full_Joint_Speed[GP::CYLINDER_INDEX],m_CylinderLen);
 //    double theta = Joint2Fkine(m_SerialLink[5].getJointPos());
 //    Full_Joint_Speed[5] = Joint2InvKine(m_SerialLink[5].getJointPos(),m_CylinderLen);
 
@@ -92,7 +92,7 @@ Eigen::VectorXd CRobotKinectModel::getJointVel(Eigen::VectorXd Tar_Speed,bool Re
     {
         if(m_SerialLink[i].Is_Free() == false) continue;
 
-        if(i == CYLINDER_INDEX)
+        if(i == GP::CYLINDER_INDEX)
         {
             if( ((LINK_0_JOINT_LIMIT_POS[i]- m_CylinderLen) <1  && speed[i]>0)||
                 (  (m_CylinderLen- LINK_0_JOINT_LIMIT_NEG[i])<1 && speed[i]<0))

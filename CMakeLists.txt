@@ -73,6 +73,8 @@ include_directories(${BaseDIR}/packages/eigen3.4.0)
 add_compile_options("$<$<C_COMPILER_ID:MSVC>:/source-charset:utf-8>")
 add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/source-charset:utf-8>")
 
+add_subdirectory(${CMAKE_SOURCE_DIR}/ThirdParty/yaml-cpp-0.8.0)
+
 find_package(Qt5 COMPONENTS
         Core
         Gui
@@ -97,7 +99,12 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/
                                                   ${CMAKE_SOURCE_DIR}/robot
                                                   ${CMAKE_SOURCE_DIR}/Task
                                                   ${CMAKE_SOURCE_DIR}/vision
+                                                  ${CMAKE_SOURCE_DIR}/ThirdParty/yaml-cpp-0.8.0/include/
 ) 
+
+
+# yaml-0.8.0
+target_link_libraries(${PROJECT_NAME} yaml-cpp::yaml-cpp)
 
 target_link_libraries(PDRobot-master
         Qt5::Core

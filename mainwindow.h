@@ -33,6 +33,7 @@
 //--------------任务部分--------------//
 #include "Task/Task.h"
 #include <QAtomicInt>
+#include "ConfigManager.hpp"
 
 //--------------可视化----------------//
 #include "vision/CameraDisplay.h"
@@ -79,6 +80,7 @@ public:
     //视觉模块
     VisionControls* m_Vision;
     VisionInterface* m_VisionInterface;
+    std::unique_ptr<Config::ConfigManager> m_config_ptr;
 
     //控十字激光
     QByteArray m_CrossLidar;
@@ -315,6 +317,10 @@ private slots:
     void initUiWiget();
 
     void updataDeviceConnectState();
+
+    void slots_btn_load_configuration_clicked();
+    void slots_btn_save_home_position_clicked();
+    void slots_btn_save_prepare_position_clicked();
 };
 
 
