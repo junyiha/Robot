@@ -85,7 +85,7 @@ MLSD::MLSD()
 //    string model_path = "D:\\_Project\\Ship\\program\\ZBRobot\\ZBRobotV24\\models\\mlsd_large.onnx";
 //    string model_path = "E:\\project\\qt\\vision_test\\vision_test_v3\\vision_test_v3\\models\\mlsd_large.onnx";
     //  string model_path = "../models/mlsd_model_tiny_20240721.onnx";
-   string model_path = "D:/PDRobot-master/models/mlsd_model_tiny_20240721.onnx";
+   string model_path = "D:/Robot/models/mlsd_model_tiny_20240721.onnx";
     
     std::wstring widestr = std::wstring(model_path.begin(), model_path.end());
 

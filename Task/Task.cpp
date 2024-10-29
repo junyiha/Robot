@@ -22,8 +22,6 @@ CTask::CTask(ComInterface* comm,CRobot* robot,VisionInterface* vision,QObject *p
 
     log = spdlog::get("logger");
     m_bMagnetOn = false;
-
-    log->info("碰钉机器人--任务模块构造完成...");
 }
 
 

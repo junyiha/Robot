@@ -93,22 +93,7 @@ int RunRobot(int argc, char *argv[])
     return a.exec();
 }
 
-void TestTask()
-{
-    CTask task(nullptr, nullptr, nullptr);
-
-
-}
-
 int main(int argc, char *argv[])
 {
-    if (argc < 2)
-    {
-        return RunRobot(argc, argv);
-    }
-
-    spdlog::info("test program...");
-    TestTask();
-
-    return 0;
+    return RunRobot(argc, argv);
 }
