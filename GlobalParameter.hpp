@@ -32,8 +32,10 @@ namespace GP
 		std::vector<double> value;
 	};
 
+	using PositionMap = std::map<std::pair<GP::WorkingScenario, GP::PositionType>, GP::PositionData>;
+
 	extern WorkingScenario Working_Scenario;
-	extern std::map<std::pair<WorkingScenario, PositionType>, PositionData> Position_Map;
+	extern PositionMap Position_Map;
 
 	static const int DOF = 10;
 

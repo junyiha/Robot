@@ -1267,7 +1267,8 @@ void MainWindow::slots_btn_save_home_position_clicked()
         );
         return;
     }
-    res = m_config_ptr->UpdateValue("home_point", data);
+    GP::Position_Map[{GP::Working_Scenario, GP::PositionType::Prepare}].value = data;
+    res = m_config_ptr->UpdateValue("position_map", GP::Position_Map);
 
     if (res)
     {
@@ -1307,7 +1308,8 @@ void MainWindow::slots_btn_save_prepare_position_clicked()
         );
         return;
     }
-    res = m_config_ptr->UpdateValue("prepare_point", data);
+    GP::Position_Map[{GP::Working_Scenario, GP::PositionType::Lift}].value = data;
+    res = m_config_ptr->UpdateValue("position_map", GP::Position_Map);
 
     if (res)
     {

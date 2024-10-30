@@ -141,4 +141,24 @@ namespace Config
 
 		return res;
 	}
+
+	bool ConfigManager::UpdateValue(const std::string key, const GP::PositionMap position_map)
+	{
+		bool res{ false };
+		YAML::Node node;
+		for (auto& it : position_map)
+		{
+			YAML::Node temp_node;
+			temp_node.push_back(it.second.brief);
+			temp_node.push_back(static_cast<int>(it.first.first));
+			temp_node.push_back(static_cast<int>(it.first.second));
+			temp_node.push_back(it.second.value);
+			node.push_back(temp_node);
+		}
+		m_root[key] = node;
+		if (WriteToFile())
+			res = true;
+
+		return res;
+	}
 }

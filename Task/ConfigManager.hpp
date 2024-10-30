@@ -51,6 +51,11 @@ namespace Config
 		 */
 		bool UpdateValue(const std::string key, const std::vector<double> value);
 
+		/**
+		 * @brief 更新示教点.
+		 */
+		bool UpdateValue(const std::string key, const GP::PositionMap position_map);
+
 	private:
 		YAML::Node m_root;
 		std::string m_path{ "D:/Robot/config.yaml" };
