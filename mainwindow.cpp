@@ -1206,7 +1206,7 @@ void MainWindow::on_btn_add_nail_pressed() {
    for(int i = 0;i<10;i++){
        vel_Home[i] = LINK_0_JOINT_MAX_VEL[i]*0.1;
    }
-   m_Robot->setJointGroupMoveAbs(GP::Home_Position.data(),vel_Home);
+   m_Robot->setJointGroupMoveAbs(GP::Position_Map[{GP::Working_Scenario, GP::PositionType::Prepare}].value.data(),vel_Home);
 
 }
 
@@ -1219,7 +1219,7 @@ void MainWindow::on_btn_preparation_pos_pressed() {
     for(int i = 0;i<10;i++){
         vel_pre[i] = LINK_0_JOINT_MAX_VEL[i]*0.1;
     }
-    m_Robot->setJointGroupMoveAbs(GP::Prepare_Position.data(),vel_pre);
+    m_Robot->setJointGroupMoveAbs(GP::Position_Map[{GP::Working_Scenario, GP::PositionType::Lift}].value.data(),vel_pre);
 }
 
 void MainWindow::on_btn_preparation_pos_released() {

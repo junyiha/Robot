@@ -21,6 +21,8 @@
 #include <clocale>
 #include <Eigen/Eigen>
 
+#include "SceneSelectionWindow.hpp"
+
 
 void initLog()
 {
@@ -85,12 +87,12 @@ int RunRobot(int argc, char *argv[])
 {
     QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8")); // 设置中文编码
 
-    QApplication a(argc, argv);
-    MainWindow w;
-    w.setWindowTitle("LNG Panel Loading Robot");
-    w.show();
+    QApplication app(argc, argv);
 
-    return a.exec();
+    APP::SceneSelectionWindow scene_selection_window;
+    scene_selection_window.show();
+
+    return app.exec();
 }
 
 int main(int argc, char *argv[])

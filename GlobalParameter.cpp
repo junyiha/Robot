@@ -2,6 +2,7 @@
 
 namespace GP
 {
+	WorkingScenario Working_Scenario{WorkingScenario::Top};
 	std::map<std::pair<WorkingScenario, PositionType>, PositionData> Position_Map{};
 
 	double velLine{0.0};	
