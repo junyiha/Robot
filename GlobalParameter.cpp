@@ -2,6 +2,8 @@
 
 namespace GP
 {
+	std::map<std::pair<WorkingScenario, PositionType>, PositionData> Position_Map{};
+
 	double velLine{0.0};	
 	double velRotate{0.0};	
 

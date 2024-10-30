@@ -185,7 +185,6 @@ void CTask::Manual()
     else if (m_manualOperator.Ready == 1)
     {
         // 移动到举升位置
-        log->info("{},{}: m_Robot->setLinkMoveAbs(GP::Home_Position,GP::End_Vel_Limit);", __FILE__,__LINE__);
         std::vector<double> TEMP_LINK_0_JOINT_MAX_VEL_FOR_READY_POINT(MAX_FREEDOM_LINK, 0.0);
         TEMP_LINK_0_JOINT_MAX_VEL_FOR_READY_POINT = {1, 1, 1, 1, 0.3, 10, 5, 0.5, 4, 1};
         m_Robot->setJointGroupMoveAbs(GP::Prepare_Position.data(), TEMP_LINK_0_JOINT_MAX_VEL_FOR_READY_POINT.data());
@@ -193,7 +192,6 @@ void CTask::Manual()
     else if (m_manualOperator.Ready == 2)
     {
         // 移动到放钉位置
-        log->info("{},{}: m_Robot->setLinkMoveAbs(GP::Prepare_Position,GP::End_Vel_Limit);", __FILE__,__LINE__);
         std::vector<double> TEMP_LINK_0_JOINT_MAX_VEL_FOR_SET_POINT(MAX_FREEDOM_LINK, 0.0);
         TEMP_LINK_0_JOINT_MAX_VEL_FOR_SET_POINT = {1, 1, 1, 1, 0.3, 10, 5, 0.5, 2, 6};
         m_Robot->setJointGroupMoveAbs(GP::Home_Position.data(), TEMP_LINK_0_JOINT_MAX_VEL_FOR_SET_POINT.data());

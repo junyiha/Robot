@@ -7,10 +7,33 @@
  *********************************************************************/
 #pragma once 
 
+#include <map>
 #include <QVector>
 
 namespace GP
 {
+	enum class WorkingScenario
+	{
+		Top = 1,	// 顶板
+		Cant,		// 斜板
+		Side		// 侧板 
+	};
+
+	enum class PositionType
+	{
+		Prepare = 1,	// 准备位
+		Lift,			// 举升位
+		Quit			// 退出位
+	};
+
+	struct PositionData
+	{
+		std::string brief;
+		std::vector<double> value;
+	};
+
+	extern std::map<std::pair<WorkingScenario, PositionType>, PositionData> Position_Map;
+
 	static const int DOF = 10;
 
 	extern double velLine;		//界面点动限速：平移
