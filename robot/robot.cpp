@@ -39,13 +39,14 @@ CRobot::CRobot(ComInterface* comm,QObject *parent)
         CTransformation(  0 * M_PI / 180,  L5,	        th6 * M_PI / 180,	   0,		Revolute ), //6臂俯仰 (角度不要为0)
         CTransformation( 90 * M_PI / 180,  L6,	          0 * M_PI / 180,	  d7,		Prismatic), //7伸缩 (角度不要为0)
         CTransformation(  0 * M_PI / 180,   0,	        th8 * M_PI / 180,	   0,		Revolute ), //8回转 (角度不要为0)
-        CTransformation( 90 * M_PI / 180,   0,	        th9 * M_PI / 180,	   0,		Revolute ), //9腕 (角度不要为0)
+        CTransformation( -90 * M_PI / 180,   0,	        th9 * M_PI / 180,	   0,		Revolute ), //9腕 (角度不要为0)
     };
 
 
     //    DH_Parameter Tool_Mat = DH_Parameter(90 * M_PI / 180, 0, 90 * M_PI / 180, L6, Prismatic);//竖板旋转用，工具坐标系旋转90
-    CTransformation Tool_Mat = CTransformation(-90* M_PI / 180, 0,  0 * M_PI / 180, dt, Prismatic);       //装横板用，末端工具（可伸缩，但是默认不动，不需要刷新）
+    CTransformation Tool_Mat = CTransformation(90* M_PI / 180, 0,  180 * M_PI / 180, dt, Prismatic);       //装横板用，末端工具（可伸缩，但是默认不动，不需要刷新）
     m_LinkModel =new CRobotKinectModel(DH_List,Tool_Mat);
+
 
 
     m_Comm = comm;

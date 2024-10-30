@@ -113,61 +113,6 @@ protected:
      * @return
      */
     bool doMagentDown();
-
-    /**
-     * 日志打印
-     */
-    //日志相关，【后续从这里分离出去，单独封装到一个类里】
-    std::map<int, std::string> enumToString_ActionIndex= {
-            //=====================0~10 :空闲、急停、按暂停 等 ==========================
-            {0, "[ 无----NULL ]"},
-            {1, "[ 急停----Halt]"},
-            {3, "[ 停止----Stop]"},
-            //=====================10~19 :举升调平 ==========================
-            {10, "[ 举升到准备位置----ready ]"},
-            {12, "[ 举升到调平位置----ready to parallel]"},
-            {15, "[ 调平----parallel]"},
-            {16, "[ 举升到对边位置----ready to line]"},
-            //=====================20~29:边线对齐=====================
-            {20, "[ 计算边线调整量----cal line adjustment]"},
-            {25, "[ 进行边线调整----line adjust]"},
-            {28, "[ 检测调整结果----check adjust result]"},
-            //=====================30~50:碰钉动作=====================
-            {30, "[ 磁铁吸合----Magnet On ]"},
-            {32, "[ 磁铁脱合----Magnet Off ]"},
-            {40, "[ 自动碰钉----Weld ]"},
-            {42, "[ 自动碰钉暂停----Weld Pause ]"},
-            {44, "[ 结束/中止碰钉----Weld End ]"},
-    };
-    // 函数，根据枚举值返回对应的字符串
-    std::string GetEnumName_action_index(const int value)
-    {
-        auto it = enumToString_ActionIndex.find(value);
-        if (it != enumToString_ActionIndex.end()) {
-            return it->second;
-        } else {
-            throw std::runtime_error("Unknown enum value");
-        }
-    }
-
-///////////////////////////////////////////--前端界面按钮映射表--//////////////////////////////////////////////////////
-
-    // 工作作业按钮名称-索引值
-    std::map<std::string, unsigned int> m_jobBtnIndex = {
-      {"btn_leveling_",      0},          // 调平
-      {"btn_sideline_",      1},          // 对齐边线
-      {"btn_magnet_open_",   2},          // 吸合
-      {"btn_auto_knock_",    3},          // 碰钉
-      {"btn_magnet_close_",  4},          // 脱开
-      {"btn_magnet_exit_",   5},          // 退出
-      {"btn_magnet_pause_",  6},          // 暂停
-      {"btn_knock_suspend_", 7},          // 终止
-      {"btn_lift_",          8},          // 举升
-      {"btn_add_nail",       9},          // 放钉
-      {"btn_magnet_stop_",  10},          // 停止
-      {"btn_magent_crash_stop_", 11}      // 急停
-    };
-
 ///////////////////////////////////////////--0827新增函数--//////////////////////////////////////////////////////
 private:
     /**
@@ -176,7 +121,7 @@ private:
      * @return  -1:不具备调平条件， 0,可执行调平， 1:完成调平
     */
     int CheckParallelState(QVector<double>  laserDistance);
-    EDetectionInParallelResult CheckParallelStateDecorator(QVector<double>  laserDistance);
+    EDetectionInParallelResult CheckParallelStateDecorator();
 
     /**
      * @brief 定位检测函数，根据相机返回数据，判断是否具备定位条件或完成定位
@@ -327,6 +272,17 @@ private:
      */
     void terminateCommand();
 
+private:
+    /**
+     * @brief 更新雷达数据.
+     */
+    void UpdateLaserDistance();
+
+    /**
+     * @brief 更新视觉数据.
+     */
+    void UpdateVisionResult(VisionResult& vis_res);
+
 public:
     /**
      * @brief 更新第一层和第二层状态(线程安全)
@@ -348,14 +304,23 @@ public:
      * 
      * @return std::string 
      */
-    std::string getCurrentStateString();
+    std::string getCurrentStateString() const;
 
     /**
      * @brief 获取当前执行指令字符串
      * 
      * @return std::string 
      */
-    std::string getCurrentExecutionCommandString();
+    std::string getCurrentExecutionCommandString() const;
+
+    /**
+     * @brief 检测第二层状态.
+     *
+     * @param subState
+     *
+     * @return true | false
+     */
+    bool checkSubState(ESubState subState) const;
 
     /**
      * @brief 将外界指令转换为内部指令

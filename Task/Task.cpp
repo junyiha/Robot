@@ -238,10 +238,6 @@ void CTask::Manual()
         m_Robot->setLinkHalt();
     }
 
-    if(m_manualOperator.TaskIndex != 0)
-    {
-        log->info("TaskIndex:{}",m_manualOperator.TaskIndex);
-    }
     switch (m_manualOperator.TaskIndex)
     {
         case stManualOperator::None:
@@ -251,49 +247,41 @@ void CTask::Manual()
         }
         case stManualOperator::Parallel:
         {
-            log->info("updateExecutionCommand(EExecutionCommand::eParallel);");
             updateExecutionCommand(EExecutionCommand::eParallel);
             break;
         }
         case stManualOperator::Positioning:
         {
-            log->info("updateExecutionCommand(EExecutionCommand::ePositioning);");
             updateExecutionCommand(EExecutionCommand::ePositioning);
             break;
         }
         case stManualOperator::DoWeld:
         {
-            log->info("updateExecutionCommand(EExecutionCommand::eAutoWeld);");
             updateExecutionCommand(EExecutionCommand::eAutoWeld);
             break;
         }
         case stManualOperator::MagentOn:
         {
-            log->info("updateExecutionCommand(EExecutionCommand::eMagentOn);");
             updateExecutionCommand(EExecutionCommand::eMagentOn);
             break;
         }
         case stManualOperator::MagentOff:
         {
-            log->info("updateExecutionCommand(EExecutionCommand::eMagentOff);");
             updateExecutionCommand(EExecutionCommand::eMagentOff);
             break;
         }
         case stManualOperator::Quit:
         {
-            log->info("updateExecutionCommand(EExecutionCommand::eQuit);");
             updateExecutionCommand(EExecutionCommand::eQuit);
             break;
         }
         case stManualOperator::Pause:
         {
-            log->info("updateExecutionCommand(EExecutionCommand::ePause);");
             updateExecutionCommand(EExecutionCommand::ePause);
             break;
         }
         case stManualOperator::Terminate:
         {
-            log->info("updateExecutionCommand(EExecutionCommand::eTerminate);");
             updateExecutionCommand(EExecutionCommand::eTerminate);
             break;
         }
@@ -581,10 +569,12 @@ int CTask::CheckParallelState(QVector<double> laserDistance)
     }
 }
 
-EDetectionInParallelResult CTask::CheckParallelStateDecorator(QVector<double> laserDistance)
+EDetectionInParallelResult CTask::CheckParallelStateDecorator()
 {
     EDetectionInParallelResult result;
-    int res = CheckParallelState(laserDistance);
+    QVector<double> laser_distance(m_stMeasuredata.m_LaserDistance, m_stMeasuredata.m_LaserDistance + 4);
+
+    int res = CheckParallelState(laser_distance);
     switch (res)
     {
         case -1:
@@ -621,7 +611,7 @@ int CTask::CheckPositionState()
     || (m_stMeasuredata.m_bLineDistance[2]||m_stMeasuredata.m_bLineDistance[3] ) == false
     || (m_stMeasuredata.m_bLineDistance[4]||m_stMeasuredata.m_bLineDistance[5] )== false)
     {
-        log->error("line918检测到的边线数据不满足调整需求");
+        log->error("{} 检测到的边线数据不满足调整需求", __LINE__);
         return -1;
     }
 
@@ -645,8 +635,6 @@ int CTask::CheckPositionState()
          line_dis_3 = m_stMeasuredata.m_LineDistance[4];
     }
 
-
-
     log->info("line_dis:{},{},{}",line_dis_1,line_dis_2,line_dis_3);
     if(fabs(line_dis_1) < LINE_DEVIATION_THRESHOLD
     && fabs(line_dis_2) < LINE_DEVIATION_THRESHOLD
@@ -660,7 +648,6 @@ int CTask::CheckPositionState()
         log->error("边线距离不满足碰钉要求，边线距离为：{},{},{},{},{},{}",m_stMeasuredata.m_LineDistance[0],m_stMeasuredata.m_LineDistance[1],m_stMeasuredata.m_LineDistance[2],m_stMeasuredata.m_LineDistance[3],m_stMeasuredata.m_LineDistance[4],m_stMeasuredata.m_LineDistance[5]);
         return 0;
     }
-
 }
 
 EDetectionInPositioningResult CTask::CheckPositionStateDecorator()

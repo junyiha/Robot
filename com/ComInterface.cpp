@@ -28,7 +28,6 @@ ComInterface::~ComInterface()
 QVector<double> ComInterface::getLasersDistance()//
 {
     return m_cTools.getLaserDistance();
-
 }
 
 QVector<st_ReadAxis> ComInterface::getJointGroupStatus()
