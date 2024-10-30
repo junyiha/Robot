@@ -1252,21 +1252,21 @@ void MainWindow::slots_btn_save_home_position_clicked()
     std::vector<double> data;
     for (auto& i : status)
     {
-        //if (i.eState != eAxis_STANDSTILL)
-        //{
-        //    res = false;
-        //    break;
-        //}
+        if (i.eState != eAxis_STANDSTILL)
+        {
+            res = false;
+            break;
+        }
         data.push_back(i.Position);
     }
-    //if (!res)
-    //{
-    //    ui->btn_save_home_position->setStyleSheet("background-color: rgb(255, 0, 0);"
-    //        "border: 2px solid blue;"
-    //        "border-radius: 10px;"
-    //    );
-    //    return;
-    //}
+    if (!res)
+    {
+        ui->btn_save_home_position->setStyleSheet("background-color: rgb(255, 0, 0);"
+            "border: 2px solid blue;"
+            "border-radius: 10px;"
+        );
+        return;
+    }
     res = m_config_ptr->UpdateValue("home_point", data);
 
     if (res)
