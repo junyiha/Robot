@@ -16,6 +16,8 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W0")
 set(QRC_SOURCE_FILE ${CMAKE_SOURCE_DIR}/res.qrc)
 
 # add_definitions(-DSTATE_MACHINE_TEST=1)
+add_definitions(-DCONFIG_PATH_RO="D:/Robot/configuration/config_ro.yaml")
+add_definitions(-DCONFIG_PATH_RW="D:/Robot/configuration/config_rw.yaml")
 
 # ffmpeg
 file(COPY ${BaseDIR}/packages/ffmpeg/bin/avcodec-59.dll DESTINATION ${CMAKE_BINARY_DIR})
@@ -91,6 +93,7 @@ aux_source_directory(${CMAKE_SOURCE_DIR}/com src)
 aux_source_directory(${CMAKE_SOURCE_DIR}/robot src)
 aux_source_directory(${CMAKE_SOURCE_DIR}/Task src)
 aux_source_directory(${CMAKE_SOURCE_DIR}/vision src)
+aux_source_directory(${CMAKE_SOURCE_DIR}/HMI src)
 
 add_executable(${PROJECT_NAME} ${src} ${QRC_SOURCE_FILE})
 
@@ -99,6 +102,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/
                                                   ${CMAKE_SOURCE_DIR}/robot
                                                   ${CMAKE_SOURCE_DIR}/Task
                                                   ${CMAKE_SOURCE_DIR}/vision
+                                                  ${CMAKE_SOURCE_DIR}/HMI
                                                   ${CMAKE_SOURCE_DIR}/ThirdParty/yaml-cpp-0.8.0/include/
 ) 
 

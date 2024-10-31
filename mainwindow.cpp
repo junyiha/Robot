@@ -1201,7 +1201,6 @@ void MainWindow::on_btn_steering_right_released() {
 
 void MainWindow::on_btn_add_nail_pressed() {
 
-//    m->setJointGroupMove(eMC_Motion,GP::Home_Position, )
    double vel_Home[10] = {0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1};
    for(int i = 0;i<10;i++){
        vel_Home[i] = LINK_0_JOINT_MAX_VEL[i]*0.1;

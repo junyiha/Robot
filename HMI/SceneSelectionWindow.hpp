@@ -25,10 +25,12 @@ namespace APP
 
 	private:
 		void ConnectSlotFunction();
+		void CallMainWindow();
 
 	private slots:
-		void ConformButtonClicked();
-		void QuitButtonClicked();
+		void TopButtonClicked();
+		void CantButtonClicked();
+		void SideButtonClicked();
 
 	private:
 		Ui::SceneSelectionWindow* ui;

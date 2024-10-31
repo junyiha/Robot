@@ -33,6 +33,9 @@ namespace Config
 		 */
 		void ParseConfiguration();
 
+		/**
+		 * @brief 将YAML数据写入文件.
+		 */
 		bool WriteToFile();
 
 	public:
@@ -42,23 +45,15 @@ namespace Config
 		bool ReloadConfiguration();
 
 		/**
-		 * @brief 更新指定参数(浮点数).
-		 */
-		bool UpdateValue(const std::string key, const double value);
-
-		/**
-		 * @brief 更新指定参数(数组).
-		 */
-		bool UpdateValue(const std::string key, const std::vector<double> value);
-
-		/**
 		 * @brief 更新示教点.
 		 */
 		bool UpdateValue(const std::string key, const GP::PositionMap position_map);
 
 	private:
-		YAML::Node m_root;
-		std::string m_path{ "D:/Robot/config.yaml" };
+		YAML::Node m_root_ro;
+		YAML::Node m_root_rw;
+		std::string m_path_ro{ CONFIG_PATH_RO};
+		std::string m_path_rw{ CONFIG_PATH_RW};
 		std::shared_ptr<spdlog::logger> log;
 	};
 }
