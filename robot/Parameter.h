@@ -20,7 +20,7 @@ const double MIN = 10000000000;
 //LINK自由度配置
 //link0 robot--10个电机    link1 地盘--4个电机
 //------------------------------------------------------------------------------//
-const long LINK_FREEDOM[6] = { 10, 4, 0, 0, 0, 0};
+const long LINK_FREEDOM[6] = { 11, 4, 0, 0, 0, 0};
 
 //------------------------------------------------------------------------------//
 //轴限位
@@ -35,7 +35,8 @@ const double LINK_0_JOINT_LIMIT_POS[MAX_FREEDOM_LINK] = { 250,      // 0 升降
                                                           30,       // 7 筒旋转 
                                                           60,       // 8 腕俯仰 
                                                           1490,     // 9 末端升降 
-                                                          MAX,MAX,MAX,MAX,MAX,MAX,MAX,MAX,MAX,MAX };
+                                                          620,      // 10 末端旋转
+                                                          MAX,MAX,MAX,MAX,MAX,MAX,MAX,MAX,MAX };
 const double LINK_0_JOINT_LIMIT_NEG[MAX_FREEDOM_LINK] = { 0,        // 0 升降 
                                                           -110,     // 1 前后 
                                                           -110,     // 2 左右 
@@ -46,7 +47,8 @@ const double LINK_0_JOINT_LIMIT_NEG[MAX_FREEDOM_LINK] = { 0,        // 0 升降
                                                           -30,      // 7 筒旋转 
                                                           -100,     // 8 腕俯仰 
                                                           1190,     // 9 末端升降 
-                                                          -MIN,-MIN,-MIN,-MIN,-MIN,-MIN,-MIN,-MIN,-MIN,-MIN };
+                                                          520,      // 10 末端旋转
+                                                          -MIN,-MIN,-MIN,-MIN,-MIN,-MIN,-MIN,-MIN,-MIN };
 
 //const double LINK_0_JOINT_LIMIT_POS[MAX_FREEDOM_LINK] = {  64,  144,  257,184, 14, 1147, 480, 150, 99,  250, MAX, MAX, MAX, MAX, MAX, MAX, MAX, MAX, MAX, MAX };
 //const double LINK_0_JOINT_LIMIT_NEG[MAX_FREEDOM_LINK] = { -64, -144,   3, -4, -14, 834,   4, -150, -47,   3,-MIN,-MIN,-MIN,-MIN,-MIN,-MIN,-MIN,-MIN,-MIN,-MIN };
