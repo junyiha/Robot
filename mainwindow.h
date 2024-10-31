@@ -321,6 +321,7 @@ private slots:
     void slots_btn_load_configuration_clicked();
     void slots_btn_save_home_position_clicked();
     void slots_btn_save_prepare_position_clicked();
+    void slots_btn_save_quit_position_clicked();
 };
 
 

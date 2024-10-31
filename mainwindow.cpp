@@ -188,6 +188,7 @@ void MainWindow::connectSlotFunctions() {// 按钮时间绑定
     connect(ui->btn_load_configuration, &QPushButton::clicked, this, &MainWindow::slots_btn_load_configuration_clicked, Qt::UniqueConnection);
     connect(ui->btn_save_home_position, &QPushButton::clicked, this, &MainWindow::slots_btn_save_home_position_clicked, Qt::UniqueConnection);
     connect(ui->btn_save_prepare_position, &QPushButton::clicked, this, &MainWindow::slots_btn_save_prepare_position_clicked, Qt::UniqueConnection);
+    connect(ui->btn_save_quit_position, &QPushButton::clicked, this, &MainWindow::slots_btn_save_quit_position_clicked, Qt::UniqueConnection);
 }
 
 MainWindow::~MainWindow()
@@ -1320,6 +1321,47 @@ void MainWindow::slots_btn_save_prepare_position_clicked()
     else
     {
         ui->btn_save_prepare_position->setStyleSheet("background-color: rgb(255, 0, 0);"
+            "border: 2px solid blue;"
+            "border-radius: 10px;"
+        );
+    }
+}
+
+void MainWindow::slots_btn_save_quit_position_clicked()
+{
+    bool res{ true };
+    auto status = m_Robot->getJointGroupSta();
+    std::vector<double> data;
+    for (auto& i : status)
+    {
+        if (i.eState != eAxis_STANDSTILL)
+        {
+            res = false;
+            break;
+        }
+        data.push_back(i.Position);
+    }
+    if (!res)
+    {
+        ui->btn_save_quit_position->setStyleSheet("background-color: rgb(255, 0, 0);"
+            "border: 2px solid blue;"
+            "border-radius: 10px;"
+        );
+        return;
+    }
+    GP::Position_Map[{GP::Working_Scenario, GP::PositionType::Quit}].value = data;
+    res = m_config_ptr->UpdateValue("position_map", GP::Position_Map);
+
+    if (res)
+    {
+        ui->btn_save_quit_position->setStyleSheet("background-color: rgb(0, 255, 0);"
+            "border: 2px solid blue;"
+            "border-radius: 10px;"
+        );
+    }
+    else
+    {
+        ui->btn_save_quit_position->setStyleSheet("background-color: rgb(255, 0, 0);"
             "border: 2px solid blue;"
             "border-radius: 10px;"
         );
