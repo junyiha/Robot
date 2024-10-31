@@ -22,6 +22,7 @@
 #include <QtMath>
 #include <cmath>
 #include <QMutex>
+#include <QTextCodec>
 //--------------机器人部分--------------//
 #include "com/ComInterface.h"
 #include "robot/robot.h"
@@ -224,6 +225,7 @@ private:
     void updateConnectSta();//更新硬件连接状态
     void setButtonIndex();  // 记录当前触发按钮索引
     void setActionIndex();  // 记录当前触发动作索引(工作流程记录)
+    void updateTaskStateMachineStatus();
     void closeEvent(QCloseEvent *event);
     bool lineStatus = false; // 是否处于直线检测状态
 

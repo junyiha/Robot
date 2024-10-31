@@ -408,7 +408,8 @@ void MainWindow::slotUpdateUIAll() {
     // 7.0 更新硬件设备连接状态，并通过指示灯显示
     updataDeviceConnectState();
 
-
+    // 8.0 更新任务状态机状态
+    updateTaskStateMachineStatus();
 }
 
 void MainWindow::updataDeviceConnectState() {
@@ -1366,4 +1367,12 @@ void MainWindow::slots_btn_save_quit_position_clicked()
             "border-radius: 10px;"
         );
     }
+}
+
+void MainWindow::updateTaskStateMachineStatus()
+{
+    std::string current_state = m_Task->getCurrentStateString();
+    QTextCodec* codec = QTextCodec::codecForName("GBK");
+    QString current_state_str = codec->toUnicode(current_state.c_str());
+    ui->task_state_machine_button->setText(current_state_str);
 }

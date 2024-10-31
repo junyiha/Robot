@@ -23,7 +23,20 @@
     </rect>
    </property>
    <property name="styleSheet">
-    <string notr="true">font: 28pt &quot;黑体&quot;;</string>
+    <string notr="true">QPushButton {
+	font: 28pt &quot;黑体&quot;;
+    border: 2px solid blue;
+    border-radius: 10px;
+}
+QPushButton:hover {
+    border: 2px solid red;
+    border-radius: 10px;
+}
+
+QPushButton:pressed {
+    border: 2px solid green;
+    border-radius: 10px;
+}</string>
    </property>
    <property name="text">
     <string>顶板</string>
@@ -39,7 +52,20 @@
     </rect>
    </property>
    <property name="styleSheet">
-    <string notr="true">font: 28pt &quot;黑体&quot;;</string>
+    <string notr="true">QPushButton {
+	font: 28pt &quot;黑体&quot;;
+    border: 2px solid blue;
+    border-radius: 10px;
+}
+QPushButton:hover {
+    border: 2px solid red;
+    border-radius: 10px;
+}
+
+QPushButton:pressed {
+    border: 2px solid green;
+    border-radius: 10px;
+}</string>
    </property>
    <property name="text">
     <string>斜板</string>
@@ -55,7 +81,20 @@
     </rect>
    </property>
    <property name="styleSheet">
-    <string notr="true">font: 28pt &quot;黑体&quot;;</string>
+    <string notr="true">QPushButton {
+	font: 28pt &quot;黑体&quot;;
+    border: 2px solid blue;
+    border-radius: 10px;
+}
+QPushButton:hover {
+    border: 2px solid red;
+    border-radius: 10px;
+}
+
+QPushButton:pressed {
+    border: 2px solid green;
+    border-radius: 10px;
+}</string>
    </property>
    <property name="text">
     <string>侧板</string>
