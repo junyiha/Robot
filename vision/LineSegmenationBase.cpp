@@ -11,7 +11,7 @@ LineSegmenationBase::LineSegmenationBase() {
 
     // std::string model_path = "../models/pp_liteseg_stdc1_softmax_20241021.onnx";
     //std::string model_path = "E:/projects/zjy/Robot-zb/models/pp_liteseg_stdc1_softmax_20241021.onnx";
-    std::string model_path = "D:/Robot/models/mlsd_model_tiny_20241011.onnx";
+    std::string model_path = "D:/Robot/models/pp_liteseg_stdc1_softmax_20241021.onnx";
 //    std::string model_path = "../models/model_ocrnet-20241020.onnx";
     std::wstring widestr = std::wstring(model_path.begin(), model_path.end());
 
