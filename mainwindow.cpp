@@ -552,9 +552,9 @@ void MainWindow::slotUpdateUIAll() {
 
     // 8.0 更新指令流转状态
     std::string currentState = m_Task->getCurrentStateString();
-    ui->label_state_transition->setText(QString::fromStdString(currentState));
-
-
+    QTextCodec* codec = QTextCodec::codecForName("GBK"); // 使用 GBK 编码
+    QString qstr = codec->toUnicode(currentState.c_str());
+    ui->label_state_transition->setText(qstr);
 }
 
 void MainWindow::updataDeviceConnectState() {

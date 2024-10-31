@@ -963,12 +963,12 @@ std::string CTask::getCurrentStateString() const
 {
     std::string stateString;
     auto itTopState = TopStateStringMap.find(m_etopState);
-    stateString = itTopState->second.second;
+    stateString = itTopState->second.first;
 
     stateString += "--";
 
     auto itSubState = SubStateStringMap.find(m_esubState);
-    stateString += itSubState->second.second;
+    stateString += itSubState->second.first;
 
     return stateString;
 }
