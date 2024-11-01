@@ -16,8 +16,9 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W0")
 set(QRC_SOURCE_FILE ${CMAKE_SOURCE_DIR}/res.qrc)
 
 # add_definitions(-DSTATE_MACHINE_TEST=1)
-add_definitions(-DCONFIG_PATH_RO="D:/Robot/configuration/config_ro.yaml")
-add_definitions(-DCONFIG_PATH_RW="D:/Robot/configuration/config_rw.yaml")
+add_definitions(-DCONFIG_PATH_RO="${CMAKE_CURRENT_SOURCE_DIR}/configuration/config_ro.yaml")
+add_definitions(-DCONFIG_PATH_RW="${CMAKE_CURRENT_SOURCE_DIR}/configuration/config_rw.yaml")
+add_definitions(-DVISION_MODEL_PATH="${CMAKE_CURRENT_SOURCE_DIR}/models/mlsd_model_tiny_20240721.onnx")
 
 # ffmpeg
 file(COPY ${BaseDIR}/packages/ffmpeg/bin/avcodec-59.dll DESTINATION ${CMAKE_BINARY_DIR})
@@ -44,6 +45,9 @@ file(COPY ${BaseDIR}/packages/HK_SDK/Libraries/win64/MvCameraControl.lib DESTINA
 # GoSdk
 file(COPY ${BaseDIR}/packages/GocatorSDK/bin/win64/kApi.dll DESTINATION ${CMAKE_BINARY_DIR})
 file(COPY ${BaseDIR}/packages/GocatorSDK/bin/win64/GoSdk.dll DESTINATION ${CMAKE_BINARY_DIR})
+
+# onnxruntime
+file(COPY ${BaseDIR}/packages/OnnxRuntime/Microsoft.ML.OnnxRuntime.1.7.0/runtimes/win-x64/native/onnxruntime.dll DESTINATION ${CMAKE_BINARY_DIR})
 
 # Opencv Setting
 include_directories(${BaseDIR}/packages/opencv4.55/build/include)
