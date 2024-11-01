@@ -1,60 +1,44 @@
 //
-// Created by csh_i on 2024/7/5.
+// Created by csh_i on 2024/10/21.
 //
 
-#ifndef CMAKE_TEST_LINEDETECTOR_H
-#define CMAKE_TEST_LINEDETECTOR_H
-#include <iostream>
-#include <vector>
-#include <opencv2/opencv.hpp>
-#include "mlsd.h"
+#ifndef MLSD_TEST_LINEDETECTOR_H
+#define MLSD_TEST_LINEDETECTOR_H
+//#include "LineSegmenationBase.h"
+#include "LineSegmenationBaseTensorRT.h"
 #include "utils.h"
-#include "Parameters.h"
 
-
-
+struct LineSpaceResult {
+    float dist;
+    bool status;
+    bool ink_line_status;
+    bool border_line_status;
+    std::string error_info; //閿欒淇℃伅
+    std::vector<float> ink_res;
+    std::vector<float> border_res;
+    cv::Mat img_drawed;
+};
 
 
 
 
 class LineDetector {
-
 public:
-
-    unsigned int resize_w = 512;
-    unsigned int resize_h = 512;
-
-
-    MLSD mlsd;
+    LineSegmenationBaseTensorRT lineSegModel;
     LineDetector();
     ~LineDetector();
 
+    int imgInputW = 768;
+    int imgInputH = 768;
 
-    // 获取参考线
-    MLine getReferenceLine(cv::Mat img, std::vector<MLine> lines);
-    // 获取墨线
-    MLine getInkLine(cv::Mat img, std::vector<MLine> lines, MLine refLine);
-    // 获取参考线与墨线的距离
-    LineResult getLineDistance(cv::Mat img);
-    // 获取所有可能的直线
-    std::vector<MLine> getAllPossibleLines(cv::Mat img);
-    // 获取参考线 LSD算法
-    MLine LineDetector::getReferenceLineLSD(cv::Mat img, cv::Mat bin_img);
-
-
-    unsigned  int  min_len_seg;
-
-    unsigned  int min_pos_valid;
-    unsigned  int max_pos_valid ;
-
-    unsigned  int min_dist_lines ;
-    unsigned  int max_dist_lines ;
-    unsigned  int max_angle_degrees ;
-
-
-
+    // get masks of ink and border
+    std::vector<cv::Mat> getMasks(cv::Mat img);
+    std::vector<float> getRerferenceLine(cv::Mat refImg, cv::Mat inputImage);
+    std::vector<float> getInkLine(cv::Mat img, std::vector<float> referenceLine);
+    LineSpaceResult getLinesDistance(cv::Mat img);
+    void getPossibleLinesFromMask(cv::Mat mask, vector<std::vector<cv::Point2f>> &possibleLines);
 
 };
 
 
-#endif //CMAKE_TEST_LINEDETECTOR_H
+#endif //MLSD_TEST_LINEDETECTOR_H

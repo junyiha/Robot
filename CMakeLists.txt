@@ -19,12 +19,42 @@ set(QRC_SOURCE_FILE ${CMAKE_SOURCE_DIR}/res.qrc)
 add_definitions(-DCONFIG_PATH_RO="${CMAKE_CURRENT_SOURCE_DIR}/configuration/config_ro.yaml")
 add_definitions(-DCONFIG_PATH_RW="${CMAKE_CURRENT_SOURCE_DIR}/configuration/config_rw.yaml")
 add_definitions(-DVISION_MODEL_PATH="${CMAKE_CURRENT_SOURCE_DIR}/models/mlsd_model_tiny_20240721.onnx")
+add_definitions(-DVISION_ENGINE_PATH="${CMAKE_CURRENT_SOURCE_DIR}/models/model_ocrnet-20241020.engine")
 
 # ffmpeg
 file(COPY ${BaseDIR}/packages/ffmpeg/bin/avcodec-59.dll DESTINATION ${CMAKE_BINARY_DIR})
 file(COPY ${BaseDIR}/packages/ffmpeg/bin/avformat-59.dll DESTINATION ${CMAKE_BINARY_DIR})
 file(COPY ${BaseDIR}/packages/ffmpeg/bin/avformat-59.dll DESTINATION ${CMAKE_BINARY_DIR})
 file(COPY ${BaseDIR}/packages/ffmpeg/bin/swresample-4.dll DESTINATION ${CMAKE_BINARY_DIR})
+
+# TensorRT
+set(TENSORRT_PATH ${BaseDIR}/packages/TensorRT-8.6.1.6)
+set(TENSORRT_LIBS
+        ${TENSORRT_PATH}/lib/nvinfer.lib
+        ${TENSORRT_PATH}/lib/nvonnxparser.lib
+        ${TENSORRT_PATH}/lib/nvparsers.lib
+        ${TENSORRT_PATH}/lib/nvinfer_plugin.lib
+)
+include_directories(${TENSORRT_PATH}/include)
+
+
+#CUDA
+set(CUDA_TOOLKIT_ROOT_DIR "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v11.3")
+set(CUDA_INCLUDE_DIRS ${CUDA_TOOLKIT_ROOT_DIR}/include)
+set(CUDA_LIBS_DIRS ${CUDA_TOOLKIT_ROOT_DIR}/lib/x64)
+set(CUDA_LIBS
+        ${CUDA_LIBS_DIRS}/cublas.lib
+        ${CUDA_LIBS_DIRS}/cudnn.lib
+        ${CUDA_LIBS_DIRS}/cuda.lib
+        ${CUDA_LIBS_DIRS}/cudadevrt.lib
+        ${CUDA_LIBS_DIRS}/cudart.lib
+)
+include_directories(${CUDA_INCLUDE_DIRS})
+link_directories(${CUDA_LIBS_DIRS})
+
+
+
+
 
 # opencv
 file(COPY ${BaseDIR}/packages/opencv4.55/build/x64/vc15/bin/opencv_world455d.dll DESTINATION ${CMAKE_BINARY_DIR})
@@ -126,6 +156,8 @@ target_link_libraries(PDRobot-master
 target_link_libraries(PDRobot-master
         opencv_world455d.lib
         MvCameraControl.lib
+        ${TENSORRT_LIBS}
+        ${CUDA_LIBS}
 )
 
 # ffmpeg

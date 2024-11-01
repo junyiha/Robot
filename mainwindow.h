@@ -28,7 +28,6 @@
 #include "robot/robot.h"
 #include "GVL.h"
 //--------------视觉部分--------------//
-#include "vision/VisionControls.h"
 #include "vision/VisionInterface.h"
 
 //--------------任务部分--------------//
@@ -37,7 +36,7 @@
 #include "ConfigManager.hpp"
 
 //--------------可视化----------------//
-#include "vision/CameraDisplay.h"
+
 #include <bitset>
 
 //--------------日志文件----------------//
@@ -79,7 +78,6 @@ public:
     CTask* m_Task;
 
     //视觉模块
-    VisionControls* m_Vision;
     VisionInterface* m_VisionInterface;
     std::unique_ptr<Config::ConfigManager> m_config_ptr;
 
@@ -277,6 +275,7 @@ private slots:
 
     // 5.0
     void on_btn_line_detect_clicked();
+    void on_btn_camera_calib_clicked();
     void on_btn_line_detect_debug_clicked();
     void on_btn_camera_capture_clicked();
     void on_btn_camera_save_clicked();

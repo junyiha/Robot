@@ -14,6 +14,7 @@
 #include "../Task/Measure.h"
 #include <QMutex>
 #include "Parameters.h"
+#include "CameraCalibrationLine.h"
 
 
 
@@ -49,6 +50,9 @@ public:
     LineDetectorRunner*  line_handler = nullptr;
     LineDetector* line_helper = nullptr;
     CameraManager* camera_controls = nullptr;
+    CameraCalibrationLine cameraCalib; // 相机标定
+
+
     // 线程相关
     QMutex mutex;
     SharedData* sharedDataLine=nullptr;
@@ -66,6 +70,8 @@ public:
     void parser_result(stMeasureData* stm);
     VisionResult getVisResult();
     void closeThread();
+    std::map<std::string, CalibrationLine> getCameraCalibResults();
+
 
 };
 

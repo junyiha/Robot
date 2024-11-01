@@ -131,3 +131,21 @@ void VisionInterface::closeThread(){
 
 
 }
+
+std::map<std::string, CalibrationLine> VisionInterface::getCameraCalibResults() {
+    std::map<std::string, CalibrationLine> res;
+    this->camera_controls->getImageAll();
+    std::map<std::string, cv::Mat> cameraData = this->camera_controls->getCameraImages();
+    if(cameraData.size() > 0){
+        for(auto &camera_data : cameraData)
+        {
+            CalibrationLine lineRes;
+            if(!camera_data.second.empty()){
+                lineRes = this->cameraCalib.findCalibrationLine(camera_data.second);
+                res[camera_data.first] = lineRes;
+            }
+        }
+
+    }
+    return res;
+}

@@ -21,7 +21,6 @@
 #include"../com/ComInterface.h"
 #include "RobotKinectModel.h"
 #include "../Task/Measure.h"
-#include "../vision/VisionControls.h"
 
 
 

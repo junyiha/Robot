@@ -61,241 +61,122 @@
     <property name="title">
      <string/>
     </property>
-    <layout class="QGridLayout" name="gridLayout_101">
-     <item row="0" column="9">
-      <widget class="QPushButton" name="btn_developerMode_">
-       <property name="minimumSize">
-        <size>
-         <width>100</width>
-         <height>30</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>120</width>
-         <height>60</height>
-        </size>
-       </property>
-       <property name="font">
-        <font>
-         <family>等线</family>
-         <pointsize>10</pointsize>
-         <weight>75</weight>
-         <bold>true</bold>
-        </font>
-       </property>
-       <property name="cursor">
-        <cursorShape>PointingHandCursor</cursorShape>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">QPushButton {
+    <widget class="QPushButton" name="btn_developerMode_">
+     <property name="geometry">
+      <rect>
+       <x>1690</x>
+       <y>10</y>
+       <width>100</width>
+       <height>40</height>
+      </rect>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>100</width>
+       <height>40</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>120</width>
+       <height>60</height>
+      </size>
+     </property>
+     <property name="font">
+      <font>
+       <family>等线</family>
+       <pointsize>10</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="cursor">
+      <cursorShape>PointingHandCursor</cursorShape>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
     border: 2px solid black;
     border-radius: 10px;
 }</string>
-       </property>
-       <property name="text">
-        <string>开发者模式</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="5">
-      <spacer name="horizontalSpacer_66">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>418</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item row="0" column="7">
-      <spacer name="horizontalSpacer_67">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>374</width>
-         <height>48</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item row="0" column="8">
-      <widget class="QPushButton" name="btn_userMode_">
-       <property name="minimumSize">
-        <size>
-         <width>100</width>
-         <height>30</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>120</width>
-         <height>60</height>
-        </size>
-       </property>
-       <property name="font">
-        <font>
-         <family>等线</family>
-         <pointsize>10</pointsize>
-         <weight>75</weight>
-         <bold>true</bold>
-        </font>
-       </property>
-       <property name="cursor">
-        <cursorShape>PointingHandCursor</cursorShape>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">QPushButton {
+     </property>
+     <property name="text">
+      <string>开发者模式</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btn_userMode_">
+     <property name="geometry">
+      <rect>
+       <x>1590</x>
+       <y>10</y>
+       <width>100</width>
+       <height>40</height>
+      </rect>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>100</width>
+       <height>40</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>120</width>
+       <height>60</height>
+      </size>
+     </property>
+     <property name="font">
+      <font>
+       <family>等线</family>
+       <pointsize>10</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="cursor">
+      <cursorShape>PointingHandCursor</cursorShape>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
     border: 2px solid black;
     border-radius: 10px;
 }</string>
-       </property>
-       <property name="text">
-        <string>用户模式</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="10">
-      <layout class="QGridLayout" name="gridLayout_99">
-       <item row="0" column="3">
-        <widget class="QPushButton" name="btn_exit">
-         <property name="minimumSize">
-          <size>
-           <width>100</width>
-           <height>30</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>120</width>
-           <height>25</height>
-          </size>
-         </property>
-         <property name="font">
-          <font>
-           <family>等线</family>
-           <pointsize>14</pointsize>
-          </font>
-         </property>
-         <property name="cursor">
-          <cursorShape>PointingHandCursor</cursorShape>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">QPushButton#btn_exit{
-	border-radius:10%;
-	border:2px solid black;
-	image: url(:/img/images/icon_exit.png);
-}
-QPushButton#btn_exit:pressed{
-	background-color: rgb(131, 255, 148);
-}
-
-
-</string>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="2">
-        <widget class="QLabel" name="icon_connect_io">
-         <property name="minimumSize">
-          <size>
-           <width>25</width>
-           <height>25</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>100</width>
-           <height>100</height>
-          </size>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">image: url(:/img/images/icon_whiteLight.png);</string>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QLabel" name="icon_connect_camera">
-         <property name="minimumSize">
-          <size>
-           <width>25</width>
-           <height>25</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>100</width>
-           <height>100</height>
-          </size>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">image: url(:/img/images/icon_whiteLight.png);</string>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="0">
-        <widget class="QLabel" name="icon_connect_plc">
-         <property name="minimumSize">
-          <size>
-           <width>25</width>
-           <height>25</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>100</width>
-           <height>100</height>
-          </size>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">image: url(:/img/images/icon_whiteLight.png);</string>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item row="0" column="3">
-      <widget class="QPushButton" name="btn_cleanError_">
-       <property name="minimumSize">
-        <size>
-         <width>100</width>
-         <height>30</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>120</width>
-         <height>30</height>
-        </size>
-       </property>
-       <property name="font">
-        <font>
-         <family>等线</family>
-         <pointsize>14</pointsize>
-        </font>
-       </property>
-       <property name="cursor">
-        <cursorShape>PointingHandCursor</cursorShape>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">QPushButton{
+     </property>
+     <property name="text">
+      <string>用户模式</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btn_cleanError_">
+     <property name="geometry">
+      <rect>
+       <x>229</x>
+       <y>10</y>
+       <width>100</width>
+       <height>40</height>
+      </rect>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>100</width>
+       <height>40</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>120</width>
+       <height>30</height>
+      </size>
+     </property>
+     <property name="font">
+      <font>
+       <family>等线</family>
+       <pointsize>14</pointsize>
+      </font>
+     </property>
+     <property name="cursor">
+      <cursorShape>PointingHandCursor</cursorShape>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton{
 	border-radius:10%;
 	border:2px solid black;
 	image: url(:/img/images/icon_cleanError.png);
@@ -307,37 +188,43 @@ QPushButton::pressed{
 
 
 </string>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="4">
-      <widget class="QPushButton" name="btn_errorStop_">
-       <property name="minimumSize">
-        <size>
-         <width>100</width>
-         <height>30</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>120</width>
-         <height>30</height>
-        </size>
-       </property>
-       <property name="font">
-        <font>
-         <family>等线</family>
-         <pointsize>14</pointsize>
-        </font>
-       </property>
-       <property name="cursor">
-        <cursorShape>PointingHandCursor</cursorShape>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">QPushButton{
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btn_errorStop_">
+     <property name="geometry">
+      <rect>
+       <x>335</x>
+       <y>10</y>
+       <width>101</width>
+       <height>40</height>
+      </rect>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>100</width>
+       <height>40</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>120</width>
+       <height>30</height>
+      </size>
+     </property>
+     <property name="font">
+      <font>
+       <family>等线</family>
+       <pointsize>14</pointsize>
+      </font>
+     </property>
+     <property name="cursor">
+      <cursorShape>PointingHandCursor</cursorShape>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton{
 	border-radius:10%;
 	border:2px solid black;
 	image: url(:/img/images/icon_emerStop.png);
@@ -349,37 +236,43 @@ QPushButton:pressed{
 
 
 </string>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QPushButton" name="btn_enable_">
-       <property name="minimumSize">
-        <size>
-         <width>100</width>
-         <height>30</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>120</width>
-         <height>30</height>
-        </size>
-       </property>
-       <property name="font">
-        <font>
-         <family>等线</family>
-         <pointsize>14</pointsize>
-        </font>
-       </property>
-       <property name="cursor">
-        <cursorShape>PointingHandCursor</cursorShape>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">QPushButton {
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btn_enable_">
+     <property name="geometry">
+      <rect>
+       <x>17</x>
+       <y>10</y>
+       <width>101</width>
+       <height>40</height>
+      </rect>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>100</width>
+       <height>40</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>120</width>
+       <height>30</height>
+      </size>
+     </property>
+     <property name="font">
+      <font>
+       <family>等线</family>
+       <pointsize>14</pointsize>
+      </font>
+     </property>
+     <property name="cursor">
+      <cursorShape>PointingHandCursor</cursorShape>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
    border-radius:10%;
    border:2px solid black;
    image: url(:/img/images/icon_enable.png);
@@ -391,37 +284,43 @@ QPushButton::pressed{
 
 
 </string>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="2">
-      <widget class="QPushButton" name="btn_disable_">
-       <property name="minimumSize">
-        <size>
-         <width>100</width>
-         <height>30</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>120</width>
-         <height>30</height>
-        </size>
-       </property>
-       <property name="font">
-        <font>
-         <family>等线</family>
-         <pointsize>14</pointsize>
-        </font>
-       </property>
-       <property name="cursor">
-        <cursorShape>PointingHandCursor</cursorShape>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">QPushButton {
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btn_disable_">
+     <property name="geometry">
+      <rect>
+       <x>123</x>
+       <y>10</y>
+       <width>100</width>
+       <height>40</height>
+      </rect>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>100</width>
+       <height>40</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>120</width>
+       <height>30</height>
+      </size>
+     </property>
+     <property name="font">
+      <font>
+       <family>等线</family>
+       <pointsize>14</pointsize>
+      </font>
+     </property>
+     <property name="cursor">
+      <cursorShape>PointingHandCursor</cursorShape>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
    border-radius:10%;
 	border:2px solid black;
 	image: url(:/img/images/icon_disable.png);
@@ -438,55 +337,103 @@ QPushButton::pressed{
 
 
 </string>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="0">
-      <layout class="QGridLayout" name="gridLayout_100"/>
-     </item>
-     <item row="0" column="6">
-      <widget class="QLabel" name="label_title">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>400</width>
-         <height>40</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>600</width>
-         <height>40</height>
-        </size>
-       </property>
-       <property name="font">
-        <font>
-         <family>Agency FB</family>
-         <pointsize>14</pointsize>
-         <weight>75</weight>
-         <bold>true</bold>
-        </font>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">border: none;</string>
-       </property>
-       <property name="text">
-        <string>碰钉机器人控制系统</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignCenter</set>
-       </property>
-      </widget>
-     </item>
-    </layout>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_title">
+     <property name="geometry">
+      <rect>
+       <x>791</x>
+       <y>9</y>
+       <width>400</width>
+       <height>40</height>
+      </rect>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>400</width>
+       <height>40</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>600</width>
+       <height>40</height>
+      </size>
+     </property>
+     <property name="font">
+      <font>
+       <family>Agency FB</family>
+       <pointsize>14</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">border: none;</string>
+     </property>
+     <property name="text">
+      <string>碰钉机器人控制系统</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btn_exit">
+     <property name="geometry">
+      <rect>
+       <x>1790</x>
+       <y>10</y>
+       <width>100</width>
+       <height>40</height>
+      </rect>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>100</width>
+       <height>40</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>120</width>
+       <height>25</height>
+      </size>
+     </property>
+     <property name="font">
+      <font>
+       <family>等线</family>
+       <pointsize>14</pointsize>
+      </font>
+     </property>
+     <property name="cursor">
+      <cursorShape>PointingHandCursor</cursorShape>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton#btn_exit{
+	border-radius:10%;
+	border:2px solid black;
+	image: url(:/img/images/icon_exit.png);
+}
+QPushButton#btn_exit:pressed{
+	background-color: rgb(131, 255, 148);
+}
+
+
+</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
    </widget>
    <widget class="QStackedWidget" name="stackedWidget_view">
     <property name="geometry">
@@ -578,15 +525,21 @@ QPushButton::pressed{
                  <height>35</height>
                 </size>
                </property>
+               <property name="font">
+                <font>
+                 <family>Arial</family>
+                 <pointsize>10</pointsize>
+                </font>
+               </property>
                <property name="styleSheet">
                 <string notr="true">QLabel {
-	background-color: rgb(255, 0, 0);
+	background-color: rgb(128,128,128);
     border: 2px solid black;
     text-align: left;
 }</string>
                </property>
                <property name="text">
-                <string>点激光1: 0.0</string>
+                <string>点激光1</string>
                </property>
               </widget>
              </item>
@@ -634,6 +587,12 @@ QPushButton::pressed{
                  <height>35</height>
                 </size>
                </property>
+               <property name="font">
+                <font>
+                 <family>Arial</family>
+                 <pointsize>10</pointsize>
+                </font>
+               </property>
                <property name="styleSheet">
                 <string notr="true">QLabel {
     border: 2px solid black;
@@ -679,6 +638,12 @@ QPushButton::pressed{
                  <width>200</width>
                  <height>35</height>
                 </size>
+               </property>
+               <property name="font">
+                <font>
+                 <family>Arial</family>
+                 <pointsize>10</pointsize>
+                </font>
                </property>
                <property name="styleSheet">
                 <string notr="true">QLabel {
@@ -726,15 +691,21 @@ QPushButton::pressed{
                  <height>35</height>
                 </size>
                </property>
+               <property name="font">
+                <font>
+                 <family>Arial</family>
+                 <pointsize>10</pointsize>
+                </font>
+               </property>
                <property name="styleSheet">
                 <string notr="true">QLabel {
     border: 2px solid black;
-	background-color: rgb(255, 0, 0);
+	background-color: rgb(128,128,128);
     text-align: left;
 }</string>
                </property>
                <property name="text">
-                <string>点激光2: 0.0</string>
+                <string>点激光2</string>
                </property>
               </widget>
              </item>
@@ -805,6 +776,12 @@ QPushButton::pressed{
                  <height>35</height>
                 </size>
                </property>
+               <property name="font">
+                <font>
+                 <family>Arial</family>
+                 <pointsize>10</pointsize>
+                </font>
+               </property>
                <property name="styleSheet">
                 <string notr="true">QLabel {
 	background-color: rgb(85, 170, 255);
@@ -861,6 +838,12 @@ QPushButton::pressed{
                  <height>35</height>
                 </size>
                </property>
+               <property name="font">
+                <font>
+                 <family>Arial</family>
+                 <pointsize>10</pointsize>
+                </font>
+               </property>
                <property name="styleSheet">
                 <string notr="true">QLabel {
     border: 2px solid black;
@@ -914,15 +897,21 @@ QPushButton::pressed{
                  <height>35</height>
                 </size>
                </property>
+               <property name="font">
+                <font>
+                 <family>Arial</family>
+                 <pointsize>10</pointsize>
+                </font>
+               </property>
                <property name="styleSheet">
                 <string notr="true">QLabel {
-	background-color: rgb(255, 0, 0);
+	background-color: rgb(128,128,128);
     border: 2px solid black;
     text-align: left;
 }</string>
                </property>
                <property name="text">
-                <string>点激光4: 0.0</string>
+                <string>点激光4</string>
                </property>
               </widget>
              </item>
@@ -971,6 +960,12 @@ QPushButton::pressed{
                  <height>35</height>
                 </size>
                </property>
+               <property name="font">
+                <font>
+                 <family>Arial</family>
+                 <pointsize>10</pointsize>
+                </font>
+               </property>
                <property name="styleSheet">
                 <string notr="true">QLabel {
     border: 2px solid black;
@@ -1016,6 +1011,12 @@ QPushButton::pressed{
                  <width>200</width>
                  <height>35</height>
                 </size>
+               </property>
+               <property name="font">
+                <font>
+                 <family>Arial</family>
+                 <pointsize>10</pointsize>
+                </font>
                </property>
                <property name="styleSheet">
                 <string notr="true">QLabel {
@@ -1063,15 +1064,21 @@ QPushButton::pressed{
                  <height>35</height>
                 </size>
                </property>
+               <property name="font">
+                <font>
+                 <family>Arial</family>
+                 <pointsize>10</pointsize>
+                </font>
+               </property>
                <property name="styleSheet">
                 <string notr="true">QLabel {
     border: 2px solid black;
-	background-color: rgb(255, 0, 0);
+	background-color: rgb(128,128,128);
     text-align: left;
 }</string>
                </property>
                <property name="text">
-                <string>点激光3: 0.0</string>
+                <string>点激光3</string>
                </property>
               </widget>
              </item>
@@ -2287,6 +2294,12 @@ QPushButton:pressed {
           <height>50</height>
          </size>
         </property>
+        <property name="font">
+         <font>
+          <family>Arial</family>
+          <pointsize>8</pointsize>
+         </font>
+        </property>
         <property name="styleSheet">
          <string notr="true">QTabBar::tab {
     min-width: 100px; /* 标签的最小宽度 */
@@ -2693,6 +2706,12 @@ QTabBar::tab:!selected {
                    <height>40</height>
                   </size>
                  </property>
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>8</pointsize>
+                  </font>
+                 </property>
                  <property name="styleSheet">
                   <string notr="true">QLabel {
 	background-color: rgb(214, 214, 214);
@@ -2722,6 +2741,12 @@ QTabBar::tab:!selected {
                    <width>80</width>
                    <height>40</height>
                   </size>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>8</pointsize>
+                  </font>
                  </property>
                  <property name="styleSheet">
                   <string notr="true">QLabel {
@@ -2753,6 +2778,12 @@ QTabBar::tab:!selected {
                    <height>40</height>
                   </size>
                  </property>
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>8</pointsize>
+                  </font>
+                 </property>
                  <property name="styleSheet">
                   <string notr="true">QLabel {
 	background-color: rgb(214, 214, 214);
@@ -2782,6 +2813,12 @@ QTabBar::tab:!selected {
                    <width>80</width>
                    <height>40</height>
                   </size>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>8</pointsize>
+                  </font>
                  </property>
                  <property name="styleSheet">
                   <string notr="true">QLabel {
@@ -2813,6 +2850,12 @@ QTabBar::tab:!selected {
                    <height>40</height>
                   </size>
                  </property>
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>8</pointsize>
+                  </font>
+                 </property>
                  <property name="styleSheet">
                   <string notr="true">QLabel {
 	background-color: rgb(214, 214, 214);
@@ -2842,6 +2885,12 @@ QTabBar::tab:!selected {
                    <width>80</width>
                    <height>40</height>
                   </size>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>8</pointsize>
+                  </font>
                  </property>
                  <property name="styleSheet">
                   <string notr="true">QLabel {
@@ -2873,6 +2922,12 @@ QTabBar::tab:!selected {
                    <height>40</height>
                   </size>
                  </property>
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>8</pointsize>
+                  </font>
+                 </property>
                  <property name="styleSheet">
                   <string notr="true">QLabel {
 	background-color: rgb(214, 214, 214);
@@ -2903,6 +2958,12 @@ QTabBar::tab:!selected {
                    <height>40</height>
                   </size>
                  </property>
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>8</pointsize>
+                  </font>
+                 </property>
                  <property name="styleSheet">
                   <string notr="true">QLabel {
 	background-color: rgb(214, 214, 214);
@@ -2932,6 +2993,12 @@ QTabBar::tab:!selected {
                    <width>80</width>
                    <height>40</height>
                   </size>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>8</pointsize>
+                  </font>
                  </property>
                  <property name="styleSheet">
                   <string notr="true">QLabel {
@@ -3000,6 +3067,12 @@ QTabBar::tab:!selected {
                    <height>40</height>
                   </size>
                  </property>
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>8</pointsize>
+                  </font>
+                 </property>
                  <property name="styleSheet">
                   <string notr="true">QLabel{
   border:1px solid black;
@@ -3026,6 +3099,12 @@ QTabBar::tab:!selected {
                    <width>100</width>
                    <height>40</height>
                   </size>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>8</pointsize>
+                  </font>
                  </property>
                  <property name="styleSheet">
                   <string notr="true">QLabel{
@@ -3054,6 +3133,12 @@ QTabBar::tab:!selected {
                    <height>40</height>
                   </size>
                  </property>
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>8</pointsize>
+                  </font>
+                 </property>
                  <property name="styleSheet">
                   <string notr="true">QLabel{
   border:1px solid black;
@@ -3080,6 +3165,12 @@ QTabBar::tab:!selected {
                    <width>100</width>
                    <height>40</height>
                   </size>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>8</pointsize>
+                  </font>
                  </property>
                  <property name="styleSheet">
                   <string notr="true">QLabel{
@@ -3108,6 +3199,12 @@ QTabBar::tab:!selected {
                    <height>40</height>
                   </size>
                  </property>
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>8</pointsize>
+                  </font>
+                 </property>
                  <property name="styleSheet">
                   <string notr="true">QLabel{
   border:1px solid black;
@@ -3134,6 +3231,12 @@ QTabBar::tab:!selected {
                    <width>100</width>
                    <height>40</height>
                   </size>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>8</pointsize>
+                  </font>
                  </property>
                  <property name="styleSheet">
                   <string notr="true">QLabel{
@@ -3162,6 +3265,12 @@ QTabBar::tab:!selected {
                    <height>40</height>
                   </size>
                  </property>
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>8</pointsize>
+                  </font>
+                 </property>
                  <property name="styleSheet">
                   <string notr="true">QLabel{
   border:1px solid black;
@@ -3189,6 +3298,12 @@ QTabBar::tab:!selected {
                    <height>40</height>
                   </size>
                  </property>
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>8</pointsize>
+                  </font>
+                 </property>
                  <property name="styleSheet">
                   <string notr="true">QLabel{
   border:1px solid black;
@@ -3215,6 +3330,12 @@ QTabBar::tab:!selected {
                    <width>100</width>
                    <height>40</height>
                   </size>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>8</pointsize>
+                  </font>
                  </property>
                  <property name="styleSheet">
                   <string notr="true">QLabel{
@@ -3280,6 +3401,12 @@ QTabBar::tab:!selected {
                    <height>40</height>
                   </size>
                  </property>
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>8</pointsize>
+                  </font>
+                 </property>
                  <property name="text">
                   <string>0</string>
                  </property>
@@ -3301,6 +3428,12 @@ QTabBar::tab:!selected {
                    <width>100</width>
                    <height>40</height>
                   </size>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>8</pointsize>
+                  </font>
                  </property>
                  <property name="text">
                   <string>0</string>
@@ -3324,6 +3457,12 @@ QTabBar::tab:!selected {
                    <height>40</height>
                   </size>
                  </property>
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>8</pointsize>
+                  </font>
+                 </property>
                  <property name="text">
                   <string>0</string>
                  </property>
@@ -3345,6 +3484,12 @@ QTabBar::tab:!selected {
                    <width>100</width>
                    <height>40</height>
                   </size>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>8</pointsize>
+                  </font>
                  </property>
                  <property name="text">
                   <string>0</string>
@@ -3368,6 +3513,12 @@ QTabBar::tab:!selected {
                    <height>40</height>
                   </size>
                  </property>
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>8</pointsize>
+                  </font>
+                 </property>
                  <property name="text">
                   <string>0</string>
                  </property>
@@ -3389,6 +3540,12 @@ QTabBar::tab:!selected {
                    <width>100</width>
                    <height>40</height>
                   </size>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>8</pointsize>
+                  </font>
                  </property>
                  <property name="text">
                   <string>0</string>
@@ -3412,6 +3569,12 @@ QTabBar::tab:!selected {
                    <height>40</height>
                   </size>
                  </property>
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>8</pointsize>
+                  </font>
+                 </property>
                  <property name="text">
                   <string>0</string>
                  </property>
@@ -3434,6 +3597,12 @@ QTabBar::tab:!selected {
                    <height>40</height>
                   </size>
                  </property>
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>8</pointsize>
+                  </font>
+                 </property>
                  <property name="text">
                   <string>0</string>
                  </property>
@@ -3455,6 +3624,12 @@ QTabBar::tab:!selected {
                    <width>100</width>
                    <height>40</height>
                   </size>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>8</pointsize>
+                  </font>
                  </property>
                  <property name="text">
                   <string>0</string>
@@ -4483,6 +4658,12 @@ QTabBar::tab:!selected {
                    <height>50</height>
                   </size>
                  </property>
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>8</pointsize>
+                  </font>
+                 </property>
                  <property name="styleSheet">
                   <string notr="true">QLabel {
     background-color: rgb(85, 170, 255); /* 设置背景颜色为蓝色 */
@@ -4506,6 +4687,12 @@ QTabBar::tab:!selected {
                    <width>90</width>
                    <height>50</height>
                   </size>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>8</pointsize>
+                  </font>
                  </property>
                  <property name="styleSheet">
                   <string notr="true">QLabel {
@@ -4531,6 +4718,12 @@ QTabBar::tab:!selected {
                    <height>50</height>
                   </size>
                  </property>
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>8</pointsize>
+                  </font>
+                 </property>
                  <property name="styleSheet">
                   <string notr="true">QLabel {
 	background-color: rgb(214, 214, 214);
@@ -4554,6 +4747,12 @@ QTabBar::tab:!selected {
                    <width>90</width>
                    <height>50</height>
                   </size>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>8</pointsize>
+                  </font>
                  </property>
                  <property name="styleSheet">
                   <string notr="true">QLabel {
@@ -4579,6 +4778,12 @@ QTabBar::tab:!selected {
                    <height>50</height>
                   </size>
                  </property>
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>8</pointsize>
+                  </font>
+                 </property>
                  <property name="styleSheet">
                   <string notr="true">QLabel {
 	background-color: rgb(214, 214, 214);
@@ -4603,6 +4808,12 @@ QTabBar::tab:!selected {
                    <height>50</height>
                   </size>
                  </property>
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>8</pointsize>
+                  </font>
+                 </property>
                  <property name="styleSheet">
                   <string notr="true">QLabel {
 	background-color: rgb(214, 214, 214);
@@ -4626,6 +4837,12 @@ QTabBar::tab:!selected {
                    <width>90</width>
                    <height>50</height>
                   </size>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>8</pointsize>
+                  </font>
                  </property>
                  <property name="styleSheet">
                   <string notr="true">QLabel {
@@ -4661,6 +4878,12 @@ QTabBar::tab:!selected {
                    <height>50</height>
                   </size>
                  </property>
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>8</pointsize>
+                  </font>
+                 </property>
                  <property name="styleSheet">
                   <string notr="true">QLabel {
     background-color: rgb(85, 170, 255); /* 设置背景颜色为蓝色 */
@@ -4685,6 +4908,12 @@ QTabBar::tab:!selected {
                    <height>50</height>
                   </size>
                  </property>
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>8</pointsize>
+                  </font>
+                 </property>
                  <property name="styleSheet">
                   <string notr="true">QLabel{
   border:1px solid black;
@@ -4705,6 +4934,12 @@ QTabBar::tab:!selected {
                    <width>140</width>
                    <height>50</height>
                   </size>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>8</pointsize>
+                  </font>
                  </property>
                  <property name="styleSheet">
                   <string notr="true">QLabel{
@@ -4727,6 +4962,12 @@ QTabBar::tab:!selected {
                    <height>50</height>
                   </size>
                  </property>
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>8</pointsize>
+                  </font>
+                 </property>
                  <property name="styleSheet">
                   <string notr="true">QLabel{
   border:1px solid black;
@@ -4747,6 +4988,12 @@ QTabBar::tab:!selected {
                    <width>140</width>
                    <height>50</height>
                   </size>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>8</pointsize>
+                  </font>
                  </property>
                  <property name="styleSheet">
                   <string notr="true">QLabel{
@@ -4769,6 +5016,12 @@ QTabBar::tab:!selected {
                    <height>50</height>
                   </size>
                  </property>
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>8</pointsize>
+                  </font>
+                 </property>
                  <property name="styleSheet">
                   <string notr="true">QLabel{
   border:1px solid black;
@@ -4789,6 +5042,12 @@ QTabBar::tab:!selected {
                    <width>140</width>
                    <height>50</height>
                   </size>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>8</pointsize>
+                  </font>
                  </property>
                  <property name="styleSheet">
                   <string notr="true">QLabel{
@@ -4821,6 +5080,12 @@ QTabBar::tab:!selected {
                    <height>50</height>
                   </size>
                  </property>
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>8</pointsize>
+                  </font>
+                 </property>
                  <property name="styleSheet">
                   <string notr="true">QLabel {
     background-color: rgb(85, 170, 255); /* 设置背景颜色为蓝色 */
@@ -4851,6 +5116,12 @@ QTabBar::tab:!selected {
                    <height>50</height>
                   </size>
                  </property>
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>8</pointsize>
+                  </font>
+                 </property>
                  <property name="text">
                   <string>0</string>
                  </property>
@@ -4872,6 +5143,12 @@ QTabBar::tab:!selected {
                    <width>120</width>
                    <height>50</height>
                   </size>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>8</pointsize>
+                  </font>
                  </property>
                  <property name="text">
                   <string>0</string>
@@ -4895,6 +5172,12 @@ QTabBar::tab:!selected {
                    <height>50</height>
                   </size>
                  </property>
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>8</pointsize>
+                  </font>
+                 </property>
                  <property name="text">
                   <string>0</string>
                  </property>
@@ -4916,6 +5199,12 @@ QTabBar::tab:!selected {
                    <width>120</width>
                    <height>50</height>
                   </size>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>8</pointsize>
+                  </font>
                  </property>
                  <property name="text">
                   <string>0</string>
@@ -4939,6 +5228,12 @@ QTabBar::tab:!selected {
                    <height>50</height>
                   </size>
                  </property>
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>8</pointsize>
+                  </font>
+                 </property>
                  <property name="text">
                   <string>0</string>
                  </property>
@@ -4960,6 +5255,12 @@ QTabBar::tab:!selected {
                    <width>120</width>
                    <height>50</height>
                   </size>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>8</pointsize>
+                  </font>
                  </property>
                  <property name="text">
                   <string>0</string>
@@ -4991,6 +5292,12 @@ QTabBar::tab:!selected {
                  <width>140</width>
                  <height>50</height>
                 </size>
+               </property>
+               <property name="font">
+                <font>
+                 <family>Arial</family>
+                 <pointsize>8</pointsize>
+                </font>
                </property>
                <property name="styleSheet">
                 <string notr="true">QLabel {
@@ -5671,7 +5978,7 @@ QTabBar::tab:!selected {
          <attribute name="title">
           <string>底盘</string>
          </attribute>
-         <widget class="QPushButton" name="btn_wheel_forward">
+         <widget class="QPushButton" name="btn_wheel_backward">
           <property name="geometry">
            <rect>
             <x>220</x>
@@ -5698,7 +6005,7 @@ QTabBar::tab:!selected {
            <string/>
           </property>
          </widget>
-         <widget class="QPushButton" name="btn_wheel_backward">
+         <widget class="QPushButton" name="btn_wheel_forward">
           <property name="geometry">
            <rect>
             <x>220</x>
@@ -5895,6 +6202,12 @@ border-image: url(:/img/images/icon_backward.png);
                <height>50</height>
               </size>
              </property>
+             <property name="font">
+              <font>
+               <family>Arial</family>
+               <pointsize>8</pointsize>
+              </font>
+             </property>
              <property name="styleSheet">
               <string notr="true">QLabel{
     border:1px solid black; 
@@ -5980,6 +6293,12 @@ border-image: url(:/img/images/icon_backward.png);
              <height>40</height>
             </size>
            </property>
+           <property name="font">
+            <font>
+             <family>Arial</family>
+             <pointsize>8</pointsize>
+            </font>
+           </property>
            <property name="styleSheet">
             <string notr="true">QLabel {
 	background-color: rgb(214, 214, 214);
@@ -6003,6 +6322,12 @@ border-image: url(:/img/images/icon_backward.png);
              <width>100</width>
              <height>40</height>
             </size>
+           </property>
+           <property name="font">
+            <font>
+             <family>Arial</family>
+             <pointsize>8</pointsize>
+            </font>
            </property>
            <property name="styleSheet">
             <string notr="true">QLabel{
@@ -6030,6 +6355,12 @@ border-image: url(:/img/images/icon_backward.png);
              <width>120</width>
              <height>50</height>
             </size>
+           </property>
+           <property name="font">
+            <font>
+             <family>Arial</family>
+             <pointsize>8</pointsize>
+            </font>
            </property>
            <property name="text">
             <string>0</string>
@@ -6567,6 +6898,60 @@ QPushButton:hover {
         <string>实时预览</string>
        </property>
       </widget>
+      <widget class="QPushButton" name="btn_camera_calib">
+       <property name="geometry">
+        <rect>
+         <x>30</x>
+         <y>120</y>
+         <width>100</width>
+         <height>50</height>
+        </rect>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>100</width>
+         <height>50</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>60</width>
+         <height>40</height>
+        </size>
+       </property>
+       <property name="font">
+        <font>
+         <family>等线</family>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QPushButton{
+	border-radius:5%;
+	border:2px solid black;
+}
+QPushButton:pressed{
+	background-color: rgb(131, 255, 148);
+}
+
+QPushButton:hover {
+    background-color: rgb(10, 240, 10);
+}
+</string>
+       </property>
+       <property name="text">
+        <string>相机标定</string>
+       </property>
+      </widget>
      </widget>
     </widget>
     <widget class="QWidget" name="page_3">
@@ -6610,7 +6995,7 @@ QPushButton:hover {
           <x>60</x>
           <y>30</y>
           <width>347</width>
-          <height>68</height>
+          <height>56</height>
          </rect>
         </property>
         <layout class="QGridLayout" name="gridLayout_65">
@@ -10379,7 +10764,7 @@ QPushButton#btn_moveRel_motor9:pressed{
           <x>40</x>
           <y>50</y>
           <width>771</width>
-          <height>104</height>
+          <height>102</height>
          </rect>
         </property>
         <layout class="QGridLayout" name="gridLayout_127">

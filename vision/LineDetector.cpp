@@ -1,226 +1,259 @@
 //
-// Created by csh_i on 2024/7/5.
+// Created by csh_i on 2024/10/21.
 //
 
 #include "LineDetector.h"
 
-
-
-LineResult LineDetector::getLineDistance(cv::Mat img) {
-
-    LineResult res;
-    memset(&res, 0, sizeof(LineResult));
-    if (img.empty()) {
-        res.errorInfo = "Input data can not be null";
-        return res;
-    }
-
-    //1. »Ò¶ÈÍ¼Ïñ×ªRGBÍ¼Ïñ
-    if(img.channels() == 1){
-        cv::cvtColor(img, img, cv::COLOR_GRAY2RGB);
-    }
-
-    float origin_h = img.rows;
-    float origin_w = img.cols;
-    float h_ratio = origin_h / this->resize_h;
-    float w_ratio = origin_w / this->resize_w;
-
-    //1.0 Í¼ÏñÔ¤´¦Àí
-    cv::Mat img_gray, bin_img, img_512;
-    cv::resize(img, img_512, cv::Size(this->resize_w,this->resize_h));
-    cv::cvtColor(img_512, img_gray, cv::COLOR_RGB2GRAY);
-    cv::threshold(img_gray, bin_img, 0, 255, cv::THRESH_BINARY|cv::THRESH_OTSU);
-    res.imgDrawed = img_512;
-
-    // mlsd  Ëã·¨¼ì²âËùÓĞ¿ÉÄÜµÄÏß¶Î
-    std::vector<MLine> all_lines =  getAllPossibleLines(img_512);
-
-    // 2.0 »ñÈ¡²Î¿¼Ïß
-    MLine referenceLine = getReferenceLine(img_512, all_lines);
-    if(referenceLine.x1!=referenceLine.x2){
-        res.refResult = referenceLine;
-        res.referLineStatus = true;
-        cv::line(res.imgDrawed, cv::Point2f(referenceLine.x1, referenceLine.y1),
-                 cv::Point2f(referenceLine.x2, referenceLine.y2), cv::Scalar(0, 0, 255), 1);
-    }else{
-        res.errorInfo = "Can not get reference line";
-        return res;
-    }
-
-    // 3.0 »ñÈ¡Ä«Ë®Ïß
-    MLine inkLine = getInkLine(bin_img, all_lines, referenceLine);
-    if(inkLine.x1!=inkLine.x2){
-        res.inkResult = inkLine;
-        res.inkLineStatus = true;
-        cv::line(res.imgDrawed, cv::Point2f(inkLine.x1, inkLine.y1),
-                 cv::Point2f(inkLine.x2, inkLine.y2), cv::Scalar(0, 255, 0), 1);
-        res.status = true;
-        double distance = calculateDistanceBetweenParallelLines(referenceLine.slope, inkLine.y1*h_ratio, referenceLine.y1*h_ratio);
-        res.lineDist = distance;
-    }
-    return res;
-}
-
-MLine LineDetector::getInkLine(cv::Mat img, std::vector<MLine> lines,  MLine refLine) {
-
-    MLine lineRes;
-    memset(&lineRes, 0, sizeof(MLine));
-     for(const auto &line:lines) {
-         cv::Vec4f line_ = {line.x1, line.y1, line.x2, line.y2};
-         if(line.y1>refLine.y1){ continue;}  // Ä«¼£ÏßÍ¨³£ÔÚ°åÏßÖ®ÉÏ
-         if (!check_is_border_line(img, line_)) {
-             std::vector<cv::Point2f> points;
-             points.push_back(cv::Point2f(line.x1, line.y1));
-             points.push_back(cv::Point2f(line.x2, line.y2));
-             std::vector<float> line_fited = fiting_line(points);
-
-             if(abs(line_fited[4])>45){  // Ğ±ÂÊ´óÓÚ30¡ã,ÈÏÎª²»ÊÇÄ«Ë®Ïß
-                 continue;
-             }
-             if(abs(line_fited[4]-refLine.slope)>30){ // Ğ±ÂÊÓë²Î¿¼ÏßĞ±ÂÊÏà²î´óÓÚ30¡ã,ÈÏÎª²»ÊÇÄ«Ë®Ïß
-                 continue;
-             }
-
-             lineRes.x1 = line_fited[0];
-             lineRes.y1 = line_fited[1];
-             lineRes.x2 = line_fited[2];
-             lineRes.y2 = line_fited[3];
-             lineRes.slope = line_fited[4];
-             break;
-         }
-     }
-    return lineRes;
-}
-
-MLine LineDetector::getReferenceLineLSD(cv::Mat img, cv::Mat bin_img){
-
-    MLine lineRes;
-    memset(&lineRes, 0, sizeof(MLine));
-
-    //»ùÓÚLSDËã·¨»ñÈ¡Ïß¼ì²âµã
-    cv::Ptr<cv::LineSegmentDetector> detector = createLineSegmentDetector(cv::LSD_REFINE_STD);
-    std::vector<cv::Vec4f> lines;
-    detector->detect(bin_img, lines);
-
-    // É¸Ñ¡°åÏßµã
-    std::vector<cv::Point2f> points;
-    for (size_t i = 0; i < lines.size(); i++) {
-        cv::Vec4f line = lines[i];
-
-        float distance = calculatePointsDistance(cv::Point2f(line[0], line[1]), cv::Point2f(line[2], line[3]));
-        // ÈçºÎÅĞ±ğ¼ì²âµÄÏßÊôÓÚ°åÏßµÄ·¶³ë£¿
-        // ³¤¶È´óĞ¡¡¢Íâ¹ÛÎÆÀí¡¢Î»ÖÃÌØµã
-
-        bool isBoundary = check_is_border_line(bin_img, line);
-        if ((distance > this->resize_w*0.1) && isBoundary) { //Âú×ãÖ±ÏßµÄ³¤¶ÈÒªÇó£¬ÇÒÖ±ÏßÉÏÏÂÇøÓòÏñËØÏàËÆ¶ÈµÍ
-            points.push_back(cv::Point2f(line[0], line[1]));
-            points.push_back(cv::Point2f(line[2], line[3]));
-            break;
-        }
-    }
-    if(points.size()>0){
-        std::vector<float>  border_line = fiting_line(points);
-        lineRes.x1 = border_line[0];
-        lineRes.y1 = border_line[1];
-        lineRes.x2 = border_line[2];
-        lineRes.y2 = border_line[3];
-        lineRes.slope = border_line[4];
-    }
-    return lineRes;
-}
-
-MLine LineDetector::getReferenceLine(cv::Mat img, std::vector<MLine> lines) {
-
-    // ·Ö¸îÏß¶Î
-    MLine refLine_lsd, refLine_model, refLine;
-    memset(&refLine_lsd, 0, sizeof(MLine));
-    memset(&refLine_model, 0, sizeof(MLine));
-    memset(&refLine, 0, sizeof(MLine));
-
-    cv::Mat img_gray, bin_img;
-    if(img.channels() == 3){
-        cv::cvtColor(img, img_gray, cv::COLOR_BGR2GRAY);
-    }else{
-        img_gray = img;
-    }
-    cv::threshold(img_gray, bin_img, 0, 255, cv::THRESH_BINARY|cv::THRESH_OTSU);
-
-    // ´«Í³Í¼Ïñ´¦ÀíËã·¨»ñÈ¡½á¹û
-    refLine_lsd = getReferenceLineLSD(img, bin_img);
-
-    // Ä£ĞÍËã·¨»ñÈ¡½á¹û
-    for (auto &line : lines) {
-        cv::Vec4f line_ = { line.x1,line.y1, line.x2,line.y2 };
-        if(abs(line.x1 - line.x2)<50){ continue;}  // ²Î¿¼ÏßÌ«¶Ì£¬²»²ÎÓë¼ÆËã
-        if(check_is_border_line(bin_img, line_)){
-            std::vector<cv::Point2f> points;
-            points.push_back( cv::Point2f(line.x1, line.y1));
-            points.push_back( cv::Point2f(line.x2, line.y2));
-            std::vector<float> line_fited = fiting_line(points);
-            if(line_fited[1]>512 || line_fited[3]>512){ continue;}  // ÄâºÏºóµÄÖ±Ïß¶Ëµã×ø±êÔ½½ç
-            refLine_model = {line_fited[0], line_fited[1], line_fited[2], line_fited[3], line_fited[4]};
-            break;
-        }
-    }
-
-    // ´«Í³Ëã·¨ºÍÄ£ĞÍËã·¨Ïà»¥½ÃÕı
-    if(refLine_model.x1!=refLine_model.x2){ // Ä£ĞÍÔ¤²â½á¹ûÓĞĞ§
-        if(refLine_lsd.x1!=refLine_lsd.x2){ // ´«Í³Ëã·¨Ô¤²â½á¹ûÓĞĞ§
-            if(abs(refLine_model.x1- refLine_lsd.x1)<50){ // ÅĞ¶ÏÁ½ÌõÏßÊÇ·ñ½üËÆÏàÁÚ
-                refLine = refLine_lsd;
-            }else{
-                refLine = refLine_model;
-            }
-        }else{ //´«Í³Ëã·¨Ô¤²â½á¹ûÎŞĞ§
-            refLine = refLine_model;
-        }
-    }else{
-        refLine = refLine_lsd;
-    }
-    return refLine;
-}
-
-std::vector<MLine> LineDetector::getAllPossibleLines(cv::Mat img) {
-
-    // MLSDËã·¨¼ì²âËùÓĞ¿ÉÄÜµÄÏß¶Î
-    std::vector<MLine> line_res;
-    std::vector<std::vector<float>>  lines_mlsd = this->mlsd.detect(img);
-    cv::Mat line_mask = cv::Mat::zeros(img.size(), CV_8UC1);
-    for(auto item: lines_mlsd){
-        cv::line(line_mask, cv::Point(item[0], item[1]), cv::Point(item[2], item[3]), cv::Scalar(255), 1);
-    }
-    std::vector<std::vector<float>> lines = get_line_by_lsd(line_mask);
-    sort_lines(lines);
-    std::vector<std::vector<float>> lines_new = linesAggregation(lines);
-
-    //¶Ô¼ì²â³öµÄÖ±Ïß½øÒ»²½¹ıÂË
-    for (auto &line : lines_new) {
-        // 1.0 ±ßÏß·Ö²¼Î»ÖÃÌØµã¹ıÂË
-        if (line[1] < this->min_pos_valid || line[3] > max_pos_valid) { continue;}
-        // 2.0 ¹ıÂËµôÊúÖ±ÎªÊúÖ±·½ÏòµÄÖ±Ïß
-        if(line[1]<0 | line[3]<0|line[1]>img.cols|line[3]>img.cols){
-            continue;
-        }
-        MLine line_true = {line[0],line[1],line[2],line[3],line[4]};
-        line_res.push_back(line_true);
-    }
-    return line_res;
-}
-
 LineDetector::LineDetector() {
-    this->resize_h = 512;
-    this->resize_w = 512;
-    // ÓĞĞ§Ïß¶Î·Ö²¼Çø¼ä
-    this->min_pos_valid = 10;
-    this->max_pos_valid = 512 - 10;
-    // Á½¸öÏß¶ÎÖ®¼äµÄ¾àÀë·¶Î§
-    this->min_dist_lines = 50;
-    this->max_dist_lines = 200;
-    // ½Ç¶È·¶Î§
-    this->max_angle_degrees = 10;
-    this->min_len_seg = static_cast<unsigned>(512 * 0.15);
+
 }
 
 LineDetector::~LineDetector() {
 
 }
+
+std::vector<cv::Mat> LineDetector::getMasks(cv::Mat maskIndex) {
+
+    std::vector<cv::Mat> masks;
+    cv::Mat inkMask = cv::Mat::zeros(maskIndex.size(), CV_8UC1);
+    cv::Mat referMask = cv::Mat::zeros(maskIndex.size(), CV_8UC1);
+
+    for (int y = 0; y < maskIndex.rows; ++y) {
+        for (int x = 0; x < maskIndex.cols; ++x) {
+            if (maskIndex.at<uchar>(y, x) == 1) {
+                inkMask.at<uchar>(y, x) = 255;
+            } else if (maskIndex.at<uchar>(y, x) == 2) {
+                referMask.at<uchar>(y, x) = 255;
+            }
+        }
+    }
+    masks.push_back(inkMask);
+    masks.push_back(referMask);
+    return masks;
+}
+
+std::vector<float> LineDetector::getRerferenceLine(cv::Mat referMask, cv::Mat imgInput) {
+
+    std::vector<float> referenceLine;
+    std::vector<std::vector<cv::Point2f>> possibleLines;
+
+    // 1. get possible lines from mask
+    getPossibleLinesFromMask(referMask, possibleLines);
+
+    if(possibleLines.size() >0){
+        // è¿›ä¸€æ­¥ç­›é€‰
+        double max_dist = 0;
+        int max_index = -1;
+        for (size_t i = 0; i < possibleLines.size(); ++i) {
+            double dist_i = calculatePointsDistance(possibleLines[i][0], possibleLines[i][1]);
+            // 1.0 é•¿åº¦è¿‡æ»¤
+            if(dist_i<768*0.15){ // 1. too smal line, ignore it
+                continue;
+            }
+            // 2.0 åˆ†å¸ƒä½ç½®è¿‡æ»¤
+            if(possibleLines[i][0].y < imgInputH/2){ // 2. reference line must in upper half of image
+                continue;
+            }
+            // ToDo: è§’åº¦è¿‡æ»¤
+
+            // 3.0 è¿‡æ»¤ç»ç¼˜æœ€å¤–å±‚è¾¹çº¿
+//            cv::Point2f p1;
+//            p1.x = (possibleLines[i][0].x+possibleLines[i][1].x)/2;
+//            p1.y = (possibleLines[i][0].y+possibleLines[i][1].y)/2;
+//            cv::Rect rect(p1.x, p1.y, 30, 30);
+//            cv::Mat roi = imgInput(rect);
+//            double mean_color = cv::mean(roi)[0];
+//            if(mean_color>180){
+//                continue;
+//            }
+
+            if(dist_i > max_dist) {
+                max_dist = dist_i;
+                max_index = i;
+            }
+        }
+        if(max_index!= -1){
+            std::vector<float> lineRes = fiting_line(possibleLines[max_index]);
+            if(lineRes[0]>=0 && lineRes[1]>=0 && lineRes[2]>=0 && lineRes[3]>=0){
+                referenceLine = lineRes;
+            }else{
+                std::cout << "get Line error" << std::endl;
+            }
+        }
+    }
+    return referenceLine;
+}
+
+void LineDetector::getPossibleLinesFromMask(cv::Mat mask, vector<std::vector<cv::Point2f>> &possibleLines) {
+
+    // 1. blur mask
+    cv::Mat referMaskBlur;
+    cv::GaussianBlur(mask, referMaskBlur, cv::Size(5, 5), 0);
+    cv::Mat binImg;
+    cv::threshold(referMaskBlur, binImg, 0, 255, cv::THRESH_OTSU);
+
+    //2. compute contours
+    std::vector<std::vector<cv::Point>> contours;
+    cv::findContours(binImg, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
+    if(contours.size()==0){
+       return ;
+    }
+
+    // 3. filter contours
+    for (size_t i = 0; i < contours.size(); ++i) {
+
+        // compute area of contour
+        double area = contourArea(contours[i]);
+        if (area < 768*0.2) { // 1. too smal line, ignore it
+            continue;
+        }
+
+        // compute minAreaRect
+        cv::RotatedRect minRect = cv::minAreaRect(contours[i]);
+        cv::Mat points;
+        std::vector<cv::Point2f> rectPoints;
+        cv::boxPoints(minRect, points);
+
+        for (int i = 0; i < points.rows; ++i) {
+            rectPoints.push_back(points.at<cv::Point2f>(i, 0));
+        }
+
+        // sort points by x-axis
+        for (int j = 0; j < rectPoints.size() - 1; ++j) {
+            for (int k = 0; k < rectPoints.size() - j - 1; ++k) {
+                if (rectPoints[k].x > rectPoints[k + 1].x) {
+                    cv::Point temp = rectPoints[k];
+                    rectPoints[k] = rectPoints[k + 1];
+                    rectPoints[k + 1] = temp;
+                }
+            }
+        }
+
+        // get left and right point
+        cv::Point2f point_left = cv::Point((rectPoints[0].x+rectPoints[1].x)/2, (rectPoints[0].y+rectPoints[1].y)/2);
+        cv::Point2f point_right = cv::Point((rectPoints[2].x+rectPoints[3].x)/2, (rectPoints[2].y+rectPoints[3].y)/2);
+        possibleLines.push_back({point_left, point_right});
+    }
+}
+
+std::vector<float> LineDetector::getInkLine(cv::Mat inkMask, std::vector<float> referenceLine){
+
+    std::vector<float> inkLine;
+    std::vector<std::vector<cv::Point2f>> possibleLines;
+    getPossibleLinesFromMask(inkMask, possibleLines);
+
+    double dgree_ref = atan((referenceLine[3]-referenceLine[1])/(referenceLine[2]-referenceLine[0]))*180/CV_PI;
+
+    if(possibleLines.size() >0){
+        // è¿›ä¸€æ­¥ç­›é€‰
+        double max_dist = 0;
+        int max_index = -1;
+        for (size_t i = 0; i < possibleLines.size(); ++i) {
+            double dist_i = calculatePointsDistance(possibleLines[i][0], possibleLines[i][1]);
+            // 1. é•¿åº¦å¤§å°è¿‡æ»¤
+            if(dist_i<768*0.15){
+                continue;
+            }
+            //2. åˆ†å¸ƒä½ç½®è¿‡æ»¤
+            double min_ref_y =  referenceLine[1]<referenceLine[3]?referenceLine[1]:referenceLine[3];
+            double max_ink_y =  possibleLines[i][0].y<possibleLines[i][1].y?possibleLines[i][1].y:possibleLines[i][0].y;
+            if(max_ink_y>min_ref_y){
+                continue;
+            }
+            // 3.è§’åº¦åå·®è¿‡æ»¤
+            double slope_i = (possibleLines[i][1].y - possibleLines[i][0].y) / (possibleLines[i][1].x - possibleLines[i][0].x);
+            double dgree_i = atan(slope_i)*180/CV_PI;
+            if(abs(dgree_i-dgree_ref)>10){
+                continue;
+            }
+
+            if(dist_i > max_dist) {
+                max_dist = dist_i;
+                max_index = i;
+            }
+        }
+        if(max_index!= -1){
+            std::vector<float> lineRes = fiting_line(possibleLines[max_index]);
+            if(lineRes[0]>=0 && lineRes[1]>=0 && lineRes[2]>=0 && lineRes[3]>=0){
+                inkLine = lineRes;
+            }else{
+                std::cout << "getRerferenceLine error" << std::endl;
+            }
+        }
+    }
+    return inkLine;
+}
+
+LineSpaceResult LineDetector::getLinesDistance(cv::Mat img) {
+
+    LineSpaceResult lineResult;
+    lineResult.status = false;
+    lineResult.border_line_status = false;
+    lineResult.ink_line_status = false;
+//    memset(&lineResult, 0, sizeof(LineSpaceResult));
+
+    if(img.empty() || img.isContinuous() == false){
+        lineResult.error_info = "img is empty or not continuous";
+        return lineResult;
+    }
+
+    cv::Mat img_resize;
+    cv::resize(img, img_resize, cv::Size(imgInputH, imgInputW));
+    int originH = img.rows;
+    int originW = img.cols;
+    float scaleH = (float)originH / imgInputH;
+    float scaleW = (float)originW / imgInputW;
+
+    lineResult.img_drawed = img_resize.clone();
+    cv::Mat img_gray;
+    if(img.channels() == 3){
+        cv::cvtColor(img_resize, img_gray, cv::COLOR_BGR2GRAY);
+    }
+
+    // 1. image enhancement
+    cv::Mat imgEqHist;
+    cv::equalizeHist(img_gray, imgEqHist);
+
+    // 2. get mask index
+    cv::Mat maskIndex = lineSegModel.predict(imgEqHist);
+    double maskSum = cv::sum(maskIndex)[0];
+    if(maskSum<100){
+        lineResult.error_info = "Not detected any matching straight line";
+        return lineResult;
+    }
+
+    // 3. get reference line
+    std::vector<cv::Mat> masks;
+    masks = getMasks(maskIndex);
+    std::vector<float> referLine = getRerferenceLine(masks[1],imgEqHist);
+    if(referLine.size()>0){
+        lineResult.border_res = referLine;
+        lineResult.border_line_status = true;
+        cv::line(lineResult.img_drawed, cv::Point(referLine[0], referLine[1]), cv::Point(referLine[2], referLine[3]), cv::Scalar(0, 0, 255), 2);
+    }else{
+        lineResult.error_info = "Detection board line failed!";
+        return lineResult;
+    }
+
+    // 4. get ink line
+    std::vector<float> inkLine = getInkLine(masks[0], referLine);
+    if(inkLine.size()>0){
+        lineResult.ink_res = inkLine;
+        lineResult.ink_line_status = true;
+        cv::line(lineResult.img_drawed, cv::Point(inkLine[0], inkLine[1]), cv::Point(inkLine[2], inkLine[3]), cv::Scalar(0, 255, 0), 2);
+    }else{
+        lineResult.error_info = "Detection ink line failed!";
+        return lineResult;
+    }
+
+    // ToDo: æ’é™¤æ¿çº¿ï¼Œä»…ä»…è·å–å†…éƒ¨çº¿
+    // ToDo: è§’åº¦è¿›è¡Œæ ¡éªŒ
+    referLine = {referLine[0]*scaleW, referLine[1]*scaleH, referLine[2]*scaleW, referLine[3]*scaleH,referLine[4]};
+    inkLine = {inkLine[0]*scaleW, inkLine[1]*scaleH, inkLine[2]*scaleW, inkLine[3]*scaleH, referLine[4]};
+    double dist  = computePointToLineDistance(referLine, inkLine);
+    lineResult.dist = dist;
+    lineResult.status = true;
+    return lineResult;
+}
+
+

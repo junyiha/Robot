@@ -156,7 +156,7 @@ void MainWindow::connectSlotFunctions() {// 按钮时间绑定
     connect(ui->btn_line_detect_debug, &QPushButton::clicked, this, &MainWindow::on_btn_line_detect_debug_clicked, Qt::UniqueConnection);
     connect(ui->btn_camera_capture, &QPushButton::clicked, this, &MainWindow::on_btn_camera_capture_clicked, Qt::UniqueConnection);
     connect(ui->btn_savePicture, &QPushButton::clicked, this, &MainWindow::on_btn_camera_save_clicked, Qt::UniqueConnection);
-
+    connect(ui->btn_camera_calib, &QPushButton::clicked, this, &MainWindow::on_btn_camera_calib_clicked, Qt::UniqueConnection);
     // 底盘移动
     connect(ui->btn_wheel_forward, &QPushButton::pressed, this, &MainWindow::on_btn_wheel_forward_pressed, Qt::UniqueConnection);
     connect(ui->btn_wheel_forward, &QPushButton::released, this, &MainWindow::on_btn_wheel_forward_released, Qt::UniqueConnection);
@@ -409,7 +409,6 @@ void MainWindow::slotUpdateUIAll() {
     updataDeviceConnectState();
 
     // 8.0 更新任务状态机状态
-    updateTaskStateMachineStatus();
 }
 
 void MainWindow::updataDeviceConnectState() {
@@ -992,19 +991,19 @@ void MainWindow::updateActionSta() {
 }
 
 void MainWindow::updateConnectSta() {
-    std::map<QString,const bool> comStatus = {
-            {"icon_connect_plc",m_Com->getCommState_Robot()},
-            {"icon_connect_io",m_Com->getCommState_IOA()},
-            {"icon_connect_io",m_Com->getCommState_IOB()},
-    };
-
-    for(const auto&item: comStatus){
-        if(item.second == false){
-            findChild<QLabel*>(item.first)->setStyleSheet("image: url(:/img/images/icon_redLight.png);");
-        }else{
-            findChild<QLabel*>(item.first)->setStyleSheet("image: url(:/img/images/icon_greenLight.png);");
-        }
-    }
+//    std::map<QString,const bool> comStatus = {
+//            {"icon_connect_plc",m_Com->getCommState_Robot()},
+//            {"icon_connect_io",m_Com->getCommState_IOA()},
+//            {"icon_connect_io",m_Com->getCommState_IOB()},
+//    };
+//
+//    for(const auto&item: comStatus){
+//        if(item.second == false){
+//            findChild<QLabel*>(item.first)->setStyleSheet("image: url(:/img/images/icon_redLight.png);");
+//        }else{
+//            findChild<QLabel*>(item.first)->setStyleSheet("image: url(:/img/images/icon_greenLight.png);");
+//        }
+//    }
 }
 
 void MainWindow::on_btn_line_detect_clicked() {
@@ -1203,6 +1202,7 @@ void MainWindow::on_btn_steering_right_released() {
 
 void MainWindow::on_btn_add_nail_pressed() {
 
+//    m->setJointGroupMove(eMC_Motion,Postion_Home, )
    double vel_Home[10] = {0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1};
    for(int i = 0;i<10;i++){
        vel_Home[i] = LINK_0_JOINT_MAX_VEL[i]*0.1;
@@ -1225,6 +1225,32 @@ void MainWindow::on_btn_preparation_pos_pressed() {
 
 void MainWindow::on_btn_preparation_pos_released() {
     m_Robot->setLinkHalt();
+}
+
+void MainWindow::on_btn_camera_calib_clicked() {
+
+    unsigned pageIndex = ui->stackedWidget_view->currentIndex();
+    if(pageIndex!=1){
+        return ;
+    }
+    this->setLineStatus(true);
+    std::map<std::string, CalibrationLine> res = m_VisionInterface->getCameraCalibResults();
+    for(const auto &item : res){
+        std::string prefix =  item.first;
+        size_t index = prefix.find("_");
+        int number = prefix[index+1]-'0';
+
+        // 更新摄像头数据
+        cv::Mat temp;
+        if(!item.second.imageDrawd.empty()){
+            cv::resize(item.second.imageDrawd, temp, cv::Size(400, 280));
+            QImage img = QImage((uchar*)temp.data, temp.cols, temp.rows, QImage::Format_RGB888);
+            findChild<QLabel*>("label_camera_dis" + QString::number(number - 1))->setPixmap(QPixmap::fromImage(img));
+        }
+        // ToDo: 更新测算系数到yaml文件
+
+    }
+
 }
 
 
