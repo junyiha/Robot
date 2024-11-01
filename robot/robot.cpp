@@ -167,7 +167,7 @@ void CRobot::UpdateStatus()
 
     //修改827
     //更新运动模型数据
-    if(m_JointGroupStatus.size() != m_Freedom+1) //机器人轴+工具轴
+    if(m_JointGroupStatus.size() != m_Freedom + m_ToolFreedom) //机器人轴+工具轴
     {
         log->error(" Statedata of axis is unmatch!");
         return;
