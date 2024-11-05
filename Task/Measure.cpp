@@ -140,7 +140,8 @@ QVector<Eigen::Matrix4d> CMeasure::calPoseDeviation(stMeasureData data)
         linePosition[2]<< -x_camera + distance[1],  -delatY + y_camera + distance[2] , data.m_LaserDistance[2]-GP::Distance_work;
         linePosition[3]<< -x_camera + distance[0],  -delatY - y_camera + distance[2] , data.m_LaserDistance[3]-GP::Distance_work;
         Result[3] = calPoseforSquare(linePosition);
-        Result[3](1,3) = Result[3](1,3)+27;//让工具向着y负方向偏离框中心24mm，让3号相机边线距39
+        Result[3](1, 3) = Result[3](1, 3);// 2024.11.04 工装硬件优化
+        //Result[3](1,3) = Result[3](1,3)+27;//让工具向着y负方向偏离框中心24mm，让3号相机边线距39
         //Result[3](0,3) = Result[3](0,3) + 1;
     }else{
         Result[3] << 1, 0, 0, 0,

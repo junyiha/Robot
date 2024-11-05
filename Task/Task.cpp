@@ -626,19 +626,19 @@ int CTask::CheckPositionState()
                          (m_stMeasuredata.m_LineDistance[3]-15)*m_stMeasuredata.m_bLineDistance[3]) /
                          (static_cast<int>(m_stMeasuredata.m_bLineDistance[2]) + static_cast<int>(m_stMeasuredata.m_bLineDistance[3]));
 
-//    double line_dis_3 = (m_stMeasuredata.m_LineDistance[4] * m_stMeasuredata.m_bLineDistance[4] -
-//                         m_stMeasuredata.m_LineDistance[5] * m_stMeasuredata.m_bLineDistance[5]) /
-//                         (static_cast<int>(m_stMeasuredata.m_bLineDistance[4]) + static_cast<int>(m_stMeasuredata.m_bLineDistance[5]));
-    double line_dis_3 = 0 ;
-    if(m_stMeasuredata.m_bLineDistance[4])
-    {
-         line_dis_3 = m_stMeasuredata.m_LineDistance[4];
-    }
+    double line_dis_3 = (m_stMeasuredata.m_LineDistance[4] * m_stMeasuredata.m_bLineDistance[4] -
+                         m_stMeasuredata.m_LineDistance[5] * m_stMeasuredata.m_bLineDistance[5]) /
+                         (static_cast<int>(m_stMeasuredata.m_bLineDistance[4]) + static_cast<int>(m_stMeasuredata.m_bLineDistance[5]));
+    //double line_dis_3 = 0 ;
+    //if(m_stMeasuredata.m_bLineDistance[4])
+    //{
+    //     line_dis_3 = m_stMeasuredata.m_LineDistance[4];
+    //}
 
     log->info("line_dis:{},{},{}",line_dis_1,line_dis_2,line_dis_3);
     if(fabs(line_dis_1) < LINE_DEVIATION_THRESHOLD
     && fabs(line_dis_2) < LINE_DEVIATION_THRESHOLD
-    && fabs(line_dis_3-41) < LINE_DEVIATION_THRESHOLD)
+    && fabs(line_dis_3) < LINE_DEVIATION_THRESHOLD)
     {
         log->info("完成对边，边线距离为：{},{},{},{},{},{}",m_stMeasuredata.m_LineDistance[0],m_stMeasuredata.m_LineDistance[1],m_stMeasuredata.m_LineDistance[2],m_stMeasuredata.m_LineDistance[3],m_stMeasuredata.m_LineDistance[4],m_stMeasuredata.m_LineDistance[5]);
         return 1;

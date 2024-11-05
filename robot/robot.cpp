@@ -7,7 +7,7 @@ CRobot::CRobot(ComInterface* comm,QObject *parent)
     //修改827
     m_Index = 0; //link索引
     m_Freedom = 9;
-    m_ToolFreedom = 2;
+    m_ToolFreedom = 1;
 
 
     //运动学参数
