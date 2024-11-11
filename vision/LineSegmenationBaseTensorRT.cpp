@@ -3,6 +3,7 @@
 //
 
 #include "LineSegmenationBaseTensorRT.h"
+#ifdef GPU_FLAG
 
 LineSegmenationBaseTensorRT::LineSegmenationBaseTensorRT() {
 
@@ -228,8 +229,4 @@ float *LineSegmenationBaseTensorRT::blobFromImage(cv::Mat &img) {
 
 }
 
-
-
-
-
-
+#endif // GPU_FLAG

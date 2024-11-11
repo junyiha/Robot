@@ -4,6 +4,8 @@
 
 #ifndef MLSD_TEST_LINESEGMENATIONBASETENSORRT_H
 #define MLSD_TEST_LINESEGMENATIONBASETENSORRT_H
+
+#ifdef GPU_FLAG
 #include <NvInfer.h>
 #include <NvInferRuntime.h>
 #include <cuda_runtime_api.h>
@@ -73,5 +75,5 @@ private:
 
 };
 
-
+#endif  // GPU_FLAG
 #endif //MLSD_TEST_LINESEGMENATIONBASETENSORRT_H

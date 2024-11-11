@@ -4,8 +4,8 @@
 
 #ifndef MLSD_TEST_LINEDETECTOR_H
 #define MLSD_TEST_LINEDETECTOR_H
-//#include "LineSegmenationBase.h"
-#include "LineSegmenationBaseTensorRT.h"
+#include "LineSegmenationBase.h"
+//#include "LineSegmenationBaseTensorRT.h"
 #include "utils.h"
 
 struct LineSpaceResult {
@@ -24,7 +24,8 @@ struct LineSpaceResult {
 
 class LineDetector {
 public:
-    LineSegmenationBaseTensorRT lineSegModel;
+    //LineSegmenationBaseTensorRT lineSegModel;
+    LineSegmenationBase lineSegModel;
     LineDetector();
     ~LineDetector();
 
