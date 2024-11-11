@@ -497,6 +497,8 @@ double calculateHistogramSimilarity(const cv::Mat& img1, const cv::Mat& img2) {
 bool check_is_border_line(cv::Mat img, cv::Vec4f line, float thr) {
     bool flag = false;
     int offset = 30; // 获取上下点的四邻域，并计算相似度；
+    int imgH = img.rows;
+    int imgW = img.cols;
 
     // 获取直线坐标
     int x1 = line[0];
@@ -514,6 +516,10 @@ bool check_is_border_line(cv::Mat img, cv::Vec4f line, float thr) {
     if(base_up_y < 0 || (base_down_y>img.rows-1)){
         return false;  // 超出边界
     }
+    if((base_x+offset-10)>imgH ||  (base_up_y+offset-10)>imgH || base_y+offset>imgH){
+        return false;
+    }
+
 
     cv::Rect roi_img_1(base_x, base_up_y, offset-10,offset-10);
     cv::Rect roi_img_2(base_x, base_y+10, offset-10,offset-10);
@@ -533,14 +539,14 @@ bool check_is_border_line(cv::Mat img, cv::Vec4f line, float thr) {
 //    double similarty = calculateHistogramSimilarity(img_cropped_1, img_cropped_2);
 
 //    similarty = (similarty+1)/2;
-    std::cout << "similarty: " << similarty << std::endl;
+//    std::cout << "similarty: " << similarty << std::endl;
 //    cv::circle(img, cv::Point(base_x, base_y), 5, cv::Scalar(255, 0, 0), -1);
 //    cv::line(img, cv::Point(x1, y1), cv::Point(x2, y2), cv::Scalar(0, 255,255),2);
 //    cv::rectangle(img, roi_img_1, cv::Scalar(0, 0, 255), 2);
 //    cv::rectangle(img, roi_img_2, cv::Scalar(0, 0, 255), 2);
 //    cv::imshow("img", img);
 //    cv::waitKey(0);
-    if(similarty > 0.6){flag = true;}
+    if(similarty > 0.7){flag = true;}
     return flag;
 }
 bool check_is_border_line_by_hist(cv::Mat img, cv::Vec4f line, float thr) {
@@ -633,6 +639,26 @@ std::string getCurrentTimestampString() {
 
     // 返回字符串
     return oss.str();
+}
+
+void image_correction(cv::Mat& img, unsigned rotate_type){
+    //图像方向矫正
+
+    cv::Mat tmp2;
+    switch (rotate_type) {
+        case 1://顺时针90
+            cv::transpose(img, tmp2);
+            cv::flip(tmp2, img, 1);
+            break;
+        case 2: //顺时针180°
+            cv::flip(img, tmp2, -1);
+            img = tmp2;
+            break;
+        case 3: //逆时针90
+            cv::transpose(img, tmp2);
+            cv::flip(tmp2, img, 0);
+            break;
+    }
 }
 
 

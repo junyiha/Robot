@@ -32,7 +32,7 @@ MainWindow::MainWindow(QWidget *parent)
     //5.0 计时器界面实时更新 (100ms更新一次)
     this->logger->trace("启动界面实时更新");
     this->updateUiTimer = new QTimer(this);
-    updateUiTimer->setInterval(10);
+    updateUiTimer->setInterval(200);
     connect(updateUiTimer,&QTimer::timeout,this,&MainWindow::slotUpdateUIAll);
 
     // 6.0 直线检测专用定时器
@@ -186,9 +186,13 @@ void MainWindow::connectSlotFunctions() {// 按钮时间绑定
 
     // 参数配置文件
     connect(ui->btn_load_configuration, &QPushButton::clicked, this, &MainWindow::slots_btn_load_configuration_clicked, Qt::UniqueConnection);
-    connect(ui->btn_save_home_position, &QPushButton::clicked, this, &MainWindow::slots_btn_save_home_position_clicked, Qt::UniqueConnection);
     connect(ui->btn_save_prepare_position, &QPushButton::clicked, this, &MainWindow::slots_btn_save_prepare_position_clicked, Qt::UniqueConnection);
+    connect(ui->btn_save_lift_position, &QPushButton::clicked, this, &MainWindow::slots_btn_save_lift_position_clicked, Qt::UniqueConnection);
     connect(ui->btn_save_quit_position, &QPushButton::clicked, this, &MainWindow::slots_btn_save_quit_position_clicked, Qt::UniqueConnection);
+
+    connect(ui->btn_autoMagentOff, &QPushButton::clicked, this, &MainWindow::slots_btn_autoMagentOff_clicked, Qt::UniqueConnection);
+    connect(ui->btn_autoWelding, &QPushButton::clicked, this, &MainWindow::slots_btn_auto_welding_clicked, Qt::UniqueConnection);
+
 }
 
 MainWindow::~MainWindow()
@@ -409,6 +413,7 @@ void MainWindow::slotUpdateUIAll() {
     updataDeviceConnectState();
 
     // 8.0 更新任务状态机状态
+    updateTaskStateMachineStatus();
 }
 
 void MainWindow::updataDeviceConnectState() {
@@ -547,7 +552,7 @@ void MainWindow::updateLineDetectResults() {
             for(int i = 0; i < cameraNum; i++){
                 float dist = visResult.stData.m_LineDistance[i];
                 dist = std::isinf(dist) ? 0 : dist;
-                findChild<QLabel*>(prefix + QString::number(i))->setText("Dist " + QString::number(i + 1) + ":" + QString::number(dist));
+                findChild<QLabel*>(prefix + QString::number(i))->setText("线间距:" + QString::number(i + 1) + ":" + QString::number(dist));
             }
         }
 
@@ -567,6 +572,14 @@ void MainWindow::updateLineDetectResults() {
 
 void MainWindow::updateLaserData() {
     QVector  laserdis = m_Com->getLasersDistance();
+
+    // 工装旋转180度，显示顺序更改
+    QVector temp(laserdis);
+    laserdis[0] = temp[2];
+    laserdis[1] = temp[3];
+    laserdis[2] = temp[0];
+    laserdis[3] = temp[1];
+
     if(laserdis.size() > 0){
         for(int i = 0; i < larserNum; i++){
             findChild<QLabel*>("label_laserDist" + QString::number(i))->setText(QString::number(laserdis[i]));
@@ -611,9 +624,25 @@ void MainWindow::updateCameraData() {
                 }
                 size_t index = item.first.find("_")+1;
                 int number = item.first[index]-'0';
+
+                cv::Mat inputImage;
                 cv::Mat temp;
                 cv::resize(item.second,temp,imgSize);
-                QImage img = QImage((uchar*)temp.data, temp.cols, temp.rows, QImage::Format_RGB888);
+                inputImage = temp;
+                // 画面方向矫正
+                if(item.first.find("cam")!=std::string::npos){
+                    if(number==5){
+                        image_correction(inputImage,3);
+                    }
+                    if(number==6){
+                        image_correction(inputImage,1);
+                    }
+                    if(number == 2 || number == 4){
+                        image_correction(inputImage,2);
+                    }
+                }
+
+                QImage img = QImage((uchar*)inputImage.data, inputImage.cols, inputImage.rows, QImage::Format_RGB888);
                 findChild<QLabel*>(prefix + QString::number(number - 1))->setPixmap(QPixmap::fromImage(img));
 //                this->logger->info("相机{}数据获取成功**************************************", item.first);
             }
@@ -1272,47 +1301,6 @@ void MainWindow::slots_btn_load_configuration_clicked()
     }
 }
 
-void MainWindow::slots_btn_save_home_position_clicked()
-{
-    bool res{ true };
-    auto status = m_Robot->getJointGroupSta();
-    std::vector<double> data;
-    for (auto& i : status)
-    {
-        if (i.eState != eAxis_STANDSTILL)
-        {
-            res = false;
-            break;
-        }
-        data.push_back(i.Position);
-    }
-    if (!res)
-    {
-        ui->btn_save_home_position->setStyleSheet("background-color: rgb(255, 0, 0);"
-            "border: 2px solid blue;"
-            "border-radius: 10px;"
-        );
-        return;
-    }
-    GP::Position_Map[{GP::Working_Scenario, GP::PositionType::Prepare}].value = data;
-    res = m_config_ptr->UpdateValue("position_map", GP::Position_Map);
-
-    if (res)
-    {
-        ui->btn_save_home_position->setStyleSheet("background-color: rgb(0, 255, 0);"
-            "border: 2px solid blue;"
-            "border-radius: 10px;"
-        );
-    }
-    else
-    {
-        ui->btn_save_home_position->setStyleSheet("background-color: rgb(255, 0, 0);"
-            "border: 2px solid blue;"
-            "border-radius: 10px;"
-        );
-    }
-}
-
 void MainWindow::slots_btn_save_prepare_position_clicked()
 {
     bool res{ true };
@@ -1320,11 +1308,11 @@ void MainWindow::slots_btn_save_prepare_position_clicked()
     std::vector<double> data;
     for (auto& i : status)
     {
-        if (i.eState != eAxis_STANDSTILL)
-        {
-            res = false;
-            break;
-        }
+        //if (i.eState != eAxis_STANDSTILL)
+        //{
+        //    res = false;
+        //    break;
+        //}
         data.push_back(i.Position);
     }
     if (!res)
@@ -1335,7 +1323,7 @@ void MainWindow::slots_btn_save_prepare_position_clicked()
         );
         return;
     }
-    GP::Position_Map[{GP::Working_Scenario, GP::PositionType::Lift}].value = data;
+    GP::Position_Map[{GP::Working_Scenario, GP::PositionType::Prepare}].value = data;
     res = m_config_ptr->UpdateValue("position_map", GP::Position_Map);
 
     if (res)
@@ -1354,6 +1342,47 @@ void MainWindow::slots_btn_save_prepare_position_clicked()
     }
 }
 
+void MainWindow::slots_btn_save_lift_position_clicked()
+{
+    bool res{ true };
+    auto status = m_Robot->getJointGroupSta();
+    std::vector<double> data;
+    for (auto& i : status)
+    {
+        //if (i.eState != eAxis_STANDSTILL)
+        //{
+        //    res = false;
+        //    break;
+        //}
+        data.push_back(i.Position);
+    }
+    if (!res)
+    {
+        ui->btn_save_lift_position->setStyleSheet("background-color: rgb(255, 0, 0);"
+            "border: 2px solid blue;"
+            "border-radius: 10px;"
+        );
+        return;
+    }
+    GP::Position_Map[{GP::Working_Scenario, GP::PositionType::Lift}].value = data;
+    res = m_config_ptr->UpdateValue("position_map", GP::Position_Map);
+
+    if (res)
+    {
+        ui->btn_save_lift_position->setStyleSheet("background-color: rgb(0, 255, 0);"
+            "border: 2px solid blue;"
+            "border-radius: 10px;"
+        );
+    }
+    else
+    {
+        ui->btn_save_lift_position->setStyleSheet("background-color: rgb(255, 0, 0);"
+            "border: 2px solid blue;"
+            "border-radius: 10px;"
+        );
+    }
+}
+
 void MainWindow::slots_btn_save_quit_position_clicked()
 {
     bool res{ true };
@@ -1361,11 +1390,11 @@ void MainWindow::slots_btn_save_quit_position_clicked()
     std::vector<double> data;
     for (auto& i : status)
     {
-        if (i.eState != eAxis_STANDSTILL)
-        {
-            res = false;
-            break;
-        }
+        //if (i.eState != eAxis_STANDSTILL)
+        //{
+        //    res = false;
+        //    break;
+        //}
         data.push_back(i.Position);
     }
     if (!res)
@@ -1398,7 +1427,47 @@ void MainWindow::slots_btn_save_quit_position_clicked()
 void MainWindow::updateTaskStateMachineStatus()
 {
     std::string current_state = m_Task->getCurrentStateString();
-    QTextCodec* codec = QTextCodec::codecForName("GBK");
+    QTextCodec* codec = QTextCodec::codecForName("UTF-8");
     QString current_state_str = codec->toUnicode(current_state.c_str());
     ui->task_state_machine_button->setText(current_state_str);
+}
+
+
+void MainWindow::slots_btn_autoMagentOff_clicked()
+{
+    bool res = m_Task->DoMagentOff();
+
+    if (res)
+    {
+        ui->btn_autoMagentOff->setStyleSheet("background-color: rgb(0, 255, 0);"
+            "border: 2px solid blue;"
+            "border-radius: 10px;"
+        );
+    }
+    else
+    {
+        ui->btn_autoMagentOff->setStyleSheet("background-color: rgb(255, 0, 0);"
+            "border: 2px solid blue;"
+            "border-radius: 10px;"
+        );
+    }
+}
+
+void MainWindow::slots_btn_auto_welding_clicked()
+{
+    ui->btn_autoWelding->setStyleSheet("background-color: rgb(0, 0, 255);"
+        "border: 2px solid blue;"
+        "border-radius: 10px;"
+    );
+
+    int cnt{ 0 };
+    while (!m_Task->DoWeldAction(1))
+    {
+        Sleep(50);
+    }
+
+    ui->btn_autoWelding->setStyleSheet("background-color: rgb(0, 255, 0);"
+        "border: 2px solid blue;"
+        "border-radius: 10px;"
+    );
 }

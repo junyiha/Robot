@@ -26,7 +26,6 @@ VisionInterface::VisionInterface() {
             {"cam_5", 0.153061224489795},
             {"cam_6", 0.153061224489795},
     };
-
     this->logger = spdlog::get("logger");
 }
 

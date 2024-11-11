@@ -137,15 +137,20 @@ void CTask::Manual()
         m_preManualOperator = m_manualOperator ;
         return;
     }
+    double velocity{ 8.0 };
+    double temp_velocity_direction = m_manualOperator.VechDirect;
 
-    if (std::fabs(m_manualOperator.VechDirect -  m_JointGroupStatus[GP::STEER_LEFT_INDEX].Position) > 3)
+    if (temp_velocity_direction > 0)
+        temp_velocity_direction = (temp_velocity_direction < 10.0) ? 0 : temp_velocity_direction - 10.0;
+    else
+        temp_velocity_direction = (temp_velocity_direction > -10.0) ? 0 : temp_velocity_direction + 10.0;
+    if (std::fabs(temp_velocity_direction -  m_JointGroupStatus[GP::STEER_LEFT_INDEX].Position) > 5)
     {
         // 当前指令和上一个指令的VechDirect都为零，判断条件始终成立
-         m_Robot->setJointMoveAbs(GP::STEER_LEFT_INDEX, m_manualOperator.VechDirect,10);//速度需改为参数
-        log->info("m_Robot->setJointMoveAbs(GP::STEER_LEFT_INDEX, {}", m_manualOperator.VechDirect);
+         m_Robot->setJointMoveAbs(GP::STEER_LEFT_INDEX, temp_velocity_direction, velocity);//速度需改为参数
 
-         m_Robot->setJointMoveAbs(GP::STEER_RIGHT_INDEX,m_manualOperator.VechDirect,10);//速度需改为参数
-        log->info("m_Robot->setJointMoveAbs(GP::STEER_RIGHT_INDEX, {}", m_manualOperator.VechDirect);
+         m_Robot->setJointMoveAbs(GP::STEER_RIGHT_INDEX, temp_velocity_direction,velocity);//速度需改为参数
+         log->info("{} m_manualOperator.VechDirect: {}, steer velocity:{}", __LINE__, m_manualOperator.VechDirect, temp_velocity_direction);
     }
 
     double vel_left,vel_right ;
@@ -160,6 +165,18 @@ void CTask::Manual()
         // 速度待修改 2024.09.03
         vel_left = m_manualOperator.VechVel * 100 - m_manualOperator.RotateVel * 30; //正转为逆时针
         vel_right = m_manualOperator.VechVel * 100 + m_manualOperator.RotateVel * 30;
+
+        // 解决过速度保护问题
+        if (vel_left > 0)
+            vel_left = (vel_left > 90.0) ? 90 : vel_left;
+        else 
+            vel_left = (vel_left < -90.0) ? -90 : vel_left;
+
+        if (vel_right > 0)
+            vel_right = (vel_right > 90.0) ? 90 : vel_right;
+        else
+            vel_right = (vel_right < -90.0) ? -90 : vel_right;
+
 
         log->info("{},{}: m_Robot->setJointMoveVel(GP::WHEEL_LEFT_INDEX, {});", __FILE__,__LINE__,vel_left);
          m_Robot->setJointMoveVel(GP::WHEEL_LEFT_INDEX, -vel_left);
@@ -185,16 +202,18 @@ void CTask::Manual()
     else if (m_manualOperator.Ready == 1)
     {
         // 移动到举升位置
-        std::vector<double> TEMP_LINK_0_JOINT_MAX_VEL_FOR_READY_POINT(MAX_FREEDOM_LINK, 0.0);
-        TEMP_LINK_0_JOINT_MAX_VEL_FOR_READY_POINT = {1, 1, 1, 1, 0.3, 10, 5, 0.5, 4, 1};
-        m_Robot->setJointGroupMoveAbs(GP::Position_Map[{GP::Working_Scenario, GP::PositionType::Lift}].value.data(), TEMP_LINK_0_JOINT_MAX_VEL_FOR_READY_POINT.data());
+        std::vector<double> temp_velocity_group(MAX_FREEDOM_LINK, 0.0);
+        temp_velocity_group = {1, 1, 1, 1, 0.3, 25, 5, 0.5, 5, 3};
+        std::for_each(temp_velocity_group.begin(), temp_velocity_group.end(), [](double& vel) { vel *= 1.1; });
+        m_Robot->setJointGroupMoveAbs(GP::Position_Map[{GP::Working_Scenario, GP::PositionType::Lift}].value.data(), temp_velocity_group.data());
     }
     else if (m_manualOperator.Ready == 2)
     {
         // 移动到准备(放钉)位置
-        std::vector<double> TEMP_LINK_0_JOINT_MAX_VEL_FOR_SET_POINT(MAX_FREEDOM_LINK, 0.0);
-        TEMP_LINK_0_JOINT_MAX_VEL_FOR_SET_POINT = {1, 1, 1, 1, 0.3, 10, 5, 0.5, 2, 6};
-        m_Robot->setJointGroupMoveAbs(GP::Position_Map[{GP::Working_Scenario, GP::PositionType::Prepare}].value.data(), TEMP_LINK_0_JOINT_MAX_VEL_FOR_SET_POINT.data());
+        std::vector<double> temp_velocity_group(MAX_FREEDOM_LINK, 0.0);
+        temp_velocity_group = {1, 1, 1, 1, 0.3, 25, 5, 0.5, 2.5, 5};
+        std::for_each(temp_velocity_group.begin(), temp_velocity_group.end(), [](double& vel) { vel *= 1.1; });
+        m_Robot->setJointGroupMoveAbs(GP::Position_Map[{GP::Working_Scenario, GP::PositionType::Prepare}].value.data(), temp_velocity_group.data());
     }
     else if (m_manualOperator.bLinkMoveFlag)
     {
@@ -409,6 +428,7 @@ bool CTask::doMagentOff()
     case 0://磁铁断电
         if(time_cnt == 0)
         {
+            
             m_Comm->SetMagentAction(0,eMag_Off);
             time_cnt ++;
             log->info("eMag_Off");
@@ -428,7 +448,7 @@ bool CTask::doMagentOff()
     case 1:  //推缸缩
         if(time_cnt == 0)
         {
-            m_Comm->SetMagentAction(0,eMag_Off);
+            
             m_Comm->SetMagentAction(0,eMag_Down);
             time_cnt ++;
             log->info("eMag_Down");
@@ -437,7 +457,7 @@ bool CTask::doMagentOff()
         {
             //计数等待
             time_cnt ++;
-            if(time_cnt > 200)//等待结束，进入下一个动作
+            if(time_cnt > 100)//等待结束，进入下一个动作
             {
                 act_index = 0;
                 time_cnt = 0;
@@ -493,7 +513,8 @@ bool CTask::doMagentOn()
         {
             //计数等待
             time_cnt ++;
-            if(time_cnt > 100)//等待结束，进入下一个动作
+//            if(time_cnt > 100)//等待结束，进入下一个动作
+            if(time_cnt > 80)//等待结束，进入下一个动作
             {
                 act_index = 2;
                 time_cnt = 0;
@@ -501,7 +522,9 @@ bool CTask::doMagentOn()
         }
         return false;
     case 2://磁铁吸合
+        
         m_Comm->SetMagentAction(0,eMag_On);
+       
         act_index = 0;
         time_cnt = 0;
         log->info("eMag_On");
@@ -560,7 +583,7 @@ int CTask::CheckParallelState(QVector<double> laserDistance)
         return -1;
     }
     //判断是否完成调平
-    if(maxDistance - minDistance< PARRALLE_DISTANCE && minDistance < GP::Lift_Distance_In_Parallel)  //最大偏差小于阈值
+    if(maxDistance - minDistance< GP::Min_Deviation_In_Parallel && minDistance < GP::Lift_Distance_In_Parallel)  //最大偏差小于阈值
     {
         return 1;
     }else
@@ -629,11 +652,11 @@ int CTask::CheckPositionState()
     double line_dis_3 = (m_stMeasuredata.m_LineDistance[4] * m_stMeasuredata.m_bLineDistance[4] -
                          m_stMeasuredata.m_LineDistance[5] * m_stMeasuredata.m_bLineDistance[5]) /
                          (static_cast<int>(m_stMeasuredata.m_bLineDistance[4]) + static_cast<int>(m_stMeasuredata.m_bLineDistance[5]));
-    //double line_dis_3 = 0 ;
-    //if(m_stMeasuredata.m_bLineDistance[4])
-    //{
-    //     line_dis_3 = m_stMeasuredata.m_LineDistance[4];
-    //}
+//    double line_dis_3 = 0 ;
+//    if(m_stMeasuredata.m_bLineDistance[4])
+//    {
+//         line_dis_3 = m_stMeasuredata.m_LineDistance[4];
+//    }
 
     log->info("line_dis:{},{},{}",line_dis_1,line_dis_2,line_dis_3);
     if(fabs(line_dis_1) < LINE_DEVIATION_THRESHOLD

@@ -14,16 +14,16 @@ namespace GP
 {
 	enum class WorkingScenario
 	{
-		Top = 1,	// ¶¥°å
-		Cant,		// Ð±°å
-		Side		// ²à°å 
+		Top = 1,	// ï¿½ï¿½ï¿½ï¿½
+		Cant,		// Ð±ï¿½ï¿½
+		Side		// ï¿½ï¿½ï¿½ 
 	};
 
 	enum class PositionType
 	{
-		Prepare = 1,	// ×¼±¸Î»
-		Lift,			// ¾ÙÉýÎ»
-		Quit			// ÍË³öÎ»
+		Prepare = 1,	// ×¼ï¿½ï¿½Î»
+		Lift,			// ï¿½ï¿½ï¿½ï¿½Î»
+		Quit			// ï¿½Ë³ï¿½Î»
 	};
 
 	struct PositionData
@@ -39,29 +39,29 @@ namespace GP
 
 	static const int DOF = 10;
 
-	extern double velLine;		//½çÃæµã¶¯ÏÞËÙ£ºÆ½ÒÆ
-	extern double velRotate;	//½çÃæµã¶¯ÏÞËÙ£ºÐý×ª
+	extern double velLine;		//ï¿½ï¿½ï¿½ï¿½ã¶¯ï¿½ï¿½ï¿½Ù£ï¿½Æ½ï¿½ï¿½
+	extern double velRotate;	//ï¿½ï¿½ï¿½ï¿½ã¶¯ï¿½ï¿½ï¿½Ù£ï¿½ï¿½ï¿½×ª
 
-	extern std::size_t CYLINDER_INDEX;			// ÍÆ¸Ë¹Ø½ÚÖáºÅË÷Òý
-	extern std::size_t STEER_LEFT_INDEX;		// ×ó¶æÂÖË÷Òý
-	extern std::size_t STEER_RIGHT_INDEX;		// ÓÒ¶æÂÖË÷Òý
-	extern std::size_t WHEEL_LEFT_INDEX;		// ×óÐÐ×ßÂÖË÷Òý
-	extern std::size_t WHEEL_RIGHT_INDEX;		// ÓÒÐÐ×ßÂÖË÷Òý
-	extern std::size_t TOOL_LIFTING;			// ¹¤¾ßÉý½µË÷Òý
+	extern std::size_t CYLINDER_INDEX;			// ï¿½Æ¸Ë¹Ø½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	extern std::size_t STEER_LEFT_INDEX;		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	extern std::size_t STEER_RIGHT_INDEX;		// ï¿½Ò¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	extern std::size_t WHEEL_LEFT_INDEX;		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	extern std::size_t WHEEL_RIGHT_INDEX;		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	extern std::size_t TOOL_LIFTING;			// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
-	extern double Lift_Distance_In_Parallel;	// µ÷Æ½×´Ì¬ÏÂ¾ÙÉýµÄÎ»ÖÃ
-	extern double Max_Deviation_In_Parallel;	// µ÷Æ½ÔÊÐí×î´óÆ«²î
-	extern double Min_Deviation_In_Parallel;	// µ÷Æ½ÔÊÐí×îÐ¡Æ«²î
+	extern double Lift_Distance_In_Parallel;	// ï¿½ï¿½Æ½×´Ì¬ï¿½Â¾ï¿½ï¿½ï¿½ï¿½ï¿½Î»ï¿½ï¿½
+	extern double Max_Deviation_In_Parallel;	// ï¿½ï¿½Æ½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ«ï¿½ï¿½
+	extern double Min_Deviation_In_Parallel;	// ï¿½ï¿½Æ½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¡Æ«ï¿½ï¿½
 
-	extern double Distance_work;				//Î»ÖÃ
+	extern double Distance_work;				//Î»ï¿½ï¿½
 
-	extern double Lift_Distance_In_FitBoard;    // ÌùºÏ×´Ì¬ÏÂ¾ÙÉýµÄÎ»ÖÃ
-	extern double Max_Deviation_In_FitBoard;	// ÌùºÏÔÊÐíÆ«²î
-	extern double Min_Deviation_In_FitBoard;    // ÌùºÏÔÊÐíÆ«²î
+	extern double Lift_Distance_In_FitBoard;    // ï¿½ï¿½ï¿½ï¿½×´Ì¬ï¿½Â¾ï¿½ï¿½ï¿½ï¿½ï¿½Î»ï¿½ï¿½
+	extern double Max_Deviation_In_FitBoard;	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ«ï¿½ï¿½
+	extern double Min_Deviation_In_FitBoard;    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ«ï¿½ï¿½
 
-	extern double Line_Deviation_Threshold;		//±ßÏßµ÷ÕûÔÊÐíÆ«²î
+	extern double Line_Deviation_Threshold;		//ï¿½ï¿½ï¿½ßµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ«ï¿½ï¿½
 
-	// ¹Ø½ÚÄ©¶ËÔË¶¯ÏÞËÙ
+	// ï¿½Ø½ï¿½Ä©ï¿½ï¿½ï¿½Ë¶ï¿½ï¿½ï¿½ï¿½ï¿½
 	extern std::vector<double> End_Vel_Limit;
 	extern std::vector<double> End_Vel_Position;
 

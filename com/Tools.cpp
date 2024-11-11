@@ -57,6 +57,10 @@ void CTools::SetMagentAction(quint8 index, E_MagentAction action)
             value_A |=  0b00000100;
             value_A &= ~0b00000010;
             break;
+        case eMag_Stop:
+            value_A &= ~0b00000010;
+            value_A &= ~0b00000100;
+            break;
 
         case eNONE_Magent:
         default:
@@ -84,7 +88,10 @@ void CTools::SetMagentAction(quint8 index, E_MagentAction action)
             value_A |=  0b00100000;
             value_A &= ~0b00010000;
             break;
-
+            case eMag_Stop:
+                value_A &= ~0b00000010;
+                value_A &= ~0b00000100;
+                break;
         case eNONE_Magent:
         default:
             break;
@@ -110,7 +117,10 @@ void CTools::SetMagentAction(quint8 index, E_MagentAction action)
             value_B |=  0b00000100;
             value_B &= ~0b00000010;
             break;
-
+            case eMag_Stop:
+                value_A &= ~0b00000010;
+                value_A &= ~0b00000100;
+                break;
         case eNONE_Magent:
         default:
             break;
@@ -137,7 +147,10 @@ void CTools::SetMagentAction(quint8 index, E_MagentAction action)
             value_B |=  0b00100000;
             value_B &= ~0b00010000;
             break;
-
+            case eMag_Stop:
+                value_A &= ~0b00000010;
+                value_A &= ~0b00000100;
+                break;
         case eNONE_Magent:
         default:
             break;
@@ -149,6 +162,8 @@ void CTools::SetMagentAction(quint8 index, E_MagentAction action)
         case eMag_On:
             value_A |= 0b00001001;
             value_B |= 0b00001001;
+            value_A &= ~0b00110110;
+            value_B &= ~0b00110110;
             break;
 
         case eMag_Off:
@@ -164,12 +179,19 @@ void CTools::SetMagentAction(quint8 index, E_MagentAction action)
             break;
 
         case eMag_Down:
-            value_A |=  0b00100100;
+           /* value_A |=  0b00100100;
             value_A &= ~0b00010010;
             value_B |=  0b00100100;
-            value_B &= ~0b00010010;
+            value_B &= ~0b00010010;*/
+            value_A |= 0b00100100;
+            value_A &= ~0b00011011;
+            value_B |= 0b00100100;
+            value_B &= ~0b00011011;
             break;
-
+        case eMag_Stop:
+            value_A &= ~0b00110110;
+            value_B &= ~0b00110110;
+                break;
         case eNONE_Magent:
         default:
             break;
@@ -178,6 +200,8 @@ void CTools::SetMagentAction(quint8 index, E_MagentAction action)
     }
     m_cIOA.SetIO(5,value_A);
     m_cIOB.SetIO(5,value_B);
+
+    //qDebug() << "value_A value_B" << value_A << ";" << value_B;
 }
 
 void CTools::SetCrossLasser(bool swtich)
@@ -226,7 +250,7 @@ QVector<double> CTools::getLaserDistance()
     tmp[2] = m_cIOB.getAIState()[0];
     tmp[3] = m_cIOB.getAIState()[1];
 
-    //log->debug("*******************LaserDistance*************: {} {} {} {} ",re[0],re[1],re[2],re[3]);
+    //log->debug("*******************LaserDistance*************: {} {} {} {} ",tmp[0],tmp[1],tmp[2],tmp[3]);
 
     //视觉标定板上表面为激光零点
     std::vector<Eigen::Vector2f> cfg_laser ={
@@ -236,10 +260,10 @@ QVector<double> CTools::getLaserDistance()
         // Eigen::Vector2f(1960,1545),//3
         // Eigen::Vector2f(1950,1540),//4
 
-        Eigen::Vector2f( 1966,1545),//0mm对应的数值，80mm对应的数值
-        Eigen::Vector2f(1965,1548),//2    // 15mm( 1965, 1968,)
-        Eigen::Vector2f(1970,1545),//3
-        Eigen::Vector2f(1965,1540),//4
+        Eigen::Vector2f( 1940,1545),//0mm对应的数值，80mm对应的数值
+        Eigen::Vector2f(1942,1548),//2    // 15mm( 1965, 1968,)
+        Eigen::Vector2f(1935,1545),//3
+        Eigen::Vector2f(1945,1540),//4 1930
     };
     for(int i=0;i<4;++i){
         //换算为真实距离，单位毫米

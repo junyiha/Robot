@@ -57,21 +57,26 @@ void CTask::manualStateTransition()
 {
     //1. 判断机器人是否处于就绪状态 
     bool robotReady = (m_LinkStatus.eLinkActState == eLINK_STANDSTILL);
-        if (robotReady)
+    if (robotReady)
     {
-        //2. 如果就绪，判断是否要执行调平指令
-        if(m_eexecutionCommand == EExecutionCommand::eParallel)
+        switch (m_eexecutionCommand)
         {
-            if(robotReady)
-            {
-                updateTopAndSubState(ETopState::eParallel, ESubState::eDetection);
-            }
-            else
-            {
-                log->warn("机器人未就绪，无法执行调平指令");
-            }
-            return;
+        case EExecutionCommand::eParallel:
+        {
+            updateTopAndSubState(ETopState::eParallel, ESubState::eDetection);
+            break;
         }
+        case EExecutionCommand::eMagentOn:
+        {
+            updateTopAndSubState(ETopState::eReadToMagentOn, ESubState::eNULL);
+            break;
+        }
+        case EExecutionCommand::eQuit:
+        {
+            updateTopAndSubState(ETopState::eQuit, ESubState::eQuiting);
+            break;
+        }
+        } 
     }
 
     //3. 执行手动操作指令 -- 遥控器处理函数--》遥控器对接。
@@ -197,6 +202,11 @@ void CTask::readyExecutionCommand()
             updateTopAndSubState(ETopState::eParallel, ESubState::eDetection);
             break;
         }
+        case EExecutionCommand::eMagentOn:
+        {
+            updateTopAndSubState(ETopState::eReadToMagentOn, ESubState::eNULL);
+            break;
+        }
         default:
         {
             log->warn("{} {}: 执行指令不合法!指令: {}",__FILE__, __LINE__, ExecutionCommandStringMap.find(m_eexecutionCommand)->second);
@@ -314,7 +324,14 @@ void CTask::motionInParallelExecutionCommand()
                 {
                     tar_pos[i] = tar_position[i];
                 }
-                m_Robot->setLinkMoveAbs(tar_pos,GP::End_Vel_Limit.data());
+
+                log->info("{}: target_position: \n{}, {}, {}, {}, {}, {}", __LINE__,
+                          tar_pos[0], tar_pos[1], tar_pos[2], tar_pos[3] * 57.3, tar_pos[4] * 57.3, tar_pos[5] * 57.3);
+                auto temp_velocity = GP::End_Vel_Limit;
+                temp_velocity.at(0) *= 7;
+                temp_velocity.at(1) *= 7;
+                temp_velocity.at(2) *= 7;
+                m_Robot->setLinkMoveAbs(tar_pos, temp_velocity.data());
             }
             break;
         }
@@ -347,6 +364,11 @@ void CTask::readyToPositioningExecutionCommand()
         case EExecutionCommand::ePositioning:
         {
             updateTopAndSubState(ETopState::ePositioning, ESubState::eDetection);
+            break;
+        }
+        case EExecutionCommand::eMagentOn:
+        {
+            updateTopAndSubState(ETopState::eReadToMagentOn, ESubState::eNULL);
             break;
         }
         case EExecutionCommand::eTerminate:
@@ -442,7 +464,26 @@ void CTask::motionInPositioningExecutionCommand()
                     tar_pos[i] = tar_position[i];
                 }
 
-                m_Robot->setLinkMoveAbs(tar_pos, GP::End_Vel_Position.data());
+                auto temp_velocity = GP::End_Vel_Limit;
+
+                auto current_status = m_Robot->getLinkSta();
+                if (std::fabs(current_status.stLinkActKin.LinkPos[0] - tar_pos[0]) < 8 || 
+                    std::fabs(current_status.stLinkActKin.LinkPos[1] - tar_pos[1]) < 8)
+                {
+                    temp_velocity.at(0) *= 2;
+                    temp_velocity.at(1) *= 2;
+                    temp_velocity.at(2) *= 2;
+                }
+                else
+                {
+                    temp_velocity.at(0) *= 5;
+                    temp_velocity.at(1) *= 5;
+                    temp_velocity.at(2) *= 5;
+                }
+
+                log->info("{}: target_position: \n{}, {}, {}, {}, {}, {}", __LINE__,
+                          tar_pos[0], tar_pos[1], tar_pos[2], tar_pos[3] * 57.3, tar_pos[4] * 57.3, tar_pos[5] * 57.3);
+                m_Robot->setLinkMoveAbs(tar_pos, temp_velocity.data());
                 stLinkStatus linkstatus = m_Robot->getLinkSta();
                 m_position_motion_flag = true;
             }
@@ -631,6 +672,7 @@ void CTask::stopWeldExecutionCommand()
             {
                 if (doMagentOff())
                 {
+                    log->info("{} do magent off end...", __LINE__);
                     weld = 0;
                     updateTopAndSubState(ETopState::eReadToMagentOn, ESubState::eNULL);
                 }
@@ -641,6 +683,7 @@ void CTask::stopWeldExecutionCommand()
         {
             doMagentOff();
             weld = -1;
+            log->info("{} do magent off begin...", __LINE__);
             break;
         }
         case EExecutionCommand::eTerminate:
@@ -662,8 +705,26 @@ void CTask::quitingExecutionCommand()
     {
         case EExecutionCommand::eNULL:
         {
-            m_Robot->setJointMoveAbs(9,1100,7);
-            if(m_JointGroupStatus[9].Position < 1110)
+
+            // 移动到退出位置
+            std::vector<double> TEMP_LINK_0_JOINT_MAX_VEL_FOR_SET_POINT(MAX_FREEDOM_LINK, 0.0);
+            TEMP_LINK_0_JOINT_MAX_VEL_FOR_SET_POINT = {1, 1, 1, 1, 0.3, 10, 5, 0.5, 3, 6};
+            auto temp_value = GP::Position_Map[{GP::Working_Scenario, GP::PositionType::Quit}].value;
+
+            // 整体联动无法停止，后续优化
+            //m_Robot->setJointGroupMoveAbs(temp_value.data(), TEMP_LINK_0_JOINT_MAX_VEL_FOR_SET_POINT.data());
+            //QVector<double> value_qv(temp_value.begin(), temp_value.end());
+            //if (m_Robot->isJointReached(value_qv))
+            //{
+            //    updateTopAndSubState(ETopState::eManual, ESubState::eReady);
+            //}
+
+            int tool_index{ 9 };
+            int base_index{ 0 };
+            m_Robot->setJointMoveAbs(tool_index, temp_value.at(tool_index), 4);
+            m_Robot->setJointMoveAbs(base_index, temp_value.at(base_index), 2);
+            if (std::abs(m_JointGroupStatus[tool_index].Position - temp_value.at(tool_index)) < 1 && 
+                std::abs(m_JointGroupStatus[base_index].Position < temp_value.at(base_index)) < 1)
             {
                 updateTopAndSubState(ETopState::eManual, ESubState::eReady);
             }
@@ -730,12 +791,12 @@ void CTask::UpdateLaserDistance()
     m_stMeasuredata.m_LaserDistance[2] = LaserDistance[2];
     m_stMeasuredata.m_LaserDistance[3] = LaserDistance[3];
 
-    // change laser position
-    std::vector<double> temp(std::begin(m_stMeasuredata.m_LaserDistance), std::end(m_stMeasuredata.m_LaserDistance));
-    m_stMeasuredata.m_LaserDistance[0] = temp[2];
-    m_stMeasuredata.m_LaserDistance[1] = temp[3];
-    m_stMeasuredata.m_LaserDistance[2] = temp[0];
-    m_stMeasuredata.m_LaserDistance[3] = temp[1];
+//    // change laser position
+//    std::vector<double> temp(std::begin(m_stMeasuredata.m_LaserDistance), std::end(m_stMeasuredata.m_LaserDistance));
+//    m_stMeasuredata.m_LaserDistance[0] = temp[2];
+//    m_stMeasuredata.m_LaserDistance[1] = temp[3];
+//    m_stMeasuredata.m_LaserDistance[2] = temp[0];
+//    m_stMeasuredata.m_LaserDistance[3] = temp[1];
 }
 
 void CTask::UpdateVisionResult(VisionResult& vis_res)
@@ -743,7 +804,7 @@ void CTask::UpdateVisionResult(VisionResult& vis_res)
     std::copy(std::begin(vis_res.stData.m_LineDistance), std::end(vis_res.stData.m_LineDistance), m_stMeasuredata.m_LineDistance);
     std::copy(std::begin(vis_res.stData.m_bLineDistance), std::end(vis_res.stData.m_bLineDistance), m_stMeasuredata.m_bLineDistance);
 
-    // change camera position
+//    // change camera position
     std::vector<double> temp_vec(std::begin(m_stMeasuredata.m_LineDistance), std::end(m_stMeasuredata.m_LineDistance));
     std::vector<double> temp_flag_vec(std::begin(m_stMeasuredata.m_bLineDistance), std::end(m_stMeasuredata.m_bLineDistance));
     m_stMeasuredata.m_LineDistance[0] = temp_vec.at(3);
@@ -915,4 +976,14 @@ void CTask::TranslateManualTaskIndexNumberToCMD()
             break;
         }
     }
+}
+
+bool CTask::DoMagentOff()
+{
+    return doMagentOff();
+}
+
+bool CTask::DoWeldAction(int index)
+{
+    return doWeldAction(index);
 }

@@ -20,6 +20,7 @@ add_definitions(-DCONFIG_PATH_RO="${CMAKE_CURRENT_SOURCE_DIR}/configuration/conf
 add_definitions(-DCONFIG_PATH_RW="${CMAKE_CURRENT_SOURCE_DIR}/configuration/config_rw.yaml")
 add_definitions(-DVISION_MODEL_PATH="${CMAKE_CURRENT_SOURCE_DIR}/models/mlsd_model_tiny_20240721.onnx")
 add_definitions(-DVISION_ENGINE_PATH="${CMAKE_CURRENT_SOURCE_DIR}/models/model_ocrnet-20241020.engine")
+#add_definitions(-DVISION_ENGINE_PATH="${CMAKE_CURRENT_SOURCE_DIR}/models/pp_liteseg_stdc1_softmax_20241021.engine")
 
 # ffmpeg
 file(COPY ${BaseDIR}/packages/ffmpeg/bin/avcodec-59.dll DESTINATION ${CMAKE_BINARY_DIR})

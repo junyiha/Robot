@@ -78,7 +78,7 @@ int CManual::RecvDataRefactor()
     m_manualOperator.RotateVel =  temp_val.first;
     m_manualOperator.bRotateFlag = temp_val.second;
 
-    m_manualOperator.VechDirect = (static_cast<quint8>(readbuff[8]) * 256 + static_cast<quint8>(readbuff[9]) - 2048 ) / 2048.0 * 90;
+    m_manualOperator.VechDirect = (static_cast<quint8>(readbuff[8]) * 256 + static_cast<quint8>(readbuff[9]) - 2048 ) / 2048.0 * 100;
 
 
     auto temp_val_x = translateToVelocity(static_cast<quint8>(readbuff[10]), static_cast<quint8>(readbuff[11]));

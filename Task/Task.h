@@ -334,6 +334,10 @@ public:
      */
     void TranslateManualTaskIndexNumberToCMD();
 
+    bool DoMagentOff();
+
+    bool DoWeldAction(int index);
+
 private:
     ETopState m_etopState{ETopState::eManual};
     ESubState m_esubState{ESubState::eReady};

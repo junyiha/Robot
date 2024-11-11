@@ -28,13 +28,21 @@ CameraManager::CameraManager() {
 
     // ��־�ļ�
     this->logger = spdlog::get("logger");
+    //this->serial2names = {
+    //        {"DA2720028", "cam_1"},//2
+    //        {"DA2720133", "cam_2"},//1
+    //        {"DA2720068", "cam_3"},//4
+    //        {"DA2720132", "cam_4"},//3
+    //        {"DA2720067", "cam_5"},//6
+    //        {"DA2720078", "cam_6"},//5
+    //};
     this->serial2names = {
-            {"DA2720028", "cam_1"},
-            {"DA2720133", "cam_2"},
-            {"DA2720068", "cam_3"},
-            {"DA2720132", "cam_4"},
-            {"DA2720067", "cam_5"},
-            {"DA2720078", "cam_6"},
+            {"DA2720132", "cam_1"}, // 1 --> 4
+            {"DA2720068", "cam_2"}, // 2 --> 3
+            {"DA2720133", "cam_3"}, // 3 --> 2
+            {"DA2720028", "cam_4"}, // 4 --> 1
+            {"DA2720078", "cam_5"}, // 6 --> 5
+            {"DA2720067", "cam_6"}, // 5 --> 6
     };
     // this->cameraInfoMap ��ʼ��
     MV_CC_DEVICE_INFO null_dev;

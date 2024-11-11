@@ -154,7 +154,7 @@ cv::Mat LineSegmenationBaseTensorRT::predict(cv::Mat inputImg) {
         output_size *= out_dims.d[j];
     }
 
-    static float* prob = new float[output_size];
+     float* prob = new float[output_size];
 //    float* inputBuffer = new float[inputHeight * inputWidth * 3];
     auto start = std::chrono::system_clock::now();
     // 图像预处理
@@ -168,6 +168,8 @@ cv::Mat LineSegmenationBaseTensorRT::predict(cv::Mat inputImg) {
     cv::Mat res = cv::Mat(mask_sz, CV_32F, prob);
 
     cv::Mat mask_res = post_process(res);
+    delete prob;
+    delete inputBuffer;
     return mask_res;
 
 }

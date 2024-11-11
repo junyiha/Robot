@@ -32,6 +32,57 @@ std::vector<cv::Mat> LineDetector::getMasks(cv::Mat maskIndex) {
     return masks;
 }
 
+std::vector<float> LineDetector::getReferenceLineLSD(cv::Mat img, cv::Mat bin_img){
+
+//    cv::imshow("img", bin_img);
+//    cv::waitKey();
+    std::vector<float> lineRes;
+    cv::Mat bin_img_blur;
+    cv::GaussianBlur(bin_img, bin_img_blur, cv::Size(5,5), 0 );
+    cv::Ptr<cv::LineSegmentDetector> detector = createLineSegmentDetector(cv::LSD_REFINE_STD);
+    std::vector<cv::Vec4f> lines;
+    detector->detect(bin_img_blur, lines);
+//    cv::Mat temp = cv::Mat::zeros(img.size(),CV_8UC3);
+//    for(int i=0;i<lines.size();i++){
+//
+//        cv::line(temp,cv::Point(lines[i][0], lines[i][1]), cv::Point(lines[i][2], lines[i][3]), cv::Scalar(0,255,0), 2);
+//
+//    }
+//    cv::imshow("temp",temp);
+//    cv::waitKey(0);
+
+
+    std::vector<cv::Point2f> points;
+    for (size_t i = 0; i < lines.size(); i++) {
+        cv::Vec4f line = lines[i];
+
+        // 1.位置过滤
+        double max_y =  line[1]>line[3]?line[1]:line[3];
+        if(max_y<img.rows/2 || max_y>img.rows*0.8){
+            continue;
+        }
+        // 2.斜率过滤
+        double slope = (line[1] - line[3]) / (line[0] - line[2]);
+        double dgree = atan(slope)*180/CV_PI;
+        if(abs(dgree)>20){
+            continue;
+        }
+
+        float distance = calculatePointsDistance(cv::Point2f(line[0], line[1]), cv::Point2f(line[2], line[3]));
+        bool isBoundary = check_is_border_line(bin_img, line);
+        if ((distance > this->imgInputW*0.1) && isBoundary) {
+            points.push_back(cv::Point2f(line[0], line[1]));
+            points.push_back(cv::Point2f(line[2], line[3]));
+            break;
+        }
+    }
+    if(points.size()>0){
+        std::vector<float>  border_line = fiting_line(points);
+        lineRes = border_line;
+    }
+    return lineRes;
+}
+
 std::vector<float> LineDetector::getRerferenceLine(cv::Mat referMask, cv::Mat imgInput) {
 
     std::vector<float> referenceLine;
@@ -47,7 +98,7 @@ std::vector<float> LineDetector::getRerferenceLine(cv::Mat referMask, cv::Mat im
         for (size_t i = 0; i < possibleLines.size(); ++i) {
             double dist_i = calculatePointsDistance(possibleLines[i][0], possibleLines[i][1]);
             // 1.0 长度过滤
-            if(dist_i<768*0.15){ // 1. too smal line, ignore it
+            if(dist_i<this->imgInputW*0.1){ // 1. too smal line, ignore it
                 continue;
             }
             // 2.0 分布位置过滤
@@ -81,16 +132,26 @@ std::vector<float> LineDetector::getRerferenceLine(cv::Mat referMask, cv::Mat im
             }
         }
     }
+    if(referenceLine.empty()){
+        // LSD算法兜底
+        cv::Mat bin_img; 
+        cv::threshold(imgInput, bin_img, 0, 255, cv::THRESH_BINARY|cv::THRESH_OTSU); 
+        std::vector<float> refLineLSD =  getReferenceLineLSD(imgInput, bin_img); 
+        referenceLine = refLineLSD;
+
+    }
+
+
     return referenceLine;
 }
 
 void LineDetector::getPossibleLinesFromMask(cv::Mat mask, vector<std::vector<cv::Point2f>> &possibleLines) {
 
     // 1. blur mask
-    cv::Mat referMaskBlur;
-    cv::GaussianBlur(mask, referMaskBlur, cv::Size(5, 5), 0);
+//    cv::Mat referMaskBlur;
+//    cv::GaussianBlur(mask, referMaskBlur, cv::Size(5, 5), 0);
     cv::Mat binImg;
-    cv::threshold(referMaskBlur, binImg, 0, 255, cv::THRESH_OTSU);
+    cv::threshold(mask, binImg, 0, 255, cv::THRESH_OTSU);
 
     //2. compute contours
     std::vector<std::vector<cv::Point>> contours;
@@ -129,9 +190,21 @@ void LineDetector::getPossibleLinesFromMask(cv::Mat mask, vector<std::vector<cv:
             }
         }
 
+        // 过滤掉竖直型轮廓
+        if(abs(rectPoints[0].y-rectPoints[1].y)>imgInputH*0.1){
+            continue;
+        }
+
         // get left and right point
-        cv::Point2f point_left = cv::Point((rectPoints[0].x+rectPoints[1].x)/2, (rectPoints[0].y+rectPoints[1].y)/2);
-        cv::Point2f point_right = cv::Point((rectPoints[2].x+rectPoints[3].x)/2, (rectPoints[2].y+rectPoints[3].y)/2);
+        cv::Point2f point_left;
+        cv::Point2f point_right;
+        if(abs(rectPoints[0].y-rectPoints[1].y)>imgInputH*0.05){ // 处理板线水平与垂直粘连的情况
+            point_left = rectPoints[0];
+            point_right = rectPoints[2].y<rectPoints[3].y?rectPoints[2]:rectPoints[3];
+        }else{
+            point_left = cv::Point((rectPoints[0].x+rectPoints[1].x)/2, (rectPoints[0].y+rectPoints[1].y)/2);
+            point_right = cv::Point((rectPoints[2].x+rectPoints[3].x)/2, (rectPoints[2].y+rectPoints[3].y)/2);
+        }
         possibleLines.push_back({point_left, point_right});
     }
 }
@@ -208,6 +281,8 @@ LineSpaceResult LineDetector::getLinesDistance(cv::Mat img) {
     cv::Mat img_gray;
     if(img.channels() == 3){
         cv::cvtColor(img_resize, img_gray, cv::COLOR_BGR2GRAY);
+    }else{
+        img_gray = img;
     }
 
     // 1. image enhancement
@@ -217,6 +292,8 @@ LineSpaceResult LineDetector::getLinesDistance(cv::Mat img) {
     // 2. get mask index
     cv::Mat maskIndex = lineSegModel.predict(imgEqHist);
     double maskSum = cv::sum(maskIndex)[0];
+//    cv::imshow("maskIndex", maskIndex*255);
+//    cv::waitKey(0);
     if(maskSum<100){
         lineResult.error_info = "Not detected any matching straight line";
         return lineResult;
@@ -225,7 +302,8 @@ LineSpaceResult LineDetector::getLinesDistance(cv::Mat img) {
     // 3. get reference line
     std::vector<cv::Mat> masks;
     masks = getMasks(maskIndex);
-    std::vector<float> referLine = getRerferenceLine(masks[1],imgEqHist);
+//    std::vector<float> referLine = getRerferenceLine(masks[1],img_gray);
+    std::vector<float> referLine = getReferenceLineFromMask(masks[1],img_gray);
     if(referLine.size()>0){
         lineResult.border_res = referLine;
         lineResult.border_line_status = true;
@@ -254,6 +332,70 @@ LineSpaceResult LineDetector::getLinesDistance(cv::Mat img) {
     lineResult.dist = dist;
     lineResult.status = true;
     return lineResult;
+}
+
+std::vector<float> LineDetector::getReferenceLineFromMask(cv::Mat mask, cv::Mat img_gray) {
+    std::vector<float> referLine;
+    cv::Ptr<cv::LineSegmentDetector> detector = createLineSegmentDetector(cv::LSD_REFINE_STD);
+    std::vector<cv::Vec4f> lines;
+    detector->detect(mask, lines);
+
+    std::vector<std::vector<float>> possiableLines;
+    for(int i=0;i<lines.size();i++){
+        cv::Vec4f line = lines[i];
+
+        double lineDistX = abs(line[0]-line[2]);
+        double scope = (line[1]-line[3])/(line[0]-line[2]);
+        double angle = atan(scope)*180/CV_PI;
+        double max_y =  line[1]>line[3]?line[1]:line[3];
+        // 位置过滤
+        if(max_y<mask.rows/2 || max_y>mask.rows*0.8){
+            continue;
+        }
+        // 斜率过滤
+        if(abs(angle)>30){
+            continue;
+        }
+        // 长度过滤
+        if(lineDistX<mask.cols*0.1){
+            continue;
+        }
+        possiableLines.push_back({line[0], line[1], line[2], line[3] , static_cast<float>(scope)});
+    }
+
+    // 寻找长度最长的候选直线
+    if(possiableLines.size()>0){
+        double index = -1;
+        double max_len = -1;
+        for(int i=0;i<possiableLines.size();i++){
+            double lineLen = abs(possiableLines[i][0]-possiableLines[i][2]);
+            if(lineLen>max_len){
+                max_len = lineLen;
+                index = i;
+            }
+        }
+        if(max_len!=-1){
+            std::vector<cv::Point2f> lineFin;
+            lineFin.push_back(cv::Point2f(possiableLines[index][0],possiableLines[index][1]));
+            lineFin.push_back(cv::Point2f(possiableLines[index][2],possiableLines[index][3]));
+            std::vector<float> lineRes = fiting_line(lineFin);
+            if(lineRes[0]>=0 && lineRes[1]>=0 && lineRes[2]>=0 && lineRes[3]>=0){
+                referLine = lineRes;
+            }else{
+                std::cout << "get Line error" << std::endl;
+            }
+//            referLine = possiableLines[index];
+        }
+    }else{ // 传统算法进行兜底
+        cv::Mat bin_img;
+        cv::threshold(img_gray, bin_img, 0, 255, cv::THRESH_BINARY|cv::THRESH_OTSU);
+        std::vector<float> refLineLSD =  getReferenceLineLSD(img_gray, bin_img);
+        referLine = refLineLSD;
+    }
+    return referLine;
+
+
+
 }
 
 

@@ -41,7 +41,8 @@ enum E_MagentAction
     eMag_On     = 1,
     eMag_Off    = 2,
     eMag_Up     = 3,
-    eMag_Down   = 4
+    eMag_Down   = 4,
+    eMag_Stop   = 5
 
 };
 

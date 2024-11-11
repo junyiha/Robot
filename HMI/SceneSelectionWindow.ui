@@ -18,9 +18,25 @@
     <rect>
      <x>40</x>
      <y>180</y>
-     <width>141</width>
-     <height>51</height>
+     <width>150</width>
+     <height>60</height>
     </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton {
+	font: 10pt &quot;黑体&quot;;
+    border: 2px solid blue;
+    border-radius: 10px;
+}
+QPushButton:hover {
+    border: 2px solid red;
+    border-radius: 10px;
+}
+
+QPushButton:pressed {
+    border: 2px solid green;
+    border-radius: 10px;
+}</string>
    </property>
    <property name="text">
     <string>顶板</string>
@@ -31,9 +47,25 @@
     <rect>
      <x>230</x>
      <y>180</y>
-     <width>131</width>
-     <height>51</height>
+     <width>150</width>
+     <height>60</height>
     </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton {
+	font: 10pt &quot;黑体&quot;;
+    border: 2px solid blue;
+    border-radius: 10px;
+}
+QPushButton:hover {
+    border: 2px solid red;
+    border-radius: 10px;
+}
+
+QPushButton:pressed {
+    border: 2px solid green;
+    border-radius: 10px;
+}</string>
    </property>
    <property name="text">
     <string>斜板</string>
@@ -44,9 +76,25 @@
     <rect>
      <x>420</x>
      <y>180</y>
-     <width>151</width>
-     <height>51</height>
+     <width>150</width>
+     <height>60</height>
     </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton {
+	font: 10pt &quot;黑体&quot;;
+    border: 2px solid blue;
+    border-radius: 10px;
+}
+QPushButton:hover {
+    border: 2px solid red;
+    border-radius: 10px;
+}
+
+QPushButton:pressed {
+    border: 2px solid green;
+    border-radius: 10px;
+}</string>
    </property>
    <property name="text">
     <string>侧板</string>

@@ -2,95 +2,95 @@ title : "####################--Robot'configuration--##################"
 line0 : "#############################################################"
 
 velLine : 
-    brief:  "½çÃæµã¶¯ÏÞËÙ£ºÆ½ÒÆ(ºÁÃ×)"
+    brief:  "ï¿½ï¿½ï¿½ï¿½ã¶¯ï¿½ï¿½ï¿½Ù£ï¿½Æ½ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½)"
     value: 1          
     
 velRotate : 
-    brief:  "½çÃæµã¶¯ÏÞËÙ£ºÐý×ª(¶È)"
+    brief:  "ï¿½ï¿½ï¿½ï¿½ã¶¯ï¿½ï¿½ï¿½Ù£ï¿½ï¿½ï¿½×ª(ï¿½ï¿½)"
     value: 0.05       
 
 end_vel_limit: 
-    brief: "¹Ø½ÚÔË¶¯ÏÞËÙ"
+    brief: "ï¿½Ø½ï¿½ï¿½Ë¶ï¿½ï¿½ï¿½ï¿½ï¿½"
     value: [1,1,1,0.05,0.05,0.05]
 
 end_vel_position: 
-    brief: "Ä©¶ËÔË¶¯ÏÞËÙ"
+    brief: "Ä©ï¿½ï¿½ï¿½Ë¶ï¿½ï¿½ï¿½ï¿½ï¿½"
     value: [1,1,1,0.05,0.05,0.05]
 
 line1 : "#############################################################"
 
 CYLINDER_INDEX : 
-    brief:  "ÍÆ¸Ë¹Ø½ÚÖáºÅË÷Òý"
+    brief:  "ï¿½Æ¸Ë¹Ø½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½"
     value: 5     
 STEER_LEFT_INDEX : 
-    brief:  "×ó¶æÂÖË÷Òý"
-    value: 10    
+    brief:  "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½"
+    value: 11
 STEER_RIGHT_INDEX : 
-    brief:  "ÓÒ¶æÂÖË÷Òý"
-    value: 12    
+    brief:  "ï¿½Ò¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½"
+    value: 13
 WHEEL_LEFT_INDEX : 
-    brief:  "×óÐÐ×ßÂÖË÷Òý"
-    value: 11    
+    brief:  "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½"
+    value: 12
 WHEEL_RIGHT_INDEX : 
-    brief:  "ÓÒÐÐ×ßÂÖË÷Òý"
-    value: 13    
+    brief:  "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½"
+    value: 14
 TOOL_LIFTING: 
-    brief:  "¹¤¾ßÉý½µË÷Òý"
+    brief:  "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½"
     value: 4      
 
 Lift_Distance_In_Parallel : 
-    brief:  "µ÷Æ½×´Ì¬ÏÂ¾ÙÉýµÄÎ»ÖÃ"
-    value: 15.0
+    brief:  "ï¿½ï¿½Æ½×´Ì¬ï¿½Â¾ï¿½ï¿½ï¿½ï¿½ï¿½Î»ï¿½ï¿½"
+    value: 11.0
 Max_Deviation_In_Parallel : 
-    brief:  "µ÷Æ½ÔÊÐí×î´óÆ«²î"
+    brief:  "ï¿½ï¿½Æ½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ«ï¿½ï¿½"
     value: 50.0    
 Min_Deviation_In_Parallel : 
-    brief:  "µ÷Æ½ÔÊÐí×îÐ¡Æ«²î"
-    value: 5.0     
+    brief:  "ï¿½ï¿½Æ½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¡Æ«ï¿½ï¿½"
+    value: 3.0     
 
 Distance_work : 
-    brief:  "Î»ÖÃ"
-    value: 15        
+    brief:  "Î»ï¿½ï¿½"
+    value: 10        
 
 Lift_Distance_In_FitBoard : 
-    brief:  "ÌùºÏ×´Ì¬ÏÂ¾ÙÉýµÄÎ»ÖÃ"
+    brief:  "ï¿½ï¿½ï¿½ï¿½×´Ì¬ï¿½Â¾ï¿½ï¿½ï¿½ï¿½ï¿½Î»ï¿½ï¿½"
     value: 6.0     
 Max_Deviation_In_FitBoard : 
-    brief:  "ÌùºÏÔÊÐíÆ«²î"
+    brief:  "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ«ï¿½ï¿½"
     value: 20.0    
 Min_Deviation_In_FitBoard : 
-    brief:  "ÌùºÏÔÊÐíÆ«²î"
+    brief:  "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ«ï¿½ï¿½"
     value: 6.0     
 
 Line_Deviation_Threshold : 
-    brief:  "±ßÏßµ÷ÕûÔÊÐíÆ«²î"
+    brief:  "ï¿½ï¿½ï¿½ßµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ«ï¿½ï¿½"
     value: 2.0     
 
 line2 : "#############################################################"
 
 robot_ip: 
-    brief:  "»úÆ÷ÈËÏÂÎ»»úIP"
+    brief:  "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î»ï¿½ï¿½IP"
     value: "192.168.1.130"
 
 robot_port:
-    brief:  "»úÆ÷ÈËÏÂÎ»»ú¶Ë¿Ú"
+    brief:  "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½Ë¿ï¿½"
     value: 6999
 
 
 IOA_ip: 
-    brief:  "IOA°åIP"
+    brief:  "IOAï¿½ï¿½IP"
     value: "192.168.1.201"
 
 IOA_port: 
-    brief:  "IOA°å¶Ë¿Ú"
+    brief:  "IOAï¿½ï¿½Ë¿ï¿½"
     value: 5999
 
 IOB_ip:
-    brief: "IOB°åIP"    
+    brief: "IOBï¿½ï¿½IP"    
     value: "192.168.1.202"
 
 IOB_port: 
-    brief:  "IOB°å¶Ë¿Ú"
+    brief:  "IOBï¿½ï¿½Ë¿ï¿½"
     value: 5999
 
 line3 : "#############################################################"

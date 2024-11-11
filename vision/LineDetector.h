@@ -37,6 +37,8 @@ public:
     std::vector<float> getInkLine(cv::Mat img, std::vector<float> referenceLine);
     LineSpaceResult getLinesDistance(cv::Mat img);
     void getPossibleLinesFromMask(cv::Mat mask, vector<std::vector<cv::Point2f>> &possibleLines);
+    std::vector<float> LineDetector::getReferenceLineLSD(cv::Mat img, cv::Mat bin_img);
+    std::vector<float> getReferenceLineFromMask(cv::Mat mask,cv::Mat bin_img);
 
 };
 

@@ -144,7 +144,7 @@ DINT TcpCom_IO::Recvbuffer()
 //                qDebug()<<"recv time out";
                 if (cnt > TIMEOUT_LIMIT)
                 {
-                    log->warn(" IO板 give up recieve once");
+                    log->warn("{} IO板 give up recieve once, timeout...", __LINE__);
                     return -2;
                 }
             }

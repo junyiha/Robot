@@ -182,6 +182,8 @@ void CRobot::UpdateStatus()
     }
     vJointValue[4].second = false; // 腰俯仰不参与联动
 
+    //vJointValue[1].second = false; // 前后不参与联动
+
     m_ActJoints[m_Freedom] = m_JointGroupStatus[m_Freedom].Position;
 
     m_LinkModel->setToolPos(len, 0);//根据工装实际安装位置确定角度。弧度

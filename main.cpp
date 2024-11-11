@@ -60,28 +60,28 @@ void vision_demo(){
 
 }
 
-//void line_detect_demo(){
-//
-//    std::string path = "F:\\cache PDRobot_碰钉积累数据\\cache\\cam_4_2024-07-22-16-14-57.png";
-//    cv::Mat img = cv::imread(path);
-//    LineDetector line_tool;
-//    auto start = std::chrono::high_resolution_clock::now();
-//    LineResult res = line_tool.getLineDistance(img);
-//    auto end = std::chrono::high_resolution_clock::now();
-//
-//    // 计算并输出运行时间
-//    std::chrono::duration<double> elapsed_seconds = end - start;
-//    std::cout << "程序运行时间: " << elapsed_seconds.count() << " 秒" << std::endl;
-//
-//    if(res.status){
-//        cv::imshow("img", res.imgDrawed);
-//        cv::waitKey(0);
-//    }else{
-//        cv::imshow("img", res.imgDrawed);
-//        cv::waitKey(0);
-//        std::cout<<res.errorInfo<<std::endl;
-//    }
-//}
+void line_detect_demo(){
+
+    std::string path = "../cache/cam_6_2024-11-01-17-28-35.png";
+    cv::Mat img = cv::imread(path);
+    LineDetector line_tool;
+    auto start = std::chrono::high_resolution_clock::now();
+    auto res = line_tool.getLinesDistance(img);
+    auto end = std::chrono::high_resolution_clock::now();
+
+    // 计算并输出运行时间
+    std::chrono::duration<double> elapsed_seconds = end - start;
+    std::cout << "程序运行时间: " << elapsed_seconds.count() << " 秒" << std::endl;
+
+    if(res.status){
+        cv::imshow("img", res.img_drawed);
+        cv::waitKey(0);
+    }else{
+        cv::imshow("img", res.img_drawed);
+        cv::waitKey(0);
+        std::cout<<res.error_info<<std::endl;
+    }
+}
 
 int RunRobot(int argc, char *argv[])
 {
@@ -98,4 +98,7 @@ int RunRobot(int argc, char *argv[])
 int main(int argc, char *argv[])
 {
     return RunRobot(argc, argv);
+
+//      line_detect_demo();
+      return 0;
 }
