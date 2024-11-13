@@ -1,4 +1,4 @@
-﻿#ifndef CTASK_H
+#ifndef CTASK_H
 #define CTASK_H
 
 #include <map>
@@ -13,19 +13,6 @@
 #include "../vision/VisionInterface.h"
 #include "TaskExternal.hpp"
 
-enum ECommadforTask
-{
-    eNONE = 0,
-    eStart = 1,
-    eCLOSE = 2,
-    eReset = 3,
-    eStop = 4
-
-};
-
-const double PARRALLE_DISTANCE = 5.0; //调平允许偏差
-const double LINE_DEVIATION_THRESHOLD = 1.0;//边线调整允许偏差
-
  //碰钉动作序列，及动作周期数(50ms)，根据实际工艺调整；eWeld_Up eWeld_Down绑定了接触器，必须保留
 const QVector<E_WeldAction> ActionList ={eGrind_MovorOff, eGrind_OnorDown, eGrind_Up, eGrind_OnorDown, eGrind_MovorOff, eWeld_MovorDwon, eWeld_Fix, eWeld_Up, eWeld_On, eWeld_Down, eInitAction};
 const QVector<int>          ActionTime ={             40,              20,       100,              20,              20,              40,        40,       40,       40,         40,          5};
@@ -39,7 +26,6 @@ public:
 
     QAtomicInt      ActionIndex;//半自动、按钮测试用
     QAtomicInt      ButtonIndex; //当前点击按钮索引
-    stMeasureData getStMeasureData();//传感器状态值 接口
     /**
      * @brief 结束任务线程
      * 
@@ -53,13 +39,8 @@ protected:
     CRobot*         m_Robot = NULL;
     VisionInterface* m_vision = NULL;
 
-    QLineEdit ** lineEdit_endRelMove;
-
     stLinkStatus     m_LinkStatus;               //机器人状态状态
     QVector<st_ReadAxis> m_JointGroupStatus;         //轴组状态
-    QVector<Eigen::Matrix4d> m_TargetDeviation;  //目标位姿（工具系下）
-    stManualCmd    m_Manual;       //遥控器指令
-    stManualCmd    m_preManual;    //上一帧遥控器指令
 
     stManualOperator m_manualOperator;
     stManualOperator m_preManualOperator;
@@ -70,9 +51,7 @@ protected:
     //  机器人
     bool         c_running = true;
     std::shared_ptr<spdlog::logger> log;
-    QMutex          mutex_cmd;
     QMutex          mutex_read;
-    QMutex          mutex_write;
 
     /**
     * @brief 运行函数
@@ -106,13 +85,6 @@ protected:
     */
     bool doMagentOff();
 
-    //bool  DoAction(int stage);
-
-    /**
-     * @brief 磁铁下降
-     * @return
-     */
-    bool doMagentDown();
 ///////////////////////////////////////////--0827新增函数--//////////////////////////////////////////////////////
 private:
     /**
@@ -179,7 +151,6 @@ private:
      * 
      */
     void quitStateTransition();
-
 
 private:
     /**
@@ -323,20 +294,32 @@ public:
     bool checkSubState(ESubState subState) const;
 
     /**
-     * @brief 将外界指令转换为内部指令
-     * 
-     */
-    void TranslateNumberToCMD();
-
-    /**
      * @brief 将遥控器的命令转换为内部指令
      * 
      */
     void TranslateManualTaskIndexNumberToCMD();
 
+    /**
+     * @brief 脱开磁铁.
+     */
     bool DoMagentOff();
 
+    /**
+     * @brief 自动碰钉.
+     */
     bool DoWeldAction(int index);
+
+    /**
+     * @brief 获取当前工作模式.
+     * @return bool: true, 自动化 | false, 半自动化.
+     */
+    bool GetWorkingMode();
+
+    /**
+     * @brief 设置工作模式，默认为半自动化。
+     * @param mode: true, 自动化 | false, 半自动化.
+     */
+    void SetWorkdingMode(const bool mode);
 
 private:
     ETopState m_etopState{ETopState::eManual};
@@ -346,6 +329,7 @@ private:
 private:
     std::mutex m_mutex;
     bool m_position_motion_flag{false};
+    bool m_automatic_working_flag{ false };
 
     std::map<ETopState, std::string> TopStateStringMap 
     {

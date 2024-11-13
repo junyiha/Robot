@@ -1,4 +1,4 @@
-﻿#ifndef ROBOT_H
+#ifndef ROBOT_H
 #define ROBOT_H
 /* *****************************************************************************
  * CRobot:包含link0(机械臂)link1 link2(底盘)
@@ -23,9 +23,6 @@
 #include "../Task/Measure.h"
 
 
-
-
-
 class CRobot:public QThread
 {
     Q_OBJECT
@@ -38,6 +35,7 @@ public:
     * @param cmd 指令状态
     */
     void setLinkCom(stLinkCommand  cmd);
+
     /**
     * @brief 获取机器人LINK状态
     * @param sta 机器人状态数据
@@ -51,8 +49,6 @@ public:
     QVector<st_ReadAxis> getJointGroupSta();
 
     void closeThread();
-
-
 
 protected:
     /**

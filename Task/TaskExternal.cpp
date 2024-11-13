@@ -261,7 +261,10 @@ void CTask::detectionInParallelExecutionCommand()
             {
                 case EDetectionInParallelResult::eDeviationIsLessThanThreshold:
                 {
-                    updateTopAndSubState(ETopState::ePositioning, ESubState::eReadyToPositioning);
+                    if (m_automatic_working_flag)
+                        updateTopAndSubState(ETopState::ePositioning, ESubState::eDetection);
+                    else
+                        updateTopAndSubState(ETopState::ePositioning, ESubState::eReadyToPositioning);
                     break;
                 }
                 case EDetectionInParallelResult::eDistanceMeetsRequirement:
@@ -296,7 +299,6 @@ void CTask::detectionInParallelExecutionCommand()
 
 void CTask::motionInParallelExecutionCommand()
 {
-    static QVector<double> last_tar_position{0, 0, 0, 0, 0, 0}; 
     switch (m_eexecutionCommand)
     {
         case EExecutionCommand::eNULL:
@@ -393,10 +395,9 @@ void CTask::detectionInPositioningExecutionCommand()
     {
         case EExecutionCommand::eNULL:
         {
-            //调用视觉函数
             VisionResult vis_res = m_vision->getVisResult();
             if(!vis_res.status)
-            { // 视觉检测无数据，等待下一个周期
+            { 
                 break;
             }
             UpdateVisionResult(vis_res);
@@ -411,13 +412,11 @@ void CTask::detectionInPositioningExecutionCommand()
                 }
                 case EDetectionInPositioningResult::eEndAdjustmentDataIsValid:
                 {
-                    log->warn("{}定位检测结果为有效数据，状态跳转: 定位--运动",__LINE__);
                     updateTopAndSubState(ETopState::ePositioning, ESubState::eMotion);
                     break;
                 }
                 case EDetectionInPositioningResult::eDataIsInvalid:
                 {
-                    log->warn("{}定位检测结果为无效数据，状态跳转: 手动--准备",__LINE__);
                     updateTopAndSubState(ETopState::eManual, ESubState::eReady);
                     break;
                 }
@@ -537,7 +536,10 @@ void CTask::readyToMagentOnExecutionCommand()
                 if (doMagentOn())
                 {
                     magent = 0;
-                    updateTopAndSubState(ETopState::eDoWeld, ESubState::eReadyToDoWeld);
+                    if (m_automatic_working_flag)
+                        updateTopAndSubState(ETopState::eDoWeld, ESubState::eDoingWeld);
+                    else
+                        updateTopAndSubState(ETopState::eDoWeld, ESubState::eReadyToDoWeld);
                 }
             }
             break;
@@ -674,7 +676,10 @@ void CTask::stopWeldExecutionCommand()
                 {
                     log->info("{} do magent off end...", __LINE__);
                     weld = 0;
-                    updateTopAndSubState(ETopState::eReadToMagentOn, ESubState::eNULL);
+                    if (m_automatic_working_flag)
+                        updateTopAndSubState(ETopState::eQuit, ESubState::eQuiting);
+                    else
+                        updateTopAndSubState(ETopState::eReadToMagentOn, ESubState::eNULL);
                 }
             }
             break;
@@ -705,7 +710,6 @@ void CTask::quitingExecutionCommand()
     {
         case EExecutionCommand::eNULL:
         {
-
             // 移动到退出位置
             std::vector<double> TEMP_LINK_0_JOINT_MAX_VEL_FOR_SET_POINT(MAX_FREEDOM_LINK, 0.0);
             TEMP_LINK_0_JOINT_MAX_VEL_FOR_SET_POINT = {1, 1, 1, 1, 0.3, 10, 5, 0.5, 3, 6};
@@ -804,7 +808,7 @@ void CTask::UpdateVisionResult(VisionResult& vis_res)
     std::copy(std::begin(vis_res.stData.m_LineDistance), std::end(vis_res.stData.m_LineDistance), m_stMeasuredata.m_LineDistance);
     std::copy(std::begin(vis_res.stData.m_bLineDistance), std::end(vis_res.stData.m_bLineDistance), m_stMeasuredata.m_bLineDistance);
 
-//    // change camera position
+    // change camera position
     std::vector<double> temp_vec(std::begin(m_stMeasuredata.m_LineDistance), std::end(m_stMeasuredata.m_LineDistance));
     std::vector<double> temp_flag_vec(std::begin(m_stMeasuredata.m_bLineDistance), std::end(m_stMeasuredata.m_bLineDistance));
     m_stMeasuredata.m_LineDistance[0] = temp_vec.at(3);
@@ -870,62 +874,6 @@ bool CTask::checkSubState(ESubState subState) const
     return subState == m_esubState;
 }
 
-void CTask::TranslateNumberToCMD()
-{
-    switch (m_manualOperator.TaskIndex)
-    {
-        case 0: // 空指令
-        {
-            updateExecutionCommand(EExecutionCommand::eNULL);
-            break;
-        }
-        case 1: // 调平 
-        {
-            updateExecutionCommand(EExecutionCommand::eParallel);
-            break;
-        }
-        case 4: // 对齐边线(定位)
-        {
-            updateExecutionCommand(EExecutionCommand::ePositioning);
-            break;
-        }
-        case 16: // 吸合
-        {
-            updateExecutionCommand(EExecutionCommand::eMagentOn);
-            break;
-        }
-        case 64: // 碰钉
-        {
-            updateExecutionCommand(EExecutionCommand::eAutoWeld);
-            break;
-        }
-        case 2: // 脱开
-        {
-            updateExecutionCommand(EExecutionCommand::eMagentOff);
-            break;
-        }
-        case 8: // 退出
-        {
-            updateExecutionCommand(EExecutionCommand::eQuit);
-            break;
-        }
-        case 32: // 暂停
-        {
-            updateExecutionCommand(EExecutionCommand::ePause);
-            break;
-        }
-        case 128: // 终止
-        {
-            updateExecutionCommand(EExecutionCommand::eTerminate);
-            break;
-        }
-        default:
-        {
-            log->warn("invalid task index: {}", m_manualOperator.TaskIndex);
-        }
-    }
-}
-
 void CTask::TranslateManualTaskIndexNumberToCMD()
 {
     switch (static_cast<stManualOperator::ETaskIndex>(m_manualOperator.TaskIndex))
@@ -986,4 +934,14 @@ bool CTask::DoMagentOff()
 bool CTask::DoWeldAction(int index)
 {
     return doWeldAction(index);
+}
+
+bool CTask::GetWorkingMode()
+{
+    return m_automatic_working_flag;
+}
+
+void CTask::SetWorkdingMode(const bool mode)
+{
+    m_automatic_working_flag = mode;
 }

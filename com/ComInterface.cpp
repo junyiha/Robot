@@ -1,4 +1,4 @@
-﻿//启用本地版本管理---
+//启用本地版本管理---
 #include "ComInterface.h"
 ComInterface *ComInterface::getInstance()
 {
@@ -122,13 +122,7 @@ QVector<st_ReadAxis> ComInterface::getLinkJointStatus(uint index)
 
 StatusofLink ComInterface::getLinkStatus(uint index)
 {
-
     return m_cRobot.getLinkStatus(index);
-}
-
-void ComInterface::getManual(stManualCmd &m_Manual)
-{
-   this->m_cManual.getManualCmd(m_Manual);
 }
 
 void ComInterface::getManual(stManualOperator &m_Manual)

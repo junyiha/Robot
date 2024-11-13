@@ -1,4 +1,4 @@
-﻿    /*****************************************************************
+    /*****************************************************************
 * 函数名称： mainwindow
 * 功能描述： ui交互及主线程操作
 ******************************************************************/
@@ -224,6 +224,7 @@ private:
     void setButtonIndex();  // 记录当前触发按钮索引
     void setActionIndex();  // 记录当前触发动作索引(工作流程记录)
     void updateTaskStateMachineStatus();
+    void updateWorkingMode();
     void closeEvent(QCloseEvent *event);
     bool lineStatus = false; // 是否处于直线检测状态
 
@@ -326,6 +327,8 @@ private slots:
 
     void slots_btn_autoMagentOff_clicked();
     void slots_btn_auto_welding_clicked();
+
+    void slots_btn_working_mode_clicked();
 };
 
 

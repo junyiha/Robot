@@ -7,49 +7,21 @@ CTask::CTask(ComInterface* comm,CRobot* robot,VisionInterface* vision,QObject *p
     m_vision = vision;
 
     std::memset(&m_LinkStatus, 0, sizeof(m_LinkStatus));
-    std::memset(&m_Manual, 0, sizeof(stManualData));
-    std::memset(&m_preManual, 0, sizeof(stManualData));
-    //std::memset(&m_JointGroupStatus,0,sizeof(st_AxisGroupRead));
-
-    for(int i = 0;i<7;i++)
-    {
-        m_TargetDeviation.push_back(Eigen::Matrix4d::Identity());
-    }
-
 
     log = spdlog::get("logger");
     m_bMagnetOn = false;
 }
 
-
 void CTask::run()
 {
-    //初始参数初始化
-
-    log->info("Task 启动运行....");
-
-    //周期函数
     while(this->c_running)
     {
         log->trace("Task 启动运行...");
 
         updateCmdandStatus();
-
-        // SemiAutoProgrcess();
-
-        // TranslateNumberToCMD();
         TranslateManualTaskIndexNumberToCMD();
         stateTransition();
 
-//        if(m_Manual.Auto)
-//        {
-//            SemiAutoProgrcess();
-//        }else
-//        {
-//            Manual();
-//            m_preManual = m_Manual;
-//        }
-//        m_preManualOperator = m_manualOperator;
         Sleep(50);
     }
 
@@ -62,13 +34,10 @@ void CTask::updateCmdandStatus()
     m_LinkStatus = m_Robot->getLinkSta();
     m_JointGroupStatus = m_Robot->getJointGroupSta();
 
-
     // 更新指令，遥控器+界面
     m_Comm->getManual(m_manualOperator);
 
     //根据界面指令修改遥控器指令
-    //m_manualOperator.Ready = 0;
-    //m_manualOperator.TaskIndex = 0;
     int tmp_val = static_cast<int>(ActionIndex.loadRelaxed());
     switch(ActionIndex.loadRelaxed())
     {
@@ -96,7 +65,6 @@ void CTask::updateCmdandStatus()
         case 8: //终止
             m_manualOperator.TaskIndex = static_cast<int>(stManualOperator::ETaskIndex::Terminate);
             break;
-
         case 9: //举升
             m_manualOperator.Ready = 1;
             break;
@@ -113,7 +81,6 @@ void CTask::updateCmdandStatus()
             break;
     }
     ActionIndex.storeRelaxed(0);
-
 
     this->mutex_read.lock();
     _stMeasuredata = m_stMeasuredata;
@@ -133,7 +100,7 @@ void CTask::Manual()
     if (m_manualOperator.HaltCommand)
     {
         log->info("{},{}: m_Robot->setLinkHalt();", __FILE__,__LINE__);
-         m_Robot->setLinkHalt();
+        m_Robot->setLinkHalt();
         m_preManualOperator = m_manualOperator ;
         return;
     }
@@ -148,15 +115,14 @@ void CTask::Manual()
     {
         // 当前指令和上一个指令的VechDirect都为零，判断条件始终成立
          m_Robot->setJointMoveAbs(GP::STEER_LEFT_INDEX, temp_velocity_direction, velocity);//速度需改为参数
-
          m_Robot->setJointMoveAbs(GP::STEER_RIGHT_INDEX, temp_velocity_direction,velocity);//速度需改为参数
          log->info("{} m_manualOperator.VechDirect: {}, steer velocity:{}", __LINE__, m_manualOperator.VechDirect, temp_velocity_direction);
     }
 
     double vel_left,vel_right ;
-
     if (m_manualOperator.bVechFlag || m_manualOperator.bRotateFlag)
     {
+        auto status = m_Robot->getJointGroupSta();
         //计算轮速
         if(fabs(m_manualOperator.VechDirect)>M_PI/6)//舵轮角度大于45°时禁止差速转向
         {
@@ -310,6 +276,7 @@ void CTask::Manual()
             log->warn("invalid task index: {}", m_manualOperator.TaskIndex);
         }
     }
+
     m_preManualOperator = m_manualOperator;
 }
 
@@ -413,7 +380,6 @@ bool CTask::doWeldAction(qint8 execute)
 
         return false;
     }
-
 }
 
 bool CTask::doMagentOff()
@@ -513,7 +479,6 @@ bool CTask::doMagentOn()
         {
             //计数等待
             time_cnt ++;
-//            if(time_cnt > 100)//等待结束，进入下一个动作
             if(time_cnt > 80)//等待结束，进入下一个动作
             {
                 act_index = 2;
@@ -537,25 +502,12 @@ bool CTask::doMagentOn()
 
 }
 
-
-stMeasureData CTask::getStMeasureData()
+void CTask::closeThread()
 {
-    stMeasureData re;
-    this->mutex_read.lock();
-    re = m_stMeasuredata;
-    this->mutex_read.unlock();
-
-    return re;
-}
-
-void CTask::closeThread() {
     this->c_running = false;
     QThread::wait();
-
 }
 
-
-//修改827
 int CTask::CheckParallelState(QVector<double> laserDistance)
 {
     //检查输入数据
@@ -652,16 +604,11 @@ int CTask::CheckPositionState()
     double line_dis_3 = (m_stMeasuredata.m_LineDistance[4] * m_stMeasuredata.m_bLineDistance[4] -
                          m_stMeasuredata.m_LineDistance[5] * m_stMeasuredata.m_bLineDistance[5]) /
                          (static_cast<int>(m_stMeasuredata.m_bLineDistance[4]) + static_cast<int>(m_stMeasuredata.m_bLineDistance[5]));
-//    double line_dis_3 = 0 ;
-//    if(m_stMeasuredata.m_bLineDistance[4])
-//    {
-//         line_dis_3 = m_stMeasuredata.m_LineDistance[4];
-//    }
 
-    log->info("line_dis:{},{},{}",line_dis_1,line_dis_2,line_dis_3);
-    if(fabs(line_dis_1) < LINE_DEVIATION_THRESHOLD
-    && fabs(line_dis_2) < LINE_DEVIATION_THRESHOLD
-    && fabs(line_dis_3) < LINE_DEVIATION_THRESHOLD)
+    const double threshold = 1.0;//边线调整允许偏差
+    if(fabs(line_dis_1) < threshold
+    && fabs(line_dis_2) < threshold
+    && fabs(line_dis_3) < threshold)
     {
         log->info("完成对边，边线距离为：{},{},{},{},{},{}",m_stMeasuredata.m_LineDistance[0],m_stMeasuredata.m_LineDistance[1],m_stMeasuredata.m_LineDistance[2],m_stMeasuredata.m_LineDistance[3],m_stMeasuredata.m_LineDistance[4],m_stMeasuredata.m_LineDistance[5]);
         return 1;

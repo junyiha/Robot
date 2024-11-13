@@ -192,7 +192,8 @@ void MainWindow::connectSlotFunctions() {// 按钮时间绑定
 
     connect(ui->btn_autoMagentOff, &QPushButton::clicked, this, &MainWindow::slots_btn_autoMagentOff_clicked, Qt::UniqueConnection);
     connect(ui->btn_autoWelding, &QPushButton::clicked, this, &MainWindow::slots_btn_auto_welding_clicked, Qt::UniqueConnection);
-
+    
+    connect(ui->btn_working_mode, &QPushButton::clicked, this, &MainWindow::slots_btn_working_mode_clicked, Qt::UniqueConnection);
 }
 
 MainWindow::~MainWindow()
@@ -414,6 +415,9 @@ void MainWindow::slotUpdateUIAll() {
 
     // 8.0 更新任务状态机状态
     updateTaskStateMachineStatus();
+
+    // 9.0 更新工作模式
+    updateWorkingMode();
 }
 
 void MainWindow::updataDeviceConnectState() {
@@ -1432,6 +1436,19 @@ void MainWindow::updateTaskStateMachineStatus()
     ui->task_state_machine_button->setText(current_state_str);
 }
 
+void MainWindow::updateWorkingMode()
+{
+    bool mode = m_Task->GetWorkingMode();
+    QTextCodec* codec_temp = QTextCodec::codecForLocale();
+    qDebug() << "Current locale encoding" << codec_temp->name();
+    QTextCodec* codec = QTextCodec::codecForName("GBK");
+    QLocale locale;
+    qDebug() << "Current locale: " << locale.name();
+    std::string mode_str = mode ? std::string("自动工作模式") : std::string("半自动工作模式");
+    QString temp_str = codec->toUnicode(mode_str.c_str());
+    qDebug() << temp_str;
+    ui->btn_working_mode->setText(temp_str);
+}
 
 void MainWindow::slots_btn_autoMagentOff_clicked()
 {
@@ -1470,4 +1487,10 @@ void MainWindow::slots_btn_auto_welding_clicked()
         "border: 2px solid blue;"
         "border-radius: 10px;"
     );
+}
+
+void MainWindow::slots_btn_working_mode_clicked()
+{
+    bool mode = m_Task->GetWorkingMode();
+    m_Task->SetWorkdingMode(!mode);
 }

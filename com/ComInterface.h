@@ -1,4 +1,4 @@
-﻿/*****************************************************************
+/*****************************************************************
 * 函数名称： ComInterface
 * 功能描述： ·基于RobotCom类和IOCom类，建立机器人对象和io对象的统一接口
 *          ·使用单例模式，全局唯一且易获取类的引用，方便跨线程访问
@@ -42,14 +42,12 @@ protected:
 
     void run();
 
-
-
 private:
-
     int isRobotConnected = false;// 0表示成功,-1失败
     int isIOConnected = false;
     bool running = true;
     QMutex mutex_read;
+
 public:
     //写操作用信号，读操作可以跨线程直接读，所以这里只需要控制指令映射
     stLinkCommand	m_main_LinkCommd[MAX_FREEDOM_LINK];
@@ -68,21 +66,12 @@ public:
      */
     bool getIOConnectSta(const uint index);
 
-
-    /**
-     * @brief setHoleLightStatus 控制对孔相机补光灯开关
-     * @param flag
-     */
-    void setHoleLightStatus(const bool flag);
-    /**
-     * @brief setCrossLightStatus 控制十字激光开关
-     */
-    void setCrossLightStatus(const bool flag);
     /**
      * @brief getLasersStatus 获取点激光的测距数据
      * @return 长度为5的double向量，前四个为高精度点激光,[4]为距离均值，[5],最大偏差
      */
     QVector<double> getLasersDistance();
+
     /**
      * @brief getJointGroupStatus 读所有轴组数据
      * @return 轴组状态向量
@@ -126,9 +115,7 @@ public:
      * 
      * @param m_Manual: 遥控器指令数据
      */
-    void getManual(stManualCmd &m_Manual);
     void getManual(stManualOperator &m_Manual);
-    //xxxxxxxxx未定义
 
     //*************机器人控制相关接口信号*************
 
@@ -161,15 +148,6 @@ public:
      * @attention 原定参数无误返回true
      */
     void RobotStop();
-
-    /**
-     * @brief RobotMove 机器人运动函数 控制整体运动
-     * @param mode 电机运动模式
-     * @param pos 位姿
-     * @param vel 速度
-     * @param freedom 自由度
-     */
-    void RobotMove(E_MotionMode mode, double pos[], double vel[], uint freedom);
 
     //************臂/车控制相关接口函数*************
     /**
@@ -281,16 +259,7 @@ public:
      */
     bool setJointGroupMove(eMC_Motion mode, const double pos[] = NULL, const double vel[]=NULL, double end_vel[]=NULL, double distance[]=NULL);
 
-
-
     //*************IO控制相关接口信号*************
-    /**
-     * @brief SetIOA 配置IO板A
-     * @param value 配置参数
-     */
-    void SetIOA(QByteArray value);
-
-
     /**
      * @brief getCommState_Robot 获取机器人连接状态
      * @return 已连接则true
