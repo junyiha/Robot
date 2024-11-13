@@ -7,12 +7,12 @@
 #include"MvCamera.h"
 #include <iostream>
 
-// º£¿µÏà»úÉè±¸Á¬½Ó½á¹¹Ìå
+// æµ·åº·ç›¸æœºè®¾å¤‡è¿æ¥ç»“æ„ä½“
 struct HKCameraDeviceInfo{
-    const char* camName ;                                         //  Ïà»úÃû³Æ
-    const char* camIp;                                            //  Ïà»úIPµØÖ·
-    const char*  ethIp ;                                             //  ÒÔÌ«ÍøIPµØÖ·
-    MV_CC_DEVICE_INFO pstDeviceInfo ;         //  Ïà»úÉè±¸ĞÅÏ¢Ïà¹Ø
+    const char* camName ;                                         //  ç›¸æœºåç§°
+    const char* camIp;                                            //  ç›¸æœºIPåœ°å€
+    const char*  ethIp ;                                             //  ä»¥å¤ªç½‘IPåœ°å€
+    MV_CC_DEVICE_INFO pstDeviceInfo ;         //  ç›¸æœºè®¾å¤‡ä¿¡æ¯ç›¸å…³
     MV_CC_DEVICE_INFO stDevInfo = {0};
     MV_GIGE_DEVICE_INFO stGigEDev = {0};
 };
@@ -23,7 +23,7 @@ enum DetectType{
 };
 
 
-// LineDetectorRunner ÀàÖĞ, Ö±Ïß¼ì²â½á¹û½á¹¹Ìå
+// LineDetectorRunner ç±»ä¸­, ç›´çº¿æ£€æµ‹ç»“æœç»“æ„ä½“
 struct LineDetectRes{
     bool status;
     float dist;
@@ -32,7 +32,7 @@ struct LineDetectRes{
 };
 
 
-// LineDetectorÖĞ, Ö±Ïß¼°Ö±Ïß¼ì²â½á¹ûµÄ½á¹¹Ìå¶¨Òå
+// LineDetectorä¸­, ç›´çº¿åŠç›´çº¿æ£€æµ‹ç»“æœçš„ç»“æ„ä½“å®šä¹‰
 struct MLine{
     float x1;
     float y1;
@@ -48,9 +48,9 @@ struct LineResult {
     bool inkLineStatus;
     bool referLineStatus;
 
-    std::string errorInfo; //´íÎóĞÅÏ¢
-    MLine inkResult;  // Ä«Ïß½á¹û
-    MLine refResult;  // ²Î¿¼Ïß½á¹û
+    std::string errorInfo; //é”™è¯¯ä¿¡æ¯
+    MLine inkResult;  // å¢¨çº¿ç»“æœ
+    MLine refResult;  // å‚è€ƒçº¿ç»“æœ
     cv::Mat imgDrawed;
 };
 

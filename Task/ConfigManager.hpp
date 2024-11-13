@@ -1,6 +1,6 @@
 /*****************************************************************//**
  * \file   ConfigManager.hpp
- * \brief  ´¦ÀíÅäÖÃÎÄ¼ş
+ * \brief  å¤„ç†é…ç½®æ–‡ä»¶
  * 
  * \author anony
  * \date   October 2024
@@ -24,28 +24,28 @@ namespace Config
 
 	private:
 		/**
-		 * @brief ¼ÓÔØ²ÎÊıÅäÖÃÎÄ¼ş.
+		 * @brief åŠ è½½å‚æ•°é…ç½®æ–‡ä»¶.
 		 */
 		bool LoadConfiguration();
 
 		/**
-		 * @brief ½âÎö²ÎÊıÅäÖÃÎÄ¼ş£¬³õÊ¼»¯È«¾Ö²ÎÊı.
+		 * @brief è§£æå‚æ•°é…ç½®æ–‡ä»¶ï¼Œåˆå§‹åŒ–å…¨å±€å‚æ•°.
 		 */
 		void ParseConfiguration();
 
 		/**
-		 * @brief ½«YAMLÊı¾İĞ´ÈëÎÄ¼ş.
+		 * @brief å°†YAMLæ•°æ®å†™å…¥æ–‡ä»¶.
 		 */
 		bool WriteToFile();
 
 	public:
 		/**
-		 * @brief ÖØĞÂ¼ÓÔØ²ÎÊıÅäÖÃÎÄ¼ş.
+		 * @brief é‡æ–°åŠ è½½å‚æ•°é…ç½®æ–‡ä»¶.
 		 */
 		bool ReloadConfiguration();
 
 		/**
-		 * @brief ¸üĞÂÊ¾½Ìµã.
+		 * @brief æ›´æ–°ç¤ºæ•™ç‚¹.
 		 */
 		bool UpdateValue(const std::string key, const GP::PositionMap position_map);
 

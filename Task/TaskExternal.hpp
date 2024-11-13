@@ -9,64 +9,64 @@
 
 enum class ETopState
 {
-    eManual = 0,        // ÊÖ¶¯
-    eParallel,          // µ÷Æ½
-    ePositioning,       // ¶¨Î»
-    eReadToMagentOn,    // ´ıÎüºÏ
-    eDoWeld,            // Åö¶¤
-    eQuit               // ÍË³ö
+    eManual = 0,        // æ‰‹åŠ¨
+    eParallel,          // è°ƒå¹³
+    ePositioning,       // å®šä½
+    eReadToMagentOn,    // å¾…å¸åˆ
+    eDoWeld,            // ç¢°é’‰
+    eQuit               // é€€å‡º
 };
 
 enum class ESubState
 {
-    eNULL = 0,          // ¿Õ×´Ì¬
-    eNotReady = 0,      // Î´¾ÍĞ÷
-    eReady,             // ¾ÍĞ÷
-    eMotion,            // ÔË¶¯
+    eNULL = 0,          // ç©ºçŠ¶æ€
+    eNotReady = 0,      // æœªå°±ç»ª
+    eReady,             // å°±ç»ª
+    eMotion,            // è¿åŠ¨
 
-    eReadyToParallel,   // ´ıµ÷Æ½
-    eDetection,         // ¼ì²â
+    eReadyToParallel,   // å¾…è°ƒå¹³
+    eDetection,         // æ£€æµ‹
 
-    eReadyToPositioning,// ´ı¶¨Î»
+    eReadyToPositioning,// å¾…å®šä½
 
-    eReadyToDoWeld,     // ´ıÅö¶¤
-    eDoingWeld,         // Åö¶¤ÖĞ
-    eStopWeld,          // Åö¶¤Í£Ö¹
+    eReadyToDoWeld,     // å¾…ç¢°é’‰
+    eDoingWeld,         // ç¢°é’‰ä¸­
+    eStopWeld,          // ç¢°é’‰åœæ­¢
 
-    eQuiting,           // ÍË³öÖĞ
-    ePause              // ÔİÍ£
+    eQuiting,           // é€€å‡ºä¸­
+    ePause              // æš‚åœ
 };
 
 enum class EExecutionCommand
 {
-    eNULL = 0,          // ¿ÕÖ¸Áî
-    eManual,            // ÊÖ¶¯Ö¸Áî
-    eParallel,          // µ÷Æ½
-    eTerminate,         // ÖÕÖ¹
-    ePause,             // ÔİÍ£
-    ePositioning,       // ¶¨Î»
-    eMagentOn,          // ÎüºÏ
-    eQuit,              // ÍË³ö
-    eAutoWeld,          // ×Ô¶¯Åö¶¤
-    eMagentOff,         // ÍÑ¿ª
-    eStopWeld,          // Í£Ö¹Åö¶¤
-    eSideline,          // ¶ÔÆë±ßÏß == ¶¨Î»(ePositioning)
-    eLift,              // ¾ÙÉı (ÊÖ¶¯Ö¸ÁîÖĞµÄ)
-    eAddNail,           // ·Å¶¤ (ÊÖ¶¯Ö¸ÁîÖĞµÄ)
-    eStop,              // Í£Ö¹ (ÊÖ¶¯Ö¸ÁîÖĞµÄ)
-    eCrashStop,         // ¼±Í£ (ÊÖ¶¯Ö¸ÁîÖĞµÄ)
+    eNULL = 0,          // ç©ºæŒ‡ä»¤
+    eManual,            // æ‰‹åŠ¨æŒ‡ä»¤
+    eParallel,          // è°ƒå¹³
+    eTerminate,         // ç»ˆæ­¢
+    ePause,             // æš‚åœ
+    ePositioning,       // å®šä½
+    eMagentOn,          // å¸åˆ
+    eQuit,              // é€€å‡º
+    eAutoWeld,          // è‡ªåŠ¨ç¢°é’‰
+    eMagentOff,         // è„±å¼€
+    eStopWeld,          // åœæ­¢ç¢°é’‰
+    eSideline,          // å¯¹é½è¾¹çº¿ == å®šä½(ePositioning)
+    eLift,              // ä¸¾å‡ (æ‰‹åŠ¨æŒ‡ä»¤ä¸­çš„)
+    eAddNail,           // æ”¾é’‰ (æ‰‹åŠ¨æŒ‡ä»¤ä¸­çš„)
+    eStop,              // åœæ­¢ (æ‰‹åŠ¨æŒ‡ä»¤ä¸­çš„)
+    eCrashStop,         // æ€¥åœ (æ‰‹åŠ¨æŒ‡ä»¤ä¸­çš„)
 };
 
 enum class EDetectionInParallelResult
 {
-    eDeviationIsLessThanThreshold = 0,     // ¼¤¹â´«¸ĞÆ÷Æ«²îĞ¡ÓÚãĞÖµ
-    eDistanceMeetsRequirement,             // °å±Ú¾àÀëÂú×ãµ÷ÕûÒªÇó
-    eNoWallDetected                        // Î´¼ì²âµ½±ÚÃæ
+    eDeviationIsLessThanThreshold = 0,     // æ¿€å…‰ä¼ æ„Ÿå™¨åå·®å°äºé˜ˆå€¼
+    eDistanceMeetsRequirement,             // æ¿å£è·ç¦»æ»¡è¶³è°ƒæ•´è¦æ±‚
+    eNoWallDetected                        // æœªæ£€æµ‹åˆ°å£é¢
 };
 
 enum class EDetectionInPositioningResult
 {
-    eDeviationIsLessThanThreshold = 0,     // ±ßÏßÆ«²îĞ¡ÓÚãĞÖµ
-    eEndAdjustmentDataIsValid,             // Ä©¶Ëµ÷ÕûÊı¾İºÏ·¨
-    eDataIsInvalid,                         // Êı¾İ·Ç·¨
+    eDeviationIsLessThanThreshold = 0,     // è¾¹çº¿åå·®å°äºé˜ˆå€¼
+    eEndAdjustmentDataIsValid,             // æœ«ç«¯è°ƒæ•´æ•°æ®åˆæ³•
+    eDataIsInvalid,                         // æ•°æ®éæ³•
 };

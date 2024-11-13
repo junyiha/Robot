@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @file main.cpp
  * @author your name (you@domain.com)
  * @brief 碰钉机器人主函数
@@ -85,8 +85,6 @@ void line_detect_demo(){
 
 int RunRobot(int argc, char *argv[])
 {
-    QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8")); // 设置中文编码
-
     QApplication app(argc, argv);
 
     APP::SceneSelectionWindow scene_selection_window;
@@ -100,5 +98,4 @@ int main(int argc, char *argv[])
     return RunRobot(argc, argv);
 
 //      line_detect_demo();
-      return 0;
 }

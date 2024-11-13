@@ -1286,7 +1286,6 @@ void MainWindow::on_btn_camera_calib_clicked() {
 
 }
 
-
 void MainWindow::slots_btn_load_configuration_clicked()
 {
     if (m_config_ptr->ReloadConfiguration())
@@ -1431,22 +1430,17 @@ void MainWindow::slots_btn_save_quit_position_clicked()
 void MainWindow::updateTaskStateMachineStatus()
 {
     std::string current_state = m_Task->getCurrentStateString();
-    QTextCodec* codec = QTextCodec::codecForName("UTF-8");
-    QString current_state_str = codec->toUnicode(current_state.c_str());
-    ui->task_state_machine_button->setText(current_state_str);
+    QString temp_str = QString::fromLocal8Bit(current_state.c_str());
+
+    ui->task_state_machine_button->setText(temp_str);
 }
 
 void MainWindow::updateWorkingMode()
 {
     bool mode = m_Task->GetWorkingMode();
-    QTextCodec* codec_temp = QTextCodec::codecForLocale();
-    qDebug() << "Current locale encoding" << codec_temp->name();
-    QTextCodec* codec = QTextCodec::codecForName("GBK");
-    QLocale locale;
-    qDebug() << "Current locale: " << locale.name();
-    std::string mode_str = mode ? std::string("自动工作模式") : std::string("半自动工作模式");
-    QString temp_str = codec->toUnicode(mode_str.c_str());
-    qDebug() << temp_str;
+    std::string mode_str = mode ? "自动工作模式" : "半自动工作模式";
+    QString temp_str = QString::fromLocal8Bit(mode_str.c_str());
+
     ui->btn_working_mode->setText(temp_str);
 }
 
