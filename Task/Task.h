@@ -70,6 +70,26 @@ protected:
     void Manual();
 
     /**
+     * @brief 舵轮控制.
+     */
+    void SteerWheelControl();
+
+    /**
+     * @brief 行走轮控制.
+     */
+    void TravelWheelControl();
+
+    /**
+     * @brief 机器人运动.
+     */
+    void RobotMotion();
+
+    /**
+     * @brief 遥控器指令转换为内部命令.
+     */
+    void ManualIndexToCommand();
+
+    /**
     * @brief 自动碰钉函数
     * @param execute   -1:结束，0:暂停， 1：执行
     */

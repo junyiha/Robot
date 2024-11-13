@@ -6291,6 +6291,150 @@ border-image: url(:/img/images/icon_backward.png);
            </item>
           </layout>
          </widget>
+         <widget class="QLabel" name="label_left_wheel_state">
+          <property name="geometry">
+           <rect>
+            <x>180</x>
+            <y>480</y>
+            <width>80</width>
+            <height>40</height>
+           </rect>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>80</width>
+            <height>40</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>80</width>
+            <height>40</height>
+           </size>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QLabel {
+    text-align: center; /* 水平居中文本 */
+    vertical-align: middle; /* 垂直居中文本 */
+    border: 1px solid black;
+    image: url(:/img/images/icon_redLight.png);
+}</string>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_right_wheel_state">
+          <property name="geometry">
+           <rect>
+            <x>260</x>
+            <y>480</y>
+            <width>80</width>
+            <height>40</height>
+           </rect>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>80</width>
+            <height>40</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>80</width>
+            <height>40</height>
+           </size>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QLabel {
+    text-align: center; /* 水平居中文本 */
+    vertical-align: middle; /* 垂直居中文本 */
+    border: 1px solid black;
+    image: url(:/img/images/icon_redLight.png);
+}</string>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_left_wheel_title">
+          <property name="geometry">
+           <rect>
+            <x>180</x>
+            <y>440</y>
+            <width>80</width>
+            <height>40</height>
+           </rect>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>80</width>
+            <height>40</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>80</width>
+            <height>40</height>
+           </size>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QLabel {
+    background-color: rgb(85, 170, 255); /* 设置背景颜色为蓝色 */
+    text-align: center; /* 水平居中文本 */
+    vertical-align: middle; /* 垂直居中文本 */
+    border: 1px solid black;
+}</string>
+          </property>
+          <property name="text">
+           <string>左轮</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_right_wheel_title">
+          <property name="geometry">
+           <rect>
+            <x>260</x>
+            <y>440</y>
+            <width>80</width>
+            <height>40</height>
+           </rect>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>80</width>
+            <height>40</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>80</width>
+            <height>40</height>
+           </size>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QLabel {
+    background-color: rgb(85, 170, 255); /* 设置背景颜色为蓝色 */
+    text-align: center; /* 水平居中文本 */
+    vertical-align: middle; /* 垂直居中文本 */
+    border: 1px solid black;
+}</string>
+          </property>
+          <property name="text">
+           <string>右轮</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
         </widget>
        </widget>
        <widget class="QWidget" name="layoutWidget">

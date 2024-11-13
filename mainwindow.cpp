@@ -45,7 +45,6 @@ MainWindow::MainWindow(QWidget *parent)
     m_VisionInterface->start();
     m_Task->start();
     updateUiTimer->start();
-
 }
 
 void MainWindow::initUiForm() {
@@ -529,7 +528,61 @@ void MainWindow::updateAxisStatus() {
     QVector<st_ReadAxis> jointStatus = m_Com->getJointGroupStatus();
     findChild<QLabel*>("label_steering_pos")->setText(QString::number(jointStatus[GP::STEER_LEFT_INDEX].Position));
 
+    // 更新左轮状态
+    switch (jointStatus[GP::WHEEL_LEFT_INDEX].eState)
+    {
+        case eAxis_ERRORSTOP:
+            ui->label_left_wheel_state->setStyleSheet(
+                    "image: url(:/img/images/icon_redLight.png);"
+                    "border:1px solid black;"
+            );
+            break;
+        case eAxis_UNDEFINED:
+            ui->label_left_wheel_state->setStyleSheet(
+                    "image: url(:/img/images/icon_greenLight.png);"
+                    "border:1px solid black;"
+            );
+            break;
+        case eAxis_DISABLED:
+            ui->label_left_wheel_state->setStyleSheet(
+                    "image: url(:/img/images/icon_yellowLight.png);"
+                    "border:1px solid black;"
+            );
+            break;
+        default:
+            ui->label_left_wheel_state->setStyleSheet(
+                    "image: url(:/img/images/icon_greenLight.png);"
+                    "border:1px solid black;"
+            );
+    }
 
+    // 更新右轮状态
+    switch (jointStatus[GP::WHEEL_RIGHT_INDEX].eState)
+    {
+    case eAxis_ERRORSTOP:
+        ui->label_right_wheel_state->setStyleSheet(
+                "image: url(:/img/images/icon_redLight.png);"
+                "border:1px solid black;"
+        );
+        break;
+    case eAxis_UNDEFINED:
+        ui->label_right_wheel_state->setStyleSheet(
+                "image: url(:/img/images/icon_greenLight.png);"
+                "border:1px solid black;"
+        );
+        break;
+    case eAxis_DISABLED:
+        ui->label_right_wheel_state->setStyleSheet(
+                "image: url(:/img/images/icon_yellowLight.png);"
+                "border:1px solid black;"
+        );
+        break;
+    default:
+        ui->label_right_wheel_state->setStyleSheet(
+                "image: url(:/img/images/icon_greenLight.png);"
+                "border:1px solid black;"
+        );
+    }
 }
 
 void MainWindow::updateLineDetectResults() {

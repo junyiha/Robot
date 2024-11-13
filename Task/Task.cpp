@@ -91,81 +91,34 @@ void CTask::Manual()
 {
     if (m_manualOperator.StopCommand)
     {
-        log->info("{},{}: m_Robot->setLinkStop();", __FILE__,__LINE__);
         m_Robot->setLinkStop();
         m_preManualOperator = m_manualOperator ;
         return;
     }
-
     if (m_manualOperator.HaltCommand)
     {
-        log->info("{},{}: m_Robot->setLinkHalt();", __FILE__,__LINE__);
         m_Robot->setLinkHalt();
         m_preManualOperator = m_manualOperator ;
         return;
     }
-    double velocity{ 8.0 };
-    double temp_velocity_direction = m_manualOperator.VechDirect;
 
-    if (temp_velocity_direction > 0)
-        temp_velocity_direction = (temp_velocity_direction < 10.0) ? 0 : temp_velocity_direction - 10.0;
-    else
-        temp_velocity_direction = (temp_velocity_direction > -10.0) ? 0 : temp_velocity_direction + 10.0;
-    if (std::fabs(temp_velocity_direction -  m_JointGroupStatus[GP::STEER_LEFT_INDEX].Position) > 5)
-    {
-        // 当前指令和上一个指令的VechDirect都为零，判断条件始终成立
-         m_Robot->setJointMoveAbs(GP::STEER_LEFT_INDEX, temp_velocity_direction, velocity);//速度需改为参数
-         m_Robot->setJointMoveAbs(GP::STEER_RIGHT_INDEX, temp_velocity_direction,velocity);//速度需改为参数
-         log->info("{} m_manualOperator.VechDirect: {}, steer velocity:{}", __LINE__, m_manualOperator.VechDirect, temp_velocity_direction);
-    }
+    SteerWheelControl();
 
-    double vel_left,vel_right ;
     if (m_manualOperator.bVechFlag || m_manualOperator.bRotateFlag)
     {
-        auto status = m_Robot->getJointGroupSta();
-        //计算轮速
-        if(fabs(m_manualOperator.VechDirect)>M_PI/6)//舵轮角度大于45°时禁止差速转向
-        {
-            m_manualOperator.VechDirect = 0;
-        }
-        // 速度待修改 2024.09.03
-        vel_left = m_manualOperator.VechVel * 100 - m_manualOperator.RotateVel * 30; //正转为逆时针
-        vel_right = m_manualOperator.VechVel * 100 + m_manualOperator.RotateVel * 30;
-
-        // 解决过速度保护问题
-        if (vel_left > 0)
-            vel_left = (vel_left > 90.0) ? 90 : vel_left;
-        else 
-            vel_left = (vel_left < -90.0) ? -90 : vel_left;
-
-        if (vel_right > 0)
-            vel_right = (vel_right > 90.0) ? 90 : vel_right;
-        else
-            vel_right = (vel_right < -90.0) ? -90 : vel_right;
-
-
-        log->info("{},{}: m_Robot->setJointMoveVel(GP::WHEEL_LEFT_INDEX, {});", __FILE__,__LINE__,vel_left);
-         m_Robot->setJointMoveVel(GP::WHEEL_LEFT_INDEX, -vel_left);
-        log->info("{},{}: m_Robot->setJointMoveVel(GP::WHEEL_RIGHT_INDEX, {});", __FILE__,__LINE__,vel_right);
-         m_Robot->setJointMoveVel(GP::WHEEL_RIGHT_INDEX, -vel_right);
-    }else
+        TravelWheelControl();
+    }
+    else
     {
         m_Robot->setJointMoveVel(GP::WHEEL_LEFT_INDEX, 0);
         m_Robot->setJointMoveVel(GP::WHEEL_RIGHT_INDEX, 0);
     }
 
-    std::vector<double> TEMP_LINK_0_JOINT_MAX_VEL(MAX_FREEDOM_LINK, 0.0);
-    for (int i = 0; i < TEMP_LINK_0_JOINT_MAX_VEL.size(); i++)
-    {
-        TEMP_LINK_0_JOINT_MAX_VEL.at(i) = LINK_0_JOINT_MAX_VEL[i] * 0.1;
-    }
-
     if (m_manualOperator.bLinkMoveFlag && m_manualOperator.Ready != 0)
     {
-        log->info("{},{}: m_Robot->setLinkHalt();", __FILE__,__LINE__);
         m_Robot->setLinkHalt();
     }
-    else if (m_manualOperator.Ready == 1)
+    if (m_manualOperator.Ready == 1)
     {
         // 移动到举升位置
         std::vector<double> temp_velocity_group(MAX_FREEDOM_LINK, 0.0);
@@ -173,7 +126,7 @@ void CTask::Manual()
         std::for_each(temp_velocity_group.begin(), temp_velocity_group.end(), [](double& vel) { vel *= 1.1; });
         m_Robot->setJointGroupMoveAbs(GP::Position_Map[{GP::Working_Scenario, GP::PositionType::Lift}].value.data(), temp_velocity_group.data());
     }
-    else if (m_manualOperator.Ready == 2)
+    if (m_manualOperator.Ready == 2)
     {
         // 移动到准备(放钉)位置
         std::vector<double> temp_velocity_group(MAX_FREEDOM_LINK, 0.0);
@@ -181,103 +134,168 @@ void CTask::Manual()
         std::for_each(temp_velocity_group.begin(), temp_velocity_group.end(), [](double& vel) { vel *= 1.1; });
         m_Robot->setJointGroupMoveAbs(GP::Position_Map[{GP::Working_Scenario, GP::PositionType::Prepare}].value.data(), temp_velocity_group.data());
     }
-    else if (m_manualOperator.bLinkMoveFlag)
+    if (m_manualOperator.bLinkMoveFlag)
     {
-        if (m_manualOperator.bEndMove != m_preManualOperator.bEndMove)
-        {
-            log->info("{},{}: m_Robot->setLinkHalt();", __FILE__,__LINE__);
-             m_Robot->setLinkHalt();
-        }
-        else
-        {
-            std::vector<double> jointvel(20, 0);
-            double endvel[6] ={0,0,0,0,0,0};
-            if (m_manualOperator.bEndMove)
-            {
-                // 末端运动
-                for(int i= 0;i<6;i++)
-                {
-                    endvel[i] = m_manualOperator.LinkMove[i]*GP::End_Vel_Limit[i];
-                }
-                log->info("{},{}: m_Robot->setLinkMoveVel(endvel): {},{},{},{},{},{}", __FILE__,__LINE__,
-                endvel[0],endvel[1],endvel[2],endvel[3],endvel[4],endvel[5]);
-                 m_Robot->setLinkMoveVel(endvel);
-            }
-            else
-            {
-                // 单轴运动，轴索引待定
-                jointvel[0] = m_manualOperator.LinkMove[0] * LINK_0_JOINT_MAX_VEL[0];		// 底升
-                jointvel[3] = m_manualOperator.LinkMove[1] * LINK_0_JOINT_MAX_VEL[3];	    // 腰
-                jointvel[5] = m_manualOperator.LinkMove[2] * LINK_0_JOINT_MAX_VEL[5];		// 大臂俯仰
-                jointvel[6] = m_manualOperator.LinkMove[3] * LINK_0_JOINT_MAX_VEL[6];		// 伸缩
-                jointvel[8] = m_manualOperator.LinkMove[4] * LINK_0_JOINT_MAX_VEL[8];		// 腕俯仰
-                jointvel[9] = m_manualOperator.LinkMove[5] * LINK_0_JOINT_MAX_VEL[9];		// 工装(工具)
-                log->info("m_Robot->setJointGroupMoveVel: {},{},{},{},{},{}",
-                                jointvel[0],jointvel[3],jointvel[5],jointvel[6],jointvel[8],jointvel[9]);
-                 m_Robot->setJointGroupMoveVel(jointvel.data());
-            }
-        }
+        RobotMotion();
     }
-    else if( (m_manualOperator.Ready == 0 &&  m_preManualOperator.Ready !=0) || ((m_manualOperator.bLinkMoveFlag == false) && m_preManualOperator.bLinkMoveFlag))
+    if( (m_manualOperator.Ready == 0 &&  m_preManualOperator.Ready !=0) ||
+        ((m_manualOperator.bLinkMoveFlag == false) && m_preManualOperator.bLinkMoveFlag)
+        )
     {
         m_Robot->setLinkHalt();
     }
 
-    switch (m_manualOperator.TaskIndex)
-    {
-        case stManualOperator::None:
-        {
-            updateExecutionCommand(EExecutionCommand::eNULL);
-            break;
-        }
-        case stManualOperator::Parallel:
-        {
-            updateExecutionCommand(EExecutionCommand::eParallel);
-            break;
-        }
-        case stManualOperator::Positioning:
-        {
-            updateExecutionCommand(EExecutionCommand::ePositioning);
-            break;
-        }
-        case stManualOperator::DoWeld:
-        {
-            updateExecutionCommand(EExecutionCommand::eAutoWeld);
-            break;
-        }
-        case stManualOperator::MagentOn:
-        {
-            updateExecutionCommand(EExecutionCommand::eMagentOn);
-            break;
-        }
-        case stManualOperator::MagentOff:
-        {
-            updateExecutionCommand(EExecutionCommand::eMagentOff);
-            break;
-        }
-        case stManualOperator::Quit:
-        {
-            updateExecutionCommand(EExecutionCommand::eQuit);
-            break;
-        }
-        case stManualOperator::Pause:
-        {
-            updateExecutionCommand(EExecutionCommand::ePause);
-            break;
-        }
-        case stManualOperator::Terminate:
-        {
-            updateExecutionCommand(EExecutionCommand::eTerminate);
-            break;
-        }
-        default:
-        {
-            // 非法任务指令
-            log->warn("invalid task index: {}", m_manualOperator.TaskIndex);
-        }
-    }
+    ManualIndexToCommand();
 
     m_preManualOperator = m_manualOperator;
+}
+
+void CTask::SteerWheelControl()
+{
+    double velocity{ 8.0 };
+    double temp_velocity_direction = m_manualOperator.VechDirect;
+
+    if (temp_velocity_direction > 0)
+        temp_velocity_direction = (temp_velocity_direction < 10.0) ? 0 : temp_velocity_direction - 10.0;
+    else
+        temp_velocity_direction = (temp_velocity_direction > -10.0) ? 0 : temp_velocity_direction + 10.0;
+
+    if (std::fabs(temp_velocity_direction - m_JointGroupStatus[GP::STEER_LEFT_INDEX].Position) > 5)
+    {
+        // 当前指令和上一个指令的VechDirect都为零，判断条件始终成立
+        m_Robot->setJointMoveAbs(GP::STEER_LEFT_INDEX, temp_velocity_direction, velocity);//速度需改为参数
+        m_Robot->setJointMoveAbs(GP::STEER_RIGHT_INDEX, temp_velocity_direction, velocity);//速度需改为参数
+        log->info("{} m_manualOperator.VechDirect: {}, steer velocity:{}", __LINE__, m_manualOperator.VechDirect, temp_velocity_direction);
+    }
+}
+
+void CTask::TravelWheelControl()
+{
+    if (m_JointGroupStatus[GP::WHEEL_LEFT_INDEX].eState != eAxis_STANDSTILL ||
+        m_JointGroupStatus[GP::WHEEL_RIGHT_INDEX].eState != eAxis_STANDSTILL)
+    {
+        log->warn("{}: left or right wheel is not standstill!!!", __LINE__);
+        return;
+    }
+
+    double vel_left, vel_right;
+    //计算轮速
+    if (fabs(m_manualOperator.VechDirect) > M_PI / 6)//舵轮角度大于45°时禁止差速转向
+    {
+        m_manualOperator.VechDirect = 0;
+    }
+    vel_left = m_manualOperator.VechVel * 100 - m_manualOperator.RotateVel * 30; //正转为逆时针
+    vel_right = m_manualOperator.VechVel * 100 + m_manualOperator.RotateVel * 30;
+
+    // 解决过速度保护问题
+    if (vel_left > 0)
+        vel_left = (vel_left > 90.0) ? 90 : vel_left;
+    else
+        vel_left = (vel_left < -90.0) ? -90 : vel_left;
+
+    if (vel_right > 0)
+        vel_right = (vel_right > 90.0) ? 90 : vel_right;
+    else
+        vel_right = (vel_right < -90.0) ? -90 : vel_right;
+
+    m_Robot->setJointMoveVel(GP::WHEEL_LEFT_INDEX, -vel_left);
+    m_Robot->setJointMoveVel(GP::WHEEL_RIGHT_INDEX, -vel_right);
+    log->info("{}: velocity left: {}, velocity right: {}", __LINE__, vel_left, vel_right);
+}
+
+void CTask::RobotMotion()
+{
+    if (m_manualOperator.bEndMove != m_preManualOperator.bEndMove)
+    {
+        log->info("{},{}: m_Robot->setLinkHalt();", __FILE__, __LINE__);
+        m_Robot->setLinkHalt();
+    }
+    else
+    {
+        std::vector<double> jointvel(20, 0);
+        double endvel[6] = { 0,0,0,0,0,0 };
+        if (m_manualOperator.bEndMove)
+        {
+            // 末端运动
+            for (int i = 0; i < 6; i++)
+            {
+                endvel[i] = m_manualOperator.LinkMove[i] * GP::End_Vel_Limit[i];
+            }
+            log->info("{},{}: m_Robot->setLinkMoveVel(endvel): {},{},{},{},{},{}", __FILE__, __LINE__,
+            endvel[0], endvel[1], endvel[2], endvel[3], endvel[4], endvel[5]);
+            m_Robot->setLinkMoveVel(endvel);
+        }
+        else
+        {
+            // 单轴运动，轴索引待定
+            jointvel[0] = m_manualOperator.LinkMove[0] * LINK_0_JOINT_MAX_VEL[0];		// 底升
+            jointvel[3] = m_manualOperator.LinkMove[1] * LINK_0_JOINT_MAX_VEL[3];	    // 腰
+            jointvel[5] = m_manualOperator.LinkMove[2] * LINK_0_JOINT_MAX_VEL[5];		// 大臂俯仰
+            jointvel[6] = m_manualOperator.LinkMove[3] * LINK_0_JOINT_MAX_VEL[6];		// 伸缩
+            jointvel[8] = m_manualOperator.LinkMove[4] * LINK_0_JOINT_MAX_VEL[8];		// 腕俯仰
+            jointvel[9] = m_manualOperator.LinkMove[5] * LINK_0_JOINT_MAX_VEL[9];		// 工装(工具)
+            log->info("m_Robot->setJointGroupMoveVel: {},{},{},{},{},{}",
+                            jointvel[0], jointvel[3], jointvel[5], jointvel[6], jointvel[8], jointvel[9]);
+            m_Robot->setJointGroupMoveVel(jointvel.data());
+        }
+    }
+}
+
+void CTask::ManualIndexToCommand()
+{
+    switch (m_manualOperator.TaskIndex)
+    {
+    case stManualOperator::None:
+    {
+        updateExecutionCommand(EExecutionCommand::eNULL);
+        break;
+    }
+    case stManualOperator::Parallel:
+    {
+        updateExecutionCommand(EExecutionCommand::eParallel);
+        break;
+    }
+    case stManualOperator::Positioning:
+    {
+        updateExecutionCommand(EExecutionCommand::ePositioning);
+        break;
+    }
+    case stManualOperator::DoWeld:
+    {
+        updateExecutionCommand(EExecutionCommand::eAutoWeld);
+        break;
+    }
+    case stManualOperator::MagentOn:
+    {
+        updateExecutionCommand(EExecutionCommand::eMagentOn);
+        break;
+    }
+    case stManualOperator::MagentOff:
+    {
+        updateExecutionCommand(EExecutionCommand::eMagentOff);
+        break;
+    }
+    case stManualOperator::Quit:
+    {
+        updateExecutionCommand(EExecutionCommand::eQuit);
+        break;
+    }
+    case stManualOperator::Pause:
+    {
+        updateExecutionCommand(EExecutionCommand::ePause);
+        break;
+    }
+    case stManualOperator::Terminate:
+    {
+        updateExecutionCommand(EExecutionCommand::eTerminate);
+        break;
+    }
+    default:
+    {
+        // 非法任务指令
+        log->warn("invalid task index: {}", m_manualOperator.TaskIndex);
+    }
+    }
 }
 
 bool CTask::doWeldAction(qint8 execute)
