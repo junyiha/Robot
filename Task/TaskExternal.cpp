@@ -526,7 +526,10 @@ void CTask::motionInPositioningExecutionCommand()
 
 void CTask::readyToMagentOnExecutionCommand()
 {
-    static int magent{0};
+    if (m_automatic_working_flag)
+        updateExecutionCommand(EExecutionCommand::eMagentOn);
+
+    static int magent{ 0 };
     switch (m_eexecutionCommand)
     {
         case EExecutionCommand::eNULL:
@@ -536,10 +539,7 @@ void CTask::readyToMagentOnExecutionCommand()
                 if (doMagentOn())
                 {
                     magent = 0;
-                    if (m_automatic_working_flag)
-                        updateTopAndSubState(ETopState::eDoWeld, ESubState::eDoingWeld);
-                    else
-                        updateTopAndSubState(ETopState::eDoWeld, ESubState::eReadyToDoWeld);
+                    updateTopAndSubState(ETopState::eDoWeld, ESubState::eReadyToDoWeld);
                 }
             }
             break;
@@ -665,6 +665,9 @@ void CTask::doingWeldExecutionCommand()
 
 void CTask::stopWeldExecutionCommand()
 {
+    if (m_automatic_working_flag)
+        updateExecutionCommand(EExecutionCommand::eMagentOff);
+
     static int weld{0};
     switch (m_eexecutionCommand)
     {
