@@ -38,4 +38,6 @@ namespace GP
 
 	std::string IOB_IP;
 	std::size_t IOB_Port;
+
+	std::size_t Do_Weld_Parallel_Condition;
 }

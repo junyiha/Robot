@@ -84,6 +84,8 @@ namespace Config
 
 			GP::Position_Map[{work_scenario, position_type}] = position_data;
 		}
+
+		GP::Do_Weld_Parallel_Condition = m_root_ro["Do_Weld_Parallel_Condition"]["value"].as<std::size_t>();
 	}
 
 	bool ConfigManager::WriteToFile()

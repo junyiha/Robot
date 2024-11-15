@@ -87,17 +87,3 @@ enum class ActionKey
     End = 405
 };
 
-std::map<ActionKey, std::string> ActionMap =
-{
-    { ActionKey::Grind_MovorOff1, "Grind_MovorOff1 " },
-    { ActionKey::Grind_OnorDown1, "Grind_OnorDown1 " },
-    { ActionKey::Grind_Up, "Grind_Up " },
-    { ActionKey::Grind_OnorDown2, "Grind_OnorDown2 " },
-    { ActionKey::Grind_MovorOff2, "Grind_MovorOff2 " },
-    { ActionKey::Weld_MovorDwon, "Weld_MovorDwon " },
-    { ActionKey::Weld_Fix, "Weld_Fix " },
-    { ActionKey::Weld_Up, "Weld_Up " },
-    { ActionKey::Weld_On, "Weld_On " },
-    { ActionKey::Weld_Down, "Weld_Down " },
-    { ActionKey::InitAction, "InitAction " }
-};

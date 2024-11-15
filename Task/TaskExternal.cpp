@@ -1005,7 +1005,7 @@ bool CTask::NewDoWeldAction(int execute)
 
     if (!offset_flag)
     {
-        if (time_cnt > 200)
+        if (time_cnt > GP::Do_Weld_Parallel_Condition)
         {
             index_tool2 = index_tool + 1;
             offset_flag = true;

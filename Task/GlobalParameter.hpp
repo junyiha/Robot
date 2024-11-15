@@ -1,4 +1,4 @@
-/*****************************************************************//**
+/*****************************************************************
  * \file   GlobalParameter.hpp
  * \brief  
  * 
@@ -14,16 +14,16 @@ namespace GP
 {
 	enum class WorkingScenario
 	{
-		Top = 1,	// ����
-		Cant,		// б��
-		Side		// ��� 
+		Top = 1,	
+		Cant,		
+		Side		
 	};
 
 	enum class PositionType
 	{
-		Prepare = 1,	// ׼��λ
-		Lift,			// ����λ
-		Quit			// �˳�λ
+		Prepare = 1,	
+		Lift,			
+		Quit			
 	};
 
 	struct PositionData
@@ -39,29 +39,28 @@ namespace GP
 
 	static const int DOF = 10;
 
-	extern double velLine;		//����㶯���٣�ƽ��
-	extern double velRotate;	//����㶯���٣���ת
+	extern double velLine;		
+	extern double velRotate;	
 
-	extern std::size_t CYLINDER_INDEX;			// �Ƹ˹ؽ��������
-	extern std::size_t STEER_LEFT_INDEX;		// ���������
-	extern std::size_t STEER_RIGHT_INDEX;		// �Ҷ�������
-	extern std::size_t WHEEL_LEFT_INDEX;		// ������������
-	extern std::size_t WHEEL_RIGHT_INDEX;		// ������������
-	extern std::size_t TOOL_LIFTING;			// ������������
+	extern std::size_t CYLINDER_INDEX;			
+	extern std::size_t STEER_LEFT_INDEX;		
+	extern std::size_t STEER_RIGHT_INDEX;		
+	extern std::size_t WHEEL_LEFT_INDEX;		
+	extern std::size_t WHEEL_RIGHT_INDEX;		
+	extern std::size_t TOOL_LIFTING;			
 
-	extern double Lift_Distance_In_Parallel;	// ��ƽ״̬�¾�����λ��
-	extern double Max_Deviation_In_Parallel;	// ��ƽ�������ƫ��
-	extern double Min_Deviation_In_Parallel;	// ��ƽ������Сƫ��
+	extern double Lift_Distance_In_Parallel;	
+	extern double Max_Deviation_In_Parallel;	
+	extern double Min_Deviation_In_Parallel;	
 
-	extern double Distance_work;				//λ��
+	extern double Distance_work;				
 
-	extern double Lift_Distance_In_FitBoard;    // ����״̬�¾�����λ��
-	extern double Max_Deviation_In_FitBoard;	// ��������ƫ��
-	extern double Min_Deviation_In_FitBoard;    // ��������ƫ��
+	extern double Lift_Distance_In_FitBoard;    
+	extern double Max_Deviation_In_FitBoard;	
+	extern double Min_Deviation_In_FitBoard;    
 
-	extern double Line_Deviation_Threshold;		//���ߵ�������ƫ��
+	extern double Line_Deviation_Threshold;		
 
-	// �ؽ�ĩ���˶�����
 	extern std::vector<double> End_Vel_Limit;
 	extern std::vector<double> End_Vel_Position;
 
@@ -73,4 +72,6 @@ namespace GP
 
 	extern std::string IOB_IP;
 	extern std::size_t IOB_Port;
+
+	extern std::size_t Do_Weld_Parallel_Condition;
 }
