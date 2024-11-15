@@ -70,3 +70,34 @@ enum class EDetectionInPositioningResult
     eEndAdjustmentDataIsValid,             // 末端调整数据合法
     eDataIsInvalid,                         // 数据非法
 };
+
+enum class ActionKey
+{
+    Grind_MovorOff1 = 0,
+    Grind_OnorDown1 = 40,
+    Grind_Up = 60,
+    Grind_OnorDown2 = 160,
+    Grind_MovorOff2 = 180,
+    Weld_MovorDwon = 200,
+    Weld_Fix = 240,
+    Weld_Up = 280,
+    Weld_On = 320,
+    Weld_Down = 360,
+    InitAction = 400,
+    End = 405
+};
+
+std::map<ActionKey, std::string> ActionMap =
+{
+    { ActionKey::Grind_MovorOff1, "Grind_MovorOff1 " },
+    { ActionKey::Grind_OnorDown1, "Grind_OnorDown1 " },
+    { ActionKey::Grind_Up, "Grind_Up " },
+    { ActionKey::Grind_OnorDown2, "Grind_OnorDown2 " },
+    { ActionKey::Grind_MovorOff2, "Grind_MovorOff2 " },
+    { ActionKey::Weld_MovorDwon, "Weld_MovorDwon " },
+    { ActionKey::Weld_Fix, "Weld_Fix " },
+    { ActionKey::Weld_Up, "Weld_Up " },
+    { ActionKey::Weld_On, "Weld_On " },
+    { ActionKey::Weld_Down, "Weld_Down " },
+    { ActionKey::InitAction, "InitAction " }
+};

@@ -3,6 +3,8 @@
 
 #include <map>
 #include <mutex>
+#include <iomanip>
+#include <bitset>
 
 #include "../robot/robot.h"
 #include "../com/ComInterface.h"
@@ -274,6 +276,20 @@ private:
      */
     void UpdateVisionResult(VisionResult& vis_res);
 
+    /**
+     * @brief 碰钉指令解析和下发.
+     */
+    void DoWelding(int tool_a, int tool_b, int key);
+
+    /**
+     * @brief 新的碰钉流程，两组交叉执行.
+     * 
+     * @param [execute] -1, 停止碰钉。0，暂停碰钉。1，开始碰钉。
+     * 
+     * @return bool
+     */
+    bool NewDoWeldAction(int execute);
+
 public:
     /**
      * @brief 更新第一层和第二层状态(线程安全)
@@ -350,6 +366,7 @@ private:
     std::mutex m_mutex;
     bool m_position_motion_flag{false};
     bool m_automatic_working_flag{ false };
+    std::map<std::string, int> ValueMap;
 
     std::map<ETopState, std::string> TopStateStringMap 
     {
