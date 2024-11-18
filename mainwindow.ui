@@ -482,6 +482,34 @@ QPushButton#btn_exit:pressed{
       </size>
      </property>
     </widget>
+    <widget class="QPushButton" name="btn_open_document">
+     <property name="geometry">
+      <rect>
+       <x>1330</x>
+       <y>10</y>
+       <width>140</width>
+       <height>40</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
+    border: 2px solid black;
+    border-radius: 10px;
+}
+QPushButton:hover {
+    border: 2px solid red;
+    border-radius: 10px;
+}
+
+QPushButton:pressed {
+    border: 2px solid green;
+    border-radius: 10px;
+}</string>
+     </property>
+     <property name="text">
+      <string>打开帮助文档</string>
+     </property>
+    </widget>
    </widget>
    <widget class="QStackedWidget" name="stackedWidget_view">
     <property name="geometry">
@@ -11652,6 +11680,7 @@ QPushButton:pressed {
       </widget>
      </widget>
     </widget>
+    <widget class="QWidget" name="page_document"/>
    </widget>
   </widget>
   <widget class="QStatusBar" name="statusbar">

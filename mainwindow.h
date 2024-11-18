@@ -329,6 +329,7 @@ private slots:
     void slots_btn_auto_welding_clicked();
 
     void slots_btn_working_mode_clicked();
+    void slots_btn_open_document_clicked();
 };
 
 

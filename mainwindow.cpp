@@ -193,6 +193,7 @@ void MainWindow::connectSlotFunctions() {// 按钮时间绑定
     connect(ui->btn_autoWelding, &QPushButton::clicked, this, &MainWindow::slots_btn_auto_welding_clicked, Qt::UniqueConnection);
     
     connect(ui->btn_working_mode, &QPushButton::clicked, this, &MainWindow::slots_btn_working_mode_clicked, Qt::UniqueConnection);
+    connect(ui->btn_open_document, &QPushButton::clicked, this, &MainWindow::slots_btn_open_document_clicked, Qt::UniqueConnection);
 }
 
 MainWindow::~MainWindow()
@@ -1533,4 +1534,9 @@ void MainWindow::slots_btn_working_mode_clicked()
 {
     bool mode = m_Task->GetWorkingMode();
     m_Task->SetWorkdingMode(!mode);
+}
+
+void MainWindow::slots_btn_open_document_clicked()
+{
+    ui->stackedWidget_view->setCurrentWidget(ui->page_document);
 }
