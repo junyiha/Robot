@@ -714,30 +714,23 @@ void MainWindow::closeEvent(QCloseEvent *event){
 
     // 关闭相机进程
     this->m_VisionInterface->closeThread();
-    this->logger->info("关闭相机进程 closeThread");
+    this->logger->info("camera closeThread");
 
     // 关闭串口
     this->m_Com->closeThread();
-    this->logger->info("关闭串口 closeThread");
+    this->logger->info("com closeThread");
 
     //关闭机器人
     this->m_Robot->closeThread();
-    this->logger->info("关闭机器进程 closeThread");
+    this->logger->info("robot closeThread");
 
     // 关闭任务
     this->m_Task->closeThread();
-    this->logger->info("关闭任务进程 closeThread");
+    this->logger->info("task closeThread");
 
     // 关闭计时器线程
     this->updateUiTimer->stop();
     disconnect(this->updateUiTimer);
-
-//    delete this->m_Com;
-//    delete this->m_Robot;
-//    delete this->m_Task;
-//    delete this->updateUiTimer;
-//    delete this->m_VisionInterface;
-
 }
 
 void MainWindow::btn_moveFwd_shaft_pressed() {

@@ -47,8 +47,8 @@ void ComInterface::run()
         //监测机器人连接状态
         if(m_cRobot.getCommState() == false){
             emit m_cRobot.sigDisconnected();
-            qDebug()<<"m_cRobot.slotStopLoop();";
-            qDebug()<<"尝试连接机器人。。。。"<<tryToConnectCount[0];
+            log->info("m_cRobot.slotStopLoop();");
+            log->info("尝试连接机器人... {}", tryToConnectCount[0]);
             isRobotConnected = m_cRobot.ConnectToServer(GP::Robot_IP.c_str(), GP::Robot_Port);
             if(tryToConnectCount[0] <= COUNT_LIMIT){
                 ++tryToConnectCount[0];
@@ -62,8 +62,8 @@ void ComInterface::run()
         if(m_cTools.m_cIOA.getCommState() == false)
         {
             emit m_cTools.m_cIOA.sigDisconnected();
-            qDebug()<<"m_cIOA.StopLoop();";
-            qDebug()<<"尝试连接IO模块A。。。。"<<tryToConnectCount[1];
+            log->info("m_cIOA.StopLoop();");
+            log->info("尝试连接IO模块A... {}", tryToConnectCount[1]);
             isIOConnected = m_cTools.m_cIOA.ConnectToServer(GP::IOA_IP.c_str(), GP::IOA_Port);
             if(tryToConnectCount[1] <= COUNT_LIMIT){
                 ++tryToConnectCount[1];
@@ -75,8 +75,8 @@ void ComInterface::run()
         if(m_cTools.m_cIOB.getCommState() == false)
         {
             emit m_cTools.m_cIOB.sigDisconnected();
-            qDebug()<<"m_cIOB.StopLoop();";
-            qDebug()<<"尝试连接IO模块B。。。。"<<tryToConnectCount[2];
+            log->info("m_cIOB.StopLoop();");
+            log->info("尝试连接IO模块B... {}", tryToConnectCount[2]);
             isIOConnected = m_cTools.m_cIOB.ConnectToServer(GP::IOB_IP.c_str(), GP::IOB_Port);
             if(tryToConnectCount[2] <= COUNT_LIMIT){
                 ++tryToConnectCount[2];
@@ -86,18 +86,15 @@ void ComInterface::run()
             }
         }
 
-
-
-
        //启动遥控器com口 通过isOpen（）判断打开状态
        if(this->m_cManual.isOpen() == false){
            this->m_cManual.open("COM1");
-           qDebug()<<"reconnect manual...";
+           log->info("reconnect manual...");
        }
 
         Sleep(1000);
     }
-    qDebug()<<"cominterface： run() stopped";
+    log->info("cominterface： run() stopped");
 }
 
 void ComInterface::setLinkJointMoveAbs(uint index, const double pos[],double vel[])
