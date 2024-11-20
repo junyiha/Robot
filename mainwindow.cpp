@@ -1539,4 +1539,10 @@ void MainWindow::slots_btn_working_mode_clicked()
 void MainWindow::slots_btn_open_document_clicked()
 {
     ui->stackedWidget_view->setCurrentWidget(ui->page_document);
+    QString help_img{ "D://Robot//images//help_image.png" };
+    QImage image(help_img);
+    QPixmap pixmap(help_img);
+    ui->label_help->resize(image.size());
+    ui->label_help->setPixmap(pixmap);
+    ui->label_help->setScaledContents(true);
 }
