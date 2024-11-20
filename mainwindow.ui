@@ -437,7 +437,7 @@ QPushButton#btn_exit:pressed{
     <widget class="QPushButton" name="btn_working_mode">
      <property name="geometry">
       <rect>
-       <x>1470</x>
+       <x>1330</x>
        <y>10</y>
        <width>120</width>
        <height>40</height>
@@ -485,11 +485,23 @@ QPushButton#btn_exit:pressed{
     <widget class="QPushButton" name="btn_open_document">
      <property name="geometry">
       <rect>
-       <x>1330</x>
+       <x>1450</x>
        <y>10</y>
        <width>140</width>
        <height>40</height>
       </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>等线</family>
+       <pointsize>10</pointsize>
+       <weight>75</weight>
+       <italic>false</italic>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="cursor">
+      <cursorShape>PointingHandCursor</cursorShape>
      </property>
      <property name="styleSheet">
       <string notr="true">QPushButton {
