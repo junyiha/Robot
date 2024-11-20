@@ -65,7 +65,6 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-
     // 日志文件初始化
     void initLog();
     std::shared_ptr<spdlog::logger> logger;
@@ -99,9 +98,6 @@ public:
     QAtomicInt      buttionIndex; // 按钮索引原子变量记录
 
     double m_wheelVel= 30;
-
-
-
 
     // 操作按钮索引配置
     std::map<std::string, unsigned int> m_btnIndex = {
@@ -201,13 +197,11 @@ public:
       {"btn_magent_crash_stop_", 12}      // 急停
     };
 
-
-
-
-
 private:
     Ui::MainWindow *ui;
     void initUiForm();
+    void initUiWiget();
+    void connectSlotFunctions();
 
     QTimer* updateUiTimer;
 
@@ -218,9 +212,7 @@ private:
 
     void updateCameraData();//更新相机数据
     void updateLaserData();//更新点激光数值
-    void updateActionSta();//更新任务流程的状态
     void updateAxisStatus();//更新单轴连接状态
-    void updateConnectSta();//更新硬件连接状态
     void setButtonIndex();  // 记录当前触发按钮索引
     void setActionIndex();  // 记录当前触发动作索引(工作流程记录)
     void updateTaskStateMachineStatus();
@@ -299,24 +291,17 @@ private slots:
     void on_btn_steering_right_pressed();
     void on_btn_steering_right_released();
 
-
     void on_btn_add_nail_pressed();
     void on_btn_add_nail_released();
 
     void on_btn_preparation_pos_pressed();
     void on_btn_preparation_pos_released();
 
-
-
     void on_comboBox_tools_currentIndexChanged();
     void on_comboBox_magents_currentIndexChanged();
 
-
     void updateLineDetectResults();
-    void connectSlotFunctions();
 
-
-    void initUiWiget();
 
     void updataDeviceConnectState();
 
@@ -330,11 +315,15 @@ private slots:
 
     void slots_btn_working_mode_clicked();
     void slots_btn_open_document_clicked();
+
+private:
+    void MessageAlert(const std::string& message);
+    void AddMessageAlert(const std::string& message);
+    void MessageConsumer();
+
+private:
+    std::mutex m_message_mutex;
+    std::queue<std::string> m_message_container;
+    QTimer m_message_timer;
 };
-
-
-
-
-
-
 #endif // MAINWINDOW_H

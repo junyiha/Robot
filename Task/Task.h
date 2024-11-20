@@ -5,6 +5,7 @@
 #include <mutex>
 #include <iomanip>
 #include <bitset>
+#include <functional>
 
 #include "../robot/robot.h"
 #include "../com/ComInterface.h"
@@ -357,6 +358,11 @@ public:
      */
     void SetWorkdingMode(const bool mode);
 
+    /**
+     * @brief 设置回调函数，用于调用消息提示框.
+     */
+    void SetCallBack(std::function<void(const std::string&)> callback);
+
 private:
     ETopState m_etopState{ETopState::eManual};
     ESubState m_esubState{ESubState::eReady};
@@ -365,8 +371,9 @@ private:
 private:
     std::mutex m_mutex;
     bool m_position_motion_flag{false};
-    bool m_automatic_working_flag{ false };
+    bool m_automatic_working_flag{ true };
     std::map<std::string, int> ValueMap;
+    std::function<void(const std::string&)> m_callback;
 
     std::map<ETopState, std::string> TopStateStringMap 
     {

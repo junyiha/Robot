@@ -57,6 +57,9 @@ void CTask::manualStateTransition()
 {
     //1. 判断机器人是否处于就绪状态 
     bool robotReady = (m_LinkStatus.eLinkActState == eLINK_STANDSTILL);
+#ifdef STATE_MACHINE_TEST
+    robotReady = true;
+#endif // STATE_MACHINE_TEST
     if (robotReady)
     {
         switch (m_eexecutionCommand)
@@ -257,6 +260,9 @@ void CTask::detectionInParallelExecutionCommand()
             UpdateLaserDistance();
 
             auto detectionResult = CheckParallelStateDecorator();
+#ifdef STATE_MACHINE_TEST
+            detectionResult = EDetectionInParallelResult::eDeviationIsLessThanThreshold;
+#endif
             switch (detectionResult)
             {
                 case EDetectionInParallelResult::eDeviationIsLessThanThreshold:
@@ -551,6 +557,10 @@ void CTask::readyToMagentOnExecutionCommand()
         }
         case EExecutionCommand::eMagentOn:
         {
+#ifdef STATE_MACHINE_TEST
+            updateTopAndSubState(ETopState::eDoWeld, ESubState::eReadyToDoWeld);
+            break;
+#endif  // STATE_MACHINE_TEST
             doMagentOn();
             magent = 1;
             break;
@@ -622,6 +632,10 @@ void CTask::doingWeldExecutionCommand()
     {
         case EExecutionCommand::eNULL:
         {
+#ifdef STATE_MACHINE_TEST
+            updateTopAndSubState(ETopState::eDoWeld, ESubState::eStopWeld);  // 碰钉结束，跳转到碰钉停止
+            break;
+#endif  // STATE_MACHINE_TEST
             if (weld == -1)
             {
                 if (doMagentOff())
@@ -689,6 +703,10 @@ void CTask::stopWeldExecutionCommand()
         }
         case EExecutionCommand::eMagentOff:
         {
+#ifdef STATE_MACHINE_TEST
+            updateTopAndSubState(ETopState::eQuit, ESubState::eQuiting);
+            break;
+#endif  // STATE_MACHINE_TEST
             doMagentOff();
             weld = -1;
             log->info("{} do magent off begin...", __LINE__);
@@ -713,13 +731,18 @@ void CTask::quitingExecutionCommand()
     {
         case EExecutionCommand::eNULL:
         {
+#ifdef STATE_MACHINE_TEST
+            updateTopAndSubState(ETopState::eManual, ESubState::eReady);
+            break;
+#endif  // STATE_MACHINE_TEST
+
             // 移动到退出位置
-            std::vector<double> TEMP_LINK_0_JOINT_MAX_VEL_FOR_SET_POINT(MAX_FREEDOM_LINK, 0.0);
-            TEMP_LINK_0_JOINT_MAX_VEL_FOR_SET_POINT = {1, 1, 1, 1, 0.3, 10, 5, 0.5, 3, 6};
+            std::vector<double> velocity(MAX_FREEDOM_LINK, 0.0);
+            velocity = {1, 1, 1, 1, 0.3, 10, 5, 0.5, 3, 6};
             auto temp_value = GP::Position_Map[{GP::Working_Scenario, GP::PositionType::Quit}].value;
 
             // 整体联动无法停止，后续优化
-            //m_Robot->setJointGroupMoveAbs(temp_value.data(), TEMP_LINK_0_JOINT_MAX_VEL_FOR_SET_POINT.data());
+            //m_Robot->setJointGroupMoveAbs(temp_value.data(), velocity.data());
             //QVector<double> value_qv(temp_value.begin(), temp_value.end());
             //if (m_Robot->isJointReached(value_qv))
             //{
@@ -797,13 +820,6 @@ void CTask::UpdateLaserDistance()
     m_stMeasuredata.m_LaserDistance[1] = LaserDistance[1];
     m_stMeasuredata.m_LaserDistance[2] = LaserDistance[2];
     m_stMeasuredata.m_LaserDistance[3] = LaserDistance[3];
-
-//    // change laser position
-//    std::vector<double> temp(std::begin(m_stMeasuredata.m_LaserDistance), std::end(m_stMeasuredata.m_LaserDistance));
-//    m_stMeasuredata.m_LaserDistance[0] = temp[2];
-//    m_stMeasuredata.m_LaserDistance[1] = temp[3];
-//    m_stMeasuredata.m_LaserDistance[2] = temp[0];
-//    m_stMeasuredata.m_LaserDistance[3] = temp[1];
 }
 
 void CTask::UpdateVisionResult(VisionResult& vis_res)
@@ -1053,6 +1069,8 @@ void CTask::updateExecutionCommand(EExecutionCommand executionCommand)
 
     if (executionCommand != EExecutionCommand::eNULL)
     {
+        std::string message = std::string("指令更新: ") + ExecutionCommandStringMap[m_eexecutionCommand] + " ==> " + ExecutionCommandStringMap[executionCommand];
+        m_callback(message);
         log->info("指令更新: {} ==> {}", ExecutionCommandStringMap[m_eexecutionCommand], ExecutionCommandStringMap[executionCommand]);
     }
 
@@ -1155,4 +1173,9 @@ bool CTask::GetWorkingMode()
 void CTask::SetWorkdingMode(const bool mode)
 {
     m_automatic_working_flag = mode;
+}
+
+void CTask::SetCallBack(std::function<void(const std::string&)> callback)
+{
+    m_callback = callback;
 }

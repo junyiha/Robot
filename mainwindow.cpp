@@ -2,14 +2,12 @@
 #include "ui_mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
+    : QMainWindow(parent), ui(new Ui::MainWindow), m_message_timer(this)
 {
     ui->setupUi(this);
 
     //1.0 初始化化日志
     initLog();
-
 
     //2.0 UI界面初始化
     initUiForm();
@@ -26,7 +24,14 @@ MainWindow::MainWindow(QWidget *parent)
     m_Com = ComInterface::getInstance();
     m_Robot = new CRobot(m_Com);
     m_VisionInterface = new VisionInterface();
+
     m_Task = new CTask(m_Com,m_Robot,m_VisionInterface);
+    m_Task->SetCallBack(std::bind(&MainWindow::AddMessageAlert, this, std::placeholders::_1));
+
+    m_message_timer.setInterval(200);
+    connect(&m_message_timer, &QTimer::timeout, this, &MainWindow::MessageConsumer);
+    m_message_timer.start();
+
     m_config_ptr = std::make_unique<Config::ConfigManager>();
 
     //5.0 计时器界面实时更新 (100ms更新一次)
@@ -34,9 +39,6 @@ MainWindow::MainWindow(QWidget *parent)
     this->updateUiTimer = new QTimer(this);
     updateUiTimer->setInterval(200);
     connect(updateUiTimer,&QTimer::timeout,this,&MainWindow::slotUpdateUIAll);
-
-    // 6.0 直线检测专用定时器
-
 
     //7.0 启动线程
     this->logger->trace("启动功能对象...");
@@ -47,26 +49,13 @@ MainWindow::MainWindow(QWidget *parent)
     updateUiTimer->start();
 }
 
-void MainWindow::initUiForm() {
-
+void MainWindow::initUiForm()
+{
     // 1.0 初始化UI控件
     initUiWiget();
 
     // 2.0 为按钮绑定操函数
     connectSlotFunctions();
-
-
-//    // 单轴
-//    QString posPrefix = "";
-//    QString moveFwdPrefix = "";
-//    QString moveBwdPrefix = "";
-//    QString moveRelPrefix = "";
-//
-//    // 按钮时间绑定
-////    for(unsigned int i = 0; i<6;i++){
-//////        connect(&findChild(posPrefix + QString::number(i)), &QPushButton::clicked, this, &MainWindow::on_btn_enable_yaofuyang_clicked );
-////
-////    }
 }
 
 void MainWindow::initUiWiget() {//2.0 碰钉工具测试用-----------------------------------
@@ -107,10 +96,6 @@ void MainWindow::connectSlotFunctions() {// 按钮时间绑定
     connect(ui->btn_userMode_, &QPushButton::clicked, this, &MainWindow::on_btn_userMode_clicked, Qt::UniqueConnection);// 用户模式
 
     // 2.0 流程操作栏按钮槽函数绑定
-//    connect(ui->btn_camera_open, &QPushButton::clicked, this, &MainWindow::on_btn_openCamera_clicked, Qt::UniqueConnection); // 打开摄像头
-//    connect(ui->btn_camera_close, &QPushButton::clicked, this, &MainWindow::on_btn_closeCamera_clicked, Qt::UniqueConnection);
-//    connect(ui->btn_location_, &QPushButton::clicked, this, &MainWindow::on_btn_location_clicked, Qt::UniqueConnection);
-//    connect(ui->btn_lift_, &QPushButton::clicked, this, &MainWindow::on_btn_lift_clicked, Qt::UniqueConnection);
     connect(ui->btn_leveling_, &QPushButton::clicked, this, &MainWindow::on_btn_leveling_clicked, Qt::UniqueConnection);
     connect(ui->btn_sideline_, &QPushButton::clicked, this, &MainWindow::on_btn_sideline_clicked, Qt::UniqueConnection);
     connect(ui->btn_magnet_open_, &QPushButton::clicked, this, &MainWindow::on_btn_magnet_open_clicked, Qt::UniqueConnection);
@@ -123,11 +108,9 @@ void MainWindow::connectSlotFunctions() {// 按钮时间绑定
     connect(ui->btn_magnet_exit, &QPushButton::clicked, this, &MainWindow::slots_on_btn_magnet_exit_clicked, Qt::UniqueConnection);
     connect(ui->btn_add_nail, &QPushButton::clicked, this, &MainWindow::slots_on_btn_add_nail_clicked, Qt::UniqueConnection);
 
-    //用于调试。临时加的btn_lift_2
-//    connect(ui->btn_lift_2, &QPushButton::clicked, this, &MainWindow::on_btn_lift_2clicked, Qt::UniqueConnection);
     // 3.0 机械臂功能按钮槽函数绑定
-    for(unsigned int i = 0; i < jointNum; i++){
-
+    for(unsigned int i = 0; i < jointNum; i++)
+    {
         // 单轴
         connect(findChild<QPushButton*>("btn_moveFwd_shaft" + QString::number(i)), &QPushButton::pressed, this, &MainWindow::btn_moveFwd_shaft_pressed, Qt::UniqueConnection);
         connect(findChild<QPushButton*>("btn_moveFwd_shaft" + QString::number(i)), &QPushButton::released, this, &MainWindow::btn_moveFwd_shaft_released, Qt::UniqueConnection);
@@ -136,7 +119,8 @@ void MainWindow::connectSlotFunctions() {// 按钮时间绑定
         connect(findChild<QPushButton*>("btn_moveRel_shaft" + QString::number(i)), &QPushButton::clicked, this, &MainWindow::on_moveRel_shaft_clicked, Qt::UniqueConnection);
     }
 
-    for(unsigned int i = 0; i < freeJointNum; i++){
+    for(unsigned int i = 0; i < freeJointNum; i++)
+    {
         // 末端联动
         connect(findChild<QPushButton*>("btn_moveFwd_end" + QString::number(i)), &QPushButton::pressed, this, &MainWindow::btn_moveFwd_end_pressed, Qt::UniqueConnection);
         connect(findChild<QPushButton*>("btn_moveFwd_end" + QString::number(i)), &QPushButton::released, this, &MainWindow::btn_moveFwd_end_released, Qt::UniqueConnection);
@@ -198,8 +182,6 @@ void MainWindow::connectSlotFunctions() {// 按钮时间绑定
 
 MainWindow::~MainWindow()
 {
-
-
 }
 
 void MainWindow::initLog()
@@ -207,7 +189,6 @@ void MainWindow::initLog()
     //创建控制台日志记录器
     auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
     console_sink->set_level(spdlog::level::debug);
-//    console_sink->set_pattern("[%Y-%m-%d %H:%M:%S:%e] [%^%l%$] %v");
 
     console_sink->set_pattern("[%Y-%m-%d %H:%M:%S.%e][thread %t][%@,%!] [%l] : %v");
 
@@ -232,14 +213,13 @@ void MainWindow::on_btn_enable_clicked()
     //这里使用link层且只有link[0]一个索引
     if(m_Com->getCommState_Robot() == true)
     {
-//        m_Robot->setLinkEnable(true);  // 仅机器臂使能
         m_Robot->setRobotEnable(true);
         this->logger->info("执行上使能!");
     }
     else
     {
         this->logger->info("上使能失败, 请先连接机器人");
-        QMessageBox::critical(this, "上使能无效", "请先连接机器人");
+        QMessageBox::critical(this, QString::fromLocal8Bit("上使能无效"), QString::fromLocal8Bit("请先连接机器人"));
     }
 }
 
@@ -256,7 +236,7 @@ void MainWindow::on_btn_disable_clicked()
     else
     {
         this->logger->info("下使能失败, 请先连接机器人");
-        QMessageBox::critical(this, "下使能无效", "请先连接机器人");
+        QMessageBox::critical(this, QString::fromLocal8Bit("下使能无效"), QString::fromLocal8Bit("请先连接机器人"));
     }
 }
 
@@ -289,8 +269,6 @@ void MainWindow::on_btn_openCamera_clicked() {
     }
 
     this->logger->info("执行相机打开操作");
-//    ui->btn_camera_open->setEnabled(false);
-//    ui->btn_camera_close->setEnabled(true);
 }
 
 void MainWindow::on_btn_closeCamera_clicked() {
@@ -299,8 +277,6 @@ void MainWindow::on_btn_closeCamera_clicked() {
         this->m_VisionInterface->line_handler->is_running = false;
     }
     this->logger->info("执行相机关闭操作");
-//    ui->btn_camera_open->setEnabled(true);
-//    ui->btn_camera_close->setEnabled(false);
 }
 
 void MainWindow::on_btn_location_clicked() {
@@ -403,12 +379,6 @@ void MainWindow::slotUpdateUIAll() {
 
     // 4.0 更新轴状态信息
     updateAxisStatus();
-
-    // 5.0 更新机器人任务流程状态
-    updateActionSta();
-
-    //6.0 更新设备连接状态
-    updateConnectSta();
 
     // 7.0 更新硬件设备连接状态，并通过指示灯显示
     updataDeviceConnectState();
@@ -613,19 +583,7 @@ void MainWindow::updateLineDetectResults() {
                 findChild<QLabel*>(prefix + QString::number(i))->setText("线间距:" + QString::number(i + 1) + ":" + QString::number(dist));
             }
         }
-
-
-//        std::map<std::string, LineDetectRes> res = m_VisionInterface->getLineRes();
-//        for(const auto &item : res){
-//            std::string prefix =  item.first;
-//            size_t index = prefix.find("_");
-//            int number = prefix[index+1]-'0';
-//            float dist = item.second.dist;
-//            // 更新直线检测结果
-//            findChild<QLabel*>("label_cam_dist" + QString::number(number-1))->setText("Dist " + QString::number(number) + ":" + QString::number(dist));
-//        }
     }
-
 }
 
 void MainWindow::updateLaserData() {
@@ -763,10 +721,12 @@ void MainWindow::btn_moveFwd_shaft_pressed() {
 
 void MainWindow::on_btn_developerMode_clicked() {
     ui->stackedWidget_view->setCurrentIndex(2);
+    MessageAlert("切换到开发者界面");
 }
 
 void MainWindow::on_btn_userMode_clicked() {
    ui->stackedWidget_view->setCurrentIndex(0);
+   MessageAlert("切换到用户界面");
 }
 
 void MainWindow::on_comboBox_tools_currentIndexChanged() {
@@ -1032,66 +992,8 @@ void MainWindow::on_btn_SetMagent_clicked()
     m_Com->SetMagentAction(index,action);
 }
 
-void MainWindow::updateActionSta() {
-    //半自动作业按钮状态更新
-//    static int old_action_index = -100;
-//    int action_index = m_Task->ActionIndex.loadRelaxed();
-//    const std::map<int,QString> AUTOWORK_NAME = {
-//            {10,"btn_location_"}, {12,"btn_lift_"}, {15,"btn_leveling_"}, {16,"btn_lift_2"},
-//            {20,"btn_sideline_"}, {35,"btn_sideline_"}, {28,"btn_sideline_"}, {30,"btn_magnet_open_"},
-//            {40,"btn_auto_knock_"}, {32,"btn_magnet_close_"}, {42,"btn_magnet_pause_"}, {44,"btn_knock_suspend_"},
-//    };
-//
-////    const std::map<int,std::string> AUTOWORK_NAME = {
-////            {10,"准备位置"},{12,"举升"},{15,"调平"},{16,"举升去对边"},
-////            {20,"获取边线"},{35,"调整偏差"},{28,"检测调整结果"},{30,"开启磁铁"},
-////            {40,"自动碰钉"},{32,"关闭磁铁"},{42,"碰钉暂停"},{44,"碰钉中止"}
-////    };
-//
-//    //当action_index状态改变时才刷新按钮
-////    logger->info("action_index {}",action_index);
-//    if(action_index == 0){
-//        for(auto it=AUTOWORK_NAME.begin();it!=AUTOWORK_NAME.end();++it){
-//            findChild<QPushButton*>(it->second)->setStyleSheet("background-color: rgb(170, 170, 255)");
-//        }
-//    }
-//
-////    ui->btn_camera_close->setText(QString::number(action_index));//临时显示action_index
-//
-//    if(old_action_index != action_index){
-//        old_action_index = action_index;
-//        for(auto it=AUTOWORK_NAME.begin();it!=AUTOWORK_NAME.end();++it){
-//            if(it->first == action_index){
-//                findChild<QPushButton*>(it->second)->setStyleSheet("background-color: green; color: black;");
-//            }else{
-//                findChild<QPushButton*>(it->second)->setStyleSheet("background-color: rgb(170, 170, 255)");
-//            }
-//        }
-//    }
-}
-
-void MainWindow::updateConnectSta() {
-//    std::map<QString,const bool> comStatus = {
-//            {"icon_connect_plc",m_Com->getCommState_Robot()},
-//            {"icon_connect_io",m_Com->getCommState_IOA()},
-//            {"icon_connect_io",m_Com->getCommState_IOB()},
-//    };
-//
-//    for(const auto&item: comStatus){
-//        if(item.second == false){
-//            findChild<QLabel*>(item.first)->setStyleSheet("image: url(:/img/images/icon_redLight.png);");
-//        }else{
-//            findChild<QLabel*>(item.first)->setStyleSheet("image: url(:/img/images/icon_greenLight.png);");
-//        }
-//    }
-}
-
-void MainWindow::on_btn_line_detect_clicked() {
-//    bool isEnable = ui->btn_camera_open->isEnabled();
-//    if(isEnable){
-//        this->logger->info("相机未开启");
-//        return;
-//    }
+void MainWindow::on_btn_line_detect_clicked()
+{
     unsigned pageIndex = ui->stackedWidget_view->currentIndex();
     if(pageIndex!=1){
         return ;
@@ -1196,23 +1098,21 @@ void MainWindow::slots_on_btn_magnet_exit_clicked() {
     setButtonIndex();
     setActionIndex();
     this->logger->info("退出");
-
 }
 
-void MainWindow::slots_on_btn_add_nail_clicked() {
+void MainWindow::slots_on_btn_add_nail_clicked()
+{
     setButtonIndex();
     setActionIndex();
     this->logger->info("放钉");
-
 }
 
-void MainWindow::on_btn_wheel_forward_pressed() {
-
+void MainWindow::on_btn_wheel_forward_pressed()
+{
     // 底盘前进
     m_Robot->setJointMoveVel(GP::WHEEL_LEFT_INDEX, m_wheelVel);
     m_Robot->setJointMoveVel(GP::WHEEL_RIGHT_INDEX, m_wheelVel);
     this->logger->info("******前进*******");
-
 }
 
 void MainWindow::on_btn_wheel_backward_released() {
@@ -1259,14 +1159,9 @@ void MainWindow::on_btn_steering_left_pressed() {
     angle = angle > 90 ? 90 : angle;
     m_Robot->setJointMoveAbs(GP::STEER_LEFT_INDEX, angle ,5);
     m_Robot->setJointMoveAbs(GP::STEER_RIGHT_INDEX, angle ,5);
-
-
-
 }
 
 void MainWindow::on_btn_steering_left_released() {
-
-
 }
 
 void MainWindow::on_btn_steering_right_pressed() {
@@ -1280,15 +1175,13 @@ void MainWindow::on_btn_steering_right_released() {
 
 }
 
-void MainWindow::on_btn_add_nail_pressed() {
-
-//    m->setJointGroupMove(eMC_Motion,Postion_Home, )
+void MainWindow::on_btn_add_nail_pressed()
+{
    double vel_Home[10] = {0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1};
    for(int i = 0;i<10;i++){
        vel_Home[i] = LINK_0_JOINT_MAX_VEL[i]*0.1;
    }
    m_Robot->setJointGroupMoveAbs(GP::Position_Map[{GP::Working_Scenario, GP::PositionType::Prepare}].value.data(),vel_Home);
-
 }
 
 void MainWindow::on_btn_add_nail_released() {
@@ -1330,7 +1223,6 @@ void MainWindow::on_btn_camera_calib_clicked() {
         // ToDo: 更新测算系数到yaml文件
 
     }
-
 }
 
 void MainWindow::slots_btn_load_configuration_clicked()
@@ -1480,6 +1372,15 @@ void MainWindow::updateTaskStateMachineStatus()
     QString temp_str = QString::fromLocal8Bit(current_state.c_str());
 
     ui->task_state_machine_button->setText(temp_str);
+
+    if (m_Task->checkSubState(ESubState::eReady))
+    {
+        ui->task_state_machine_button->setStyleSheet("background-color: lightblue; border: 2px solid blue; border-radius: 10px;");
+    }
+    else
+    {
+        ui->task_state_machine_button->setStyleSheet("background-color: yellow; border: 2px solid blue; border-radius: 10px;");
+    }
 }
 
 void MainWindow::updateWorkingMode()
@@ -1539,10 +1440,49 @@ void MainWindow::slots_btn_working_mode_clicked()
 void MainWindow::slots_btn_open_document_clicked()
 {
     ui->stackedWidget_view->setCurrentWidget(ui->page_document);
-    QString help_img{ "D://Robot//images//help_image.png" };
+    QString help_img{ROOT_PATH};
+    help_img += "/images/help_image.png"; 
     QImage image(help_img);
     QPixmap pixmap(help_img);
     ui->label_help->resize(image.size());
     ui->label_help->setPixmap(pixmap);
     ui->label_help->setScaledContents(true);
+    MessageAlert("切换到帮助文档页面");
+}
+
+void MainWindow::MessageAlert(const std::string& message)
+{
+    QString msg = QString::fromLocal8Bit(message.c_str());
+    QLabel* label_ptr = new QLabel(msg, this);
+    label_ptr->setWindowFlags(Qt::Tool | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
+    label_ptr->setAttribute(Qt::WA_StyledBackground);
+    label_ptr->setStyleSheet("background-color: white; color: red; padding: 15px; border: 2px solid blue; border-radius: 5px;");
+    label_ptr->setAlignment(Qt::AlignCenter);
+    label_ptr->setFixedSize(200, 50);
+
+    QPoint global_pos = mapToGlobal(QPoint(0, 0));
+    label_ptr->move(global_pos.x() + width() / 2 - label_ptr->width() / 2 + 40, global_pos.y() + 80);
+    label_ptr->show();
+
+    QTimer::singleShot(3000, label_ptr, &QLabel::deleteLater);
+}
+
+void MainWindow::AddMessageAlert(const std::string& message)
+{
+    std::lock_guard<std::mutex> lock(m_message_mutex);
+
+    m_message_container.push(message);
+}
+
+void MainWindow::MessageConsumer()
+{
+    if (m_message_container.empty())
+    {
+        return;
+    }
+
+    std::lock_guard<std::mutex> lock(m_message_mutex);
+    std::string msg = m_message_container.front();
+    MessageAlert(msg);
+    m_message_container.pop();
 }
