@@ -1179,3 +1179,30 @@ void CTask::SetCallBack(std::function<void(const std::string&)> callback)
 {
     m_callback = callback;
 }
+
+bool CTask::LaserValueIsValid()
+{
+    UpdateLaserDistance();
+
+    std::vector<double> laser_value(std::begin(m_stMeasuredata.m_LaserDistance), std::end(m_stMeasuredata.m_LaserDistance));
+    return std::all_of(laser_value.begin(), laser_value.end(), [](double value) { return value < GP::Laser_Valid_Threshold; });
+}
+
+bool CTask::LineValueIsValid()
+{
+    VisionResult vis_res = m_vision->getVisResult();
+    if (!vis_res.status)
+    {
+        return false;
+    }
+    UpdateVisionResult(vis_res);
+
+    if((m_stMeasuredata.m_bLineDistance[0]||m_stMeasuredata.m_bLineDistance[1])  == false
+    || (m_stMeasuredata.m_bLineDistance[2]||m_stMeasuredata.m_bLineDistance[3] ) == false
+    || (m_stMeasuredata.m_bLineDistance[4]||m_stMeasuredata.m_bLineDistance[5] )== false)
+    {
+        return false;
+    }
+
+    return true;
+}

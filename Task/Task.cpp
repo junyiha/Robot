@@ -534,7 +534,7 @@ int CTask::CheckParallelState(QVector<double> laserDistance)
         return -1;
     }
     for(int i=0;i<4;++i) {
-        if(laserDistance[i] > 300 || laserDistance[i] < 0) {
+        if(laserDistance[i] > GP::Laser_Valid_Threshold || laserDistance[i] < 0) {
             log->error("{}激光数据有误,或壁面距离太远",i);
             return -1;
         }
@@ -607,8 +607,6 @@ int CTask::CheckPositionState()
         log->error("{} 检测到的边线数据不满足调整需求", __LINE__);
         return -1;
     }
-
-    double Ref_Distance = 15;
 
     //边线偏差是否小于阈值
     double line_dis_1 = ((m_stMeasuredata.m_LineDistance[0]-15) * m_stMeasuredata.m_bLineDistance[0] -

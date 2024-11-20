@@ -25,7 +25,7 @@ if(BUILD_GPU_FLAG)
     add_definitions(-DGPU_FLAG=true)
 endif()
 
-add_definitions(-DSTATE_MACHINE_TEST=1)
+# add_definitions(-DSTATE_MACHINE_TEST=1)
 add_definitions(-DCONFIG_PATH_RO="${CMAKE_CURRENT_SOURCE_DIR}/configuration/config_ro.yaml")
 add_definitions(-DCONFIG_PATH_RW="${CMAKE_CURRENT_SOURCE_DIR}/configuration/config_rw.yaml")
 add_definitions(-DROOT_PATH="${CMAKE_CURRENT_SOURCE_DIR}")

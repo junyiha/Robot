@@ -38,6 +38,10 @@ TOOL_LIFTING:
     brief:  "tool lifting"
     value: 4      
 
+Laser_Valid_Threshold :
+    brief: "less than the value, the value is valid"
+    value: 300
+
 Lift_Distance_In_Parallel : 
     brief:  "lift distance in parallel"
     value: 11.0

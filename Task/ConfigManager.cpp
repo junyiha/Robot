@@ -86,6 +86,7 @@ namespace Config
 		}
 
 		GP::Do_Weld_Parallel_Condition = m_root_ro["Do_Weld_Parallel_Condition"]["value"].as<std::size_t>();
+		GP::Laser_Valid_Threshold = m_root_ro["Laser_Valid_Threshold"]["value"].as<double>();
 	}
 
 	bool ConfigManager::WriteToFile()

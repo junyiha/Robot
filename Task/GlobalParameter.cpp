@@ -40,4 +40,6 @@ namespace GP
 	std::size_t IOB_Port;
 
 	std::size_t Do_Weld_Parallel_Condition;
+
+	double Laser_Valid_Threshold;
 }

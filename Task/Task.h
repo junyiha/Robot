@@ -363,6 +363,10 @@ public:
      */
     void SetCallBack(std::function<void(const std::string&)> callback);
 
+    bool LaserValueIsValid();
+
+    bool LineValueIsValid();
+
 private:
     ETopState m_etopState{ETopState::eManual};
     ESubState m_esubState{ESubState::eReady};
@@ -370,7 +374,7 @@ private:
     
 private:
     std::mutex m_mutex;
-    bool m_position_motion_flag{false};
+    bool m_position_motion_flag{ false };
     bool m_automatic_working_flag{ true };
     std::map<std::string, int> ValueMap;
     std::function<void(const std::string&)> m_callback;

@@ -178,6 +178,8 @@ void MainWindow::connectSlotFunctions() {// 按钮时间绑定
     
     connect(ui->btn_working_mode, &QPushButton::clicked, this, &MainWindow::slots_btn_working_mode_clicked, Qt::UniqueConnection);
     connect(ui->btn_open_document, &QPushButton::clicked, this, &MainWindow::slots_btn_open_document_clicked, Qt::UniqueConnection);
+    connect(ui->btn_check_laser_is_valid, &QPushButton::clicked, this, &MainWindow::slots_btn_check_laser_is_valid_clicked, Qt::UniqueConnection);
+    connect(ui->btn_check_line_is_valid, &QPushButton::clicked, this, &MainWindow::slots_btn_check_line_is_valid_clicked, Qt::UniqueConnection);
 }
 
 MainWindow::~MainWindow()
@@ -1448,6 +1450,47 @@ void MainWindow::slots_btn_open_document_clicked()
     ui->label_help->setPixmap(pixmap);
     ui->label_help->setScaledContents(true);
     MessageAlert("切换到帮助文档页面");
+}
+
+void MainWindow::slots_btn_check_laser_is_valid_clicked()
+{
+    if (m_Task->LaserValueIsValid())
+    {
+        ui->btn_check_laser_is_valid->setStyleSheet("background-color: lightblue;"
+        "border: 2px solid blue;"
+        "border-radius: 10px;"
+        );
+        MessageAlert("点激光数据有效，可以进行作业");
+    }
+    else
+    {
+        ui->btn_check_laser_is_valid->setStyleSheet("background-color: red;"
+        "border: 2px solid red;"
+        "border-radius: 10px;"
+        );
+        std::string msg = std::string("点激光数据无效，至少有一个点激光数据大于 ") + std::to_string(GP::Laser_Valid_Threshold);
+        MessageAlert(msg);
+    }
+}
+
+void MainWindow::slots_btn_check_line_is_valid_clicked()
+{
+    if (m_Task->LineValueIsValid())
+    {
+        ui->btn_check_line_is_valid->setStyleSheet("background-color: lightblue;"
+        "border: 2px solid blue;"
+        "border-radius: 10px;"
+        );
+        MessageAlert("线间距数据有效，可以进行作业");
+    }
+    else
+    {
+        ui->btn_check_line_is_valid->setStyleSheet("background-color: red;"
+        "border: 2px solid red;"
+        "border-radius: 10px;"
+        );
+        MessageAlert("线间距数据无效，至少有一组线间距数据都无效");
+    }
 }
 
 void MainWindow::MessageAlert(const std::string& message)
