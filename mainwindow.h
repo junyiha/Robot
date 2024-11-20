@@ -23,6 +23,7 @@
 #include <cmath>
 #include <QMutex>
 #include <QTextCodec>
+#include <QTextBrowser>
 //--------------机器人部分--------------//
 #include "com/ComInterface.h"
 #include "robot/robot.h"

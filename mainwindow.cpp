@@ -1442,13 +1442,19 @@ void MainWindow::slots_btn_working_mode_clicked()
 void MainWindow::slots_btn_open_document_clicked()
 {
     ui->stackedWidget_view->setCurrentWidget(ui->page_document);
-    QString help_img{ROOT_PATH};
-    help_img += "/images/help_image.png"; 
-    QImage image(help_img);
-    QPixmap pixmap(help_img);
-    ui->label_help->resize(image.size());
-    ui->label_help->setPixmap(pixmap);
-    ui->label_help->setScaledContents(true);
+
+    std::string help_file{ ROOT_PATH };
+    help_file += "/configuration/help.html";
+    auto current_widget_ptr = ui->stackedWidget_view->currentWidget();
+
+    QTextBrowser* text_browser = new QTextBrowser;
+    text_browser->setSource(QUrl::fromLocalFile(QString::fromLocal8Bit(help_file.c_str())));
+
+    QVBoxLayout* layout = new QVBoxLayout;
+    layout->addWidget(text_browser);
+    current_widget_ptr->setLayout(layout);
+    current_widget_ptr->show();
+
     MessageAlert("切换到帮助文档页面");
 }
 

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>帮助文档</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+
+        header {
+            background-color: #0078d7;
+            color: #fff;
+            padding: 1em 0;
+            text-align: center;
+        }
+
+        nav {
+            background: #333;
+            color: white;
+            padding: 1em;
+            text-align: center;
+        }
+
+            nav a {
+                color: white;
+                margin: 0 10px;
+                text-decoration: none;
+            }
+
+                nav a:hover {
+                    text-decoration: underline;
+                }
+
+        main {
+            padding: 2em;
+        }
+
+        h1, h2 {
+            color: #0078d7;
+        }
+
+        footer {
+            text-align: center;
+            padding: 1em;
+            background-color: #333;
+            color: white;
+        }
+
+        .divider {
+            border-top: 2px dashed #0078d7; /* 自定义虚线样式 */
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>帮助文档</h1>
+    </header>
+
+    <main>
+        <section id="question">
+            <h2>常见问题</h2>
+            <dl>
+                <dt><b>问题：</b></dt>
+                <dd>在调平阶段和对边阶段，注意观察各轴实时位置，如果没有发生变化，很可能是某一个轴到达限位。</dd>
+                <dt><b>解决方法：</b></dt>
+                <dd>发送终止指令，使机器人状态跳转到手动--就绪状态，手动调整达到限位的轴。情况分为两种，达到最大限位和最小限位。如果最大限位，则适当调小，反之调大。</dd>
+                <div class="divider"></div>
+
+                <dt><b>问题：</b></dt>
+                <dd>前后轴或左右轴容易到达限位，超负载导致抱闸</dd>
+                <dt><b>解决方法：</b></dt>
+                <dd>在进行位置点示教时，要注意前后轴和左右轴的位置，一般在零位，在示教举升位时，腰俯仰一般在90度，使机器人受力更均衡。</dd>
+                <div class="divider"></div>
+
+                <dt><b>问题：</b></dt>
+                <dd>调平时间过长</dd>
+                <dt><b>解决方法：</b></dt>
+                <dd>在设置举升位时，一般点激光数据在100毫米左右。操控机器人向壁面运动到达举升位时，优先使工具升降向正方向运动，务必使底部升降在5mm左右。这样壁面机器人重心上移，增强机器人稳定性。</dd>
+                <div class="divider"></div>
+
+                <dt><b>问题：</b></dt>
+                <dd>对边时间过长</dd>
+                <dt><b>解决方法：</b></dt>
+                <dd>在进行调平和对边之前，先观察线间距，尽量保证线间距1，线间距3，线间距2，线间距4数据都在30mm以内，线间距5和线间距6在70mm左右，这一阶段是通过人工手动操控机器人，可以称为粗调整。这样做可以减少对边的作业时间，提升作业效率。</dd>
+                <div class="divider"></div>
+
+                <dt><b>问题：</b></dt>
+                <dd>状态跳转指示</dd>
+                <dt><b>解决方法：</b></dt>
+                <dd>
+                    状态显示为蓝色是处于手动--就绪状态，表示可以进行新的碰钉作业。
+                    状态显示为黄色是正在进行碰钉作业，不可进行新的碰钉作业。
+                </dd>
+                <div class="divider"></div>
+            </dl>
+        </section>
+
+        <section id="image">
+            <h2>操作流程--简要版本</h2>
+            <div>
+                <img src="../images/help_image.png" alt="操作流程" />
+            </div>
+            <h2>操作流程--详细版本</h2>
+            <div>
+                <img src="../images/help_image-2.png" alt="操作流程" />
+            </div>
+        </section>
+
+        <section id="contact">
+            <h2>联系我们</h2>
+            <p>如果您有任何问题或建议，请随时与我们联系。</p>
+            <p>邮箱：<a href="mailto:support@example.com">support@example.com</a></p>
+            <p>电话：123-456-7890</p>
+        </section>
+    </main>
+
+    <footer>
+        <p>版权所有 &copy; 2024 公司名称. 保留所有权利。</p>
+    </footer>
+</body>
+</html>
