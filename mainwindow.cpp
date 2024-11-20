@@ -1501,7 +1501,7 @@ void MainWindow::MessageAlert(const std::string& message)
     label_ptr->setAttribute(Qt::WA_StyledBackground);
     label_ptr->setStyleSheet("background-color: white; color: red; padding: 15px; border: 2px solid blue; border-radius: 5px;");
     label_ptr->setAlignment(Qt::AlignCenter);
-    label_ptr->setFixedSize(200, 50);
+    label_ptr->setFixedSize(400, 50);
 
     QPoint global_pos = mapToGlobal(QPoint(0, 0));
     label_ptr->move(global_pos.x() + width() / 2 - label_ptr->width() / 2 + 40, global_pos.y() + 80);
