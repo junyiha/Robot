@@ -320,6 +320,8 @@ private slots:
     void slots_btn_check_laser_is_valid_clicked();
     void slots_btn_check_line_is_valid_clicked();
 
+    void slots_btn_single_job_clicked();
+
 private:
     void MessageAlert(const std::string& message);
     void AddMessageAlert(const std::string& message);

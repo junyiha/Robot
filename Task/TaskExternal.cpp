@@ -232,6 +232,7 @@ void CTask::readyToParallelExecutionCommand()
         }
         case EExecutionCommand::eParallel:
         {
+            m_begin_time = std::chrono::system_clock::now();
             updateTopAndSubState(ETopState::eParallel, ESubState::eDetection);
             break;
         }
@@ -532,10 +533,10 @@ void CTask::motionInPositioningExecutionCommand()
 
 void CTask::readyToMagentOnExecutionCommand()
 {
-    if (m_automatic_working_flag)
+    static int magent{ 0 };
+    if (m_automatic_working_flag && magent == 0)
         updateExecutionCommand(EExecutionCommand::eMagentOn);
 
-    static int magent{ 0 };
     switch (m_eexecutionCommand)
     {
         case EExecutionCommand::eNULL:
@@ -650,7 +651,7 @@ void CTask::doingWeldExecutionCommand()
                 }
                 break;
             }
-            if (NewDoWeldAction(1))
+            if (DoWeldActionDecorator(1))
             {
                 updateTopAndSubState(ETopState::eDoWeld, ESubState::eStopWeld);  // 碰钉结束，跳转到碰钉停止
             }
@@ -658,20 +659,20 @@ void CTask::doingWeldExecutionCommand()
         }
         case EExecutionCommand::eTerminate:
         {
-            NewDoWeldAction(-1);
+            DoWeldActionDecorator(-1);
             doMagentOff();
             weld = -1;
             break;
         }
         case EExecutionCommand::eStopWeld:
         {
-            NewDoWeldAction(-1);
+            DoWeldActionDecorator(-1);
             updateTopAndSubState(ETopState::eDoWeld, ESubState::eStopWeld);
             break;
         }
         case EExecutionCommand::ePause:
         {
-            NewDoWeldAction(0);
+            DoWeldActionDecorator(0);
             updateTopAndSubState(ETopState::eDoWeld, ESubState::eReadyToDoWeld);
             break;
         }
@@ -684,10 +685,10 @@ void CTask::doingWeldExecutionCommand()
 
 void CTask::stopWeldExecutionCommand()
 {
-    if (m_automatic_working_flag)
+    static int weld{0};
+    if (m_automatic_working_flag && weld == 0)
         updateExecutionCommand(EExecutionCommand::eMagentOff);
 
-    static int weld{0};
     switch (m_eexecutionCommand)
     {
         case EExecutionCommand::eNULL:
@@ -756,12 +757,18 @@ void CTask::quitingExecutionCommand()
 
             int tool_index{ 9 };
             int base_index{ 0 };
-            m_Robot->setJointMoveAbs(tool_index, temp_value.at(tool_index), 4);
-            m_Robot->setJointMoveAbs(base_index, temp_value.at(base_index), 2);
+            m_Robot->setJointMoveAbs(tool_index, temp_value.at(tool_index), 6);
+            m_Robot->setJointMoveAbs(base_index, temp_value.at(base_index), 4);
             if (std::abs(m_JointGroupStatus[tool_index].Position - temp_value.at(tool_index)) < 1 && 
                 std::abs(m_JointGroupStatus[base_index].Position < temp_value.at(base_index)) < 1)
             {
                 updateTopAndSubState(ETopState::eManual, ESubState::eReady);
+                auto duration = std::chrono::system_clock::now() - m_begin_time;
+                auto result = std::chrono::duration_cast<std::chrono::seconds>(duration).count();
+                log->info("{}: 碰钉作业耗时: {}", __LINE__, result);
+                std::string temp_str = "本次碰钉作业耗时" + std::to_string(result) + "\n";
+                m_timer_record << temp_str << "\n";
+                m_timer_record.flush();
             }
             break;
         }
@@ -850,7 +857,7 @@ void CTask::UpdateVisionResult(VisionResult& vis_res)
     m_stMeasuredata.m_bLineDistance[5] = temp_flag_vec.at(4);
 }
 
-void CTask::DoWelding(int tool_a, int tool_b, int key)
+void CTask::DoubleToolsDoWeldingExecuteUnit(int tool_a, int tool_b, int key)
 {
     std::bitset<8> value;
     switch (static_cast<ActionKey>(key))
@@ -957,8 +964,102 @@ void CTask::DoWelding(int tool_a, int tool_b, int key)
     }
 }
 
+void CTask::SingleToolDoWeldingExecuteUnit(int index, int key)
+{
+    std::bitset<8> value;
+    switch (static_cast<ActionKey>(key))
+    {
+    case ActionKey::Grind_MovorOff1:
+    {
+        m_Comm->SetToolsAction(index, eGrind_MovorOff);
+        value = eGrind_MovorOff;
+        break;
+    }
+    case ActionKey::Grind_OnorDown1:
+    {
+        m_Comm->SetToolsAction(index, eGrind_OnorDown);
+        value = eGrind_OnorDown;
+        break;
+    }
+    case ActionKey::Grind_Up:
+    {
+        m_Comm->SetToolsAction(index, eGrind_Up);
+        value = eGrind_Up;
+        break;
+    }
+    case ActionKey::Grind_OnorDown2:
+    {
+        m_Comm->SetToolsAction(index, eGrind_OnorDown);
+        value = eGrind_OnorDown;
+        break;
+    }
+    case ActionKey::Grind_MovorOff2:
+    {
+        m_Comm->SetToolsAction(index, eGrind_MovorOff);
+        value = eGrind_MovorOff;
+        break;
+    }
+    case ActionKey::Weld_MovorDwon:
+    {
+        m_Comm->SetToolsAction(index, eWeld_MovorDwon);
+        value = eWeld_MovorDwon;
+        break;
+    }
+    case ActionKey::Weld_Fix:
+    {
+        m_Comm->SetToolsAction(index, eWeld_Fix);
+        value = eWeld_Fix;
+        break;
+    }
+    case ActionKey::Weld_Up:
+    {
+        m_Comm->SetToolsAction(index, eWeld_Up);
+        m_Comm->SetGunConnect(index);
+        value = eWeld_Up;
+        break;
+    }
+    case ActionKey::Weld_On:
+    {
+        m_Comm->SetToolsAction(index, eWeld_On);
+        value = eWeld_On;
+        break;
+    }
+    case ActionKey::Weld_Down:
+    {
+        m_Comm->SetToolsAction(index, eWeld_Down);
+        m_Comm->SetGunConnect(0);
+        value = eWeld_Down;
+        break;
+    }
+    case ActionKey::InitAction:
+    {
+        m_Comm->SetToolsAction(index, eInitAction);
+        value = eInitAction;
+        break;
+    }
+    }
+    if (value.count() != 0)
+    {
+        auto now = std::chrono::system_clock::now();
+        auto timestamp = std::chrono::system_clock::to_time_t(now);
+        std::tm* now_tm = std::localtime(&timestamp);
+        std::stringstream os;
+        os << std::put_time(now_tm, "%Y-%m-%d %H:%M:%S");
 
-bool CTask::NewDoWeldAction(int execute)
+        auto it = ValueMap.find(os.str());
+        if (it != ValueMap.end())
+        {
+            it->second += value.count();
+        }
+        else
+        {
+            ValueMap[os.str()] = value.count();
+        }
+        log->warn("{}: value.count(): {}, timestamp: {}", __LINE__, value.count(), os.str());
+    }
+}
+
+bool CTask::FourToolsDoWeldAction(int execute)
 {
     static quint8  index_tool = 1; //执行焊枪编号范围1~5
     static quint8  index_tool2 = 1; //执行焊枪编号范围1~5
@@ -973,20 +1074,22 @@ bool CTask::NewDoWeldAction(int execute)
     {
         unsigned char tem = ActionList[index_act] & 0b00100011;//关闭打磨、碰钉、定位气缸、打磨降
         tem |= 0b00100000; //碰钉枪下降
-        log->info("{}: m_Comm->SetToolsAction({}, (E_WeldAction)tem); ", __LINE__, index_tool);
-        log->info("{}: m_Comm->SetToolsAction({}, (E_WeldAction)tem); ", __LINE__, 11 - index_tool);
+        m_Comm->SetToolsAction(index_tool, (E_WeldAction)tem);;
+        m_Comm->SetToolsAction(11 - index_tool, (E_WeldAction)tem);;
         if (offset_flag)
         {
-            log->info("{}: m_Comm->SetToolsAction({}, (E_WeldAction)tem); ", __LINE__, index_tool2);
-            log->info("{}: m_Comm->SetToolsAction({}, (E_WeldAction)tem); ", __LINE__, 11 - index_tool2);
+            m_Comm->SetToolsAction(index_tool2, (E_WeldAction)tem);;
+            m_Comm->SetToolsAction(11 - index_tool2, (E_WeldAction)tem);;
         }
-        log->info("{}: m_Comm->SetGunConnect(0);//关闭接触器 ", __LINE__);
+        m_Comm->SetGunConnect(0);//关闭接触器;
 
         index_tool = 1;
         index_tool2 = 1;
         index_act = 0;
         time_cnt = 0;
         time_cnt2 = 0;
+        offset_flag = false;
+        end_flag = true;
         log->info("结束碰钉作业");
         return true;
     }
@@ -999,14 +1102,14 @@ bool CTask::NewDoWeldAction(int execute)
         if (pause_cnt > 600)//暂停时间过长，停止
         {
             unsigned char tem = ActionList[index_act] & 0b10111111;//关闭打磨
-            log->info("{}: m_Comm->SetToolsAction({}, (E_WeldAction)tem); ", __LINE__, index_tool);
-            log->info("{}: m_Comm->SetToolsAction({}, (E_WeldAction)tem); ", __LINE__, 11 - index_tool);
+            m_Comm->SetToolsAction(index_tool, (E_WeldAction)tem);;
+            m_Comm->SetToolsAction(11 - index_tool, (E_WeldAction)tem);;
             if (offset_flag)
             {
-                log->info("{}: m_Comm->SetToolsAction({}, (E_WeldAction)tem); ", __LINE__, index_tool2);
-                log->info("{}: m_Comm->SetToolsAction({}, (E_WeldAction)tem); ", __LINE__, 11 - index_tool2);
+                m_Comm->SetToolsAction(index_tool2, (E_WeldAction)tem);;
+                m_Comm->SetToolsAction(11 - index_tool2, (E_WeldAction)tem);;
             }
-            log->info("{}: m_Comm->SetGunConnect(0);//关闭接触器 ", __LINE__);
+            m_Comm->SetGunConnect(0);//关闭接触器;
 
             pause_cnt = 0;
             log->warn("暂停时间过长，关闭打磨及接触器");
@@ -1016,7 +1119,7 @@ bool CTask::NewDoWeldAction(int execute)
     }
 
     //=============== 执行10把焊枪轮次焊接1~5,6~10 ==============
-    DoWelding(index_tool, 11 - index_tool, time_cnt);
+    DoubleToolsDoWeldingExecuteUnit(index_tool, 11 - index_tool, time_cnt);
     time_cnt++;
     if (time_cnt > static_cast<int>(ActionKey::End))
     {
@@ -1036,7 +1139,7 @@ bool CTask::NewDoWeldAction(int execute)
     {
         if (end_flag)
         {
-            DoWelding(index_tool2, 11 - index_tool2, time_cnt2);
+            DoubleToolsDoWeldingExecuteUnit(index_tool2, 11 - index_tool2, time_cnt2);
             time_cnt2++;
             if (time_cnt2 > static_cast<int>(ActionKey::End))
             {
@@ -1052,6 +1155,118 @@ bool CTask::NewDoWeldAction(int execute)
 
     if (index_tool > 5)
     {
+        index_tool = 1;
+        index_tool2 = 1;
+        index_act = 0;
+        time_cnt = 0;
+        time_cnt2 = 0;
+        offset_flag = false;
+        end_flag = true;
+        return  true;
+    }
+
+    return false;
+}
+
+bool CTask::DoubleToolsDoWeldAction(int execute)
+{
+    static quint8  index_tool = 1; //执行焊枪编号范围1~5
+    static quint8  index_tool2 = 10; //执行焊枪编号范围1~5
+    static quint8  index_act = 0;
+    static int  time_cnt = 0; //周期计数，控制动作间隔
+    static int  time_cnt2 = 0; //周期计数，控制动作间隔
+    static bool offset_flag{ false };
+    static bool end_flag{ true };
+
+    //=====================结束碰钉 ==========================
+    if (execute == -1)
+    {
+        unsigned char tem = ActionList[index_act] & 0b00100011;//关闭打磨、碰钉、定位气缸、打磨降
+        tem |= 0b00100000; //碰钉枪下降
+        m_Comm->SetToolsAction(index_tool, (E_WeldAction)tem);
+        if (offset_flag)
+        {
+            m_Comm->SetToolsAction(index_tool2, (E_WeldAction)tem);
+        }
+        m_Comm->SetGunConnect(0);//关闭接触器;
+
+        index_tool = 1;
+        index_tool2 = 10;
+        index_act = 0;
+        time_cnt = 0;
+        time_cnt2 = 0;
+        log->info("结束碰钉作业");
+        return true;
+    }
+
+    //=====================暂停碰钉 ==========================
+    static quint32 pause_cnt = 0;
+    if (execute == 0)
+    {
+        pause_cnt++;
+        if (pause_cnt > 600)//暂停时间过长，停止
+        {
+            unsigned char tem = ActionList[index_act] & 0b10111111;//关闭打磨
+            m_Comm->SetToolsAction(index_tool, (E_WeldAction)tem);
+            if (offset_flag)
+            {
+                m_Comm->SetToolsAction(index_tool2, (E_WeldAction)tem);
+            }
+            m_Comm->SetGunConnect(0);//关闭接触器;
+
+            pause_cnt = 0;
+            log->warn("暂停时间过长，关闭打磨及接触器");
+        }
+        log->info("自动碰钉暂停");
+        return true;
+    }
+
+    //=============== 执行10把焊枪轮次焊接1~5,6~10 ==============
+    if (index_tool > 5)
+    {
+        goto __JUMP_FIRST;
+    }
+    SingleToolDoWeldingExecuteUnit(index_tool, time_cnt);
+    time_cnt++;
+    if (time_cnt > static_cast<int>(ActionKey::End))
+    {
+        time_cnt = 0;
+        index_tool++;
+    }
+__JUMP_FIRST:
+
+    if (!offset_flag)
+    {
+        if (time_cnt > GP::Do_Weld_Parallel_Condition)
+        {
+            offset_flag = true;
+        }
+    }
+    if (offset_flag)
+    {
+        if (end_flag)
+        {
+            SingleToolDoWeldingExecuteUnit(index_tool2, time_cnt2);
+            time_cnt2++;
+            if (time_cnt2 > static_cast<int>(ActionKey::End))
+            {
+                time_cnt2 = 0;
+                index_tool2--;
+                if (index_tool2 <= 5)
+                {
+                    end_flag = false;
+                }
+            }
+        }
+    }
+
+    if (index_tool > 5 && !end_flag)
+    {
+        index_tool = 1;
+        index_tool2 = 10;
+        index_act = 0;
+        time_cnt = 0;
+        time_cnt2 = 0;
         return  true;
     }
 
@@ -1165,9 +1380,9 @@ bool CTask::DoMagentOff()
     return doMagentOff();
 }
 
-bool CTask::DoWeldAction(int index)
+bool CTask::DoWeldActionDecorator(int execute)
 {
-    return NewDoWeldAction(index);
+    return FourToolsDoWeldAction(execute);
 }
 
 bool CTask::GetWorkingMode()

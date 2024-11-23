@@ -1,15 +1,19 @@
 #include "Task.h"
 
 CTask::CTask(ComInterface* comm,CRobot* robot,VisionInterface* vision,QObject *parent)
+    : m_Comm(comm), m_Robot(robot), m_vision(vision)
 {
-    m_Comm = comm;
-    m_Robot = robot;
-    m_vision = vision;
-
     std::memset(&m_LinkStatus, 0, sizeof(m_LinkStatus));
 
     log = spdlog::get("logger");
-    m_bMagnetOn = false;
+
+    std::string record_file{ ROOT_PATH };
+    record_file += "/out/weld_time_record.txt";
+    m_timer_record.open(record_file);
+    if (m_timer_record.bad())
+    {
+        throw std::bad_exception();
+    }
 }
 
 void CTask::run()
@@ -122,7 +126,7 @@ void CTask::Manual()
     {
         // 移动到举升位置
         std::vector<double> temp_velocity_group(MAX_FREEDOM_LINK, 0.0);
-        temp_velocity_group = {1, 1, 1, 1, 0.3, 25, 5, 0.5, 5, 3};
+        temp_velocity_group = {2, 2, 2, 1, 0.3, 25, 5, 0.5, 5, 3};
         std::for_each(temp_velocity_group.begin(), temp_velocity_group.end(), [](double& vel) { vel *= 1.1; });
         m_Robot->setJointGroupMoveAbs(GP::Position_Map[{GP::Working_Scenario, GP::PositionType::Lift}].value.data(), temp_velocity_group.data());
     }
@@ -130,7 +134,7 @@ void CTask::Manual()
     {
         // 移动到准备(放钉)位置
         std::vector<double> temp_velocity_group(MAX_FREEDOM_LINK, 0.0);
-        temp_velocity_group = {1, 1, 1, 1, 0.3, 25, 5, 0.5, 2.5, 5};
+        temp_velocity_group = {2, 2, 2, 1, 0.3, 25, 5, 0.5, 2.5, 5};
         std::for_each(temp_velocity_group.begin(), temp_velocity_group.end(), [](double& vel) { vel *= 1.1; });
         m_Robot->setJointGroupMoveAbs(GP::Position_Map[{GP::Working_Scenario, GP::PositionType::Prepare}].value.data(), temp_velocity_group.data());
     }
@@ -171,8 +175,8 @@ void CTask::SteerWheelControl()
 
 void CTask::TravelWheelControl()
 {
-    if (m_JointGroupStatus[GP::WHEEL_LEFT_INDEX].eState != eAxis_STANDSTILL ||
-        m_JointGroupStatus[GP::WHEEL_RIGHT_INDEX].eState != eAxis_STANDSTILL)
+    if (m_JointGroupStatus[GP::WHEEL_LEFT_INDEX].eState != eAxis_CONTINOUSMOTION ||
+        m_JointGroupStatus[GP::WHEEL_RIGHT_INDEX].eState != eAxis_CONTINOUSMOTION)
     {
         log->warn("{}: left or right wheel is not standstill!!!", __LINE__);
         return;

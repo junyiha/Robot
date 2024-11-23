@@ -2,6 +2,7 @@
 // Created by csh_i on 2024/8/15.
 //
 
+#ifndef GPU_FLAG
 #include "LineSegmenationBase.h"
 //#include<cuda_provider_factory.h>
 using namespace std;
@@ -198,7 +199,4 @@ void LineSegmenationBase::imageEnhance(cv::Mat &img) {
      cv::equalizeHist(img, img);
 
 }
-
-
-
-
+#endif  // GPU_FLAG

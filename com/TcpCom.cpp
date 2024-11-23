@@ -1,4 +1,4 @@
-﻿#include "TcpCom.h"
+#include "TcpCom.h"
 
 TcpCom::TcpCom()
 {
@@ -187,8 +187,8 @@ void TcpCom::close()
 {
     if(m_CommState == true)
     {
-        qDebug()<<"close current threadID:"<<GetCurrentThreadId();
-        qDebug()<<"socket is closed ";
+        log->warn("{}: close current threadID:", __LINE__, GetCurrentThreadId());
+        log->warn("{}: socket is closed", __LINE__);
         closesocket(m_SockClient);
         WSACleanup();
         m_CommState = false;

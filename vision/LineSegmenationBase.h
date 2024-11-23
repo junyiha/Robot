@@ -1,9 +1,8 @@
 //
 // Created by csh_i on 2024/8/15.
 //
-
-
 #pragma once
+#ifndef GPU_FLAG
 #include <opencv2/opencv.hpp>
 #include<opencv2/dnn.hpp>
 #include <iostream>
@@ -54,5 +53,4 @@ private:
 
     void Normalize(cv::Mat src, cv::Mat &dst);
 };
-
-
+#endif // GPU_FLAG

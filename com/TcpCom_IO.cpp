@@ -1,4 +1,4 @@
-﻿#include "TcpCom_IO.h"
+#include "TcpCom_IO.h"
 
 TcpCom_IO::TcpCom_IO()
 {
@@ -144,7 +144,7 @@ DINT TcpCom_IO::Recvbuffer()
 //                qDebug()<<"recv time out";
                 if (cnt > TIMEOUT_LIMIT)
                 {
-                    log->warn("{} IO板 give up recieve once, timeout...", __LINE__);
+                    log->warn("{} IO板 give up recieve once, timeout..., count: {}", __LINE__, cnt);
                     return -2;
                 }
             }
@@ -175,8 +175,8 @@ void TcpCom_IO::close()
 {
     if(m_CommState == true)
     {
-        qDebug()<<"close current threadID:"<<GetCurrentThreadId();
-        qDebug()<<"socket is closed";
+        log->warn("{}: close current threadID:", __LINE__, GetCurrentThreadId());
+        log->warn("{}: socket is closed", __LINE__);
         closesocket(m_SockClient);
         WSACleanup();
         m_CommState = false;

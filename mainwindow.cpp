@@ -180,6 +180,7 @@ void MainWindow::connectSlotFunctions() {// 按钮时间绑定
     connect(ui->btn_open_document, &QPushButton::clicked, this, &MainWindow::slots_btn_open_document_clicked, Qt::UniqueConnection);
     connect(ui->btn_check_laser_is_valid, &QPushButton::clicked, this, &MainWindow::slots_btn_check_laser_is_valid_clicked, Qt::UniqueConnection);
     connect(ui->btn_check_line_is_valid, &QPushButton::clicked, this, &MainWindow::slots_btn_check_line_is_valid_clicked, Qt::UniqueConnection);
+    connect(ui->btn_single_job_execute, &QPushButton::clicked, this, &MainWindow::slots_btn_single_job_clicked, Qt::UniqueConnection);
 }
 
 MainWindow::~MainWindow()
@@ -628,7 +629,7 @@ void MainWindow::updateCameraData() {
             prefix = "label_camera_dis";
             imgSize = cv::Size(400,280);
         }else{
-            this->logger->info("相机页面选择错误");
+            //this->logger->info("相机页面选择错误");
             return ;
         }
 
@@ -722,12 +723,12 @@ void MainWindow::btn_moveFwd_shaft_pressed() {
 }
 
 void MainWindow::on_btn_developerMode_clicked() {
-    ui->stackedWidget_view->setCurrentIndex(2);
+    ui->stackedWidget_view->setCurrentWidget(ui->page_config);
     MessageAlert("切换到开发者界面");
 }
 
 void MainWindow::on_btn_userMode_clicked() {
-   ui->stackedWidget_view->setCurrentIndex(0);
+    ui->stackedWidget_view->setCurrentWidget(ui->page_user);
    MessageAlert("切换到用户界面");
 }
 
@@ -1024,7 +1025,8 @@ void MainWindow::on_btn_line_detect_clicked()
 }
 
 void MainWindow::on_btn_line_detect_debug_clicked() {
-    ui->stackedWidget_view->setCurrentIndex(1);
+    ui->stackedWidget_view->setCurrentWidget(ui->page_vision);
+    MessageAlert("切换到视觉界面");
 }
 
 void MainWindow::on_btn_camera_capture_clicked() {
@@ -1032,7 +1034,8 @@ void MainWindow::on_btn_camera_capture_clicked() {
 }
 
 void MainWindow::on_btn_camera_save_clicked() {
-    std::string saveRoot = "../cache/";
+    std::string saveRoot = ROOT_PATH;
+    saveRoot += "/out/";
     this->m_VisionInterface->camera_controls->getImageAll();
     std::map<std::string, cv::Mat> cameraData = this->m_VisionInterface->camera_controls->getCameraImages();
     for(const auto &item : cameraData) {
@@ -1416,21 +1419,14 @@ void MainWindow::slots_btn_autoMagentOff_clicked()
 
 void MainWindow::slots_btn_auto_welding_clicked()
 {
-    ui->btn_autoWelding->setStyleSheet("background-color: rgb(0, 0, 255);"
-        "border: 2px solid blue;"
-        "border-radius: 10px;"
-    );
-
+    logger->info("{}: 自动碰钉流程开始", __LINE__);
     int cnt{ 0 };
-    while (!m_Task->DoWeldAction(1))
+    while (!m_Task->DoWeldActionDecorator(1))
     {
         Sleep(50);
     }
 
-    ui->btn_autoWelding->setStyleSheet("background-color: rgb(0, 255, 0);"
-        "border: 2px solid blue;"
-        "border-radius: 10px;"
-    );
+    logger->info("{}: 自动碰钉流程结束", __LINE__);
 }
 
 void MainWindow::slots_btn_working_mode_clicked()
@@ -1499,6 +1495,28 @@ void MainWindow::slots_btn_check_line_is_valid_clicked()
         );
         MessageAlert("线间距数据无效，至少有一组线间距数据都无效");
     }
+}
+
+void MainWindow::slots_btn_single_job_clicked()
+{
+    int cnt{ 0 };
+    int index = ui->spin_box_for_single_job->value();
+    int key{ 0 };
+    std::string msg;
+    msg = "工具: [" + std::to_string(index) + "] 单次作业开始";
+    MessageAlert(msg);
+    while (true)
+    {
+        m_Task->SingleToolDoWeldingExecuteUnit(index, key);
+        key++;
+        if (key > static_cast<int>(ActionKey::End))
+        {
+            break;
+        }
+        Sleep(50);
+    }
+    msg = "工具: [" + std::to_string(index) + "] 单次作业结束";
+    MessageAlert(msg);
 }
 
 void MainWindow::MessageAlert(const std::string& message)
