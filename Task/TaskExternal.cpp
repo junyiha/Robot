@@ -608,6 +608,11 @@ void CTask::readyToWeldExecutionCommand()
         }
         case EExecutionCommand::eMagentOff:
         {
+            if (m_automatic_working_flag)
+            {
+                m_callback("自动工作模式下不支持脱开指令，具体操作请看帮助手册。");
+                break;
+            }
             doMagentOff();
             weld = -1;
             break;

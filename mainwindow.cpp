@@ -1437,6 +1437,8 @@ void MainWindow::slots_btn_working_mode_clicked()
 {
     bool mode = m_Task->GetWorkingMode();
     m_Task->SetWorkdingMode(!mode);
+
+    MessageAlert((!mode) ? "切换至自动工作模式" : "切换至半自动工作模式");
 }
 
 void MainWindow::slots_btn_open_document_clicked()

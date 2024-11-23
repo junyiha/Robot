@@ -8,8 +8,6 @@ set(CMAKE_AUTOUIC ON)
 
 set(CMAKE_PREFIX_PATH "D:/Qt514/5.14.0/msvc2017_64")
 set(BaseDIR D:/)
-#set(CMAKE_PREFIX_PATH "D:/soft/qt5.14/5.14.0/msvc2017_64")
-#set(BaseDIR E:/znzz/codes/qt/PDRootV1)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W0")
 
@@ -25,7 +23,7 @@ if(BUILD_GPU_FLAG)
     add_definitions(-DGPU_FLAG=true)
 endif()
 
-# add_definitions(-DSTATE_MACHINE_TEST=1)
+add_definitions(-DSTATE_MACHINE_TEST=1)
 add_definitions(-DCONFIG_PATH_RO="${CMAKE_CURRENT_SOURCE_DIR}/configuration/config_ro.yaml")
 add_definitions(-DCONFIG_PATH_RW="${CMAKE_CURRENT_SOURCE_DIR}/configuration/config_rw.yaml")
 add_definitions(-DROOT_PATH="${CMAKE_CURRENT_SOURCE_DIR}")
