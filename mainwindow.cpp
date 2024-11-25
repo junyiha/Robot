@@ -1421,7 +1421,7 @@ void MainWindow::slots_btn_auto_welding_clicked()
 {
     logger->info("{}: 自动碰钉流程开始", __LINE__);
     int cnt{ 0 };
-    while (!m_Task->DoWeldActionDecorator(1))
+    while (!m_Task->DoWeldAction(1))
     {
         Sleep(50);
     }
@@ -1507,7 +1507,7 @@ void MainWindow::slots_btn_single_job_clicked()
     MessageAlert(msg);
     while (true)
     {
-        m_Task->SingleToolDoWeldingExecuteUnit(index, key);
+        m_Task->SingleToolDoWeld(index, key);
         key++;
         if (key > static_cast<int>(ActionKey::End))
         {

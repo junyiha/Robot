@@ -279,23 +279,18 @@ private:
     void UpdateVisionResult(VisionResult& vis_res);
 
     /**
-     * @brief 两个碰钉工具执行单元.
+     * @brief 碰钉指令解析和下发.
      */
-    void DoubleToolsDoWeldingExecuteUnit(int tool_a, int tool_b, int key);
+    void DoWelding(int tool_a, int tool_b, int key);
 
     /**
-     * @brief 新的碰钉流程，两组(四个工具)交叉执行.
+     * @brief 新的碰钉流程，两组交叉执行.
      * 
      * @param [execute] -1, 停止碰钉。0，暂停碰钉。1，开始碰钉。
      * 
      * @return bool
      */
-    bool FourToolsDoWeldAction(int execute);
-
-    /**
-     * @brief 备用方案，两组(两个工具)交叉执行，避免两个打磨同时进行的问题.
-     */
-    bool DoubleToolsDoWeldAction(int execute);
+    bool NewDoWeldAction(int execute);
 
 public:
     /**
@@ -350,7 +345,7 @@ public:
     /**
      * @brief 自动碰钉.
      */
-    bool DoWeldActionDecorator(int execute);
+    bool DoWeldAction(int index);
 
     /**
      * @brief 获取当前工作模式.
@@ -379,10 +374,7 @@ public:
     */
     bool LineValueIsValid();
 
-    /**
-     * @brief 一个碰钉工具执行单元.
-     */
-    void SingleToolDoWeldingExecuteUnit(int index, int key);
+    void SingleToolDoWeld(int index, int key);
 
 private:
     ETopState m_etopState{ETopState::eManual};
