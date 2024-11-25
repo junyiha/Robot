@@ -12,14 +12,6 @@ MainWindow::MainWindow(QWidget *parent)
     //2.0 UI界面初始化
     initUiForm();
 
-    //3.0 DO 初始化
-    this->logger->trace("初始化DO映射控制字");
-    for(int i=0;i<DOBYTENUM;i++)
-    {
-        qint8 temp = 0;
-        m_CrossLidar.append(temp);
-    }
-
     //4.0 初始化机器人、视觉、任务
     m_Com = ComInterface::getInstance();
     m_Robot = new CRobot(m_Com);

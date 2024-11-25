@@ -48,13 +48,9 @@
 #include "GVL.h"
 
 
-
-
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
-
-
 
 
 class MainWindow : public QMainWindow
@@ -62,43 +58,137 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-    // 日志文件初始化
+private:
     void initLog();
-    std::shared_ptr<spdlog::logger> logger;
-
-    //引用机器人接口类实例
-    ComInterface* m_Com;
-    //机器人
-    CRobot* m_Robot;
-    //任务
-    CTask* m_Task;
-
-    //视觉模块
-    VisionInterface* m_VisionInterface;
-    std::unique_ptr<Config::ConfigManager> m_config_ptr;
-
-    //控十字激光
-    QByteArray m_CrossLidar;
-    // 手动操作限制  待修改
-    const double axisVelLimit[JointNum][2]={
-            {0,7}, //0 底部升降
-            {0,7}, //1 前后平台
-            {0,7}, //2 左右平台
-            {0,4},  //3 腰旋转
-            {0,4},  //4 大臂  待修正
-            {0,4},  //5 腕部  待修正
-            {0,8},  //6 末端升降
-    };
     bool getLineStatus();
     void setLineStatus(bool lineStatus);
-    QMutex m_mutex;
-    QAtomicInt      buttionIndex; // 按钮索引原子变量记录
+    
+private:
+    void initUiForm();
+    void initUiWiget();
+    void connectSlotFunctions();
+    void setButtonIndex();  // 记录当前触发按钮索引
+    void setActionIndex();  // 记录当前触发动作索引(工作流程记录)
+    void closeEvent(QCloseEvent *event);
 
-    double m_wheelVel= 30;
+private slots:
+    //1.0
+    void on_btn_enable_clicked();
+    void on_btn_disable_clicked();
+    void on_btn_setRobotReset_clicked();
+    void on_btn_setLinkHalt_clicked();
+    void on_btn_developerMode_clicked();
+    void on_btn_userMode_clicked();
+
+    //2.0
+    void on_btn_openCamera_clicked();
+    void on_btn_closeCamera_clicked();
+    void on_btn_location_clicked();
+    void on_btn_lift_clicked();
+    void on_btn_lift_2clicked();
+    void on_btn_leveling_clicked();
+    void on_btn_sideline_clicked();
+    void on_btn_magnet_open_clicked();
+    void on_btn_auto_knock_clicked();
+    void on_btn_magnet_close_clicked();
+    void on_btn_magnet_pause_clicked();
+    void on_btn_knock_suspend_clicked();
+    void on_btn_magnet_stop_clicked();
+    void on_btn_magent_crash_stop_clicked();
+    void on_btn_SetTools_clicked();
+    void on_btn_SetMagent_clicked();
+    void slots_on_btn_magnet_exit_clicked();
+    void slots_on_btn_add_nail_clicked();
+
+    //3.0 update the UI
+    void slotUpdateUIAll();
+    void updateLineDetectResults();
+    void updataDeviceConnectState();
+    void updateCameraData();//更新相机数据
+    void updateLaserData();//更新点激光数值
+    void updateAxisStatus();//更新单轴连接状态
+    void updateTaskStateMachineStatus();
+    void updateWorkingMode();
+
+    //4.0
+    void btn_moveFwd_shaft_pressed();
+    void btn_moveFwd_shaft_released();
+    void btn_moveBwd_shaft_pressed();
+    void btn_moveBwd_shaft_released();
+    void on_moveRel_shaft_clicked();
+
+    void btn_moveFwd_end_pressed();
+    void btn_moveFwd_end_released();
+    void btn_moveBwd_end_pressed();
+    void btn_moveBwd_end_released();
+    void on_moveRel_end_clicked();
+
+    // 5.0
+    void on_btn_line_detect_clicked();
+    void on_btn_camera_calib_clicked();
+    void on_btn_line_detect_debug_clicked();
+    void on_btn_camera_capture_clicked();
+    void on_btn_camera_save_clicked();
+
+    // 6.0 舵轮移动
+    void on_btn_wheel_forward_pressed();
+    void on_btn_wheel_forward_released();
+    void on_btn_wheel_backward_pressed();
+    void on_btn_wheel_backward_released();
+    void on_btn_wheel_left_pressed();
+    void on_btn_wheel_left_released();
+    void on_btn_wheel_right_pressed();
+    void on_btn_wheel_right_released();
+    void on_btn_steering_left_pressed();
+    void on_btn_steering_left_released();
+    void on_btn_steering_right_pressed();
+    void on_btn_steering_right_released();
+    void on_btn_add_nail_pressed();
+    void on_btn_add_nail_released();
+    void on_btn_preparation_pos_pressed();
+    void on_btn_preparation_pos_released();
+    void on_comboBox_tools_currentIndexChanged();
+    void on_comboBox_magents_currentIndexChanged();
+    void slots_btn_load_configuration_clicked();
+    void slots_btn_save_prepare_position_clicked();
+    void slots_btn_save_lift_position_clicked();
+    void slots_btn_save_quit_position_clicked();
+    void slots_btn_autoMagentOff_clicked();
+    void slots_btn_auto_welding_clicked();
+    void slots_btn_working_mode_clicked();
+    void slots_btn_open_document_clicked();
+    void slots_btn_check_laser_is_valid_clicked();
+    void slots_btn_check_line_is_valid_clicked();
+    void slots_btn_single_job_clicked();
+
+private:
+    void MessageAlert(const std::string& message);
+    void AddMessageAlert(const std::string& message);
+    void MessageConsumer();
+
+private:
+    const unsigned int larserNum = 4;
+    const unsigned int cameraNum = 6;
+    const unsigned int jointNum = 10;
+    const unsigned int freeJointNum = 6;
+    ComInterface* m_Com;
+    CRobot* m_Robot;
+    CTask* m_Task;
+    VisionInterface* m_VisionInterface;
+    std::unique_ptr<Config::ConfigManager> m_config_ptr;
+    std::mutex m_message_mutex;
+    std::queue<std::string> m_message_container;
+    double m_wheelVel{ 30 };
+    std::shared_ptr<spdlog::logger> logger;
+
+    Ui::MainWindow* ui;
+    QMutex m_mutex;
+    QTimer* updateUiTimer;
+    QTimer m_message_timer;
+    bool lineStatus{ false }; // 是否处于直线检测状态
 
     // 操作按钮索引配置
     std::map<std::string, unsigned int> m_btnIndex = {
@@ -197,139 +287,5 @@ public:
       {"btn_magnet_stop_",  11},          // 停止
       {"btn_magent_crash_stop_", 12}      // 急停
     };
-
-private:
-    Ui::MainWindow *ui;
-    void initUiForm();
-    void initUiWiget();
-    void connectSlotFunctions();
-
-    QTimer* updateUiTimer;
-
-    const unsigned int larserNum=4;
-    const unsigned int cameraNum=6;
-    const unsigned int jointNum=10;
-    const unsigned int freeJointNum=6;
-
-    void updateCameraData();//更新相机数据
-    void updateLaserData();//更新点激光数值
-    void updateAxisStatus();//更新单轴连接状态
-    void setButtonIndex();  // 记录当前触发按钮索引
-    void setActionIndex();  // 记录当前触发动作索引(工作流程记录)
-    void updateTaskStateMachineStatus();
-    void updateWorkingMode();
-    void closeEvent(QCloseEvent *event);
-    bool lineStatus = false; // 是否处于直线检测状态
-
-
-private slots:
-    //1.0
-    void on_btn_enable_clicked();
-    void on_btn_disable_clicked();
-    void on_btn_setRobotReset_clicked();
-    void on_btn_setLinkHalt_clicked();
-    void on_btn_developerMode_clicked();
-    void on_btn_userMode_clicked();
-
-
-    //2.0
-    void on_btn_openCamera_clicked();
-    void on_btn_closeCamera_clicked();
-    void on_btn_location_clicked();
-    void on_btn_lift_clicked();
-    void on_btn_lift_2clicked();
-    void on_btn_leveling_clicked();
-    void on_btn_sideline_clicked();
-    void on_btn_magnet_open_clicked();
-    void on_btn_auto_knock_clicked();
-    void on_btn_magnet_close_clicked();
-    void on_btn_magnet_pause_clicked();
-    void on_btn_knock_suspend_clicked();
-    void on_btn_magnet_stop_clicked();
-    void on_btn_magent_crash_stop_clicked();
-    void on_btn_SetTools_clicked();
-    void on_btn_SetMagent_clicked();
-    void slots_on_btn_magnet_exit_clicked();
-    void slots_on_btn_add_nail_clicked();
-    //3.0 update the UI
-    void slotUpdateUIAll();
-
-    //4.0
-    void btn_moveFwd_shaft_pressed();
-    void btn_moveFwd_shaft_released();
-    void btn_moveBwd_shaft_pressed();
-    void btn_moveBwd_shaft_released();
-    void on_moveRel_shaft_clicked();
-
-    void btn_moveFwd_end_pressed();
-    void btn_moveFwd_end_released();
-    void btn_moveBwd_end_pressed();
-    void btn_moveBwd_end_released();
-    void on_moveRel_end_clicked();
-
-    // 5.0
-    void on_btn_line_detect_clicked();
-    void on_btn_camera_calib_clicked();
-    void on_btn_line_detect_debug_clicked();
-    void on_btn_camera_capture_clicked();
-    void on_btn_camera_save_clicked();
-
-    // 6.0 舵轮移动
-    void on_btn_wheel_forward_pressed();
-    void on_btn_wheel_forward_released();
-
-    void on_btn_wheel_backward_pressed();
-    void on_btn_wheel_backward_released();
-
-    void on_btn_wheel_left_pressed();
-    void on_btn_wheel_left_released();
-
-    void on_btn_wheel_right_pressed();
-    void on_btn_wheel_right_released();
-
-    void on_btn_steering_left_pressed();
-    void on_btn_steering_left_released();
-    void on_btn_steering_right_pressed();
-    void on_btn_steering_right_released();
-
-    void on_btn_add_nail_pressed();
-    void on_btn_add_nail_released();
-
-    void on_btn_preparation_pos_pressed();
-    void on_btn_preparation_pos_released();
-
-    void on_comboBox_tools_currentIndexChanged();
-    void on_comboBox_magents_currentIndexChanged();
-
-    void updateLineDetectResults();
-
-
-    void updataDeviceConnectState();
-
-    void slots_btn_load_configuration_clicked();
-    void slots_btn_save_prepare_position_clicked();
-    void slots_btn_save_lift_position_clicked();
-    void slots_btn_save_quit_position_clicked();
-
-    void slots_btn_autoMagentOff_clicked();
-    void slots_btn_auto_welding_clicked();
-
-    void slots_btn_working_mode_clicked();
-    void slots_btn_open_document_clicked();
-
-    void slots_btn_check_laser_is_valid_clicked();
-    void slots_btn_check_line_is_valid_clicked();
-
-    void slots_btn_single_job_clicked();
-
-private:
-    void MessageAlert(const std::string& message);
-    void AddMessageAlert(const std::string& message);
-    void MessageConsumer();
-
-private:
-    std::mutex m_message_mutex;
-    std::queue<std::string> m_message_container;
-    QTimer m_message_timer;
 };
 #endif // MAINWINDOW_H
