@@ -17,30 +17,30 @@
 #include "../vision/VisionInterface.h"
 #include "TaskExternal.hpp"
 
- //碰钉动作序列，及动作周期数(50ms)，根据实际工艺调整；eWeld_Up eWeld_Down绑定了接触器，必须保留
-const QVector<E_WeldAction> ActionList ={eGrind_MovorOff, eGrind_OnorDown, eGrind_Up, eGrind_OnorDown, eGrind_MovorOff, eWeld_MovorDwon, eWeld_Fix, eWeld_Up, eWeld_On, eWeld_Down, eInitAction};
-const QVector<int>          ActionTime ={             40,              20,       100,              20,              20,              40,        40,       40,       40,         40,          5};
-const QVector<std::string>  ActionName ={"GrindMovorOff","Grind_OnorDown","Grind_Up","Weld_MovorDwon","Grind_MovorOff","Weld_MovorDwon","Weld_Fix","Weld_Up","Weld_On","Weld_Down","InitAction"};
+//碰钉动作序列，及动作周期数(50ms)，根据实际工艺调整；eWeld_Up eWeld_Down绑定了接触器，必须保留
+const QVector<E_WeldAction> ActionList = { eGrind_MovorOff, eGrind_OnorDown, eGrind_Up, eGrind_OnorDown, eGrind_MovorOff, eWeld_MovorDwon, eWeld_Fix, eWeld_Up, eWeld_On, eWeld_Down, eInitAction };
+const QVector<int>          ActionTime = { 40,              20,       100,              20,              20,              40,        40,       40,       40,         40,          5 };
+const QVector<std::string>  ActionName = { "GrindMovorOff","Grind_OnorDown","Grind_Up","Weld_MovorDwon","Grind_MovorOff","Weld_MovorDwon","Weld_Fix","Weld_Up","Weld_On","Weld_Down","InitAction" };
 
-class CTask:public QThread
+class CTask :public QThread
 {
     Q_OBJECT
 public:
-    explicit CTask(ComInterface* comm,CRobot* robot, VisionInterface* vision, QObject *parent = nullptr);
+    explicit CTask(ComInterface* comm, CRobot* robot, VisionInterface* vision, QObject* parent = nullptr);
 
     QAtomicInt      ActionIndex;//半自动、按钮测试用
     QAtomicInt      ButtonIndex; //当前点击按钮索引
     /**
      * @brief 结束任务线程
-     * 
+     *
      */
     void closeThread();
 
     bool m_bMagnetOn{ false };        //磁铁吸合状态
 
 protected:
-    ComInterface*   m_Comm = NULL;
-    CRobot*         m_Robot = NULL;
+    ComInterface* m_Comm = NULL;
+    CRobot* m_Robot = NULL;
     VisionInterface* m_vision = NULL;
 
     stLinkStatus     m_LinkStatus;               //机器人状态状态
@@ -109,7 +109,7 @@ protected:
     */
     bool doMagentOff();
 
-///////////////////////////////////////////--0827新增函数--//////////////////////////////////////////////////////
+    ///////////////////////////////////////////--0827新增函数--//////////////////////////////////////////////////////
 private:
     /**
      * @brief 调平检测函数，根据激光测距数据判断是否具备调平条件或完成调平
@@ -132,138 +132,138 @@ private:
      */
     void TaskTerminate();
 
-///////////////////////////////////////////--状态机部分--//////////////////////////////////////////////////////
+    ///////////////////////////////////////////--状态机部分--//////////////////////////////////////////////////////
 private:
     /**
      * @brief 状态转换函数
-     * 
+     *
      */
     void stateTransition();
 
     /**
      * @brief 手动状态
-     * 
+     *
      */
     void manualStateTransition();
 
     /**
      * @brief 调平状态
-     * 
+     *
      */
     void parallelStateTransition();
 
     /**
      * @brief 定位状态
-     * 
+     *
      */
     void positioningStateTransition();
 
     /**
      * @brief 待吸合状态
-     * 
+     *
      */
     void readyToMagentOnStateTransition();
 
     /**
      * @brief 碰钉状态
-     * 
+     *
      */
     void doWeldStateTransition();
 
     /**
      * @brief 退出状态
-     * 
+     *
      */
     void quitStateTransition();
 
 private:
     /**
      * @brief 手动指令
-     * 
+     *
      */
     void readyExecutionCommand();
 
     /**
      * @brief 未就绪状态下执行的手动指令
-     * 
+     *
      */
     void notReadyExecutionCommand();
 
     /**
      * @brief 调平--待调平状态下，可执行指令
-     * 
+     *
      */
     void readyToParallelExecutionCommand();
 
     /**
      * @brief 调平--检测状态下，可执行指令
-     * 
+     *
      */
     void detectionInParallelExecutionCommand();
 
     /**
      * @brief 定位--检测状态下，可执行指令
-     * 
+     *
      */
     void detectionInPositioningExecutionCommand();
 
     /**
      * @brief 调平--运动状态下，可执行指令
-     * 
+     *
      */
     void motionInParallelExecutionCommand();
 
     /**
      * @brief 定位--运动状态下，可执行指令
-     * 
+     *
      */
     void motionInPositioningExecutionCommand();
 
     /**
      * @brief 定位--待定位状态下，可执行指令
-     * 
+     *
      */
     void readyToPositioningExecutionCommand();
 
     /**
      * @brief 待吸合状态下，可执行指令
-     * 
+     *
      */
     void readyToMagentOnExecutionCommand();
 
     /**
      * @brief 碰钉--待碰钉状态下，可执行指令
-     * 
+     *
      */
     void readyToWeldExecutionCommand();
 
     /**
      * @brief 碰钉--碰钉中状态下，可执行指令
-     * 
+     *
      */
     void doingWeldExecutionCommand();
 
     /**
      * @brief 碰钉--停止状态下，可执行指令
-     * 
+     *
      */
     void stopWeldExecutionCommand();
 
     /**
      * @brief 退出--退出中状态下，可执行指令
-     * 
+     *
      */
     void quitingExecutionCommand();
 
     /**
      * @brief 退出--暂停状态下，可执行指令
-     * 
+     *
      */
     void pauseExecutionCommand();
 
     /**
      * @brief 终止指令。停止运行，状态跳转至: 手动
-     * 
+     *
      */
     void terminateCommand();
 
@@ -279,46 +279,51 @@ private:
     void UpdateVisionResult(VisionResult& vis_res);
 
     /**
-     * @brief 碰钉指令解析和下发.
+     * @brief 两个碰钉工具执行单元.
      */
-    void DoWelding(int tool_a, int tool_b, int key);
+    void DoubleToolsDoWeldingExecuteUnit(int tool_a, int tool_b, int key);
 
     /**
-     * @brief 新的碰钉流程，两组交叉执行.
-     * 
+     * @brief 新的碰钉流程，两组(四个工具)交叉执行.
+     *
      * @param [execute] -1, 停止碰钉。0，暂停碰钉。1，开始碰钉。
-     * 
+     *
      * @return bool
      */
-    bool NewDoWeldAction(int execute);
+    bool FourToolsDoWeldAction(int execute);
+
+    /**
+     * @brief 备用方案，两组(两个工具)交叉执行，避免两个打磨同时进行的问题.
+     */
+    bool DoubleToolsDoWeldAction(int execute);
 
 public:
     /**
      * @brief 更新第一层和第二层状态(线程安全)
-     * 
-     * @param topState 
-     * @param subState 
+     *
+     * @param topState
+     * @param subState
      */
     void updateTopAndSubState(ETopState topState, ESubState subState);
 
     /**
      * @brief 更新执行指令(线程安全 默认更新为空指令)
-     * 
-     * @param executionCommand 
+     *
+     * @param executionCommand
      */
     void updateExecutionCommand(EExecutionCommand executionCommand = EExecutionCommand::eNULL);
 
     /**
      * @brief 获取当前状态字符串，格式: 第一层状态--第二层状态
-     * 
-     * @return std::string 
+     *
+     * @return std::string
      */
     std::string getCurrentStateString() const;
 
     /**
      * @brief 获取当前执行指令字符串
-     * 
-     * @return std::string 
+     *
+     * @return std::string
      */
     std::string getCurrentExecutionCommandString() const;
 
@@ -333,7 +338,7 @@ public:
 
     /**
      * @brief 将遥控器的命令转换为内部指令
-     * 
+     *
      */
     void TranslateManualTaskIndexNumberToCMD();
 
@@ -345,7 +350,7 @@ public:
     /**
      * @brief 自动碰钉.
      */
-    bool DoWeldAction(int index);
+    bool DoWeldActionDecorator(int execute);
 
     /**
      * @brief 获取当前工作模式.
@@ -374,13 +379,16 @@ public:
     */
     bool LineValueIsValid();
 
-    void SingleToolDoWeld(int index, int key);
+    /**
+     * @brief 一个碰钉工具执行单元.
+     */
+    void SingleToolDoWeldingExecuteUnit(int index, int key);
 
 private:
-    ETopState m_etopState{ETopState::eManual};
-    ESubState m_esubState{ESubState::eReady};
-    EExecutionCommand m_eexecutionCommand{EExecutionCommand::eNULL};
-    
+    ETopState m_etopState{ ETopState::eManual };
+    ESubState m_esubState{ ESubState::eReady };
+    EExecutionCommand m_eexecutionCommand{ EExecutionCommand::eNULL };
+
 private:
     std::mutex m_mutex;
     bool m_position_motion_flag{ false };
@@ -390,7 +398,7 @@ private:
     std::chrono::time_point<std::chrono::system_clock> m_begin_time;
     std::ofstream m_timer_record;
 
-    std::map<ETopState, std::string> TopStateStringMap 
+    std::map<ETopState, std::string> TopStateStringMap
     {
         {ETopState::eManual, "手动"},
         {ETopState::eParallel, "调平"},
