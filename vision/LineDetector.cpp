@@ -380,7 +380,12 @@ std::vector<float> LineDetector::getReferenceLineFromMask(cv::Mat mask, cv::Mat 
             lineFin.push_back(cv::Point2f(possiableLines[index][2],possiableLines[index][3]));
             std::vector<float> lineRes = fiting_line(lineFin);
             if(lineRes[0]>=0 && lineRes[1]>=0 && lineRes[2]>=0 && lineRes[3]>=0){
-                referLine = lineRes;
+                // 板线位置限制 
+                double max_y_ref = lineRes[1] > lineRes[3] ? lineRes[1] : lineRes[3];
+                if (max_y_ref>this->imgInputH*0.5 && max_y_ref < this->imgInputH * 0.85) {
+                    referLine = lineRes;
+                }
+                
             }else{
                 std::cout << "get Line error" << std::endl;
             }
@@ -390,7 +395,12 @@ std::vector<float> LineDetector::getReferenceLineFromMask(cv::Mat mask, cv::Mat 
         cv::Mat bin_img;
         cv::threshold(img_gray, bin_img, 0, 255, cv::THRESH_BINARY|cv::THRESH_OTSU);
         std::vector<float> refLineLSD =  getReferenceLineLSD(img_gray, bin_img);
-        referLine = refLineLSD;
+        // 板线位置限制
+        double max_y_ref_lsd = refLineLSD[1] > refLineLSD[3] ? refLineLSD[1] : refLineLSD[3];
+        if (max_y_ref_lsd > this->imgInputH * 0.5 && max_y_ref_lsd<this->imgInputH * 0.85) {
+            referLine = refLineLSD;
+        }
+       
     }
     return referLine;
 
