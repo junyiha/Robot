@@ -105,7 +105,7 @@ void MainWindow::connectSlotFunctions() {// 按钮时间绑定
     connect(ui->btn_knock_suspend_, &QPushButton::clicked, this, &MainWindow::on_btn_knock_suspend_clicked, Qt::UniqueConnection);
     connect(ui->btn_magnet_stop_, &QPushButton::clicked, this, &MainWindow::on_btn_magnet_stop_clicked, Qt::UniqueConnection);
     connect(ui->btn_magent_crash_stop_, &QPushButton::clicked, this, &MainWindow::on_btn_magent_crash_stop_clicked, Qt::UniqueConnection);
-    connect(ui->btn_magnet_exit, &QPushButton::clicked, this, &MainWindow::slots_on_btn_magnet_exit_clicked, Qt::UniqueConnection);
+    connect(ui->btn_magnet_quit, &QPushButton::clicked, this, &MainWindow::slots_on_btn_magnet_exit_clicked, Qt::UniqueConnection);
     connect(ui->btn_add_nail, &QPushButton::clicked, this, &MainWindow::slots_on_btn_add_nail_clicked, Qt::UniqueConnection);
 
     // 3.0 机械臂功能按钮槽函数绑定
@@ -1075,7 +1075,6 @@ void MainWindow::setButtonIndex() {
     //设置原子变量index
     if(this->m_btnIndex.find(objectName.toStdString()) != this->m_btnIndex.end()){
         m_Task->ButtonIndex.storeRelaxed(this->m_btnIndex[objectName.toStdString()]);
-//        this->logger->info("The object name of the clicked button is:{}",objectName.toStdString());
     }else{
         this->logger->error("Button index not found in predefined index map!");
     }
@@ -1381,6 +1380,10 @@ void MainWindow::updateTaskStateMachineStatus()
     if (m_Task->checkSubState(ESubState::eReady))
     {
         ui->task_state_machine_button->setStyleSheet("background-color: lightblue; border: 2px solid blue; border-radius: 10px;");
+    }
+    else if (m_Task->checkSubState(ESubState::eReadyToDoWeld))
+    {
+        ui->task_state_machine_button->setStyleSheet("background-color: green; border: 2px solid blue; border-radius: 10px;");
     }
     else
     {

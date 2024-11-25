@@ -2095,7 +2095,7 @@ QPushButton:pressed {
            </widget>
           </item>
           <item row="1" column="2">
-           <widget class="QPushButton" name="btn_magnet_exit">
+           <widget class="QPushButton" name="btn_magnet_quit">
             <property name="minimumSize">
              <size>
               <width>100</width>

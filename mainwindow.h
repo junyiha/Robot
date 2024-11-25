@@ -189,7 +189,7 @@ public:
       {"btn_magnet_open_",   3},          // 吸合
       {"btn_auto_knock_",    4},          // 碰钉
       {"btn_magnet_close_",  5},          // 脱开
-      {"btn_magnet_exit_",   6},          // 退出
+      {"btn_magnet_quit",   6},          // 退出
       {"btn_magnet_pause_",  7},          // 暂停
       {"btn_knock_suspend_", 8},          // 终止
       {"btn_lift_",          9},          // 举升
