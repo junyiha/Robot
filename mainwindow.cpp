@@ -1383,7 +1383,7 @@ void MainWindow::updateTaskStateMachineStatus()
     }
     else if (m_Task->checkSubState(ESubState::eReadyToDoWeld))
     {
-        ui->task_state_machine_button->setStyleSheet("background-color: green; border: 2px solid blue; border-radius: 10px;");
+        ui->task_state_machine_button->setStyleSheet("background-color: rgb(183, 255, 156); border: 2px solid blue; border-radius: 10px;");
     }
     else
     {
@@ -1394,7 +1394,7 @@ void MainWindow::updateTaskStateMachineStatus()
 void MainWindow::updateWorkingMode()
 {
     bool mode = m_Task->GetWorkingMode();
-    std::string mode_str = mode ? "自动工作模式" : "半自动工作模式";
+    std::string mode_str = mode ? "自动模式" : "半自动模式";
     QString temp_str = QString::fromLocal8Bit(mode_str.c_str());
 
     ui->btn_working_mode->setText(temp_str);
