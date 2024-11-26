@@ -156,7 +156,7 @@ void CTask::Manual()
 
 void CTask::SteerWheelControl()
 {
-    double velocity{ 8.0 };
+    double velocity{ 10.0 };
     double temp_velocity_direction = m_manualOperator.VechDirect;
 
     if (temp_velocity_direction > 0)
