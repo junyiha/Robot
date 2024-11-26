@@ -379,28 +379,34 @@ std::vector<float> LineDetector::getReferenceLineFromMask(cv::Mat mask, cv::Mat 
             lineFin.push_back(cv::Point2f(possiableLines[index][0],possiableLines[index][1]));
             lineFin.push_back(cv::Point2f(possiableLines[index][2],possiableLines[index][3]));
             std::vector<float> lineRes = fiting_line(lineFin);
-            if(lineRes[0]>=0 && lineRes[1]>=0 && lineRes[2]>=0 && lineRes[3]>=0){
-                // 板线位置限制 
-                double max_y_ref = lineRes[1] > lineRes[3] ? lineRes[1] : lineRes[3];
-                if (max_y_ref>this->imgInputH*0.5 && max_y_ref < this->imgInputH * 0.85) {
-                    referLine = lineRes;
-                }
+            if (lineRes.size() > 0)
+            {
+                if(lineRes[0]>=0 && lineRes[1]>=0 && lineRes[2]>=0 && lineRes[3]>=0){
+                    // 板线位置限制 
+                    double max_y_ref = lineRes[1] > lineRes[3] ? lineRes[1] : lineRes[3];
+                    if (max_y_ref>this->imgInputH*0.5 && max_y_ref < this->imgInputH * 0.85) {
+                        referLine = lineRes;
+                    }
                 
-            }else{
-                std::cout << "get Line error" << std::endl;
+                }else{
+                    std::cout << "get Line error" << std::endl;
+                }
+    //            referLine = possiableLines[index];
+
             }
-//            referLine = possiableLines[index];
         }
     }else{ // 传统算法进行兜底
         cv::Mat bin_img;
         cv::threshold(img_gray, bin_img, 0, 255, cv::THRESH_BINARY|cv::THRESH_OTSU);
         std::vector<float> refLineLSD =  getReferenceLineLSD(img_gray, bin_img);
-        // 板线位置限制
-        double max_y_ref_lsd = refLineLSD[1] > refLineLSD[3] ? refLineLSD[1] : refLineLSD[3];
-        if (max_y_ref_lsd > this->imgInputH * 0.5 && max_y_ref_lsd<this->imgInputH * 0.85) {
-            referLine = refLineLSD;
+        if (refLineLSD.size() > 0)
+        {
+            // 板线位置限制
+            double max_y_ref_lsd = refLineLSD[1] > refLineLSD[3] ? refLineLSD[1] : refLineLSD[3];
+            if (max_y_ref_lsd > this->imgInputH * 0.5 && max_y_ref_lsd<this->imgInputH * 0.85) {
+                referLine = refLineLSD;
+            }
         }
-       
     }
     return referLine;
 
