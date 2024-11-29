@@ -43,6 +43,7 @@ double calculateDistance(const std::vector<float> A, const std::vector<float> B)
 
 // 判断直线是否为板界线
 bool check_is_boundary(cv::Mat img, cv::Vec4f line);
+bool check_is_border_line_only_border(cv::Mat img, cv::Vec4f line, float thr=0.6);
 
 //绘制直线
 void draw_line(std::vector<cv::Vec4f> lines, cv::Mat& img);

@@ -69,7 +69,7 @@ std::vector<float> LineDetector::getReferenceLineLSD(cv::Mat img, cv::Mat bin_im
         }
 
         float distance = calculatePointsDistance(cv::Point2f(line[0], line[1]), cv::Point2f(line[2], line[3]));
-        bool isBoundary = check_is_border_line(bin_img, line);
+        bool isBoundary = check_is_border_line_only_border(bin_img, line);
         if ((distance > this->imgInputW*0.1) && isBoundary) {
             points.push_back(cv::Point2f(line[0], line[1]));
             points.push_back(cv::Point2f(line[2], line[3]));

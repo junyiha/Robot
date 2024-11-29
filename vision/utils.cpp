@@ -549,6 +549,49 @@ bool check_is_border_line(cv::Mat img, cv::Vec4f line, float thr) {
     if(similarty > 0.7){flag = true;}
     return flag;
 }
+
+bool check_is_border_line_only_border(cv::Mat img, cv::Vec4f line, float thr) {
+    // 仅判断边界线是否为纯边界(根据板线下半部分区域信息)
+    bool flag = false;
+    int x1 = int(line[0]), y1 = int(line[1]), x2 = int(line[2]), y2 = int(line[3]);
+    int roiW = abs(x2 - x1), roiH = abs(y2 - y1);
+    int imgW = img.cols, imgH = img.rows;
+    int offset = 100;
+    if (x1 < 0 || x2 < 0 || y1 < 0 || y2 < 0) {
+        return flag;  // 超出边界
+    }
+    cv::Rect roi_img;
+    if (x1 < x2) {
+        if (x1 + roiW > imgW || y1 + offset > imgH) {
+            return flag;
+        }
+        roi_img = {
+                x1, y1, roiW, offset
+        };
+    }
+    else {
+        if (x2 + roiW > imgW || y2 + offset > imgH) {
+            return flag;
+        }
+        roi_img = {
+                x2, y2, roiW, offset
+        };
+    }
+    cv::Mat img_cropped = img(roi_img);
+    cv::Scalar meanScalar = cv::mean(img_cropped);
+    double similarty = abs(static_cast<double>(meanScalar[0])) / 255.0;
+    if (similarty > thr) {
+        flag = true;
+    }
+    return flag;
+}
+
+
+
+
+
+
+
 bool check_is_border_line_by_hist(cv::Mat img, cv::Vec4f line, float thr) {
     bool flag = false;
     int offset = 30; // 获取上下点的四邻域，并计算相似度；
