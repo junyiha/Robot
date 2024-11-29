@@ -26,6 +26,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     m_config_ptr = std::make_unique<Config::ConfigManager>();
 
+    ui->stackedWidget_view->setCurrentWidget(ui->page_user);
+
     //5.0 计时器界面实时更新 (100ms更新一次)
     this->logger->trace("启动界面实时更新");
     this->updateUiTimer = new QTimer(this);
@@ -383,6 +385,8 @@ void MainWindow::slotUpdateUIAll() {
 
     // 9.0 更新工作模式
     updateWorkingMode();
+
+    updateWorkdScenario();
 }
 
 void MainWindow::updataDeviceConnectState() {
@@ -494,8 +498,9 @@ void MainWindow::updateAxisStatus() {
     QVector<st_ReadAxis> jointStatus = m_Com->getJointGroupStatus();
     findChild<QLabel*>("label_steering_pos")->setText(QString::number(jointStatus[GP::STEER_LEFT_INDEX].Position));
 
-    ui->label_left_steer_wheel_pos->setText(QString::number(jointStatus[GP::STEER_LEFT_INDEX].Position));
-    ui->label_right_steer_wheel_pos->setText(QString::number(jointStatus[GP::STEER_LEFT_INDEX].Position));
+    double left_pos = jointStatus[GP::STEER_LEFT_INDEX].Position * 1000 / 1000.0;
+    ui->label_left_steer_wheel_pos->setText(QString::number(static_cast<int>(jointStatus[GP::STEER_LEFT_INDEX].Position * 1000) / 1000.0));
+    ui->label_right_steer_wheel_pos->setText(QString::number(static_cast<int>(jointStatus[GP::STEER_RIGHT_INDEX].Position * 1000) / 1000.0));
 
     // 更新左轮状态
     switch (jointStatus[GP::WHEEL_LEFT_INDEX].eState)
@@ -720,6 +725,12 @@ void MainWindow::closeEvent(QCloseEvent *event){
     // 关闭计时器线程
     this->updateUiTimer->stop();
     disconnect(this->updateUiTimer);
+
+    m_thread_exit_flag = true;
+    for (auto& t : m_thread_pool)
+    {
+        t->join();
+    }
 }
 
 void MainWindow::btn_moveFwd_shaft_pressed() {
@@ -1427,6 +1438,28 @@ void MainWindow::updateWorkingMode()
     ui->btn_working_mode->setText(temp_str);
 }
 
+void MainWindow::updateWorkdScenario()
+{
+    switch (GP::Working_Scenario)
+    {
+        case GP::WorkingScenario::Top:
+        {
+            ui->btn_working_scenario->setText(QString::fromLocal8Bit("顶板场景"));
+            break;
+        }
+        case GP::WorkingScenario::Cant:
+        {
+            ui->btn_working_scenario->setText(QString::fromLocal8Bit("上斜板场景"));
+            break;
+        }
+        case GP::WorkingScenario::Side:
+        {
+            ui->btn_working_scenario->setText(QString::fromLocal8Bit("侧板场景"));
+            break;
+        }
+    }
+}
+
 void MainWindow::slots_btn_autoMagentOff_clicked()
 {
     bool res = m_Task->DoMagentOff();
@@ -1449,14 +1482,17 @@ void MainWindow::slots_btn_autoMagentOff_clicked()
 
 void MainWindow::slots_btn_auto_welding_clicked()
 {
-    logger->info("{}: 自动碰钉流程开始", __LINE__);
-    int cnt{ 0 };
-    while (!m_Task->DoWeldActionDecorator(1))
-    {
-        Sleep(50);
-    }
-
-    logger->info("{}: 自动碰钉流程结束", __LINE__);
+    auto temp_ptr = new std::thread([this]() {
+        AddMessageAlert("自动碰钉流程开始");
+        while (!m_Task->DoWeldActionDecorator(1))
+        {
+            if (m_thread_exit_flag)
+                return;
+            Sleep(50);
+        }
+        AddMessageAlert("自动碰钉流程结束");
+    });
+    m_thread_pool.push_back(temp_ptr);
 }
 
 void MainWindow::slots_btn_working_mode_clicked()
@@ -1529,24 +1565,28 @@ void MainWindow::slots_btn_check_line_is_valid_clicked()
 
 void MainWindow::slots_btn_single_job_clicked()
 {
-    int cnt{ 0 };
     int index = ui->spin_box_for_single_job->value();
-    int key{ 0 };
-    std::string msg;
-    msg = "工具: [" + std::to_string(index) + "] 单次作业开始";
-    MessageAlert(msg);
-    while (true)
-    {
-        m_Task->SingleToolDoWeldingExecuteUnit(index, key);
-        key++;
-        if (key > static_cast<int>(ActionKey::End))
+    auto temp_ptr = new std::thread([this](int index) {
+        int key{ 0 };
+        std::string msg;
+        msg = "工具: [" + std::to_string(index) + "] 单次作业开始";
+        AddMessageAlert(msg);
+        while (true)
         {
-            break;
+            if (m_thread_exit_flag)
+                return;
+            m_Task->SingleToolDoWeldingExecuteUnit(index, key);
+            key++;
+            if (key > static_cast<int>(ActionKey::End))
+            {
+                break;
+            }
+            Sleep(50);
         }
-        Sleep(50);
-    }
-    msg = "工具: [" + std::to_string(index) + "] 单次作业结束";
-    MessageAlert(msg);
+        msg = "工具: [" + std::to_string(index) + "] 单次作业结束";
+        AddMessageAlert(msg);
+    }, index);
+    m_thread_pool.push_back(temp_ptr);
 }
 
 void MainWindow::MessageAlert(const std::string& message)

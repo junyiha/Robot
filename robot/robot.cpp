@@ -1,4 +1,4 @@
-﻿#include "robot.h"
+#include "robot.h"
 
 
 CRobot::CRobot(ComInterface* comm,QObject *parent)
@@ -44,10 +44,17 @@ CRobot::CRobot(ComInterface* comm,QObject *parent)
 
 
     //    DH_Parameter Tool_Mat = DH_Parameter(90 * M_PI / 180, 0, 90 * M_PI / 180, L6, Prismatic);//竖板旋转用，工具坐标系旋转90
-    CTransformation Tool_Mat = CTransformation(90* M_PI / 180, 0,  180 * M_PI / 180, dt, Prismatic);       //装横板用，末端工具（可伸缩，但是默认不动，不需要刷新）
-    m_LinkModel =new CRobotKinectModel(DH_List,Tool_Mat);
-
-
+    if (GP::Working_Scenario == GP::WorkingScenario::Cant)
+    {
+        // 2024.11.26 上斜板作业场景，工装绕工具坐标系Z轴正方向旋转90度
+        CTransformation Tool_Mat = CTransformation(90 * M_PI / 180, 0, -90 * M_PI / 180, dt, Prismatic);
+        m_LinkModel = new CRobotKinectModel(DH_List, Tool_Mat);
+    }
+    else
+    {
+        CTransformation Tool_Mat = CTransformation(90 * M_PI / 180, 0, 180 * M_PI / 180, dt, Prismatic);       //装横板用，末端工具（可伸缩，但是默认不动，不需要刷新）
+        m_LinkModel = new CRobotKinectModel(DH_List, Tool_Mat);
+    }
 
     m_Comm = comm;
     m_running = false;
@@ -113,8 +120,12 @@ void CRobot::run()
     while(m_running == true)
     {
         //qDebug()<<"机器人运行中------------------------------------------";
+        //log->info("*****************************************************************************CRobot-->UpdateStatus**************************************** start");
         UpdateStatus();//更新状态
+        //log->info("*****************************************************************************CRobot-->UpdateStatus**************************************** end");
+        //log->info("*****************************************************************************CRobot-->StateMachine**************************************** start");
         StateMachine();//状态机
+        //log->info("*****************************************************************************CRobot-->StateMachine**************************************** end");
         QThread::msleep(50);
     }
     //停止设备
@@ -150,6 +161,7 @@ QVector<st_ReadAxis> CRobot::getJointGroupSta()
 void CRobot::UpdateStatus()
 {
 
+    //log->info("*****************************************************************************CRobot-->UpdateStatus**************************************** 1 ");
     //通过接口获取反馈数据
     QVector<st_ReadAxis> m_JointGroupStatus = m_Comm->getLinkJointStatus(m_Index); //link轴组数据
     stLinkStatus sta = m_Comm->getLinkStatus(m_Index);//link状态数据
@@ -172,6 +184,7 @@ void CRobot::UpdateStatus()
         log->error(" Statedata of axis is unmatch!");
         return;
     }
+    //log->info("*****************************************************************************CRobot-->UpdateStatus**************************************** 2 ");
 
     std::vector<std::pair<double,bool>> vJointValue;
     for(int i=0;i<m_Freedom; i++)
@@ -182,13 +195,18 @@ void CRobot::UpdateStatus()
     }
     vJointValue[4].second = false; // 腰俯仰不参与联动
 
-    //vJointValue[1].second = false; // 前后不参与联动
+    if (GP::Working_Scenario == GP::WorkingScenario::Cant ||
+        GP::Working_Scenario == GP::WorkingScenario::Side)
+    {
+        vJointValue[1].second = false; // 前后不参与联动
+    }
 
     m_ActJoints[m_Freedom] = m_JointGroupStatus[m_Freedom].Position;
 
     m_LinkModel->setToolPos(len, 0);//根据工装实际安装位置确定角度。弧度
     m_LinkModel->setJointPos(vJointValue);
     //修改827 end
+    //log->info("*****************************************************************************CRobot-->UpdateStatus**************************************** 3 ");
 
     //更新link状态数据
     m_LinkSta.eLinkActState = sta.eLinkActState;
@@ -196,6 +214,7 @@ void CRobot::UpdateStatus()
     Eigen::VectorXd endpos= m_LinkModel->getEndPosition();   //末端姿态
     std::memcpy(m_ActPose, endpos.data(), 6*sizeof(double));
     std::memcpy(m_LinkSta.stLinkActKin.LinkPos,m_ActPose,6*sizeof(double));
+    //log->info("*****************************************************************************CRobot-->UpdateStatus**************************************** 4 ");
 
 
     mutex_sta.lock();
@@ -212,6 +231,7 @@ void CRobot::UpdateStatus()
     mutex_posDev.lock();
     _EndPose = m_LinkModel->getEndPose();
     mutex_posDev.unlock();
+    //log->info("*****************************************************************************CRobot-->UpdateStatus**************************************** 5 ");
 
 }
 

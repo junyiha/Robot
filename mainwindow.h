@@ -112,6 +112,7 @@ private slots:
     void updateAxisStatus();//更新单轴连接状态
     void updateTaskStateMachineStatus();
     void updateWorkingMode();
+    void updateWorkdScenario();
 
     //4.0
     void btn_moveFwd_shaft_pressed();
@@ -189,6 +190,9 @@ private:
     QTimer* updateUiTimer;
     QTimer m_message_timer;
     bool lineStatus{ false }; // 是否处于直线检测状态
+    std::thread m_job_thread;
+    std::vector<std::thread*> m_thread_pool;
+    bool m_thread_exit_flag{ false };
 
     // 操作按钮索引配置
     std::map<std::string, unsigned int> m_btnIndex = {

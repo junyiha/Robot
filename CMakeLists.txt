@@ -29,11 +29,11 @@ add_definitions(-DCONFIG_PATH_RO="${CMAKE_CURRENT_SOURCE_DIR}/configuration/conf
 add_definitions(-DCONFIG_PATH_RW="${CMAKE_CURRENT_SOURCE_DIR}/configuration/config_rw.yaml")
 add_definitions(-DROOT_PATH="${CMAKE_CURRENT_SOURCE_DIR}")
 
-# add_definitions(-DVISION_ENGINE_PATH="${CMAKE_CURRENT_SOURCE_DIR}/models/ocrnet_model_wb_20241120.engine")
-add_definitions(-DVISION_ENGINE_PATH="${CMAKE_CURRENT_SOURCE_DIR}/models/ppseg_model_wb_20241120.engine")
+add_definitions(-DVISION_ENGINE_PATH="${CMAKE_CURRENT_SOURCE_DIR}/models/ocrnet_model_wb_20241120.engine")
+# add_definitions(-DVISION_ENGINE_PATH="${CMAKE_CURRENT_SOURCE_DIR}/models/ppseg_model_wb_20241120.engine")
 
-# add_definitions(-DVISION_MODEL_PATH="${CMAKE_CURRENT_SOURCE_DIR}/models/ocrnet_model_wb_20241120.onnx")
-add_definitions(-DVISION_MODEL_PATH="${CMAKE_CURRENT_SOURCE_DIR}/models/ppseg_model_wb_20241120.onnx")
+add_definitions(-DVISION_MODEL_PATH="${CMAKE_CURRENT_SOURCE_DIR}/models/ocrnet_model_wb_20241120.onnx")
+# add_definitions(-DVISION_MODEL_PATH="${CMAKE_CURRENT_SOURCE_DIR}/models/ppseg_model_wb_20241120.onnx")
 
 
 # ffmpeg

@@ -1,4 +1,4 @@
-﻿#include "Tools.h"
+#include "Tools.h"
 
 CTools::CTools()
 {
@@ -272,8 +272,8 @@ QVector<double> CTools::getLaserDistance()
 
     //调整点激光顺序 1,x+，y-； 2x+，y+；3：X-,Y+; 4X-,Y-
     re[0] = tmp[1];
-    re[1] = tmp[0];
-    re[2] = tmp[2];
+    re[1] = tmp[0] + 2;
+    re[2] = tmp[2] + 2;
     re[3] = tmp[3];
 
    //log->debug("测量距离：{} {} {} {} ",re[0],re[1],re[2],re[3]);

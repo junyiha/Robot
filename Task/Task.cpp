@@ -126,7 +126,8 @@ void CTask::Manual()
     {
         // 移动到举升位置
         std::vector<double> temp_velocity_group(MAX_FREEDOM_LINK, 0.0);
-        temp_velocity_group = {2, 2, 2, 1, 0.3, 25, 5, 0.5, 5, 3};
+        temp_velocity_group = { 2, 2, 2, 1, 0.9, 25, 5, 0.5, 5, 3 };  // 快速
+        //temp_velocity_group = {1, 1, 1, 1, 0.5, 10, 2.5, 0.5, 4, 2};  // 慢速
         std::for_each(temp_velocity_group.begin(), temp_velocity_group.end(), [](double& vel) { vel *= 1.1; });
         m_Robot->setJointGroupMoveAbs(GP::Position_Map[{GP::Working_Scenario, GP::PositionType::Lift}].value.data(), temp_velocity_group.data());
     }
@@ -134,7 +135,8 @@ void CTask::Manual()
     {
         // 移动到准备(放钉)位置
         std::vector<double> temp_velocity_group(MAX_FREEDOM_LINK, 0.0);
-        temp_velocity_group = {2, 2, 2, 1, 0.3, 25, 5, 0.5, 2.5, 5};
+        temp_velocity_group = { 2, 2, 2, 1, 0.9, 25, 5, 0.5, 2.5, 5 };  // 快速
+        //temp_velocity_group = {1, 1, 1, 1, 0.5, 10, 2.5, 0.5, 1.5, 4};  // 慢速
         std::for_each(temp_velocity_group.begin(), temp_velocity_group.end(), [](double& vel) { vel *= 1.1; });
         m_Robot->setJointGroupMoveAbs(GP::Position_Map[{GP::Working_Scenario, GP::PositionType::Prepare}].value.data(), temp_velocity_group.data());
     }

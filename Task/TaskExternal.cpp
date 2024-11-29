@@ -66,6 +66,7 @@ void CTask::manualStateTransition()
         {
         case EExecutionCommand::eParallel:
         {
+            m_begin_time = std::chrono::system_clock::now();
             updateTopAndSubState(ETopState::eParallel, ESubState::eDetection);
             break;
         }
@@ -232,7 +233,6 @@ void CTask::readyToParallelExecutionCommand()
     }
     case EExecutionCommand::eParallel:
     {
-        m_begin_time = std::chrono::system_clock::now();
         updateTopAndSubState(ETopState::eParallel, ESubState::eDetection);
         break;
     }
@@ -268,10 +268,19 @@ void CTask::detectionInParallelExecutionCommand()
         {
         case EDetectionInParallelResult::eDeviationIsLessThanThreshold:
         {
-            if (m_automatic_working_flag)
+            if (GP::Working_Scenario == GP::WorkingScenario::Cant)
+            {
+                updateTopAndSubState(ETopState::eReadToMagentOn, ESubState::eNULL);
+                break;
+            }
+            else if (m_automatic_working_flag)
+            {
                 updateTopAndSubState(ETopState::ePositioning, ESubState::eDetection);
+            }
             else
+            {
                 updateTopAndSubState(ETopState::ePositioning, ESubState::eReadyToPositioning);
+            }
             break;
         }
         case EDetectionInParallelResult::eDistanceMeetsRequirement:
@@ -337,9 +346,18 @@ void CTask::motionInParallelExecutionCommand()
             log->info("{}: target_position: \n{}, {}, {}, {}, {}, {}", __LINE__,
                       tar_pos[0], tar_pos[1], tar_pos[2], tar_pos[3] * 57.3, tar_pos[4] * 57.3, tar_pos[5] * 57.3);
             auto temp_velocity = GP::End_Vel_Limit;
-            temp_velocity.at(0) *= 7;
-            temp_velocity.at(1) *= 7;
-            temp_velocity.at(2) *= 7;
+            if (GP::Working_Scenario == GP::WorkingScenario::Top)
+            {
+                temp_velocity.at(0) *= 7;
+                temp_velocity.at(1) *= 7;
+                temp_velocity.at(2) *= 7;
+            }
+            else if (GP::Working_Scenario == GP::WorkingScenario::Side)
+            {
+                temp_velocity.at(0) *= 2;
+                temp_velocity.at(1) *= 2;
+                temp_velocity.at(2) *= 2;
+            }
             m_Robot->setLinkMoveAbs(tar_pos, temp_velocity.data());
         }
         break;
@@ -733,6 +751,9 @@ void CTask::stopWeldExecutionCommand()
 
 void CTask::quitingExecutionCommand()
 {
+    // 退出时响应手动操作指令
+    Manual();
+
     switch (m_eexecutionCommand)
     {
     case EExecutionCommand::eNULL:
@@ -747,28 +768,38 @@ void CTask::quitingExecutionCommand()
         velocity = { 1, 1, 1, 1, 0.3, 10, 5, 0.5, 3, 6 };
         auto temp_value = GP::Position_Map[{GP::Working_Scenario, GP::PositionType::Quit}].value;
 
-        // 整体联动无法停止，后续优化
-        //m_Robot->setJointGroupMoveAbs(temp_value.data(), velocity.data());
-        //QVector<double> value_qv(temp_value.begin(), temp_value.end());
-        //if (m_Robot->isJointReached(value_qv))
-        //{
-        //    updateTopAndSubState(ETopState::eManual, ESubState::eReady);
-        //}
-
-        int tool_index{ 9 };
-        int base_index{ 0 };
-        m_Robot->setJointMoveAbs(tool_index, temp_value.at(tool_index), 6);
-        m_Robot->setJointMoveAbs(base_index, temp_value.at(base_index), 4);
-        if (std::abs(m_JointGroupStatus[tool_index].Position - temp_value.at(tool_index)) < 1 &&
-            std::abs(m_JointGroupStatus[base_index].Position < temp_value.at(base_index)) < 1)
+        int tool_index{ 9 };  // 工具升降
+        int base_index{ 0 };  // 底部升降
+        int cant_scenario_index{ 6 }; // 伸缩
+        if (GP::Working_Scenario == GP::WorkingScenario::Side)
         {
-            updateTopAndSubState(ETopState::eManual, ESubState::eReady);
-            auto duration = std::chrono::system_clock::now() - m_begin_time;
-            auto result = std::chrono::duration_cast<std::chrono::seconds>(duration).count();
-            log->info("{}: 碰钉作业耗时: {}", __LINE__, result);
-            std::string temp_str = "本次碰钉作业耗时" + std::to_string(result) + "\n";
-            m_timer_record << temp_str << "\n";
-            m_timer_record.flush();
+            m_Robot->setJointMoveAbs(cant_scenario_index, temp_value.at(cant_scenario_index), 4);
+            if (std::abs(m_JointGroupStatus[cant_scenario_index].Position < temp_value.at(cant_scenario_index)) < 1)
+            {
+                updateTopAndSubState(ETopState::eManual, ESubState::eReady);
+                auto duration = std::chrono::system_clock::now() - m_begin_time;
+                auto result = std::chrono::duration_cast<std::chrono::seconds>(duration).count();
+                log->info("{}: 碰钉作业耗时: {}", __LINE__, result);
+                std::string temp_str = "本次碰钉作业耗时" + std::to_string(result) + "\n";
+                m_timer_record << temp_str << "\n";
+                m_timer_record.flush();
+            }
+        }
+        else
+        {
+            m_Robot->setJointMoveAbs(tool_index, temp_value.at(tool_index), 6);
+            m_Robot->setJointMoveAbs(base_index, temp_value.at(base_index), 4);
+            if (std::abs(m_JointGroupStatus[tool_index].Position - temp_value.at(tool_index)) < 1 &&
+                std::abs(m_JointGroupStatus[base_index].Position < temp_value.at(base_index)) < 1 )
+            {
+                updateTopAndSubState(ETopState::eManual, ESubState::eReady);
+                auto duration = std::chrono::system_clock::now() - m_begin_time;
+                auto result = std::chrono::duration_cast<std::chrono::seconds>(duration).count();
+                log->info("{}: 碰钉作业耗时: {}", __LINE__, result);
+                std::string temp_str = "本次碰钉作业耗时" + std::to_string(result) + "\n";
+                m_timer_record << temp_str << "\n";
+                m_timer_record.flush();
+            }
         }
         break;
     }
