@@ -17,60 +17,60 @@
 #include "../vision/VisionInterface.h"
 #include "TaskExternal.hpp"
 
-//碰钉动作序列，及动作周期数(50ms)，根据实际工艺调整；eWeld_Up eWeld_Down绑定了接触器，必须保留
-const QVector<E_WeldAction> ActionList = { eGrind_MovorOff, eGrind_OnorDown, eGrind_Up, eGrind_OnorDown, eGrind_MovorOff, eWeld_MovorDwon, eWeld_Fix, eWeld_Up, eWeld_On, eWeld_Down, eInitAction };
-const QVector<int>          ActionTime = { 40,              20,       100,              20,              20,              40,        40,       40,       40,         40,          5 };
-const QVector<std::string>  ActionName = { "GrindMovorOff","Grind_OnorDown","Grind_Up","Weld_MovorDwon","Grind_MovorOff","Weld_MovorDwon","Weld_Fix","Weld_Up","Weld_On","Weld_Down","InitAction" };
+// 碰钉动作序列，及动作周期数(50ms)，根据实际工艺调整；eWeld_Up eWeld_Down绑定了接触器，必须保留
+const QVector<E_WeldAction> ActionList = {eGrind_MovorOff, eGrind_OnorDown, eGrind_Up, eGrind_OnorDown, eGrind_MovorOff, eWeld_MovorDwon, eWeld_Fix, eWeld_Up, eWeld_On, eWeld_Down, eInitAction};
+const QVector<int> ActionTime = {40, 20, 100, 20, 20, 40, 40, 40, 40, 40, 5};
+const QVector<std::string> ActionName = {"GrindMovorOff", "Grind_OnorDown", "Grind_Up", "Weld_MovorDwon", "Grind_MovorOff", "Weld_MovorDwon", "Weld_Fix", "Weld_Up", "Weld_On", "Weld_Down", "InitAction"};
 
-class CTask :public QThread
+class CTask : public QThread
 {
     Q_OBJECT
 public:
-    explicit CTask(ComInterface* comm, CRobot* robot, VisionInterface* vision, QObject* parent = nullptr);
+    explicit CTask(ComInterface *comm, CRobot *robot, VisionInterface *vision, QObject *parent = nullptr);
 
-    QAtomicInt      ActionIndex;//半自动、按钮测试用
-    QAtomicInt      ButtonIndex; //当前点击按钮索引
+    QAtomicInt ActionIndex; // 半自动、按钮测试用
+    QAtomicInt ButtonIndex; // 当前点击按钮索引
     /**
      * @brief 结束任务线程
      *
      */
     void closeThread();
 
-    bool m_bMagnetOn{ false };        //磁铁吸合状态
+    bool m_bMagnetOn{false}; // 磁铁吸合状态
 
 protected:
-    ComInterface* m_Comm = NULL;
-    CRobot* m_Robot = NULL;
-    VisionInterface* m_vision = NULL;
+    ComInterface *m_Comm = NULL;
+    CRobot *m_Robot = NULL;
+    VisionInterface *m_vision = NULL;
 
-    stLinkStatus     m_LinkStatus;               //机器人状态状态
-    QVector<st_ReadAxis> m_JointGroupStatus;         //轴组状态
+    stLinkStatus m_LinkStatus;               // 机器人状态状态
+    QVector<st_ReadAxis> m_JointGroupStatus; // 轴组状态
 
     stManualOperator m_manualOperator;
     stManualOperator m_preManualOperator;
 
-    stMeasureData m_stMeasuredata; //传感器状态反馈
-    stMeasureData _stMeasuredata;  //传感器状态反馈
+    stMeasureData m_stMeasuredata; // 传感器状态反馈
+    stMeasureData _stMeasuredata;  // 传感器状态反馈
 
     //  机器人
-    bool         c_running = true;
+    bool c_running = true;
     std::shared_ptr<spdlog::logger> log;
-    QMutex          mutex_read;
+    QMutex mutex_read;
 
     /**
-    * @brief 运行函数
-    */
+     * @brief 运行函数
+     */
 
     void run() override;
 
     /**
-    * @brief 更新机器人状态和外部指令
-    */
+     * @brief 更新机器人状态和外部指令
+     */
     void updateCmdandStatus();
 
     /**
-    * @brief 手动操作指令处理
-    */
+     * @brief 手动操作指令处理
+     */
     void Manual();
 
     /**
@@ -94,19 +94,19 @@ protected:
     void ManualIndexToCommand();
 
     /**
-    * @brief 自动碰钉函数(旧版本)
-    * @param execute   -1:结束，0:暂停， 1：执行
-    */
+     * @brief 自动碰钉函数(旧版本)
+     * @param execute   -1:结束，0:暂停， 1：执行
+     */
     bool doWeldAction(qint8 execute);
 
     /**
-    * @brief 吸合磁铁
-    */
+     * @brief 吸合磁铁
+     */
     bool doMagentOn();
 
     /**
-    * @brief 磁体相关
-    */
+     * @brief 磁体相关
+     */
     bool doMagentOff();
 
     ///////////////////////////////////////////--0827新增函数--//////////////////////////////////////////////////////
@@ -115,8 +115,8 @@ private:
      * @brief 调平检测函数，根据激光测距数据判断是否具备调平条件或完成调平
      * @param laserDistance[4] 激光测距数据
      * @return  -1:不具备调平条件， 0,可执行调平， 1:完成调平
-    */
-    int CheckParallelState(QVector<double>  laserDistance);
+     */
+    int CheckParallelState(QVector<double> laserDistance);
     EDetectionInParallelResult CheckParallelStateDecorator();
 
     /**
@@ -276,7 +276,7 @@ private:
     /**
      * @brief 更新视觉数据.
      */
-    void UpdateVisionResult(VisionResult& vis_res);
+    void UpdateVisionResult(VisionResult &vis_res);
 
     /**
      * @brief 两个碰钉工具执行单元.
@@ -367,7 +367,7 @@ public:
     /**
      * @brief 设置回调函数，用于调用消息提示框.
      */
-    void SetCallBack(std::function<void(const std::string&)> callback);
+    void SetCallBack(std::function<void(const std::string &)> callback);
 
     /**
      * @brief 检查点激光数据是否满足作业条件
@@ -375,8 +375,8 @@ public:
     bool LaserValueIsValid();
 
     /**
-    * @brief 检查线间距数据是否满足作业条件
-    */
+     * @brief 检查线间距数据是否满足作业条件
+     */
     bool LineValueIsValid();
 
     /**
@@ -385,30 +385,27 @@ public:
     void SingleToolDoWeldingExecuteUnit(int index, int key);
 
 private:
-    ETopState m_etopState{ ETopState::eManual };
-    ESubState m_esubState{ ESubState::eReady };
-    EExecutionCommand m_eexecutionCommand{ EExecutionCommand::eNULL };
+    ETopState m_etopState{ETopState::eManual};
+    ESubState m_esubState{ESubState::eReady};
+    EExecutionCommand m_eexecutionCommand{EExecutionCommand::eNULL};
 
 private:
     std::mutex m_mutex;
-    bool m_position_motion_flag{ false };
-    bool m_automatic_working_flag{ true };
+    bool m_position_motion_flag{false};
+    bool m_automatic_working_flag{true};
     std::map<std::string, int> ValueMap;
-    std::function<void(const std::string&)> m_callback;
+    std::function<void(const std::string &)> m_callback;
     std::chrono::time_point<std::chrono::system_clock> m_begin_time;
     std::ofstream m_timer_record;
 
-    std::map<ETopState, std::string> TopStateStringMap
-    {
+    std::map<ETopState, std::string> TopStateStringMap{
         {ETopState::eManual, "手动"},
         {ETopState::eParallel, "调平"},
         {ETopState::ePositioning, "定位"},
         {ETopState::eReadToMagentOn, "待吸合"},
         {ETopState::eDoWeld, "碰钉"},
-        {ETopState::eQuit, "退出"}
-    };
-    std::map<ESubState, std::string> SubStateStringMap
-    {
+        {ETopState::eQuit, "退出"}};
+    std::map<ESubState, std::string> SubStateStringMap{
         {ESubState::eNULL, "空状态"},
         {ESubState::eNotReady, "未就绪"},
         {ESubState::eReady, "就绪"},
@@ -420,10 +417,8 @@ private:
         {ESubState::eDoingWeld, "碰钉中"},
         {ESubState::eStopWeld, "碰钉停止"},
         {ESubState::eQuiting, "退出中"},
-        {ESubState::ePause, "暂停"}
-    };
-    std::map<EExecutionCommand, std::string> ExecutionCommandStringMap
-    {
+        {ESubState::ePause, "暂停"}};
+    std::map<EExecutionCommand, std::string> ExecutionCommandStringMap{
         {EExecutionCommand::eNULL, "空指令"},
         {EExecutionCommand::eManual, "手动指令"},
         {EExecutionCommand::eParallel, "调平"},
@@ -434,23 +429,21 @@ private:
         {EExecutionCommand::eQuit, "退出"},
         {EExecutionCommand::eAutoWeld, "自动碰钉"},
         {EExecutionCommand::eMagentOff, "脱开"},
-        {EExecutionCommand::eStopWeld, "停止碰钉"}
-    };
+        {EExecutionCommand::eStopWeld, "停止碰钉"}};
 
     std::map<ActionKey, std::string> ActionMap =
-    {
-        { ActionKey::Grind_MovorOff1, "Grind_MovorOff1 " },
-        { ActionKey::Grind_OnorDown1, "Grind_OnorDown1 " },
-        { ActionKey::Grind_Up, "Grind_Up " },
-        { ActionKey::Grind_OnorDown2, "Grind_OnorDown2 " },
-        { ActionKey::Grind_MovorOff2, "Grind_MovorOff2 " },
-        { ActionKey::Weld_MovorDwon, "Weld_MovorDwon " },
-        { ActionKey::Weld_Fix, "Weld_Fix " },
-        { ActionKey::Weld_Up, "Weld_Up " },
-        { ActionKey::Weld_On, "Weld_On " },
-        { ActionKey::Weld_Down, "Weld_Down " },
-        { ActionKey::InitAction, "InitAction " }
-    };
+        {
+            {ActionKey::Grind_MovorOff1, "Grind_MovorOff1 "},
+            {ActionKey::Grind_OnorDown1, "Grind_OnorDown1 "},
+            {ActionKey::Grind_Up, "Grind_Up "},
+            {ActionKey::Grind_OnorDown2, "Grind_OnorDown2 "},
+            {ActionKey::Grind_MovorOff2, "Grind_MovorOff2 "},
+            {ActionKey::Weld_MovorDwon, "Weld_MovorDwon "},
+            {ActionKey::Weld_Fix, "Weld_Fix "},
+            {ActionKey::Weld_Up, "Weld_Up "},
+            {ActionKey::Weld_On, "Weld_On "},
+            {ActionKey::Weld_Down, "Weld_Down "},
+            {ActionKey::InitAction, "InitAction "}};
 };
 
 #endif // CTASK_H

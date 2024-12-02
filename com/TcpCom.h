@@ -1,10 +1,10 @@
 ﻿/*****************************************************************
-* 函数名称： TcpCom
-* 功能描述： ·基于以往项目的tcp的统一基类，定义了通用的成员和函数
-*          ·在本版本中修改为qobject派生类，增加少量信号和槽交互
-* 参数说明： 参数说明
-* 返回值：   返回值说明
-******************************************************************/
+ * 函数名称： TcpCom
+ * 功能描述： ·基于以往项目的tcp的统一基类，定义了通用的成员和函数
+ *          ·在本版本中修改为qobject派生类，增加少量信号和槽交互
+ * 参数说明： 参数说明
+ * 返回值：   返回值说明
+ ******************************************************************/
 #ifndef TCPCOM_H
 #define TCPCOM_H
 
@@ -21,19 +21,18 @@
 #include "../robot/DataStruct.h"
 #include <iostream>
 #include <spdlog/spdlog.h>
-#pragma comment(lib,"ws2_32.lib")
+#pragma comment(lib, "ws2_32.lib")
 
 #define CONNECT_TIMES 10
 #define TIMEOUT_LIMIT 10
 #define DATA_SIZE 20000
 
-class TcpCom:public QObject
+class TcpCom : public QObject
 {
     Q_OBJECT
 public:
     TcpCom();
     ~TcpCom();
-
 
 public:
     /**
@@ -48,6 +47,7 @@ public:
      * @brief close
      */
     void close();
+
 public:
     /**
      * @brief Sendbuffer
@@ -65,17 +65,17 @@ public:
      * @brief 获取通讯状态
      * @return
      */
-    bool getCommState(){return m_CommState;}
+    bool getCommState() { return m_CommState; }
 
 protected:
-    bool		m_CommState;
-    ULONG		m_SendSize;
-    ULONG		m_RecvSize;
+    bool m_CommState;
+    ULONG m_SendSize;
+    ULONG m_RecvSize;
 
-    char		m_RecvData[DATA_SIZE];
-    char		m_SendData[DATA_SIZE];
+    char m_RecvData[DATA_SIZE];
+    char m_SendData[DATA_SIZE];
 
-    SOCKET		m_SockClient;
+    SOCKET m_SockClient;
     SOCKADDR_IN m_AdrServer;
     WSADATA wsaData;
 

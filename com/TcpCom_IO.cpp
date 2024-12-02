@@ -17,44 +17,43 @@ TcpCom_IO::~TcpCom_IO()
 
 int TcpCom_IO::ConnectToServer(const char *IpAdr, const int port)
 {
-    qDebug()<<"connect current threadID:"<<GetCurrentThreadId();
+    qDebug() << "connect current threadID:" << GetCurrentThreadId();
     unsigned long ul = 1;
     int i = 0;
     while (i++ < CONNECT_TIMES)
     {
         WSAStartup(MAKEWORD(2, 2), &wsaData);
         m_SockClient = socket(AF_INET, SOCK_STREAM, 0);
-        //ioctlsocket(m_SockClient, FIONBIO, (unsigned long *)&ul);
+        // ioctlsocket(m_SockClient, FIONBIO, (unsigned long *)&ul);
         inet_pton(AF_INET, IpAdr, &(m_AdrServer.sin_addr));
         m_AdrServer.sin_family = AF_INET;
         m_AdrServer.sin_port = htons(port);
 
-        qDebug()<<"try connect IO板";
+        qDebug() << "try connect IO板";
         int re;
-        re = ::connect(m_SockClient, (SOCKADDR*)&m_AdrServer, sizeof(SOCKADDR));
-        qDebug()<<"connect over IO板";
+        re = ::connect(m_SockClient, (SOCKADDR *)&m_AdrServer, sizeof(SOCKADDR));
+        qDebug() << "connect over IO板";
         if (-1 == re)
         {
             int err = WSAGetLastError();
             printf("%d:%d\n", re, WSAGetLastError());
             if (err == WSAETIMEDOUT)
             {
-                qDebug()<<"connect time out,trying again!\n ";
+                qDebug() << "connect time out,trying again!\n ";
                 Sleep(1000);
                 continue;
             }
             else
             {
-                qDebug()<<"connect err,give up\n ";
+                qDebug() << "connect err,give up\n ";
                 close();
                 break;
             }
-
         }
         else
         {
-            int SendTimeout = 10;   //1000ms
-            int RecvTimeout = 10;   //1000ms
+            int SendTimeout = 10; // 1000ms
+            int RecvTimeout = 10; // 1000ms
             setsockopt(m_SockClient, SOL_SOCKET, SO_RCVTIMEO, (char *)&RecvTimeout, sizeof(int));
             setsockopt(m_SockClient, SOL_SOCKET, SO_SNDTIMEO, (char *)&SendTimeout, sizeof(int));
             m_CommState = true;
@@ -63,38 +62,37 @@ int TcpCom_IO::ConnectToServer(const char *IpAdr, const int port)
         }
     }
     return -1;
-
 }
 
 int TcpCom_IO::Sendbuffer()
 {
     if (false == m_CommState)
     {
-        qDebug()<<"no connection!";
+        qDebug() << "no connection!";
         return -1;
     }
-    //put data to buffer
+    // put data to buffer
     int sendnum = 0;
     ULONG datalen = 0;
     char sendbuff[DATA_SIZE];
-    while ( datalen< m_SendSize)
+    while (datalen < m_SendSize)
     {
-        memcpy( sendbuff, m_SendData + datalen,m_SendSize-datalen);
-        //sendnum = send(m_SockClient, sendbuff, m_SendSize - datalen, 0);
-        sendnum = send(m_SockClient, sendbuff, m_SendSize-datalen, 0);
+        memcpy(sendbuff, m_SendData + datalen, m_SendSize - datalen);
+        // sendnum = send(m_SockClient, sendbuff, m_SendSize - datalen, 0);
+        sendnum = send(m_SockClient, sendbuff, m_SendSize - datalen, 0);
         datalen = datalen + sendnum;
         if (-1 == sendnum)
         {
             int err = WSAGetLastError();
-            log->warn("tcp io send error:{}",err);
-//            qDebug()<<err;
+            log->warn("tcp io send error:{}", err);
+            //            qDebug()<<err;
             if (err == EAGAIN || err == EWOULDBLOCK || err == EINPROGRESS)
             {
                 continue;
             }
             else if (err == WSAETIMEDOUT)
             {
-//                qDebug()<<"Send time out";
+                //                qDebug()<<"Send time out";
             }
             else
             {
@@ -109,7 +107,7 @@ int TcpCom_IO::Sendbuffer()
             return -1;
         }
     }
-    //log->debug("IO_Sendbuff:{},{},{},{},{},",(quint8)sendbuff[6],(quint8)sendbuff[7],(quint8)sendbuff[8],(quint8)sendbuff[9],(quint8)sendbuff[10]);
+    // log->debug("IO_Sendbuff:{},{},{},{},{},",(quint8)sendbuff[6],(quint8)sendbuff[7],(quint8)sendbuff[8],(quint8)sendbuff[9],(quint8)sendbuff[10]);
     return 0;
 }
 
@@ -117,7 +115,7 @@ DINT TcpCom_IO::Recvbuffer()
 {
     if (false == m_CommState)
     {
-        qDebug()<<"no connection!";
+        qDebug() << "no connection!";
         return -1;
     }
 
@@ -132,16 +130,16 @@ DINT TcpCom_IO::Recvbuffer()
         if (-1 == recvnum)
         {
             int err = WSAGetLastError();
-            //log->warn("tcp io recv error:{},{}",err,cnt);
-//
+            // log->warn("tcp io recv error:{},{}",err,cnt);
+            //
             if (err == EAGAIN || err == EWOULDBLOCK || err == EINTR)
             {
                 continue;
             }
-            else if(err == WSAETIMEDOUT)
+            else if (err == WSAETIMEDOUT)
             {
                 cnt++;
-//                qDebug()<<"recv time out";
+                //                qDebug()<<"recv time out";
                 if (cnt > TIMEOUT_LIMIT)
                 {
                     log->warn("{} IO板 give up recieve once, timeout..., count: {}", __LINE__, cnt);
@@ -164,16 +162,15 @@ DINT TcpCom_IO::Recvbuffer()
         memcpy(m_RecvData + datalen, recvbuff, recvnum);
         datalen = datalen + recvnum;
     }
-    //实际使用发现返回数据帧可能大于协议长度，因此在这里去除多余干扰数据
+    // 实际使用发现返回数据帧可能大于协议长度，因此在这里去除多余干扰数据
     char temp[5];
     recvnum = recv(m_SockClient, temp, 5, 0);
     return 0;
 }
 
-
 void TcpCom_IO::close()
 {
-    if(m_CommState == true)
+    if (m_CommState == true)
     {
         log->warn("{}: close current threadID:", __LINE__, GetCurrentThreadId());
         log->warn("{}: socket is closed", __LINE__);

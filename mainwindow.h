@@ -1,7 +1,7 @@
-    /*****************************************************************
-* 函数名称： mainwindow
-* 功能描述： ui交互及主线程操作
-******************************************************************/
+/*****************************************************************
+ * 函数名称： mainwindow
+ * 功能描述： ui交互及主线程操作
+ ******************************************************************/
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
@@ -47,11 +47,12 @@
 #include <spdlog/sinks/rotating_file_sink.h>
 #include "GVL.h"
 
-
 QT_BEGIN_NAMESPACE
-namespace Ui { class MainWindow; }
+namespace Ui
+{
+    class MainWindow;
+}
 QT_END_NAMESPACE
-
 
 class MainWindow : public QMainWindow
 {
@@ -65,17 +66,17 @@ private:
     void initLog();
     bool getLineStatus();
     void setLineStatus(bool lineStatus);
-    
+
 private:
     void initUiForm();
     void initUiWiget();
     void connectSlotFunctions();
-    void setButtonIndex();  // 记录当前触发按钮索引
-    void setActionIndex();  // 记录当前触发动作索引(工作流程记录)
+    void setButtonIndex(); // 记录当前触发按钮索引
+    void setActionIndex(); // 记录当前触发动作索引(工作流程记录)
     void closeEvent(QCloseEvent *event);
 
 private slots:
-    //1.0
+    // 1.0
     void on_btn_enable_clicked();
     void on_btn_disable_clicked();
     void on_btn_setRobotReset_clicked();
@@ -83,7 +84,7 @@ private slots:
     void on_btn_developerMode_clicked();
     void on_btn_userMode_clicked();
 
-    //2.0
+    // 2.0
     void on_btn_openCamera_clicked();
     void on_btn_closeCamera_clicked();
     void on_btn_location_clicked();
@@ -101,18 +102,18 @@ private slots:
     void slots_on_btn_magnet_exit_clicked();
     void slots_on_btn_add_nail_clicked();
 
-    //3.0 update the UI
+    // 3.0 update the UI
     void slotUpdateUIAll();
     void updateLineDetectResults();
     void updataDeviceConnectState();
-    void updateCameraData();//更新相机数据
-    void updateLaserData();//更新点激光数值
-    void updateAxisStatus();//更新单轴连接状态
+    void updateCameraData(); // 更新相机数据
+    void updateLaserData();  // 更新点激光数值
+    void updateAxisStatus(); // 更新单轴连接状态
     void updateTaskStateMachineStatus();
     void updateWorkingMode();
     void updateWorkdScenario();
 
-    //4.0
+    // 4.0
     void btn_moveFwd_shaft_pressed();
     void btn_moveFwd_shaft_released();
     void btn_moveBwd_shaft_pressed();
@@ -164,8 +165,8 @@ private slots:
     void slots_btn_single_job_clicked();
 
 private:
-    void MessageAlert(const std::string& message);
-    void AddMessageAlert(const std::string& message);
+    void MessageAlert(const std::string &message);
+    void AddMessageAlert(const std::string &message);
     void MessageConsumer();
 
 private:
@@ -173,121 +174,120 @@ private:
     const unsigned int cameraNum = 6;
     const unsigned int jointNum = 10;
     const unsigned int freeJointNum = 6;
-    ComInterface* m_Com;
-    CRobot* m_Robot;
-    CTask* m_Task;
-    VisionInterface* m_VisionInterface;
+    ComInterface *m_Com;
+    CRobot *m_Robot;
+    CTask *m_Task;
+    VisionInterface *m_VisionInterface;
     std::unique_ptr<Config::ConfigManager> m_config_ptr;
     std::mutex m_message_mutex;
     std::queue<std::string> m_message_container;
-    double m_wheelVel{ 30 };
+    double m_wheelVel{30};
     std::shared_ptr<spdlog::logger> logger;
 
-    Ui::MainWindow* ui;
+    Ui::MainWindow *ui;
     QMutex m_mutex;
-    QTimer* updateUiTimer;
+    QTimer *updateUiTimer;
     QTimer m_message_timer;
-    bool lineStatus{ false }; // 是否处于直线检测状态
+    bool lineStatus{false}; // 是否处于直线检测状态
     std::thread m_job_thread;
-    std::vector<std::thread*> m_thread_pool;
-    bool m_thread_exit_flag{ false };
+    std::vector<std::thread *> m_thread_pool;
+    bool m_thread_exit_flag{false};
 
     // 操作按钮索引配置
     std::map<std::string, unsigned int> m_btnIndex = {
-        //作业操作模块
-      {"btn_location_",     0},   // 位置准备
-      {"btn_lift_",         1},   // 举升
-      {"btn_leveling_",     2},   //调平
-      {"btn_lift_2",        3},   //举升对边
-      {"btn_sideline_",     4},   //对齐边线
-      {"btn_magnet_open_",  5},   //开启磁铁
-      {"btn_auto_knock_",   6},   //自动碰钉
-      {"btn_magnet_close_", 7},  //关闭磁铁
-      {"btn_magnet_pause_", 8},  //碰钉暂停
-      {"btn_knock_suspend_", 9}, // 碰钉终止
-      {"btn_magnet_stop_", 10},  // 停止
-      {"btn_magent_crash_stop_", 11},  // 急停
-      // 顶部操作模块
-      {"btn_enable_", 12}, // 上使能
-      {"btn_disable_", 13}, // 下使能
-      {"btn_cleanError_", 14}, // 清除错误
-      {"btn_errorStop_", 15}, // 紧急停止
-      {"btn_exit", 16}, // 退出
+        // 作业操作模块
+        {"btn_location_", 0},           // 位置准备
+        {"btn_lift_", 1},               // 举升
+        {"btn_leveling_", 2},           // 调平
+        {"btn_lift_2", 3},              // 举升对边
+        {"btn_sideline_", 4},           // 对齐边线
+        {"btn_magnet_open_", 5},        // 开启磁铁
+        {"btn_auto_knock_", 6},         // 自动碰钉
+        {"btn_magnet_close_", 7},       // 关闭磁铁
+        {"btn_magnet_pause_", 8},       // 碰钉暂停
+        {"btn_knock_suspend_", 9},      // 碰钉终止
+        {"btn_magnet_stop_", 10},       // 停止
+        {"btn_magent_crash_stop_", 11}, // 急停
+        // 顶部操作模块
+        {"btn_enable_", 12},     // 上使能
+        {"btn_disable_", 13},    // 下使能
+        {"btn_cleanError_", 14}, // 清除错误
+        {"btn_errorStop_", 15},  // 紧急停止
+        {"btn_exit", 16},        // 退出
 
-      // 单轴操作
-      {"btn_moveFwd_shaft0", 17},
-      {"btn_moveFwd_shaft1", 18},
-      {"btn_moveFwd_shaft2", 19},
-      {"btn_moveFwd_shaft3", 20},
-      {"btn_moveFwd_shaft4", 21},
-      {"btn_moveFwd_shaft5", 22},
-      {"btn_moveFwd_shaft6", 23},
-      {"btn_moveFwd_shaft7", 24},
-      {"btn_moveFwd_shaft8", 25},
-      {"btn_moveFwd_shaft9", 26},
-      {"btn_moveFwd_shaft10", 27},
+        // 单轴操作
+        {"btn_moveFwd_shaft0", 17},
+        {"btn_moveFwd_shaft1", 18},
+        {"btn_moveFwd_shaft2", 19},
+        {"btn_moveFwd_shaft3", 20},
+        {"btn_moveFwd_shaft4", 21},
+        {"btn_moveFwd_shaft5", 22},
+        {"btn_moveFwd_shaft6", 23},
+        {"btn_moveFwd_shaft7", 24},
+        {"btn_moveFwd_shaft8", 25},
+        {"btn_moveFwd_shaft9", 26},
+        {"btn_moveFwd_shaft10", 27},
 
-      {"btn_moveBwd_shaft0", 28},
-      {"btn_moveBwd_shaft1", 29},
-      {"btn_moveBwd_shaft2", 30},
-      {"btn_moveBwd_shaft3", 31},
-      {"btn_moveBwd_shaft4", 32},
-      {"btn_moveBwd_shaft5", 33},
-      {"btn_moveBwd_shaft6", 34},
-      {"btn_moveBwd_shaft7", 35},
-      {"btn_moveBwd_shaft8", 36},
-      {"btn_moveBwd_shaft9", 37},
-      {"btn_moveBwd_shaft10", 38},
+        {"btn_moveBwd_shaft0", 28},
+        {"btn_moveBwd_shaft1", 29},
+        {"btn_moveBwd_shaft2", 30},
+        {"btn_moveBwd_shaft3", 31},
+        {"btn_moveBwd_shaft4", 32},
+        {"btn_moveBwd_shaft5", 33},
+        {"btn_moveBwd_shaft6", 34},
+        {"btn_moveBwd_shaft7", 35},
+        {"btn_moveBwd_shaft8", 36},
+        {"btn_moveBwd_shaft9", 37},
+        {"btn_moveBwd_shaft10", 38},
 
-      {"btn_moveRel_shaft0", 39},
-      {"btn_moveRel_shaft1", 40},
-      {"btn_moveRel_shaft2", 41},
-      {"btn_moveRel_shaft3", 42},
-      {"btn_moveRel_shaft4", 43},
-      {"btn_moveRel_shaft5", 44},
-      {"btn_moveRel_shaft6", 45},
-      {"btn_moveRel_shaft7", 46},
-      {"btn_moveRel_shaft8", 47},
-      {"btn_moveRel_shaft9", 48},
-      {"btn_moveRel_shaft10", 49},
+        {"btn_moveRel_shaft0", 39},
+        {"btn_moveRel_shaft1", 40},
+        {"btn_moveRel_shaft2", 41},
+        {"btn_moveRel_shaft3", 42},
+        {"btn_moveRel_shaft4", 43},
+        {"btn_moveRel_shaft5", 44},
+        {"btn_moveRel_shaft6", 45},
+        {"btn_moveRel_shaft7", 46},
+        {"btn_moveRel_shaft8", 47},
+        {"btn_moveRel_shaft9", 48},
+        {"btn_moveRel_shaft10", 49},
 
-      // 末端操作
-      {"btn_moveFwd_end0", 50},
-      {"btn_moveFwd_end1", 51},
-      {"btn_moveFwd_end2", 52},
-      {"btn_moveFwd_end3", 53},
-      {"btn_moveFwd_end4", 54},
-      {"btn_moveFwd_end5", 55},
+        // 末端操作
+        {"btn_moveFwd_end0", 50},
+        {"btn_moveFwd_end1", 51},
+        {"btn_moveFwd_end2", 52},
+        {"btn_moveFwd_end3", 53},
+        {"btn_moveFwd_end4", 54},
+        {"btn_moveFwd_end5", 55},
 
-      {"btn_moveBwd_end0", 56},
-      {"btn_moveBwd_end1", 57},
-      {"btn_moveBwd_end2", 58},
-      {"btn_moveBwd_end3", 59},
-      {"btn_moveBwd_end4", 60},
-      {"btn_moveBwd_end5", 61},
+        {"btn_moveBwd_end0", 56},
+        {"btn_moveBwd_end1", 57},
+        {"btn_moveBwd_end2", 58},
+        {"btn_moveBwd_end3", 59},
+        {"btn_moveBwd_end4", 60},
+        {"btn_moveBwd_end5", 61},
 
-      {"btn_moveRel_end0", 62},
-      {"btn_moveRel_end1", 63},
-      {"btn_moveRel_end2", 64},
-      {"btn_moveRel_end3", 65},
-      {"btn_moveRel_end4", 66},
-      {"btn_moveRel_end5", 67}
-    };
+        {"btn_moveRel_end0", 62},
+        {"btn_moveRel_end1", 63},
+        {"btn_moveRel_end2", 64},
+        {"btn_moveRel_end3", 65},
+        {"btn_moveRel_end4", 66},
+        {"btn_moveRel_end5", 67}};
 
     // 工作作业按钮名称-索引值
     std::map<std::string, unsigned int> m_jobBtnIndex = {
-      {"btn_leveling_",      1},          // 调平
-      {"btn_sideline_",      2},          // 对齐边线
-      {"btn_magnet_open_",   3},          // 吸合
-      {"btn_auto_knock_",    4},          // 碰钉
-      {"btn_magnet_close_",  5},          // 脱开
-      {"btn_magnet_quit",   6},          // 退出
-      {"btn_magnet_pause_",  7},          // 暂停
-      {"btn_knock_suspend_", 8},          // 终止
-      {"btn_lift_",          9},          // 举升
-      {"btn_add_nail",       10},          // 放钉
-      {"btn_magnet_stop_",  11},          // 停止
-      {"btn_magent_crash_stop_", 12}      // 急停
+        {"btn_leveling_", 1},          // 调平
+        {"btn_sideline_", 2},          // 对齐边线
+        {"btn_magnet_open_", 3},       // 吸合
+        {"btn_auto_knock_", 4},        // 碰钉
+        {"btn_magnet_close_", 5},      // 脱开
+        {"btn_magnet_quit", 6},        // 退出
+        {"btn_magnet_pause_", 7},      // 暂停
+        {"btn_knock_suspend_", 8},     // 终止
+        {"btn_lift_", 9},              // 举升
+        {"btn_add_nail", 10},          // 放钉
+        {"btn_magnet_stop_", 11},      // 停止
+        {"btn_magent_crash_stop_", 12} // 急停
     };
 };
 #endif // MAINWINDOW_H

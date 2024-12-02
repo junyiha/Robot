@@ -12,12 +12,12 @@ RobotCom::RobotCom()
     }
     m_Hour = 0;
     m_endhour = 0;
-    m_SysTime = { 0 };
+    m_SysTime = {0};
     m_SendSize = sizeof(DINT) + sizeof(stRobotCommand) + m_LinkNum * sizeof(stLinkCommand) + m_JointNum * sizeof(st_SetAxis);
-    m_RecvSize = sizeof(DINT) + sizeof(stRobotStatus)  + m_LinkNum * sizeof(stLinkStatus)  + m_JointNum * sizeof(st_ReadAxis);
-    if (m_SendSize > DATA_SIZE || m_RecvSize>DATA_SIZE)
+    m_RecvSize = sizeof(DINT) + sizeof(stRobotStatus) + m_LinkNum * sizeof(stLinkStatus) + m_JointNum * sizeof(st_ReadAxis);
+    if (m_SendSize > DATA_SIZE || m_RecvSize > DATA_SIZE)
     {
-        qDebug()<<"Error recv length is bigger than DATA_SIZE";
+        qDebug() << "Error recv length is bigger than DATA_SIZE";
     }
 
     m_UpperHeartbeat = 0;
@@ -29,25 +29,23 @@ RobotCom::RobotCom()
     memset(m_LinkStatus, 0, MAX_FREEDOM_LINK * sizeof(stLinkStatus));
     memset(m_AxisStatus, 0, MAX_FREEDOM_ROBOT * sizeof(st_ReadAxis));
 
-    //com连接成功发送信号则打开loop，启动两个定时器；连接断开发送信号关闭loop。
-    connect(this,&RobotCom::sigConnected,this,&RobotCom::slotStartLoop);
-    connect(this,&RobotCom::sigDisconnected,this,&RobotCom::slotStopLoop);
+    // com连接成功发送信号则打开loop，启动两个定时器；连接断开发送信号关闭loop。
+    connect(this, &RobotCom::sigConnected, this, &RobotCom::slotStartLoop);
+    connect(this, &RobotCom::sigDisconnected, this, &RobotCom::slotStopLoop);
 
-    //定时器连接senddata函数
-    m_crobotSendTimer=new QTimer(this);
+    // 定时器连接senddata函数
+    m_crobotSendTimer = new QTimer(this);
     m_crobotSendTimer->setInterval(50);
-    connect(m_crobotSendTimer,&QTimer::timeout,this,&RobotCom::SendData);
+    connect(m_crobotSendTimer, &QTimer::timeout, this, &RobotCom::SendData);
 
-    //定时器连接recvdata函数
-    m_crobotRecvTimer=new QTimer(this);
+    // 定时器连接recvdata函数
+    m_crobotRecvTimer = new QTimer(this);
     m_crobotRecvTimer->setInterval(10);
-    connect(m_crobotRecvTimer,&QTimer::timeout,this,&RobotCom::RecvData);
-
+    connect(m_crobotRecvTimer, &QTimer::timeout, this, &RobotCom::RecvData);
 }
 
 RobotCom::~RobotCom()
 {
-
 }
 
 void RobotCom::slotStartLoop()
@@ -64,12 +62,12 @@ void RobotCom::slotStopLoop()
 
 DINT RobotCom::RecvData()
 {
-    if(m_CommState == true)
+    if (m_CommState == true)
     {
         DINT re = Recvbuffer();
         if (0 != re)
         {
-//            qDebug()<<"failed to recv\n";
+            //            qDebug()<<"failed to recv\n";
             return -1;
         }
 
@@ -95,19 +93,18 @@ DINT RobotCom::RecvData()
                     }
                 }
             }
-
         }
 
-       mutex_Read.unlock();
+        mutex_Read.unlock();
 
-       //emit sigRobotDataUpdate();
-       return GetTime() - m_RobotHeartbeat;
+        // emit sigRobotDataUpdate();
+        return GetTime() - m_RobotHeartbeat;
     }
 }
 
 DINT RobotCom::SendData()
 {
-    if(m_CommState == true)
+    if (m_CommState == true)
     {
         m_UpperHeartbeat = GetTime();
         ULONG offset = 0;
@@ -141,8 +138,7 @@ DINT RobotCom::SendData()
 
         mutex_send.unlock();
 
-
-        //发送数据
+        // 发送数据
         int re = Sendbuffer();
         if (0 == re)
         {
@@ -150,12 +146,13 @@ DINT RobotCom::SendData()
         }
         else
         {
-            qDebug()<<"failed to send\n";
+            qDebug() << "failed to send\n";
             return -1;
         }
     }
-    //标志位没开
-    else return -10;
+    // 标志位没开
+    else
+        return -10;
 }
 
 DINT RobotCom::GetTime()
@@ -172,25 +169,21 @@ DINT RobotCom::GetTime()
         m_Hour = m_Hour + m_endhour;
         m_endhour = 0;
     }
-    DINT acttime = m_Hour * 3600000
-            + m_SysTime.wMinute * 60000
-            + m_SysTime.wSecond * 1000
-            + m_SysTime.wMilliseconds;
-
+    DINT acttime = m_Hour * 3600000 + m_SysTime.wMinute * 60000 + m_SysTime.wSecond * 1000 + m_SysTime.wMilliseconds;
 
     mutex_Read.unlock();
 
     return acttime;
 }
 
-void RobotCom::EndVelMove(uint i,double vel,bool direction,bool underTool)
+void RobotCom::EndVelMove(uint i, double vel, bool direction, bool underTool)
 {
     mutex_send.lock();
 
     mutex_send.unlock();
 }
 
-void RobotCom::EndPosMove(double* dp, bool underTool)
+void RobotCom::EndPosMove(double *dp, bool underTool)
 {
     mutex_send.lock();
 
@@ -214,7 +207,6 @@ void RobotCom::RobotPower(bool enable)
     this->m_RobotCmmd.stKinPar.bEnable = enable;
 
     mutex_send.unlock();
-
 }
 
 void RobotCom::RobotHome()
@@ -243,8 +235,6 @@ void RobotCom::RobotStop()
 
     mutex_send.unlock();
 }
-
-
 
 void RobotCom::LinkReset(uint index)
 {
@@ -394,7 +384,7 @@ bool RobotCom::setJointGroupMove(eMC_Motion mode, const double pos[], const doub
     bool re = true;
 
     mutex_send.lock();
-    for(int i=0;i<m_JointNum;i++)
+    for (int i = 0; i < m_JointNum; i++)
     {
         switch (mode)
         {
@@ -430,35 +420,35 @@ bool RobotCom::setJointGroupMove(eMC_Motion mode, const double pos[], const doub
 bool RobotCom::setLinkGroupMove(uint index, eMC_Motion mode, const double pos[], double vel[], double end_vel[], double distance[])
 {
     bool re = true;
-    int first_joint =0;
-    for(uint i=0; i<index; i++)
+    int first_joint = 0;
+    for (uint i = 0; i < index; i++)
     {
         first_joint += LINK_FREEDOM[i];
     }
     mutex_send.lock();
-    for(int i=0; i<LINK_FREEDOM[index]; i++)
+    for (int i = 0; i < LINK_FREEDOM[index]; i++)
     {
         switch (mode)
         {
         case eMC_MOV_ABS:
-            this->m_AxisCommd[i+first_joint].eMC_Motion = mode;
-            this->m_AxisCommd[i+first_joint].Position = pos[i];
-            this->m_AxisCommd[i+first_joint].Velocity = vel[i];
+            this->m_AxisCommd[i + first_joint].eMC_Motion = mode;
+            this->m_AxisCommd[i + first_joint].Position = pos[i];
+            this->m_AxisCommd[i + first_joint].Velocity = vel[i];
             break;
         case eMC_MOV_CON_ABS:
-            this->m_AxisCommd[i+first_joint].eMC_Motion = mode;
-            this->m_AxisCommd[i+first_joint].Position = pos[i];
-            this->m_AxisCommd[i+first_joint].Velocity = vel[i];
-            this->m_AxisCommd[i+first_joint].EndVelocity = end_vel[i];
+            this->m_AxisCommd[i + first_joint].eMC_Motion = mode;
+            this->m_AxisCommd[i + first_joint].Position = pos[i];
+            this->m_AxisCommd[i + first_joint].Velocity = vel[i];
+            this->m_AxisCommd[i + first_joint].EndVelocity = end_vel[i];
             break;
         case eMC_MOV_RELATIVE:
-            this->m_AxisCommd[i+first_joint].eMC_Motion = mode;
-            this->m_AxisCommd[i+first_joint].Distance = distance[i];
-            this->m_AxisCommd[i+first_joint].Velocity = vel[i];
+            this->m_AxisCommd[i + first_joint].eMC_Motion = mode;
+            this->m_AxisCommd[i + first_joint].Distance = distance[i];
+            this->m_AxisCommd[i + first_joint].Velocity = vel[i];
             break;
         case eMC_MOV_VEL:
-            this->m_AxisCommd[i+first_joint].eMC_Motion = mode;
-            this->m_AxisCommd[i+first_joint].Velocity = vel[i];
+            this->m_AxisCommd[i + first_joint].eMC_Motion = mode;
+            this->m_AxisCommd[i + first_joint].Velocity = vel[i];
             break;
         default:
             re = false;
@@ -467,7 +457,6 @@ bool RobotCom::setLinkGroupMove(uint index, eMC_Motion mode, const double pos[],
     }
     mutex_send.unlock();
     return re;
-
 }
 
 QVector<st_ReadAxis> RobotCom::getLinkJointStatus(uint index)
@@ -476,18 +465,17 @@ QVector<st_ReadAxis> RobotCom::getLinkJointStatus(uint index)
     QVector<st_ReadAxis> re;
     uint joint_index = 0;
     uint freedom = LINK_FREEDOM[index];
-    for(int i=0;i<index;i++)
+    for (int i = 0; i < index; i++)
     {
         joint_index += LINK_FREEDOM[i];
-
     }
     mutex_Read.lock();
-    for(int i = joint_index; i < joint_index+freedom; i++ )
+    for (int i = joint_index; i < joint_index + freedom; i++)
     {
         re.push_back(m_AxisStatus[i]);
     }
     mutex_Read.unlock();
-    return  re;
+    return re;
 }
 
 StatusofLink RobotCom::getLinkStatus(uint index)
@@ -504,12 +492,10 @@ QVector<st_ReadAxis> RobotCom::getJointGroupStatus()
     QVector<st_ReadAxis> re;
 
     mutex_Read.lock();
-    for(int i = 0; i <m_JointNum; i++ )
+    for (int i = 0; i < m_JointNum; i++)
     {
         re.push_back(m_AxisStatus[i]);
     }
     mutex_Read.unlock();
-    return  re;
-
+    return re;
 }
-

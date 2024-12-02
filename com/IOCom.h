@@ -43,25 +43,23 @@
 #define SEND_LEN 0x0f
 #define RECV_LEN 0x31
 
-#define DO_LEN  8 //DO数组数据长度
-#define DI_LEN  2  //DI数组数据长度
-#define AI_NUM  16 //AI数量
+#define DO_LEN 8  // DO数组数据长度
+#define DI_LEN 2  // DI数组数据长度
+#define AI_NUM 16 // AI数量
 
-class IOCom:public TcpCom_IO
+class IOCom : public TcpCom_IO
 {
     Q_OBJECT
 public:
     IOCom();
     ~IOCom();
 
-
-
     /**
      * @brief SetIO 在上次DO命令基础上设置DO输出
      * @param index_port DO端子编号0~7   （共7个端子，从0开始）
      * @param value      端子输出状态（注意电气图纸是1-8编号）
      */
-    void SetIO(qint8 index_port,byte value);
+    void SetIO(qint8 index_port, byte value);
 
     QVector<byte> getDIState();
     QVector<byte> getDOState();
@@ -70,10 +68,7 @@ public:
     bool is_Running = true;
     void run();
 
-
 protected:
-
-
     //****************通信相关接口函数***************
     /**
      * @brief SendIO 发送数据
@@ -93,7 +88,6 @@ protected:
      */
     DINT SendAndRecvIO();
 
-
     //****************子线程循环发送接口函数***************
 
 protected slots:
@@ -109,14 +103,11 @@ protected slots:
      */
     void slotStopLoop();
 
-
-
 private:
-
-    byte		m_DOSet[DO_LEN];
-    byte		m_DOState[DO_LEN];
-    byte		m_DIState[DI_LEN];
-    unsigned short  m_AISate[AI_NUM];
+    byte m_DOSet[DO_LEN];
+    byte m_DOState[DO_LEN];
+    byte m_DIState[DI_LEN];
+    unsigned short m_AISate[AI_NUM];
 
     QTimer *m_cIOSendAndRecvTimer;
 
@@ -125,7 +116,6 @@ private:
 
     QAtomicInteger<INT64> m_SetIO;
     QAtomicInteger<INT64> m_readIO;
-
 };
 
 #endif // IOCOM_H

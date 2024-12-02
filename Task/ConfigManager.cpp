@@ -14,12 +14,11 @@ namespace Config
 
 	ConfigManager::~ConfigManager()
 	{
-
 	}
 
 	bool ConfigManager::LoadConfiguration()
 	{
-		bool res{ true };
+		bool res{true};
 		try
 		{
 			m_root_ro = YAML::LoadFile(m_path_ro);
@@ -73,7 +72,7 @@ namespace Config
 		GP::Min_Deviation_In_FitBoard = m_root_ro["Min_Deviation_In_FitBoard"]["value"].as<double>();
 		GP::Line_Deviation_Threshold = m_root_ro["Line_Deviation_Threshold"]["value"].as<double>();
 
-		for (auto& it : m_root_rw["position_map"])
+		for (auto &it : m_root_rw["position_map"])
 		{
 			auto work_scenario = static_cast<GP::WorkingScenario>(it[1].as<int>());
 			auto position_type = static_cast<GP::PositionType>(it[2].as<int>());
@@ -91,7 +90,7 @@ namespace Config
 
 	bool ConfigManager::WriteToFile()
 	{
-		bool res{ false };
+		bool res{false};
 
 		std::ofstream fout(m_path_rw);
 		if (fout)
@@ -111,9 +110,9 @@ namespace Config
 
 	bool ConfigManager::UpdateValue(const std::string key, const GP::PositionMap position_map)
 	{
-		bool res{ false };
+		bool res{false};
 		YAML::Node node;
-		for (auto& it : position_map)
+		for (auto &it : position_map)
 		{
 			YAML::Node temp_node;
 			temp_node.push_back(it.second.brief);

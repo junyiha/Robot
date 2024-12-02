@@ -1,10 +1,10 @@
 /*****************************************************************
-* 函数名称： ComInterface
-* 功能描述： ·基于RobotCom类和IOCom类，建立机器人对象和io对象的统一接口
-*          ·使用单例模式，全局唯一且易获取类的引用，方便跨线程访问
-* 参数说明： 参数说明
-* 返回值：   返回值说明
-******************************************************************/
+ * 函数名称： ComInterface
+ * 功能描述： ·基于RobotCom类和IOCom类，建立机器人对象和io对象的统一接口
+ *          ·使用单例模式，全局唯一且易获取类的引用，方便跨线程访问
+ * 参数说明： 参数说明
+ * 返回值：   返回值说明
+ ******************************************************************/
 #ifndef COMINTERFACE_H
 #define COMINTERFACE_H
 
@@ -24,34 +24,34 @@ class ComInterface : public QThread
 {
     Q_OBJECT
 public:
-    //饿汉式单例模式
+    // 饿汉式单例模式
     static ComInterface *getInstance();
-    ComInterface(const ComInterface&) = delete;
-    ComInterface& operator = (const ComInterface&) = delete;
+    ComInterface(const ComInterface &) = delete;
+    ComInterface &operator=(const ComInterface &) = delete;
     explicit ComInterface(QObject *parent = nullptr);
     ~ComInterface();
     void closeThread();
-    CManual     m_cManual;
+    CManual m_cManual;
 
 protected:
-    //设备成员
-    RobotCom	m_cRobot;
-    CTools		m_cTools;
+    // 设备成员
+    RobotCom m_cRobot;
+    CTools m_cTools;
 
     std::shared_ptr<spdlog::logger> log;
 
     void run();
 
 private:
-    int isRobotConnected = false;// 0表示成功,-1失败
+    int isRobotConnected = false; // 0表示成功,-1失败
     int isIOConnected = false;
     bool running = true;
     QMutex mutex_read;
 
 public:
-    //写操作用信号，读操作可以跨线程直接读，所以这里只需要控制指令映射
-    stLinkCommand	m_main_LinkCommd[MAX_FREEDOM_LINK];
-    st_SetAxis		m_main_AxisCommd[MAX_FREEDOM_ROBOT];
+    // 写操作用信号，读操作可以跨线程直接读，所以这里只需要控制指令映射
+    stLinkCommand m_main_LinkCommd[MAX_FREEDOM_LINK];
+    st_SetAxis m_main_AxisCommd[MAX_FREEDOM_ROBOT];
 
     /**
      *@brief 获取机器人连接状态
@@ -79,40 +79,40 @@ public:
     QVector<st_ReadAxis> getJointGroupStatus();
 
     /**
-    * @brief 轴组关节运动
-    * @param index: LINK索引
-    * @param pos:   目标位置
-    * @param vel:   设定速度
-    * @return
-    */
-    void setLinkJointMoveAbs(uint index, const double pos[],double vel[]);
+     * @brief 轴组关节运动
+     * @param index: LINK索引
+     * @param pos:   目标位置
+     * @param vel:   设定速度
+     * @return
+     */
+    void setLinkJointMoveAbs(uint index, const double pos[], double vel[]);
 
     /**
-    * @brief 轴组关节速度
-    * @param index: LINK索引
-    * @param pos:  目标位置
-    * @param vel:  设定速度
-    * @return
-    */
+     * @brief 轴组关节速度
+     * @param index: LINK索引
+     * @param pos:  目标位置
+     * @param vel:  设定速度
+     * @return
+     */
     void setLinkJointMoveVel(uint index, double vel[]);
 
     /**
-    * @brief 获取link轴组关节状态
-    * @param index: LINK索引
-    * @return QVector<st_ReadAxis> 轴组状态向量
-    */
+     * @brief 获取link轴组关节状态
+     * @param index: LINK索引
+     * @return QVector<st_ReadAxis> 轴组状态向量
+     */
     QVector<st_ReadAxis> getLinkJointStatus(uint index);
 
     /**
-    * @brief 获取link状态
-    * @param index: LINK索引
-    * @return QVector<st_ReadAxis> 轴组状态向量
-    */
+     * @brief 获取link状态
+     * @param index: LINK索引
+     * @return QVector<st_ReadAxis> 轴组状态向量
+     */
     StatusofLink getLinkStatus(uint index);
 
     /**
      * @brief 获取遥控器指令
-     * 
+     *
      * @param m_Manual: 遥控器指令数据
      */
     void getManual(stManualOperator &m_Manual);
@@ -138,9 +138,9 @@ public:
     void RobotHome();
 
     /**
-      * @brief RobotHalt 机器人暂停函数 控制整体运动
-      * @attention 原定参数无误返回true
-      */
+     * @brief RobotHalt 机器人暂停函数 控制整体运动
+     * @attention 原定参数无误返回true
+     */
     void RobotHalt();
 
     /**
@@ -257,25 +257,25 @@ public:
      * @param distance 方向
      * @return [不确定]
      */
-    bool setJointGroupMove(eMC_Motion mode, const double pos[] = NULL, const double vel[]=NULL, double end_vel[]=NULL, double distance[]=NULL);
+    bool setJointGroupMove(eMC_Motion mode, const double pos[] = NULL, const double vel[] = NULL, double end_vel[] = NULL, double distance[] = NULL);
 
     //*************IO控制相关接口信号*************
     /**
      * @brief getCommState_Robot 获取机器人连接状态
      * @return 已连接则true
      */
-    bool getCommState_Robot(){return m_cRobot.getCommState();}
+    bool getCommState_Robot() { return m_cRobot.getCommState(); }
 
     /**
      * @brief getCommState_IOA 获取IOA板子连接状态
      * @return 已连接则true
      */
-    bool getCommState_IOA(){return m_cTools.m_cIOA.getCommState();}
-    bool getCommState_IOB(){return m_cTools.m_cIOB.getCommState();}
+    bool getCommState_IOA() { return m_cTools.m_cIOA.getCommState(); }
+    bool getCommState_IOB() { return m_cTools.m_cIOB.getCommState(); }
 
     /**
      * @brief 激光控制
-     * 
+     *
      * @param swit 开关量
      */
     void setCrossLaser(bool swit);

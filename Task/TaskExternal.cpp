@@ -55,7 +55,7 @@ void CTask::stateTransition()
 
 void CTask::manualStateTransition()
 {
-    //1. 判断机器人是否处于就绪状态 
+    // 1. 判断机器人是否处于就绪状态
     bool robotReady = (m_LinkStatus.eLinkActState == eLINK_STANDSTILL);
 #ifdef STATE_MACHINE_TEST
     robotReady = true;
@@ -83,7 +83,7 @@ void CTask::manualStateTransition()
         }
     }
 
-    //3. 执行手动操作指令 -- 遥控器处理函数--》遥控器对接。
+    // 3. 执行手动操作指令 -- 遥控器处理函数--》遥控器对接。
     Manual();
 }
 
@@ -466,7 +466,7 @@ void CTask::detectionInPositioningExecutionCommand()
 
 void CTask::motionInPositioningExecutionCommand()
 {
-    static QVector<double> last_tar_position{ 0, 0, 0, 0, 0, 0 };
+    static QVector<double> last_tar_position{0, 0, 0, 0, 0, 0};
     switch (m_eexecutionCommand)
     {
     case EExecutionCommand::eNULL:
@@ -478,13 +478,15 @@ void CTask::motionInPositioningExecutionCommand()
             updateTopAndSubState(ETopState::eManual, ESubState::eReady);
             break;
         }
-        static QVector<double> tar_position{ 0,0,0,0,0,0 };
-        static double tar_pos[6] = { 0,0,0,0,0,0 };
-        if (!m_position_motion_flag) {
+        static QVector<double> tar_position{0, 0, 0, 0, 0, 0};
+        static double tar_pos[6] = {0, 0, 0, 0, 0, 0};
+        if (!m_position_motion_flag)
+        {
             QVector<Eigen::Matrix4d> Dev_RT = CMeasure::calPoseDeviation(m_stMeasuredata);
-            tar_position = m_Robot->getTargetPose(Dev_RT[3]);  // 计算调整量
+            tar_position = m_Robot->getTargetPose(Dev_RT[3]); // 计算调整量
 
-            for (int i = 0; i < 6; i++) {
+            for (int i = 0; i < 6; i++)
+            {
                 tar_pos[i] = tar_position[i];
             }
 
@@ -515,7 +517,8 @@ void CTask::motionInPositioningExecutionCommand()
             m_Robot->isEndReached(tar_position))
         {
             static int cnt = 0;
-            if (cnt > 100) {
+            if (cnt > 100)
+            {
                 cnt = 0;
                 m_position_motion_flag = false;
                 updateTopAndSubState(ETopState::ePositioning, ESubState::eDetection);
@@ -551,7 +554,7 @@ void CTask::motionInPositioningExecutionCommand()
 
 void CTask::readyToMagentOnExecutionCommand()
 {
-    static int magent{ 0 };
+    static int magent{0};
     if (m_automatic_working_flag && magent == 0)
         updateExecutionCommand(EExecutionCommand::eMagentOn);
 
@@ -579,7 +582,7 @@ void CTask::readyToMagentOnExecutionCommand()
 #ifdef STATE_MACHINE_TEST
         updateTopAndSubState(ETopState::eDoWeld, ESubState::eReadyToDoWeld);
         break;
-#endif  // STATE_MACHINE_TEST
+#endif // STATE_MACHINE_TEST
         doMagentOn();
         magent = 1;
         break;
@@ -605,7 +608,7 @@ void CTask::readyToMagentOnExecutionCommand()
 
 void CTask::readyToWeldExecutionCommand()
 {
-    static int weld{ 0 };
+    static int weld{0};
     switch (m_eexecutionCommand)
     {
     case EExecutionCommand::eNULL:
@@ -651,15 +654,15 @@ void CTask::readyToWeldExecutionCommand()
 
 void CTask::doingWeldExecutionCommand()
 {
-    static int weld{ 0 };
+    static int weld{0};
     switch (m_eexecutionCommand)
     {
     case EExecutionCommand::eNULL:
     {
 #ifdef STATE_MACHINE_TEST
-        updateTopAndSubState(ETopState::eDoWeld, ESubState::eStopWeld);  // 碰钉结束，跳转到碰钉停止
+        updateTopAndSubState(ETopState::eDoWeld, ESubState::eStopWeld); // 碰钉结束，跳转到碰钉停止
         break;
-#endif  // STATE_MACHINE_TEST
+#endif // STATE_MACHINE_TEST
         if (weld == -1)
         {
             if (doMagentOff())
@@ -671,7 +674,7 @@ void CTask::doingWeldExecutionCommand()
         }
         if (DoWeldActionDecorator(1))
         {
-            updateTopAndSubState(ETopState::eDoWeld, ESubState::eStopWeld);  // 碰钉结束，跳转到碰钉停止
+            updateTopAndSubState(ETopState::eDoWeld, ESubState::eStopWeld); // 碰钉结束，跳转到碰钉停止
         }
         break;
     }
@@ -703,7 +706,7 @@ void CTask::doingWeldExecutionCommand()
 
 void CTask::stopWeldExecutionCommand()
 {
-    static int weld{ 0 };
+    static int weld{0};
     if (m_automatic_working_flag && weld == 0)
         updateExecutionCommand(EExecutionCommand::eMagentOff);
 
@@ -730,7 +733,7 @@ void CTask::stopWeldExecutionCommand()
 #ifdef STATE_MACHINE_TEST
         updateTopAndSubState(ETopState::eQuit, ESubState::eQuiting);
         break;
-#endif  // STATE_MACHINE_TEST
+#endif // STATE_MACHINE_TEST
         doMagentOff();
         weld = -1;
         log->info("{} do magent off begin...", __LINE__);
@@ -761,16 +764,16 @@ void CTask::quitingExecutionCommand()
 #ifdef STATE_MACHINE_TEST
         updateTopAndSubState(ETopState::eManual, ESubState::eReady);
         break;
-#endif  // STATE_MACHINE_TEST
+#endif // STATE_MACHINE_TEST
 
         // 移动到退出位置
         std::vector<double> velocity(MAX_FREEDOM_LINK, 0.0);
-        velocity = { 1, 1, 1, 1, 0.3, 10, 5, 0.5, 3, 6 };
+        velocity = {1, 1, 1, 1, 0.3, 10, 5, 0.5, 3, 6};
         auto temp_value = GP::Position_Map[{GP::Working_Scenario, GP::PositionType::Quit}].value;
 
-        int tool_index{ 9 };  // 工具升降
-        int base_index{ 0 };  // 底部升降
-        int cant_scenario_index{ 6 }; // 伸缩
+        int tool_index{9};          // 工具升降
+        int base_index{0};          // 底部升降
+        int cant_scenario_index{6}; // 伸缩
         if (GP::Working_Scenario == GP::WorkingScenario::Side)
         {
             m_Robot->setJointMoveAbs(cant_scenario_index, temp_value.at(cant_scenario_index), 4);
@@ -790,7 +793,7 @@ void CTask::quitingExecutionCommand()
             m_Robot->setJointMoveAbs(tool_index, temp_value.at(tool_index), 6);
             m_Robot->setJointMoveAbs(base_index, temp_value.at(base_index), 4);
             if (std::abs(m_JointGroupStatus[tool_index].Position - temp_value.at(tool_index)) < 1 &&
-                std::abs(m_JointGroupStatus[base_index].Position < temp_value.at(base_index)) < 1 )
+                std::abs(m_JointGroupStatus[base_index].Position < temp_value.at(base_index)) < 1)
             {
                 updateTopAndSubState(ETopState::eManual, ESubState::eReady);
                 auto duration = std::chrono::system_clock::now() - m_begin_time;
@@ -865,7 +868,7 @@ void CTask::UpdateLaserDistance()
     m_stMeasuredata.m_LaserDistance[3] = LaserDistance[3];
 }
 
-void CTask::UpdateVisionResult(VisionResult& vis_res)
+void CTask::UpdateVisionResult(VisionResult &vis_res)
 {
     std::copy(std::begin(vis_res.stData.m_LineDistance), std::end(vis_res.stData.m_LineDistance), m_stMeasuredata.m_LineDistance);
     std::copy(std::begin(vis_res.stData.m_bLineDistance), std::end(vis_res.stData.m_bLineDistance), m_stMeasuredata.m_bLineDistance);
@@ -978,7 +981,7 @@ void CTask::DoubleToolsDoWeldingExecuteUnit(int tool_a, int tool_b, int key)
     {
         auto now = std::chrono::system_clock::now();
         auto timestamp = std::chrono::system_clock::to_time_t(now);
-        std::tm* now_tm = std::localtime(&timestamp);
+        std::tm *now_tm = std::localtime(&timestamp);
         std::stringstream os;
         os << std::put_time(now_tm, "%Y-%m-%d %H:%M:%S");
 
@@ -1073,7 +1076,7 @@ void CTask::SingleToolDoWeldingExecuteUnit(int index, int key)
     {
         auto now = std::chrono::system_clock::now();
         auto timestamp = std::chrono::system_clock::to_time_t(now);
-        std::tm* now_tm = std::localtime(&timestamp);
+        std::tm *now_tm = std::localtime(&timestamp);
         std::stringstream os;
         os << std::put_time(now_tm, "%Y-%m-%d %H:%M:%S");
 
@@ -1092,27 +1095,31 @@ void CTask::SingleToolDoWeldingExecuteUnit(int index, int key)
 
 bool CTask::FourToolsDoWeldAction(int execute)
 {
-    static quint8  index_tool = 1; //执行焊枪编号范围1~5
-    static quint8  index_tool2 = 1; //执行焊枪编号范围1~5
-    static quint8  index_act = 0;
-    static int  time_cnt = 0; //周期计数，控制动作间隔
-    static int  time_cnt2 = 0; //周期计数，控制动作间隔
-    static bool offset_flag{ false };
-    static bool end_flag{ true };
+    static quint8 index_tool = 1;  // 执行焊枪编号范围1~5
+    static quint8 index_tool2 = 1; // 执行焊枪编号范围1~5
+    static quint8 index_act = 0;
+    static int time_cnt = 0;  // 周期计数，控制动作间隔
+    static int time_cnt2 = 0; // 周期计数，控制动作间隔
+    static bool offset_flag{false};
+    static bool end_flag{true};
 
     //=====================结束碰钉 ==========================
     if (execute == -1)
     {
-        unsigned char tem = ActionList[index_act] & 0b00100011;//关闭打磨、碰钉、定位气缸、打磨降
-        tem |= 0b00100000; //碰钉枪下降
-        m_Comm->SetToolsAction(index_tool, (E_WeldAction)tem);;
-        m_Comm->SetToolsAction(11 - index_tool, (E_WeldAction)tem);;
+        unsigned char tem = ActionList[index_act] & 0b00100011; // 关闭打磨、碰钉、定位气缸、打磨降
+        tem |= 0b00100000;                                      // 碰钉枪下降
+        m_Comm->SetToolsAction(index_tool, (E_WeldAction)tem);
+        ;
+        m_Comm->SetToolsAction(11 - index_tool, (E_WeldAction)tem);
+        ;
         if (offset_flag)
         {
-            m_Comm->SetToolsAction(index_tool2, (E_WeldAction)tem);;
-            m_Comm->SetToolsAction(11 - index_tool2, (E_WeldAction)tem);;
+            m_Comm->SetToolsAction(index_tool2, (E_WeldAction)tem);
+            ;
+            m_Comm->SetToolsAction(11 - index_tool2, (E_WeldAction)tem);
+            ;
         }
-        m_Comm->SetGunConnect(0);//关闭接触器;
+        m_Comm->SetGunConnect(0); // 关闭接触器;
 
         index_tool = 1;
         index_tool2 = 1;
@@ -1130,17 +1137,21 @@ bool CTask::FourToolsDoWeldAction(int execute)
     if (execute == 0)
     {
         pause_cnt++;
-        if (pause_cnt > 600)//暂停时间过长，停止
+        if (pause_cnt > 600) // 暂停时间过长，停止
         {
-            unsigned char tem = ActionList[index_act] & 0b10111111;//关闭打磨
-            m_Comm->SetToolsAction(index_tool, (E_WeldAction)tem);;
-            m_Comm->SetToolsAction(11 - index_tool, (E_WeldAction)tem);;
+            unsigned char tem = ActionList[index_act] & 0b10111111; // 关闭打磨
+            m_Comm->SetToolsAction(index_tool, (E_WeldAction)tem);
+            ;
+            m_Comm->SetToolsAction(11 - index_tool, (E_WeldAction)tem);
+            ;
             if (offset_flag)
             {
-                m_Comm->SetToolsAction(index_tool2, (E_WeldAction)tem);;
-                m_Comm->SetToolsAction(11 - index_tool2, (E_WeldAction)tem);;
+                m_Comm->SetToolsAction(index_tool2, (E_WeldAction)tem);
+                ;
+                m_Comm->SetToolsAction(11 - index_tool2, (E_WeldAction)tem);
+                ;
             }
-            m_Comm->SetGunConnect(0);//关闭接触器;
+            m_Comm->SetGunConnect(0); // 关闭接触器;
 
             pause_cnt = 0;
             log->warn("暂停时间过长，关闭打磨及接触器");
@@ -1193,7 +1204,7 @@ bool CTask::FourToolsDoWeldAction(int execute)
         time_cnt2 = 0;
         offset_flag = false;
         end_flag = true;
-        return  true;
+        return true;
     }
 
     return false;
@@ -1201,25 +1212,25 @@ bool CTask::FourToolsDoWeldAction(int execute)
 
 bool CTask::DoubleToolsDoWeldAction(int execute)
 {
-    static quint8  index_tool = 1; //执行焊枪编号范围1~5
-    static quint8  index_tool2 = 10; //执行焊枪编号范围1~5
-    static quint8  index_act = 0;
-    static int  time_cnt = 0; //周期计数，控制动作间隔
-    static int  time_cnt2 = 0; //周期计数，控制动作间隔
-    static bool offset_flag{ false };
-    static bool end_flag{ true };
+    static quint8 index_tool = 1;   // 执行焊枪编号范围1~5
+    static quint8 index_tool2 = 10; // 执行焊枪编号范围1~5
+    static quint8 index_act = 0;
+    static int time_cnt = 0;  // 周期计数，控制动作间隔
+    static int time_cnt2 = 0; // 周期计数，控制动作间隔
+    static bool offset_flag{false};
+    static bool end_flag{true};
 
     //=====================结束碰钉 ==========================
     if (execute == -1)
     {
-        unsigned char tem = ActionList[index_act] & 0b00100011;//关闭打磨、碰钉、定位气缸、打磨降
-        tem |= 0b00100000; //碰钉枪下降
+        unsigned char tem = ActionList[index_act] & 0b00100011; // 关闭打磨、碰钉、定位气缸、打磨降
+        tem |= 0b00100000;                                      // 碰钉枪下降
         m_Comm->SetToolsAction(index_tool, (E_WeldAction)tem);
         if (offset_flag)
         {
             m_Comm->SetToolsAction(index_tool2, (E_WeldAction)tem);
         }
-        m_Comm->SetGunConnect(0);//关闭接触器;
+        m_Comm->SetGunConnect(0); // 关闭接触器;
 
         index_tool = 1;
         index_tool2 = 10;
@@ -1235,15 +1246,15 @@ bool CTask::DoubleToolsDoWeldAction(int execute)
     if (execute == 0)
     {
         pause_cnt++;
-        if (pause_cnt > 600)//暂停时间过长，停止
+        if (pause_cnt > 600) // 暂停时间过长，停止
         {
-            unsigned char tem = ActionList[index_act] & 0b10111111;//关闭打磨
+            unsigned char tem = ActionList[index_act] & 0b10111111; // 关闭打磨
             m_Comm->SetToolsAction(index_tool, (E_WeldAction)tem);
             if (offset_flag)
             {
                 m_Comm->SetToolsAction(index_tool2, (E_WeldAction)tem);
             }
-            m_Comm->SetGunConnect(0);//关闭接触器;
+            m_Comm->SetGunConnect(0); // 关闭接触器;
 
             pause_cnt = 0;
             log->warn("暂停时间过长，关闭打磨及接触器");
@@ -1298,7 +1309,7 @@ __JUMP_FIRST:
         index_act = 0;
         time_cnt = 0;
         time_cnt2 = 0;
-        return  true;
+        return true;
     }
 
     return false;
@@ -1426,7 +1437,7 @@ void CTask::SetWorkdingMode(const bool mode)
     m_automatic_working_flag = mode;
 }
 
-void CTask::SetCallBack(std::function<void(const std::string&)> callback)
+void CTask::SetCallBack(std::function<void(const std::string &)> callback)
 {
     m_callback = callback;
 }
@@ -1436,7 +1447,8 @@ bool CTask::LaserValueIsValid()
     UpdateLaserDistance();
 
     std::vector<double> laser_value(std::begin(m_stMeasuredata.m_LaserDistance), std::end(m_stMeasuredata.m_LaserDistance));
-    return std::all_of(laser_value.begin(), laser_value.end(), [](double value) { return value < GP::Laser_Valid_Threshold; });
+    return std::all_of(laser_value.begin(), laser_value.end(), [](double value)
+                       { return value < GP::Laser_Valid_Threshold; });
 }
 
 bool CTask::LineValueIsValid()
@@ -1448,9 +1460,7 @@ bool CTask::LineValueIsValid()
     }
     UpdateVisionResult(vis_res);
 
-    if ((m_stMeasuredata.m_bLineDistance[0] || m_stMeasuredata.m_bLineDistance[1]) == false
-    || (m_stMeasuredata.m_bLineDistance[2] || m_stMeasuredata.m_bLineDistance[3]) == false
-    || (m_stMeasuredata.m_bLineDistance[4] || m_stMeasuredata.m_bLineDistance[5]) == false)
+    if ((m_stMeasuredata.m_bLineDistance[0] || m_stMeasuredata.m_bLineDistance[1]) == false || (m_stMeasuredata.m_bLineDistance[2] || m_stMeasuredata.m_bLineDistance[3]) == false || (m_stMeasuredata.m_bLineDistance[4] || m_stMeasuredata.m_bLineDistance[5]) == false)
     {
         return false;
     }

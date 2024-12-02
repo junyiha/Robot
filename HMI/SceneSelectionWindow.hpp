@@ -1,7 +1,7 @@
-/*****************************************************************//**
+/*******************************************************************
  * \file   SceneSelectionWindow.hpp
- * \brief  
- * 
+ * \brief
+ *
  * \author anony
  * \date   October 2024
  *********************************************************************/
@@ -20,7 +20,7 @@ namespace APP
 	{
 		Q_OBJECT
 	public:
-		SceneSelectionWindow(QWidget* parent = nullptr);
+		SceneSelectionWindow(QWidget *parent = nullptr);
 		~SceneSelectionWindow();
 
 	private:
@@ -33,7 +33,7 @@ namespace APP
 		void SideButtonClicked();
 
 	private:
-		Ui::SceneSelectionWindow* ui;
+		Ui::SceneSelectionWindow *ui;
 		std::unique_ptr<MainWindow> main_window_ptr;
 	};
 }

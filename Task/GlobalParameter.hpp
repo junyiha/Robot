@@ -1,11 +1,11 @@
 /*****************************************************************
  * \file   GlobalParameter.hpp
- * \brief  
- * 
+ * \brief
+ *
  * \author anony
  * \date   October 2024
  *********************************************************************/
-#pragma once 
+#pragma once
 
 #include <map>
 #include <QVector>
@@ -14,16 +14,16 @@ namespace GP
 {
 	enum class WorkingScenario
 	{
-		Top = 1,	
-		Cant,		
-		Side		
+		Top = 1,
+		Cant,
+		Side
 	};
 
 	enum class PositionType
 	{
-		Prepare = 1,	
-		Lift,			
-		Quit			
+		Prepare = 1,
+		Lift,
+		Quit
 	};
 
 	struct PositionData
@@ -39,27 +39,27 @@ namespace GP
 
 	static const int DOF = 10;
 
-	extern double velLine;		
-	extern double velRotate;	
+	extern double velLine;
+	extern double velRotate;
 
-	extern std::size_t CYLINDER_INDEX;			
-	extern std::size_t STEER_LEFT_INDEX;		
-	extern std::size_t STEER_RIGHT_INDEX;		
-	extern std::size_t WHEEL_LEFT_INDEX;		
-	extern std::size_t WHEEL_RIGHT_INDEX;		
-	extern std::size_t TOOL_LIFTING;			
+	extern std::size_t CYLINDER_INDEX;
+	extern std::size_t STEER_LEFT_INDEX;
+	extern std::size_t STEER_RIGHT_INDEX;
+	extern std::size_t WHEEL_LEFT_INDEX;
+	extern std::size_t WHEEL_RIGHT_INDEX;
+	extern std::size_t TOOL_LIFTING;
 
-	extern double Lift_Distance_In_Parallel;	
-	extern double Max_Deviation_In_Parallel;	
-	extern double Min_Deviation_In_Parallel;	
+	extern double Lift_Distance_In_Parallel;
+	extern double Max_Deviation_In_Parallel;
+	extern double Min_Deviation_In_Parallel;
 
-	extern double Distance_work;				
+	extern double Distance_work;
 
-	extern double Lift_Distance_In_FitBoard;    
-	extern double Max_Deviation_In_FitBoard;	
-	extern double Min_Deviation_In_FitBoard;    
+	extern double Lift_Distance_In_FitBoard;
+	extern double Max_Deviation_In_FitBoard;
+	extern double Min_Deviation_In_FitBoard;
 
-	extern double Line_Deviation_Threshold;		
+	extern double Line_Deviation_Threshold;
 
 	extern std::vector<double> End_Vel_Limit;
 	extern std::vector<double> End_Vel_Position;

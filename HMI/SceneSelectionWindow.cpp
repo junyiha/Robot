@@ -3,8 +3,8 @@
 
 namespace APP
 {
-	SceneSelectionWindow::SceneSelectionWindow(QWidget* parent)
-		:QWidget(parent), ui(new Ui::SceneSelectionWindow)
+	SceneSelectionWindow::SceneSelectionWindow(QWidget *parent)
+		: QWidget(parent), ui(new Ui::SceneSelectionWindow)
 	{
 		ui->setupUi(this);
 		ConnectSlotFunction();

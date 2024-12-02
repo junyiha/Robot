@@ -1,7 +1,7 @@
-/*****************************************************************//**
+/*****************************************************************
  * \file   ConfigManager.hpp
  * \brief  处理配置文件
- * 
+ *
  * \author anony
  * \date   October 2024
  *********************************************************************/
@@ -52,8 +52,8 @@ namespace Config
 	private:
 		YAML::Node m_root_ro;
 		YAML::Node m_root_rw;
-		std::string m_path_ro{ CONFIG_PATH_RO};
-		std::string m_path_rw{ CONFIG_PATH_RW};
+		std::string m_path_ro{CONFIG_PATH_RO};
+		std::string m_path_rw{CONFIG_PATH_RW};
 		std::shared_ptr<spdlog::logger> log;
 	};
 }
