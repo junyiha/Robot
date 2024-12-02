@@ -5,14 +5,9 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow), m_message_timer(this)
 {
     ui->setupUi(this);
-
-    //1.0 初始化化日志
     initLog();
-
-    //2.0 UI界面初始化
     initUiForm();
 
-    //4.0 初始化机器人、视觉、任务
     m_Com = ComInterface::getInstance();
     m_Robot = new CRobot(m_Com);
     m_VisionInterface = new VisionInterface();
@@ -28,13 +23,11 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->stackedWidget_view->setCurrentWidget(ui->page_user);
 
-    //5.0 计时器界面实时更新 (100ms更新一次)
-    this->logger->trace("启动界面实时更新");
-    this->updateUiTimer = new QTimer(this);
+    logger->trace("启动界面实时更新");
+    updateUiTimer = new QTimer(this);
     updateUiTimer->setInterval(200);
     connect(updateUiTimer,&QTimer::timeout,this,&MainWindow::slotUpdateUIAll);
 
-    //7.0 启动线程
     this->logger->trace("启动功能对象...");
     m_Com->start();
     m_Robot->start();
