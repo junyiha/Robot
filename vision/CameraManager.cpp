@@ -126,9 +126,9 @@ void CameraManager::getImageAll() {
         if(!image.empty()){
             this->cameraImages[camera.first] = image;
         }else{
-            image = cv::imread("C:\\Users\\csh_i\\MVS\\Data\\Image_20240710150737081.bmp"); //��һ����
-            this->cameraImages[camera.first] = image;
-            this->logger->error("get image from camera {} failed", camera.first);
+            //image = cv::imread("C:\\Users\\csh_i\\MVS\\Data\\Image_20240710150737081.bmp"); //��һ����
+            //this->cameraImages[camera.first] = image;
+            //this->logger->error("get image from camera {} failed", camera.first);
         }
     }
     this->dataMutex.unlock();

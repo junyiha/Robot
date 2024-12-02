@@ -283,21 +283,6 @@ void MainWindow::on_btn_location_clicked() {
     this->logger->info("进入准备位置...");
 }
 
-void MainWindow::on_btn_lift_clicked() {
-    // 举升
-    setButtonIndex();
-    setActionIndex();
-    this->logger->info("准备,末端举升");
-
-}
-
-void MainWindow::on_btn_lift_2clicked() {
-    setButtonIndex();
-    // 举升
-    m_Task->ActionIndex.storeRelaxed(16);
-    this->logger->info("lift up to 15mm");
-}
-
 void MainWindow::on_btn_leveling_clicked() {
     // 调平
     setButtonIndex();
@@ -595,7 +580,7 @@ void MainWindow::updateLineDetectResults() {
 
     bool isEnable = m_VisionInterface->camera_controls->camerasIsOpened();
     if(!isEnable){
-        this->logger->info("相机未全部开启成功,请检查相机连接！");
+        //this->logger->info("相机未全部开启成功,请检查相机连接！");
         return;
     }
     unsigned pageIndex = ui->stackedWidget_view->currentIndex();

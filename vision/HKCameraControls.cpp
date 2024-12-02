@@ -223,7 +223,7 @@ void HKCameraControls::run(){
                     }
                     this->data_mutex.unlock();
                 }else{
-                    this->logger->info(" HKCameraControls::  camName: {}, get image failed", this->stHkDev.camName);
+                    //this->logger->info(" HKCameraControls::  camName: {}, get image failed", this->stHkDev.camName);
                 }
                 this->pstMvCamera->FreeImageBuffer(&stImageInfo);  // 释放图像缓存
             }else{
@@ -253,7 +253,7 @@ cv::Mat HKCameraControls::getFrame() {
     if(this->camera_queue.size()>0){
         srcImage = this->camera_queue.back();
     }else{
-        this->logger->info(" HKCameraControls::getFrame()  camName: {}, get frame failed", this->stHkDev.camName);
+        //this->logger->info(" HKCameraControls::getFrame()  camName: {}, get frame failed", this->stHkDev.camName);
     }
     this->data_mutex.unlock();
     return srcImage;

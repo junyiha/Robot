@@ -18,22 +18,25 @@ LineDetectorRunner::~LineDetectorRunner() {
     QThread::wait() ; // 等待线程退出
 }
 
-void LineDetectorRunner::run() {
-
-    while(this->is_running){
-        if(this->detect_control_flag){
+void LineDetectorRunner::run()
+{
+    while(this->is_running)
+    {
+        if(this->detect_control_flag)
+        {   
             // 先获取待检测图像
             std::map<std::string, LineDetectRes> temp_results;
             this->cam_controls->getImageAll();
             std::map<std::string, cv::Mat> cameraData = this->cam_controls->getCameraImages();
-            if(cameraData.size() > 0){
+            if(cameraData.size() > 0)
+            {
                 for(auto &camera_data : cameraData)
                 {
                     LineDetectRes vision_res;
                     std::string camera_name = camera_data.first;
                     cv::Mat image = camera_data.second;
-                    if(image.empty()){
-                        logger->info("Gets the image of camera {} is empty !",camera_name);
+                    if(image.empty())
+                    {
                         continue;
                     }
                     // 检测图像
@@ -41,17 +44,16 @@ void LineDetectorRunner::run() {
                     LineSpaceResult line_res = this->line_helper->getLinesDistance(image);
                     auto end_time = std::chrono::high_resolution_clock::now();
                     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
-//                    std::cout << "line detection total time:: " << duration.count() << " milliseconds." << std::endl;
-                    if(line_res.status){ //检测成功
+                    if(line_res.status)
+                    { //检测成功
                         vision_res.status = true;
                         vision_res.dist = line_res.dist;
                         vision_res.img_drawed = line_res.img_drawed;
-//                        this->logger->info("Camera {} get line distance is {}",camera_name,line_res.lineDist);
                     }
-                    else{
+                    else
+                    {
                         vision_res.status = false;
                         vision_res.dist = -1;
-//                        this->logger->info(vision_res.)
                         vision_res.img_drawed =line_res.img_drawed;
                     }
                     temp_results[camera_name] = vision_res;
@@ -62,8 +64,9 @@ void LineDetectorRunner::run() {
                     this->sharedData->dataReady.wakeOne();
                     this->sharedData->spaceAvailable.wait(&this->sharedData->mutex);
                 }
-            }else{
-                logger->info("Gets the number of image frames 0!");
+            }
+            else
+            {
             }
         }
         QThread::msleep(200);
@@ -83,10 +86,3 @@ void LineDetectorRunner::pauseDetect() {
 void LineDetectorRunner::restartDetect() {
     this->detect_control_flag = true;
 }
-
-
-
-
-
-
-

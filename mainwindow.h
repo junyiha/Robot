@@ -87,8 +87,6 @@ private slots:
     void on_btn_openCamera_clicked();
     void on_btn_closeCamera_clicked();
     void on_btn_location_clicked();
-    void on_btn_lift_clicked();
-    void on_btn_lift_2clicked();
     void on_btn_leveling_clicked();
     void on_btn_sideline_clicked();
     void on_btn_magnet_open_clicked();
