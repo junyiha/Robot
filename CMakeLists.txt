@@ -6,8 +6,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-# set(CMAKE_PREFIX_PATH "D:/soft/Qt5.14.0/5.14.0/msvc2017_64")
-set(CMAKE_PREFIX_PATH "D:/Qt514/5.14.0/msvc2017_64")
+set(CMAKE_PREFIX_PATH "D:/soft/Qt5.14.0/5.14.0/msvc2017_64")
 set(BaseDIR D:/)
 #set(CMAKE_PREFIX_PATH "D:/soft/qt5.14/5.14.0/msvc2017_64")
 #set(BaseDIR E:/znzz/codes/qt/PDRootV1)
@@ -16,44 +15,46 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W0")
 
 set(QRC_SOURCE_FILE ${CMAKE_SOURCE_DIR}/res.qrc)
 
+
+add_definitions(-DVISION_MODEL_PATH="${CMAKE_SOURCE_DIR}/models/mlsd_model_tiny_20241011.onnx")
 # add_definitions(-DSTATE_MACHINE_TEST=1)
 
 # ffmpeg
-#file(COPY ${BaseDIR}/packages/ffmpeg/bin/avcodec-59.dll DESTINATION ${CMAKE_BINARY_DIR})
-#file(COPY ${BaseDIR}/packages/ffmpeg/bin/avformat-59.dll DESTINATION ${CMAKE_BINARY_DIR})
-#file(COPY ${BaseDIR}/packages/ffmpeg/bin/avformat-59.dll DESTINATION ${CMAKE_BINARY_DIR})
-#file(COPY ${BaseDIR}/packages/ffmpeg/bin/swresample-4.dll DESTINATION ${CMAKE_BINARY_DIR})
+#file(COPY ${BaseDIR}/packages/ffmpeg/bin/avcodec-59.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/)
+#file(COPY ${BaseDIR}/packages/ffmpeg/bin/avformat-59.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/)
+#file(COPY ${BaseDIR}/packages/ffmpeg/bin/avformat-59.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/)
+#file(COPY ${BaseDIR}/packages/ffmpeg/bin/swresample-4.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/)
 
 # opencv
-file(COPY ${BaseDIR}/packages/opencv4.55/build/x64/vc15/bin/opencv_world455d.dll DESTINATION ${CMAKE_BINARY_DIR})
-file(COPY ${BaseDIR}/packages/opencv4.55/build/x64/vc15/bin/opencv_world455.dll DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY ${BaseDIR}/packages/opencv4.55/build/x64/vc15/bin/opencv_world455d.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/)
+file(COPY ${BaseDIR}/packages/opencv4.55/build/x64/vc15/bin/opencv_world455.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/)
 
 # Qt
-file(COPY ${CMAKE_PREFIX_PATH}/bin/Qt5Core.dll DESTINATION ${CMAKE_BINARY_DIR})
-file(COPY ${CMAKE_PREFIX_PATH}/bin/Qt5Cored.dll DESTINATION ${CMAKE_BINARY_DIR})
-file(COPY ${CMAKE_PREFIX_PATH}/bin/Qt5Gui.dll DESTINATION ${CMAKE_BINARY_DIR})
-file(COPY ${CMAKE_PREFIX_PATH}/bin/Qt5Guid.dll DESTINATION ${CMAKE_BINARY_DIR})
-file(COPY ${CMAKE_PREFIX_PATH}/bin/Qt5Widgets.dll DESTINATION ${CMAKE_BINARY_DIR})
-file(COPY ${CMAKE_PREFIX_PATH}/bin/Qt5Widgetsd.dll DESTINATION ${CMAKE_BINARY_DIR})
-file(COPY ${CMAKE_PREFIX_PATH}/plugins/platforms DESTINATION ${CMAKE_BINARY_DIR}/plugins/)
+file(COPY ${CMAKE_PREFIX_PATH}/bin/Qt5Core.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/)
+file(COPY ${CMAKE_PREFIX_PATH}/bin/Qt5Cored.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/)
+file(COPY ${CMAKE_PREFIX_PATH}/bin/Qt5Gui.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/)
+file(COPY ${CMAKE_PREFIX_PATH}/bin/Qt5Guid.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/)
+file(COPY ${CMAKE_PREFIX_PATH}/bin/Qt5Widgets.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/)
+file(COPY ${CMAKE_PREFIX_PATH}/bin/Qt5Widgetsd.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/)
+file(COPY ${CMAKE_PREFIX_PATH}/plugins/platforms DESTINATION ${CMAKE_BINARY_DIR}/Debug//plugins/)
 
 # HK
-file(COPY ${BaseDIR}/packages/HK_SDK/Libraries/win64/MvCameraControl.lib DESTINATION ${CMAKE_BINARY_DIR}/)
+file(COPY ${BaseDIR}/packages/HK_SDK/Libraries/win64/MvCameraControl.lib DESTINATION ${CMAKE_BINARY_DIR}/Debug//)
 
 # GoSdk
-#file(COPY ${BaseDIR}/packages/GocatorSDK/bin/win64/kApi.dll DESTINATION ${CMAKE_BINARY_DIR}/)
-#file(COPY ${BaseDIR}/packages/GocatorSDK/bin/win64/GoSdk.dll DESTINATION ${CMAKE_BINARY_DIR}/)
+#file(COPY ${BaseDIR}/packages/GocatorSDK/bin/win64/kApi.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug//)
+#file(COPY ${BaseDIR}/packages/GocatorSDK/bin/win64/GoSdk.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug//)
 
 # BestfitLaserScanner
-file(COPY ${BaseDIR}/packages/BestfitLayserScaner/lib/bin/BestfitLaserScanerSDK.dll DESTINATION ${CMAKE_BINARY_DIR}/)
+file(COPY ${BaseDIR}/packages/BestfitLayserScaner/lib/bin/BestfitLaserScanerSDK.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug//)
 
 # onnxruntime
-file(COPY ${BaseDIR}/packages/OnnxRuntime/Microsoft.ML.OnnxRuntime.Gpu.1.8.0/runtimes/win-x64/native/onnxruntime.dll DESTINATION ${CMAKE_BINARY_DIR}/)
-file(COPY ${BaseDIR}/packages/OnnxRuntime/Microsoft.ML.OnnxRuntime.Gpu.1.8.0/runtimes/win-x64/native/onnxruntime_providers_cuda.dll DESTINATION ${CMAKE_BINARY_DIR}/)
-file(COPY ${BaseDIR}/packages/OnnxRuntime/Microsoft.ML.OnnxRuntime.Gpu.1.8.0/runtimes/win-x64/native/onnxruntime_providers_shared.dll DESTINATION ${CMAKE_BINARY_DIR}/)
+file(COPY ${BaseDIR}/packages/OnnxRuntime/Microsoft.ML.OnnxRuntime.Gpu.1.8.0/runtimes/win-x64/native/onnxruntime.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug//)
+file(COPY ${BaseDIR}/packages/OnnxRuntime/Microsoft.ML.OnnxRuntime.Gpu.1.8.0/runtimes/win-x64/native/onnxruntime_providers_cuda.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug//)
+file(COPY ${BaseDIR}/packages/OnnxRuntime/Microsoft.ML.OnnxRuntime.Gpu.1.8.0/runtimes/win-x64/native/onnxruntime_providers_shared.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug//)
 
 # vision models
-file(COPY ${CMAKE_SOURCE_DIR}/models DESTINATION ${CMAKE_BINARY_DIR}/)
+file(COPY ${CMAKE_SOURCE_DIR}/models DESTINATION ${CMAKE_BINARY_DIR}/Debug//)
 
 # Opencv Setting
 include_directories(${BaseDIR}/packages/opencv4.55/build/include)
@@ -116,7 +117,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/
                                                   ${CMAKE_SOURCE_DIR}/vision
                                                   ${CMAKE_SOURCE_DIR}/ThirdParty/yaml-cpp-0.8.0/include/
                                                   ${CMAKE_SOURCE_DIR}/ThirdParty/cxxopts-3.2.0/include/
-) 
+)
 
 # yaml-0.8.0
 target_link_libraries(${PROJECT_NAME} yaml-cpp::yaml-cpp)

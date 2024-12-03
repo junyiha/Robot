@@ -18,42 +18,42 @@
 typedef struct DataofManual
 {
     qint8 MoveVel;
-    quint8 MoveDirection; //舵轮方向角
+    quint8 MoveDirection; // 舵轮方向角
     qint8 RotateVel;
-    qint8 BoardMoveVel;//前往装板/取板位置的速度
-    qint8 RobotMove[6]; //机器人单轴/末端移动速度
-    bool   EndMove;//true 末端移动，false，单轴移动
-    bool   Auto;    //自动作业标志位
-    bool   Estop;   //急停标志位
-}stManualData;
+    qint8 BoardMoveVel; // 前往装板/取板位置的速度
+    qint8 RobotMove[6]; // 机器人单轴/末端移动速度
+    bool EndMove;       // true 末端移动，false，单轴移动
+    bool Auto;          // 自动作业标志位
+    bool Estop;         // 急停标志位
+} stManualData;
 
 typedef struct CommandfManual
 {
-    bool   Estop;   //急停标志位
-    bool   Auto;    //自动作业标志位
-    bool   EndMove;//true 末端移动，false，单轴移动
+    bool Estop;   // 急停标志位
+    bool Auto;    // 自动作业标志位
+    bool EndMove; // true 末端移动，false，单轴移动
 
-    double MoveVel; //车辆移动 速度百分比
-    bool   bMove;
+    double MoveVel; // 车辆移动 速度百分比
+    bool bMove;
 
-    double MoveDirection; //舵轮方向角度
+    double MoveDirection; // 舵轮方向角度
 
-    double RotateVel;      //车辆旋转速度百分比
-    bool   bRotate;
+    double RotateVel; // 车辆旋转速度百分比
+    bool bRotate;
 
-    double BoardMoveVel;    //取装板移动速度百分比
-    bool   bPickBoard;
-    bool   bPushBoard;
+    double BoardMoveVel; // 取装板移动速度百分比
+    bool bPickBoard;
+    bool bPushBoard;
 
-    double RobotMove[6]; //机器人单轴/末端移动速度百分比
-    bool   bRobotMove;
-    bool   status;       // 命令是否有效标志位
+    double RobotMove[6]; // 机器人单轴/末端移动速度百分比
+    bool bRobotMove;
+    bool status; // 命令是否有效标志位
 
-}stManualCmd;
+} stManualCmd;
 
-const double Min_Thresh = 0.3; //范围（0~0.9）推杆的最小推动阈值 大于行程Min_Thresh*100%是起作用
+const double Min_Thresh = 0.3; // 范围（0~0.9）推杆的最小推动阈值 大于行程Min_Thresh*100%是起作用
 
-class CManual:public CSerialCom
+class CManual : public CSerialCom
 {
 public:
     CManual();
@@ -68,26 +68,25 @@ public:
      * @brief 外部调用接口，获取遥控器指令
      * @param cmd
      */
-    void getManualCmd(stManualCmd& cmd);
-    void getManualCmd(stManualOperator& cmd);
+    void getManualCmd(stManualCmd &cmd);
+    void getManualCmd(stManualOperator &cmd);
 
     bool getConnectState();
     bool isConnected = false;
     std::shared_ptr<spdlog::logger> log;
 
-
 protected:
-    stManualData    m_InputData;
-    stManualCmd     m_OutCmd;
-    stManualCmd     _OutCmd;
-    QTimer*         m_cManualRecvTimer;
-    QMutex          mutex_cmd;
+    stManualData m_InputData;
+    stManualCmd m_OutCmd;
+    stManualCmd _OutCmd;
+    QTimer *m_cManualRecvTimer;
+    QMutex mutex_cmd;
 
     /**
-     * @brief 
-     * 
+     * @brief
+     *
      */
-     void run() override;
+    void run() override;
 
     /**
      * @brief 数据转换，将协议数据转换为命令m_InputData => m_OutCmd
@@ -106,7 +105,7 @@ protected:
      */
     void slotStopLoop();
 
-////////////////////////////--重构版本--//////////////////////////////////////////////
+    ////////////////////////////--重构版本--//////////////////////////////////////////////
 
 private:
     stManualOperator m_manualOperator;
@@ -119,7 +118,7 @@ public:
 private:
     std::pair<double, bool> translateToVelocity(quint8 high_byte, quint8 low_byte);
 
-//////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////
 };
 
 #endif // CMANUAL_H

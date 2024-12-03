@@ -3,38 +3,37 @@
 CTools::CTools()
 {
     log = spdlog::get("logger");
-
 }
 
 void CTools::SetToolsAction(quint8 index, E_WeldAction action)
 {
 
-    if( index>=1 && index <=5)  //A板
+    if (index >= 1 && index <= 5) // A板
     {
-        if(action != eNone_Action)
+        if (action != eNone_Action)
         {
-            m_cIOA.SetIO(index-1,action);
+            m_cIOA.SetIO(index - 1, action);
         }
-        log->debug("SetToolsAction{}:{}",index,(quint8)action);
+        log->debug("SetToolsAction{}:{}", index, (quint8)action);
     }
-    else if( index>=6 && index <=10)  //B板
+    else if (index >= 6 && index <= 10) // B板
     {
-        if(action != eNone_Action)
+        if (action != eNone_Action)
         {
-            m_cIOB.SetIO(index-6,action);
+            m_cIOB.SetIO(index - 6, action);
         }
-        log->debug("SetToolsAction{}:{}",index,(quint8)action);
-    }else
-    {
-        qDebug()<<"SetToolsAction： err index";
+        log->debug("SetToolsAction{}:{}", index, (quint8)action);
     }
-
+    else
+    {
+        qDebug() << "SetToolsAction： err index";
+    }
 }
 
 void CTools::SetMagentAction(quint8 index, E_MagentAction action)
 {
-    byte value_A = m_cIOA.getDOState()[5];//磁铁输出状态
-    byte value_B = m_cIOB.getDOState()[5];//磁铁输出状态
+    byte value_A = m_cIOA.getDOState()[5]; // 磁铁输出状态
+    byte value_B = m_cIOB.getDOState()[5]; // 磁铁输出状态
     switch (index)
     {
     case 1:
@@ -49,12 +48,12 @@ void CTools::SetMagentAction(quint8 index, E_MagentAction action)
             break;
 
         case eMag_Up:
-            value_A |=  0b00000010;
+            value_A |= 0b00000010;
             value_A &= ~0b00000100;
             break;
 
         case eMag_Down:
-            value_A |=  0b00000100;
+            value_A |= 0b00000100;
             value_A &= ~0b00000010;
             break;
 
@@ -76,12 +75,12 @@ void CTools::SetMagentAction(quint8 index, E_MagentAction action)
             break;
 
         case eMag_Up:
-            value_A |=  0b00010000;
+            value_A |= 0b00010000;
             value_A &= ~0b00100000;
             break;
 
         case eMag_Down:
-            value_A |=  0b00100000;
+            value_A |= 0b00100000;
             value_A &= ~0b00010000;
             break;
 
@@ -102,12 +101,12 @@ void CTools::SetMagentAction(quint8 index, E_MagentAction action)
             break;
 
         case eMag_Up:
-            value_B |=  0b00000010;
+            value_B |= 0b00000010;
             value_B &= ~0b00000100;
             break;
 
         case eMag_Down:
-            value_B |=  0b00000100;
+            value_B |= 0b00000100;
             value_B &= ~0b00000010;
             break;
 
@@ -129,12 +128,12 @@ void CTools::SetMagentAction(quint8 index, E_MagentAction action)
             break;
 
         case eMag_Up:
-            value_B |=  0b00010000;
+            value_B |= 0b00010000;
             value_B &= ~0b00100000;
             break;
 
         case eMag_Down:
-            value_B |=  0b00100000;
+            value_B |= 0b00100000;
             value_B &= ~0b00010000;
             break;
 
@@ -157,16 +156,16 @@ void CTools::SetMagentAction(quint8 index, E_MagentAction action)
             break;
 
         case eMag_Up:
-            value_A |=  0b00010010;
+            value_A |= 0b00010010;
             value_A &= ~0b00100100;
-            value_B |=  0b00010010;
+            value_B |= 0b00010010;
             value_B &= ~0b00100100;
             break;
 
         case eMag_Down:
-            value_A |=  0b00100100;
+            value_A |= 0b00100100;
             value_A &= ~0b00010010;
-            value_B |=  0b00100100;
+            value_B |= 0b00100100;
             value_B &= ~0b00010010;
             break;
 
@@ -174,76 +173,75 @@ void CTools::SetMagentAction(quint8 index, E_MagentAction action)
         default:
             break;
         }
-
     }
-    m_cIOA.SetIO(5,value_A);
-    m_cIOB.SetIO(5,value_B);
+    m_cIOA.SetIO(5, value_A);
+    m_cIOB.SetIO(5, value_B);
 }
 
 void CTools::SetCrossLasser(bool swtich)
 {
     byte value_A = m_cIOA.getDOState()[5];
-    if(swtich == true)
+    if (swtich == true)
     {
         value_A |= 0b10000000;
-    }else
+    }
+    else
     {
         value_A &= ~0b10000000;
     }
-     m_cIOA.SetIO(5,value_A);
+    m_cIOA.SetIO(5, value_A);
 }
 
 void CTools::SetGunConnect(qint8 index)
 {
-    byte value =0;
-    if( index>=1 && index <=5)  //A板
+    byte value = 0;
+    if (index >= 1 && index <= 5) // A板
     {
-        value = 1<<(index-1);
-        m_cIOA.SetIO(6,value);
+        value = 1 << (index - 1);
+        m_cIOA.SetIO(6, value);
     }
-    else if( index>=6 && index <=10)  //B板
+    else if (index >= 6 && index <= 10) // B板
     {
-        value = 1<<(index-6);
-        m_cIOB.SetIO(6,value);
-
-    }else
-    {
-        //断开所有
-        m_cIOA.SetIO(6,0);
-        m_cIOB.SetIO(6,0);
+        value = 1 << (index - 6);
+        m_cIOB.SetIO(6, value);
     }
-
-
+    else
+    {
+        // 断开所有
+        m_cIOA.SetIO(6, 0);
+        m_cIOB.SetIO(6, 0);
+    }
 }
 
 QVector<double> CTools::getLaserDistance()
 {
     QVector<double> re(6);
-    QVector<double> tmp(6);//转换一下
+    QVector<double> tmp(6); // 转换一下
 
     tmp[0] = m_cIOA.getAIState()[0];
     tmp[1] = m_cIOA.getAIState()[1];
     tmp[2] = m_cIOB.getAIState()[0];
     tmp[3] = m_cIOB.getAIState()[1];
 
-    //log->debug("*******************LaserDistance*************: {} {} {} {} ",re[0],re[1],re[2],re[3]);
+    // log->debug("*******************LaserDistance*************: {} {} {} {} ",re[0],re[1],re[2],re[3]);
 
-    //视觉标定板上表面为激光零点
-    std::vector<Eigen::Vector2f> cfg_laser ={
+    // 视觉标定板上表面为激光零点
+    std::vector<Eigen::Vector2f> cfg_laser = {
         //      k       b
         // Eigen::Vector2f(1950,1545),//0mm对应的数值，95mm对应的数值
         // Eigen::Vector2f(1957,1548),//2
         // Eigen::Vector2f(1960,1545),//3
         // Eigen::Vector2f(1950,1540),//4
 
-        Eigen::Vector2f( 1966,1545),//0mm对应的数值，80mm对应的数值
-        Eigen::Vector2f(1965,1548),//2    // 15mm( 1965, 1968,)
-        Eigen::Vector2f(1970,1545),//3
-        Eigen::Vector2f(1965,1540),//4
+        Eigen::Vector2f(1966, 1545), // 0mm对应的数值，80mm对应的数值
+        Eigen::Vector2f(1965, 1548), // 2    // 15mm( 1965, 1968,)
+        Eigen::Vector2f(1970, 1545), // 3
+        Eigen::Vector2f(1965, 1540), // 4
     };
-    for(int i=0;i<4;++i){
-        //换算为真实距离，单位毫米
-        tmp[i] = 80.0/(cfg_laser[i].y()-  cfg_laser[i].x()) * (tmp[i] -  cfg_laser[i].x());
+    for (int i = 0; i < 4; ++i)
+    {
+        // 换算为真实距离，单位毫米
+        tmp[i] = 80.0 / (cfg_laser[i].y() - cfg_laser[i].x()) * (tmp[i] - cfg_laser[i].x());
     }
 
     re[0] = tmp[2];
@@ -251,6 +249,6 @@ QVector<double> CTools::getLaserDistance()
     re[2] = tmp[1];
     re[3] = tmp[0];
 
-   //log->debug("测量距离：{} {} {} {} ",re[0],re[1],re[2],re[3]);
+    // log->debug("测量距离：{} {} {} {} ",re[0],re[1],re[2],re[3]);
     return re;
 }

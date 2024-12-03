@@ -8,3 +8,4 @@ images
 cache
 out
 models
+package/*

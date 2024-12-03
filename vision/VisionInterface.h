@@ -16,16 +16,13 @@
 #include "Parameters.h"
 #include "LidarHandler.h"
 
-
-
-
-
-struct VisionResult {
+struct VisionResult
+{
     bool lineStatus;
     bool laserStatus;
     stMeasureData stData;
 
-    VisionResult& operator=(const VisionResult& other)
+    VisionResult &operator=(const VisionResult &other)
     {
         if (this != &other) // 防止自赋值
         {
@@ -37,41 +34,34 @@ struct VisionResult {
     }
 };
 
-
-
-
-
-class VisionInterface: public QThread {
-Q_OBJECT
+class VisionInterface : public QThread
+{
+    Q_OBJECT
 public:
-
     std::map<std::string, LineDetectRes> line_res; // LineDetectorRunner 返回结果,主要用于解析结果
     std::map<std::string, LidarData> lidar_res;
-    VisionResult vis_result;  // VisionInterface 返回格式解析好的检测结果, 提供于其他线程使用
-    VisionResult vis_result_;  // 备份
-    std::map<std::string, float> scales_line;  //相机与现实世界的比例系数
-    std::map<std::string, float> camera_offset;  //相机与现实世界的比例系数
+    VisionResult vis_result;                    // VisionInterface 返回格式解析好的检测结果, 提供于其他线程使用
+    VisionResult vis_result_;                   // 备份
+    std::map<std::string, float> scales_line;   // 相机与现实世界的比例系数
+    std::map<std::string, float> camera_offset; // 相机与现实世界的比例系数
 
-    //核心功能类
-    LineDetectorRunner*  line_handler = nullptr;
-    LineDetector* line_helper = nullptr;
-    CameraManager* camera_controls = nullptr;
+    // 核心功能类
+    LineDetectorRunner *line_handler = nullptr;
+    LineDetector *line_helper = nullptr;
+    CameraManager *camera_controls = nullptr;
 
-    //轮廓激光传感器
-    LidarHelper* lidar_helper= nullptr;
-    LaserScanerControls* laser_controls = nullptr;
-    LidarHandler* lidar_handler = nullptr;
-
-
-
+    // 轮廓激光传感器
+    LidarHelper *lidar_helper = nullptr;
+    LaserScanerControls *laser_controls = nullptr;
+    LidarHandler *lidar_handler = nullptr;
 
     // 线程相关
     QMutex mutex;
     QMutex imagesMutex;
     QMutex pointMaskMutex;
-    SharedData* sharedDataLine=nullptr;
-    SharedData* sharedDataLaser=nullptr;
-    bool isRunning= true;
+    SharedData *sharedDataLine = nullptr;
+    SharedData *sharedDataLaser = nullptr;
+    bool isRunning = true;
     bool is_Detected = true;
 
     std::shared_ptr<spdlog::logger> logger;
@@ -80,13 +70,11 @@ public:
     ~VisionInterface() override;
     void run() override;
 
-    void getDetectResult(VisionResult& result);
+    void getDetectResult(VisionResult &result);
     std::map<std::string, LineDetectRes> VisionInterface::getLineRes();
-    void parser_result(std::string paserType, stMeasureData* stm);
+    void parser_result(std::string paserType, stMeasureData *stm);
     VisionResult getVisResult();
     void closeThread();
-
 };
 
-
-#endif //PDROOTV1_VISIONINTERFACE_H
+#endif // PDROOTV1_VISIONINTERFACE_H

@@ -8,10 +8,10 @@ typedef long LONG;
 typedef unsigned char BYTE;
 typedef unsigned long ULONG;
 
-
 typedef long long DINT;
 
-enum eMC_Motion : LONG {
+enum eMC_Motion : LONG
+{
 	eMC_NONE = 0,
 	eMC_RESET = 1,
 	eMC_HOME = 2,
@@ -24,7 +24,8 @@ enum eMC_Motion : LONG {
 	eMC_MOV_VEL = 10
 };
 
-enum eAxis_States : LONG {
+enum eAxis_States : LONG
+{
 	eAxis_UNDEFINED = 0,
 	eAxis_DISABLED = 1,
 	eAxis_STANDSTILL = 2,
@@ -80,26 +81,28 @@ typedef struct _stAction
 	double DA2;
 	double DA03;
 
-    _stAction& operator = (const _stAction& A){
-        DO0 = A.DO0;
-        DO1 = A.DO1;
-        DO2 = A.DO2;
-        DO3 = A.DO3;
-        IDO0 = A.IDO0;
-        IDO1 = A.IDO1;
-        IDO2 = A.IDO2;
-        IDO3 = A.IDO3;
+	_stAction &operator=(const _stAction &A)
+	{
+		DO0 = A.DO0;
+		DO1 = A.DO1;
+		DO2 = A.DO2;
+		DO3 = A.DO3;
+		IDO0 = A.IDO0;
+		IDO1 = A.IDO1;
+		IDO2 = A.IDO2;
+		IDO3 = A.IDO3;
 
-        for(int i=0;i<4;++i){
-            reserved1[i] = A.reserved1[i];
-        }
+		for (int i = 0; i < 4; ++i)
+		{
+			reserved1[i] = A.reserved1[i];
+		}
 
-        DA0 = A.DA0;
-        DA1 = A.DA1;
-        DA2 = A.DA2;
-        DA03 = A.DA03;
-        return *this;
-    }
+		DA0 = A.DA0;
+		DA1 = A.DA1;
+		DA2 = A.DA2;
+		DA03 = A.DA03;
+		return *this;
+	}
 
 } stAction, *PstAction;
 
@@ -116,7 +119,7 @@ typedef struct _st_AxisGroupRead
 {
 	ULONG Number;
 	unsigned char reserved1[4];
-     st_ReadAxis AxisGroup[20];
+	st_ReadAxis AxisGroup[20];
 	stAction RobotActAction;
 	stAction LinkActActions[6];
 } st_AxisGroupRead, *Pst_AxisGroupRead;
@@ -125,7 +128,8 @@ typedef BYTE Recvbuff[3000];
 
 typedef BYTE Sendbuff[3000];
 
-enum eConfigMode : ULONG {
+enum eConfigMode : ULONG
+{
 	eNone = 0,
 	eInit = 1,
 	eHomed = 2
@@ -137,4 +141,3 @@ typedef struct _st_InitParameter
 	ULONG RecvSize;
 	ULONG SendSize;
 } st_InitParameter, *Pst_InitParameter;
-

@@ -5,39 +5,43 @@
 ****************************************************************************/
 #pragma once
 #pragma pack(push)
-#pragma pack(8) 
-//修改
+#pragma pack(8)
+// 修改
 
-#include"Parameter.h"
+#include "Parameter.h"
 #include "ErrCode.h"
 
 #define myDEBUG
 
 #define OUT
-#define _IN	const
+#define _IN const
 #define INOUT
-#define  Pi 3.1415926
+#define Pi 3.1415926
 
-#define  sq(x) ((x)*(x))
+#define sq(x) ((x) * (x))
 
-#define D_SafeDelete(p)		if(p)		{ delete p; p = NULL; }
+#define D_SafeDelete(p) \
+	if (p)              \
+	{                   \
+		delete p;       \
+		p = NULL;       \
+	}
 
 #define __STR2__(x) #x
 #define __STR1__(x) __STR2__(x)
-#define __myLOC__ __FILE__ "("__STR1__(__LINE__)")"
-#define _warning(iCode, msgStr) message( __myLOC__ " : warning C" __STR1__(iCode) ": " msgStr )
-
+#define __myLOC__ __FILE__ "("__STR1__(__LINE__) ")"
+#define _warning(iCode, msgStr) message(__myLOC__ " : warning C" __STR1__(iCode) ": " msgStr)
 
 //------------------------------------------------------------------------------//
-//Link 联动模式
+// Link 联动模式
 //------------------------------------------------------------------------------//
 enum E_MotionMode
 {
-    eMotionLineAbsolute = 0, //LNG:基坐标系下移动到目标位置
-    eMotionLineVelocity,     //LNG: 工具坐标系按给定方向移动
-    eMotionLineRelative,
+	eMotionLineAbsolute = 0, // LNG:基坐标系下移动到目标位置
+	eMotionLineVelocity,	 // LNG: 工具坐标系按给定方向移动
+	eMotionLineRelative,
 
-    eMotionMode1,
+	eMotionMode1,
 	eMotionMode2,
 	eMotionMode3,
 	eMotionMode4,
@@ -49,7 +53,7 @@ enum E_MotionMode
 };
 
 //------------------------------------------------------------------------------//
-//Link State
+// Link State
 //------------------------------------------------------------------------------//
 enum E_LinkState
 {
@@ -61,29 +65,29 @@ enum E_LinkState
 	eLINK_MOVING
 };
 //------------------------------------------------------------------------------//
-//Link kinetic
+// Link kinetic
 //------------------------------------------------------------------------------//
 typedef struct ParameterofKinetic
 {
-	E_MotionMode	eActMotionMode;
-	bool			bBusy;
-	bool			bDone;
-	bool			bEnable;
-	double			LinkPos[MAX_FREEDOM_LINK];
-	double			LinkVel[MAX_FREEDOM_LINK];
-}stKineticPar;
+	E_MotionMode eActMotionMode;
+	bool bBusy;
+	bool bDone;
+	bool bEnable;
+	double LinkPos[MAX_FREEDOM_LINK];
+	double LinkVel[MAX_FREEDOM_LINK];
+} stKineticPar;
 //------------------------------------------------------------------------------//
-//Link Reserve data
+// Link Reserve data
 //------------------------------------------------------------------------------//
 typedef struct DataofReserve
 {
-	bool			bReserve[4];
-	LONG			lReserve[4];
-	double			fReserve[4];
-}stReserveData;
+	bool bReserve[4];
+	LONG lReserve[4];
+	double fReserve[4];
+} stReserveData;
 
 //------------------------------------------------------------------------------//
-//Link Motion Commd
+// Link Motion Commd
 //------------------------------------------------------------------------------//
 enum E_LinkCommd
 {
@@ -96,29 +100,27 @@ enum E_LinkCommd
 	eLINK_MOV
 };
 //------------------------------------------------------------------------------//
-//Link Input CMD
+// Link Input CMD
 //------------------------------------------------------------------------------//
 typedef struct CommandtoLink
 {
-	E_LinkCommd		eLinkCommd;
-	stKineticPar	stLinkKinPar;
-	stReserveData	stResverInput;
-}stLinkCommand;
+	E_LinkCommd eLinkCommd;
+	stKineticPar stLinkKinPar;
+	stReserveData stResverInput;
+} stLinkCommand;
 
 //------------------------------------------------------------------------------//
-//Link Status
+// Link Status
 //------------------------------------------------------------------------------//
 typedef struct StatusofLink
 {
-	E_LinkState		eLinkActState;	//Link状态
-	stKineticPar	stLinkActKin;	//运动参数
-	stReserveData	stResverOutput;
-}stLinkStatus;
-
-
+	E_LinkState eLinkActState; // Link状态
+	stKineticPar stLinkActKin; // 运动参数
+	stReserveData stResverOutput;
+} stLinkStatus;
 
 //------------------------------------------------------------------------------//
-//Robot State
+// Robot State
 //------------------------------------------------------------------------------//
 enum E_RobotState
 {
@@ -131,7 +133,7 @@ enum E_RobotState
 };
 
 //------------------------------------------------------------------------------//
-//Robot Motion Commd
+// Robot Motion Commd
 //------------------------------------------------------------------------------//
 enum E_RobotCommd
 {
@@ -144,79 +146,80 @@ enum E_RobotCommd
 	eROBOT_MOV
 };
 //------------------------------------------------------------------------------//
-//Robot Input CMD
+// Robot Input CMD
 //------------------------------------------------------------------------------//
 typedef struct CommandtoRobot
 {
-	E_RobotCommd	eCommd;
-	stKineticPar	stKinPar;
-	ULONG			ErrNum;
-	stReserveData	stResverInput;
-}stRobotCommand;
+	E_RobotCommd eCommd;
+	stKineticPar stKinPar;
+	ULONG ErrNum;
+	stReserveData stResverInput;
+} stRobotCommand;
 
 //------------------------------------------------------------------------------//
-//Robot Status
+// Robot Status
 //------------------------------------------------------------------------------//
 typedef struct StatusofRobot
 {
-	E_LinkState		eActState;	//Link状态
-	stKineticPar	stActKin;	//运动参数	
-	ERR_ID			ErrList[10];	//错误列表
-	ULONG			ErrNum;			//错误数量
-	stReserveData	stResverOutput;
-}stRobotStatus;
-
+	E_LinkState eActState; // Link状态
+	stKineticPar stActKin; // 运动参数
+	ERR_ID ErrList[10];	   // 错误列表
+	ULONG ErrNum;		   // 错误数量
+	stReserveData stResverOutput;
+} stRobotStatus;
 
 //------------------------------------------------------------------------------//
-//JOINT PARAMETER
+// JOINT PARAMETER
 //------------------------------------------------------------------------------//
 typedef struct ParameterofJoint
 {
-	double		Limit_Positive;
-	double		Limit_Negtive;
-	double		Max_Vel;
-	double		Ration;
-	LONG		Direction;
-	double		EncoderCorr;
-}stJointPara;
+	double Limit_Positive;
+	double Limit_Negtive;
+	double Max_Vel;
+	double Ration;
+	LONG Direction;
+	double EncoderCorr;
+} stJointPara;
 
 //---------------------------------------------定义广义类型
 class AnyType
 {
 public:
-	template<typename RealDataType>
-	AnyType(RealDataType* data)										//构造函数，初始化私有变量m_RealData为data
+	template <typename RealDataType>
+	AnyType(RealDataType *data) // 构造函数，初始化私有变量m_RealData为data
 		: m_RealData(data)
-	{}
-	template<typename RealDataType>									//创建RealDataType模板
-	RealDataType& GetRealDataType()
+	{
+	}
+	template <typename RealDataType> // 创建RealDataType模板
+	RealDataType &GetRealDataType()
 	{
 		//////D_CHECK(m_RealData);
-		return *reinterpret_cast<RealDataType*>(m_RealData);		//将m_RealData指针对象的类型修改为RealDataType
+		return *reinterpret_cast<RealDataType *>(m_RealData); // 将m_RealData指针对象的类型修改为RealDataType
 	}
 
-	template<typename RealDataType>
-	const RealDataType& GetRealDataType() const
+	template <typename RealDataType>
+	const RealDataType &GetRealDataType() const
 	{
 		//////D_CHECK(m_RealData);
-		return *reinterpret_cast<const RealDataType*>(m_RealData);
+		return *reinterpret_cast<const RealDataType *>(m_RealData);
 	}
 
-	template<typename RealDataType>
-	AnyType& operator =(RealDataType* _Data)
+	template <typename RealDataType>
+	AnyType &operator=(RealDataType *_Data)
 	{
 		Set<RealDataType>(_Data);
 		return *this;
 	}
+
 private:
-	template<typename RealDataType>
-	void Set(RealDataType* _Data)
+	template <typename RealDataType>
+	void Set(RealDataType *_Data)
 	{
-		m_RealData = reinterpret_cast<void*>(_Data);
+		m_RealData = reinterpret_cast<void *>(_Data);
 	}
 
 private:
-	void* m_RealData;
+	void *m_RealData;
 };
 
 typedef AnyType InputParam;

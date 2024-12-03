@@ -11,30 +11,30 @@ CMvCamera::~CMvCamera()
     if (m_hDevHandle)
     {
         MV_CC_DestroyHandle(m_hDevHandle);
-        m_hDevHandle    = MV_NULL;
+        m_hDevHandle = MV_NULL;
     }
 }
 
-// ch:»ñÈ¡SDK°æ±¾ºÅ | en:Get SDK Version
+// ch:è·å–SDKç‰ˆæœ¬å· | en:Get SDK Version
 int CMvCamera::GetSDKVersion()
 {
     return MV_CC_GetSDKVersion();
 }
 
-// ch:Ã¶¾ÙÉè±¸ | en:Enumerate Device
-int CMvCamera::EnumDevices(unsigned int nTLayerType, MV_CC_DEVICE_INFO_LIST* pstDevList)
+// ch:æšä¸¾è®¾å¤‡ | en:Enumerate Device
+int CMvCamera::EnumDevices(unsigned int nTLayerType, MV_CC_DEVICE_INFO_LIST *pstDevList)
 {
     return MV_CC_EnumDevices(nTLayerType, pstDevList);
 }
 
-// ch:ÅĞ¶ÏÉè±¸ÊÇ·ñ¿É´ï | en:Is the device accessible
-bool CMvCamera::IsDeviceAccessible(MV_CC_DEVICE_INFO* pstDevInfo, unsigned int nAccessMode)
+// ch:åˆ¤æ–­è®¾å¤‡æ˜¯å¦å¯è¾¾ | en:Is the device accessible
+bool CMvCamera::IsDeviceAccessible(MV_CC_DEVICE_INFO *pstDevInfo, unsigned int nAccessMode)
 {
     return MV_CC_IsDeviceAccessible(pstDevInfo, nAccessMode);
 }
 
-// ch:´ò¿ªÉè±¸ | en:Open Device
-int CMvCamera::Open(MV_CC_DEVICE_INFO* pstDeviceInfo)
+// ch:æ‰“å¼€è®¾å¤‡ | en:Open Device
+int CMvCamera::Open(MV_CC_DEVICE_INFO *pstDeviceInfo)
 {
     if (MV_NULL == pstDeviceInfo)
     {
@@ -46,7 +46,7 @@ int CMvCamera::Open(MV_CC_DEVICE_INFO* pstDeviceInfo)
         return MV_E_CALLORDER;
     }
 
-    int nRet  = MV_CC_CreateHandle(&m_hDevHandle, pstDeviceInfo);
+    int nRet = MV_CC_CreateHandle(&m_hDevHandle, pstDeviceInfo);
     if (MV_OK != nRet)
     {
         return nRet;
@@ -61,7 +61,7 @@ int CMvCamera::Open(MV_CC_DEVICE_INFO* pstDeviceInfo)
     return nRet;
 }
 
-// ch:¹Ø±ÕÉè±¸ | en:Close Device
+// ch:å…³é—­è®¾å¤‡ | en:Close Device
 int CMvCamera::Close()
 {
     if (MV_NULL == m_hDevHandle)
@@ -77,62 +77,62 @@ int CMvCamera::Close()
     return nRet;
 }
 
-// ch:ÅĞ¶ÏÏà»úÊÇ·ñ´¦ÓÚÁ¬½Ó×´Ì¬ | en:Is The Device Connected
+// ch:åˆ¤æ–­ç›¸æœºæ˜¯å¦å¤„äºè¿æ¥çŠ¶æ€ | en:Is The Device Connected
 bool CMvCamera::IsDeviceConnected()
 {
     return MV_CC_IsDeviceConnected(m_hDevHandle);
 }
 
-// ch:×¢²áÍ¼ÏñÊı¾İ»Øµ÷ | en:Register Image Data CallBack
-int CMvCamera::RegisterImageCallBack(void(__stdcall* cbOutput)(unsigned char * pData, MV_FRAME_OUT_INFO_EX* pFrameInfo, void* pUser), void* pUser)
+// ch:æ³¨å†Œå›¾åƒæ•°æ®å›è°ƒ | en:Register Image Data CallBack
+int CMvCamera::RegisterImageCallBack(void(__stdcall *cbOutput)(unsigned char *pData, MV_FRAME_OUT_INFO_EX *pFrameInfo, void *pUser), void *pUser)
 {
     return MV_CC_RegisterImageCallBackEx(m_hDevHandle, cbOutput, pUser);
 }
 
-// ch:¿ªÆô×¥Í¼ | en:Start Grabbing
+// ch:å¼€å¯æŠ“å›¾ | en:Start Grabbing
 int CMvCamera::StartGrabbing()
 {
     return MV_CC_StartGrabbing(m_hDevHandle);
 }
 
-// ch:Í£Ö¹×¥Í¼ | en:Stop Grabbing
+// ch:åœæ­¢æŠ“å›¾ | en:Stop Grabbing
 int CMvCamera::StopGrabbing()
 {
     return MV_CC_StopGrabbing(m_hDevHandle);
 }
 
-// ch:Ö÷¶¯»ñÈ¡Ò»Ö¡Í¼ÏñÊı¾İ | en:Get one frame initiatively
-int CMvCamera::GetImageBuffer(MV_FRAME_OUT* pFrame, int nMsec)
+// ch:ä¸»åŠ¨è·å–ä¸€å¸§å›¾åƒæ•°æ® | en:Get one frame initiatively
+int CMvCamera::GetImageBuffer(MV_FRAME_OUT *pFrame, int nMsec)
 {
     return MV_CC_GetImageBuffer(m_hDevHandle, pFrame, nMsec);
 }
 
-// ch:ÊÍ·ÅÍ¼Ïñ»º´æ | en:Free image buffer
-int CMvCamera::FreeImageBuffer(MV_FRAME_OUT* pFrame)
+// ch:é‡Šæ”¾å›¾åƒç¼“å­˜ | en:Free image buffer
+int CMvCamera::FreeImageBuffer(MV_FRAME_OUT *pFrame)
 {
     return MV_CC_FreeImageBuffer(m_hDevHandle, pFrame);
 }
 
-// ch:ÉèÖÃÏÔÊ¾´°¿Ú¾ä±ú | en:Set Display Window Handle
-int CMvCamera::DisplayOneFrame(MV_DISPLAY_FRAME_INFO* pDisplayInfo)
+// ch:è®¾ç½®æ˜¾ç¤ºçª—å£å¥æŸ„ | en:Set Display Window Handle
+int CMvCamera::DisplayOneFrame(MV_DISPLAY_FRAME_INFO *pDisplayInfo)
 {
     return MV_CC_DisplayOneFrame(m_hDevHandle, pDisplayInfo);
 }
 
-// ch:ÉèÖÃSDKÄÚ²¿Í¼Ïñ»º´æ½Úµã¸öÊı | en:Set the number of the internal image cache nodes in SDK
+// ch:è®¾ç½®SDKå†…éƒ¨å›¾åƒç¼“å­˜èŠ‚ç‚¹ä¸ªæ•° | en:Set the number of the internal image cache nodes in SDK
 int CMvCamera::SetImageNodeNum(unsigned int nNum)
 {
     return MV_CC_SetImageNodeNum(m_hDevHandle, nNum);
 }
 
-// ch:»ñÈ¡Éè±¸ĞÅÏ¢ | en:Get device information
-int CMvCamera::GetDeviceInfo(MV_CC_DEVICE_INFO* pstDevInfo)
+// ch:è·å–è®¾å¤‡ä¿¡æ¯ | en:Get device information
+int CMvCamera::GetDeviceInfo(MV_CC_DEVICE_INFO *pstDevInfo)
 {
     return MV_CC_GetDeviceInfo(m_hDevHandle, pstDevInfo);
 }
 
-// ch:»ñÈ¡GEVÏà»úµÄÍ³¼ÆĞÅÏ¢ | en:Get detect info of GEV camera
-int CMvCamera::GetGevAllMatchInfo(MV_MATCH_INFO_NET_DETECT* pMatchInfoNetDetect)
+// ch:è·å–GEVç›¸æœºçš„ç»Ÿè®¡ä¿¡æ¯ | en:Get detect info of GEV camera
+int CMvCamera::GetGevAllMatchInfo(MV_MATCH_INFO_NET_DETECT *pMatchInfoNetDetect)
 {
     if (MV_NULL == pMatchInfoNetDetect)
     {
@@ -156,8 +156,8 @@ int CMvCamera::GetGevAllMatchInfo(MV_MATCH_INFO_NET_DETECT* pMatchInfoNetDetect)
     return MV_CC_GetAllMatchInfo(m_hDevHandle, &struMatchInfo);
 }
 
-// ch:»ñÈ¡U3VÏà»úµÄÍ³¼ÆĞÅÏ¢ | en:Get detect info of U3V camera
-int CMvCamera::GetU3VAllMatchInfo(MV_MATCH_INFO_USB_DETECT* pMatchInfoUSBDetect)
+// ch:è·å–U3Vç›¸æœºçš„ç»Ÿè®¡ä¿¡æ¯ | en:Get detect info of U3V camera
+int CMvCamera::GetU3VAllMatchInfo(MV_MATCH_INFO_USB_DETECT *pMatchInfoUSBDetect)
 {
     if (MV_NULL == pMatchInfoUSBDetect)
     {
@@ -177,84 +177,84 @@ int CMvCamera::GetU3VAllMatchInfo(MV_MATCH_INFO_USB_DETECT* pMatchInfoUSBDetect)
     struMatchInfo.pInfo = pMatchInfoUSBDetect;
     struMatchInfo.nInfoSize = sizeof(MV_MATCH_INFO_USB_DETECT);
     memset(struMatchInfo.pInfo, 0, sizeof(MV_MATCH_INFO_USB_DETECT));
-    
+
     return MV_CC_GetAllMatchInfo(m_hDevHandle, &struMatchInfo);
 }
 
-// ch:»ñÈ¡ºÍÉèÖÃIntĞÍ²ÎÊı£¬Èç WidthºÍHeight£¬ÏêÏ¸ÄÚÈİ²Î¿¼SDK°²×°Ä¿Â¼ÏÂµÄ MvCameraNode.xlsx ÎÄ¼ş
+// ch:è·å–å’Œè®¾ç½®Intå‹å‚æ•°ï¼Œå¦‚ Widthå’ŒHeightï¼Œè¯¦ç»†å†…å®¹å‚è€ƒSDKå®‰è£…ç›®å½•ä¸‹çš„ MvCameraNode.xlsx æ–‡ä»¶
 // en:Get Int type parameters, such as Width and Height, for details please refer to MvCameraNode.xlsx file under SDK installation directory
-int CMvCamera::GetIntValue(IN const char* strKey, OUT MVCC_INTVALUE_EX *pIntValue)
+int CMvCamera::GetIntValue(IN const char *strKey, OUT MVCC_INTVALUE_EX *pIntValue)
 {
     return MV_CC_GetIntValueEx(m_hDevHandle, strKey, pIntValue);
 }
 
-int CMvCamera::SetIntValue(IN const char* strKey, IN int64_t nValue)
+int CMvCamera::SetIntValue(IN const char *strKey, IN int64_t nValue)
 {
     return MV_CC_SetIntValueEx(m_hDevHandle, strKey, nValue);
 }
 
-// ch:»ñÈ¡ºÍÉèÖÃEnumĞÍ²ÎÊı£¬Èç PixelFormat£¬ÏêÏ¸ÄÚÈİ²Î¿¼SDK°²×°Ä¿Â¼ÏÂµÄ MvCameraNode.xlsx ÎÄ¼ş
+// ch:è·å–å’Œè®¾ç½®Enumå‹å‚æ•°ï¼Œå¦‚ PixelFormatï¼Œè¯¦ç»†å†…å®¹å‚è€ƒSDKå®‰è£…ç›®å½•ä¸‹çš„ MvCameraNode.xlsx æ–‡ä»¶
 // en:Get Enum type parameters, such as PixelFormat, for details please refer to MvCameraNode.xlsx file under SDK installation directory
-int CMvCamera::GetEnumValue(IN const char* strKey, OUT MVCC_ENUMVALUE *pEnumValue)
+int CMvCamera::GetEnumValue(IN const char *strKey, OUT MVCC_ENUMVALUE *pEnumValue)
 {
     return MV_CC_GetEnumValue(m_hDevHandle, strKey, pEnumValue);
 }
 
-int CMvCamera::SetEnumValue(IN const char* strKey, IN unsigned int nValue)
+int CMvCamera::SetEnumValue(IN const char *strKey, IN unsigned int nValue)
 {
     return MV_CC_SetEnumValue(m_hDevHandle, strKey, nValue);
 }
 
-int CMvCamera::SetEnumValueByString(IN const char* strKey, IN const char* sValue)
+int CMvCamera::SetEnumValueByString(IN const char *strKey, IN const char *sValue)
 {
     return MV_CC_SetEnumValueByString(m_hDevHandle, strKey, sValue);
 }
 
-// ch:»ñÈ¡ºÍÉèÖÃFloatĞÍ²ÎÊı£¬Èç ExposureTimeºÍGain£¬ÏêÏ¸ÄÚÈİ²Î¿¼SDK°²×°Ä¿Â¼ÏÂµÄ MvCameraNode.xlsx ÎÄ¼ş
+// ch:è·å–å’Œè®¾ç½®Floatå‹å‚æ•°ï¼Œå¦‚ ExposureTimeå’ŒGainï¼Œè¯¦ç»†å†…å®¹å‚è€ƒSDKå®‰è£…ç›®å½•ä¸‹çš„ MvCameraNode.xlsx æ–‡ä»¶
 // en:Get Float type parameters, such as ExposureTime and Gain, for details please refer to MvCameraNode.xlsx file under SDK installation directory
-int CMvCamera::GetFloatValue(IN const char* strKey, OUT MVCC_FLOATVALUE *pFloatValue)
+int CMvCamera::GetFloatValue(IN const char *strKey, OUT MVCC_FLOATVALUE *pFloatValue)
 {
     return MV_CC_GetFloatValue(m_hDevHandle, strKey, pFloatValue);
 }
 
-int CMvCamera::SetFloatValue(IN const char* strKey, IN float fValue)
+int CMvCamera::SetFloatValue(IN const char *strKey, IN float fValue)
 {
     return MV_CC_SetFloatValue(m_hDevHandle, strKey, fValue);
 }
 
-// ch:»ñÈ¡ºÍÉèÖÃBoolĞÍ²ÎÊı£¬Èç ReverseX£¬ÏêÏ¸ÄÚÈİ²Î¿¼SDK°²×°Ä¿Â¼ÏÂµÄ MvCameraNode.xlsx ÎÄ¼ş
+// ch:è·å–å’Œè®¾ç½®Boolå‹å‚æ•°ï¼Œå¦‚ ReverseXï¼Œè¯¦ç»†å†…å®¹å‚è€ƒSDKå®‰è£…ç›®å½•ä¸‹çš„ MvCameraNode.xlsx æ–‡ä»¶
 // en:Get Bool type parameters, such as ReverseX, for details please refer to MvCameraNode.xlsx file under SDK installation directory
-int CMvCamera::GetBoolValue(IN const char* strKey, OUT bool *pbValue)
+int CMvCamera::GetBoolValue(IN const char *strKey, OUT bool *pbValue)
 {
     return MV_CC_GetBoolValue(m_hDevHandle, strKey, pbValue);
 }
 
-int CMvCamera::SetBoolValue(IN const char* strKey, IN bool bValue)
+int CMvCamera::SetBoolValue(IN const char *strKey, IN bool bValue)
 {
     return MV_CC_SetBoolValue(m_hDevHandle, strKey, bValue);
 }
 
-// ch:»ñÈ¡ºÍÉèÖÃStringĞÍ²ÎÊı£¬Èç DeviceUserID£¬ÏêÏ¸ÄÚÈİ²Î¿¼SDK°²×°Ä¿Â¼ÏÂµÄ MvCameraNode.xlsx ÎÄ¼şUserSetSave
+// ch:è·å–å’Œè®¾ç½®Stringå‹å‚æ•°ï¼Œå¦‚ DeviceUserIDï¼Œè¯¦ç»†å†…å®¹å‚è€ƒSDKå®‰è£…ç›®å½•ä¸‹çš„ MvCameraNode.xlsx æ–‡ä»¶UserSetSave
 // en:Get String type parameters, such as DeviceUserID, for details please refer to MvCameraNode.xlsx file under SDK installation directory
-int CMvCamera::GetStringValue(IN const char* strKey, MVCC_STRINGVALUE *pStringValue)
+int CMvCamera::GetStringValue(IN const char *strKey, MVCC_STRINGVALUE *pStringValue)
 {
     return MV_CC_GetStringValue(m_hDevHandle, strKey, pStringValue);
 }
 
-int CMvCamera::SetStringValue(IN const char* strKey, IN const char* strValue)
+int CMvCamera::SetStringValue(IN const char *strKey, IN const char *strValue)
 {
     return MV_CC_SetStringValue(m_hDevHandle, strKey, strValue);
 }
 
-// ch:Ö´ĞĞÒ»´ÎCommandĞÍÃüÁî£¬Èç UserSetSave£¬ÏêÏ¸ÄÚÈİ²Î¿¼SDK°²×°Ä¿Â¼ÏÂµÄ MvCameraNode.xlsx ÎÄ¼ş
+// ch:æ‰§è¡Œä¸€æ¬¡Commandå‹å‘½ä»¤ï¼Œå¦‚ UserSetSaveï¼Œè¯¦ç»†å†…å®¹å‚è€ƒSDKå®‰è£…ç›®å½•ä¸‹çš„ MvCameraNode.xlsx æ–‡ä»¶
 // en:Execute Command once, such as UserSetSave, for details please refer to MvCameraNode.xlsx file under SDK installation directory
-int CMvCamera::CommandExecute(IN const char* strKey)
+int CMvCamera::CommandExecute(IN const char *strKey)
 {
     return MV_CC_SetCommandValue(m_hDevHandle, strKey);
 }
 
-// ch:Ì½²âÍøÂç×î¼Ñ°ü´óĞ¡(Ö»¶ÔGigEÏà»úÓĞĞ§) | en:Detection network optimal package size(It only works for the GigE camera)
-int CMvCamera::GetOptimalPacketSize(unsigned int* pOptimalPacketSize)
+// ch:æ¢æµ‹ç½‘ç»œæœ€ä½³åŒ…å¤§å°(åªå¯¹GigEç›¸æœºæœ‰æ•ˆ) | en:Detection network optimal package size(It only works for the GigE camera)
+int CMvCamera::GetOptimalPacketSize(unsigned int *pOptimalPacketSize)
 {
     if (MV_NULL == pOptimalPacketSize)
     {
@@ -272,70 +272,79 @@ int CMvCamera::GetOptimalPacketSize(unsigned int* pOptimalPacketSize)
     return MV_OK;
 }
 
-// ch:×¢²áÏûÏ¢Òì³£»Øµ÷ | en:Register Message Exception CallBack
-int CMvCamera::RegisterExceptionCallBack(void(__stdcall* cbException)(unsigned int nMsgType, void* pUser),void* pUser)
+// ch:æ³¨å†Œæ¶ˆæ¯å¼‚å¸¸å›è°ƒ | en:Register Message Exception CallBack
+int CMvCamera::RegisterExceptionCallBack(void(__stdcall *cbException)(unsigned int nMsgType, void *pUser), void *pUser)
 {
     return MV_CC_RegisterExceptionCallBack(m_hDevHandle, cbException, pUser);
 }
 
-// ch:×¢²áµ¥¸öÊÂ¼ş»Øµ÷ | en:Register Event CallBack
-int CMvCamera::RegisterEventCallBack(const char* pEventName, void(__stdcall* cbEvent)(MV_EVENT_OUT_INFO * pEventInfo, void* pUser), void* pUser)
+// ch:æ³¨å†Œå•ä¸ªäº‹ä»¶å›è°ƒ | en:Register Event CallBack
+int CMvCamera::RegisterEventCallBack(const char *pEventName, void(__stdcall *cbEvent)(MV_EVENT_OUT_INFO *pEventInfo, void *pUser), void *pUser)
 {
     return MV_CC_RegisterEventCallBackEx(m_hDevHandle, pEventName, cbEvent, pUser);
 }
 
-// ch:Ç¿ÖÆIP | en:Force IP
+// ch:å¼ºåˆ¶IP | en:Force IP
 int CMvCamera::ForceIp(unsigned int nIP, unsigned int nSubNetMask, unsigned int nDefaultGateWay)
 {
     return MV_GIGE_ForceIpEx(m_hDevHandle, nIP, nSubNetMask, nDefaultGateWay);
 }
 
-// ch:ÅäÖÃIP·½Ê½ | en:IP configuration method
+// ch:é…ç½®IPæ–¹å¼ | en:IP configuration method
 int CMvCamera::SetIpConfig(unsigned int nType)
 {
     return MV_GIGE_SetIpConfig(m_hDevHandle, nType);
 }
 
-// ch:ÉèÖÃÍøÂç´«ÊäÄ£Ê½ | en:Set Net Transfer Mode
+// ch:è®¾ç½®ç½‘ç»œä¼ è¾“æ¨¡å¼ | en:Set Net Transfer Mode
 int CMvCamera::SetNetTransMode(unsigned int nType)
 {
     return MV_GIGE_SetNetTransMode(m_hDevHandle, nType);
 }
 
-
-// ch:ÏñËØ¸ñÊ½×ª»» | en:Pixel format conversion
-int CMvCamera::ConvertPixelType(MV_CC_PIXEL_CONVERT_PARAM* pstCvtParam)
+// ch:åƒç´ æ ¼å¼è½¬æ¢ | en:Pixel format conversion
+int CMvCamera::ConvertPixelType(MV_CC_PIXEL_CONVERT_PARAM *pstCvtParam)
 {
     return MV_CC_ConvertPixelType(m_hDevHandle, pstCvtParam);
 }
 
-// ch:±£´æÍ¼Æ¬ | en:save image
-int CMvCamera::SaveImage(MV_SAVE_IMAGE_PARAM_EX* pstParam)
+// ch:ä¿å­˜å›¾ç‰‡ | en:save image
+int CMvCamera::SaveImage(MV_SAVE_IMAGE_PARAM_EX *pstParam)
 {
     return MV_CC_SaveImageEx2(m_hDevHandle, pstParam);
 }
 
-// ch:±£´æÍ¼Æ¬ÎªÎÄ¼ş | en:Save the image as a file
-int CMvCamera::SaveImageToFile(MV_SAVE_IMG_TO_FILE_PARAM* pstSaveFileParam)
+// ch:ä¿å­˜å›¾ç‰‡ä¸ºæ–‡ä»¶ | en:Save the image as a file
+int CMvCamera::SaveImageToFile(MV_SAVE_IMG_TO_FILE_PARAM *pstSaveFileParam)
 {
     return MV_CC_SaveImageToFile(m_hDevHandle, pstSaveFileParam);
 }
 
-int CMvCamera::SetGrabStrategy(unsigned  int nStrategy) {
-    if(nStrategy == 0){
+int CMvCamera::SetGrabStrategy(unsigned int nStrategy)
+{
+    if (nStrategy == 0)
+    {
         return MV_CC_SetGrabStrategy(m_hDevHandle, MV_GrabStrategy_OneByOne);
     }
-    else if(nStrategy == 1){
+    else if (nStrategy == 1)
+    {
         return MV_CC_SetGrabStrategy(m_hDevHandle, MV_GrabStrategy_LatestImagesOnly);
-    }else if(nStrategy == 2){
+    }
+    else if (nStrategy == 2)
+    {
         return MV_CC_SetGrabStrategy(m_hDevHandle, MV_GrabStrategy_LatestImages);
-    }else if(nStrategy == 3){
+    }
+    else if (nStrategy == 3)
+    {
         return MV_CC_SetGrabStrategy(m_hDevHandle, MV_GrabStrategy_UpcomingImage);
-    }else{
+    }
+    else
+    {
         return -1;
     }
 }
 
-int CMvCamera::SetCommandValue(const char* command) {
-   return  MV_CC_SetCommandValue(m_hDevHandle, command);
+int CMvCamera::SetCommandValue(const char *command)
+{
+    return MV_CC_SetCommandValue(m_hDevHandle, command);
 }

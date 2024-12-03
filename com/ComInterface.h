@@ -131,7 +131,7 @@ public:
 
     /**
      * @brief 获取遥控器指令
-     * 
+     *
      * @param m_Manual: 遥控器指令数据
      */
     void getManual(stManualCmd &m_Manual);
@@ -314,7 +314,7 @@ public:
 
     /**
      * @brief 激光控制
-     * 
+     *
      * @param swit 开关量
      */
     void setCrossLaser(bool swit);

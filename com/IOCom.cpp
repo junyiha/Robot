@@ -7,60 +7,57 @@ IOCom::IOCom()
     memset(m_DOSet, 0, DO_LEN);
     memset(m_DOState, 0, DO_LEN);
     memset(m_DIState, 0, DI_LEN);
-    memset(m_AISate, 0, AI_NUM*sizeof(unsigned short));
+    memset(m_AISate, 0, AI_NUM * sizeof(unsigned short));
 
-    //com???????????loop???????????????????loop?
-    connect(this,&IOCom::sigConnected,this,&IOCom::slotStartLoop);
-    connect(this,&IOCom::sigDisconnected,this,&IOCom::slotStopLoop);
-//    //?????senddata??
-//    m_cIOSendAndRecvTimer=new QTimer(this);
-//    //500???200?? ,?????sleep
-//    m_cIOSendAndRecvTimer->setInterval(100);
-//    connect(m_cIOSendAndRecvTimer,&QTimer::timeout,this,&IOCom::SendAndRecvIO);
+    // com???????????loop???????????????????loop?
+    connect(this, &IOCom::sigConnected, this, &IOCom::slotStartLoop);
+    connect(this, &IOCom::sigDisconnected, this, &IOCom::slotStopLoop);
+    //    //?????senddata??
+    //    m_cIOSendAndRecvTimer=new QTimer(this);
+    //    //500???200?? ,?????sleep
+    //    m_cIOSendAndRecvTimer->setInterval(100);
+    //    connect(m_cIOSendAndRecvTimer,&QTimer::timeout,this,&IOCom::SendAndRecvIO);
 
-
-
-//    g_RecvIOLock.clear();
-//    g_SendIOLock.clear();
+    //    g_RecvIOLock.clear();
+    //    g_SendIOLock.clear();
 }
 
 IOCom::~IOCom()
 {
-
 }
 
 void IOCom::slotStartLoop()
 {
-//    m_cIOSendAndRecvTimer->start();
-    qDebug()<<" slotStartLoop start thread*************************************";
-     this->start();
+    //    m_cIOSendAndRecvTimer->start();
+    qDebug() << " slotStartLoop start thread*************************************";
+    this->start();
 }
 
 void IOCom::slotStopLoop()
 {
-//    m_cIOSendAndRecvTimer->stop();
+    //    m_cIOSendAndRecvTimer->stop();
 }
 
 DINT IOCom::SendIO()
 {
-    if(m_CommState == true)
+    if (m_CommState == true)
     {
-         mutex_send.lock();
+        mutex_send.lock();
         {
             m_SendData[0] = m_SendSize; //??
-            m_SendData[1] = 64;			//DO??
-            m_SendData[2] = 16;			//DI??
-            m_SendData[3] = 0;			//AO??
-            m_SendData[4] = 16;			//AI??
-            m_SendData[5] = 1;			//????
+            m_SendData[1] = 64;         // DO??
+            m_SendData[2] = 16;         // DI??
+            m_SendData[3] = 0;          // AO??
+            m_SendData[4] = 16;         // AI??
+            m_SendData[5] = 1;          //????
 
-            memcpy(&m_SendData[6], m_DOSet, DO_LEN); //DO??
-                                                     //AO??????
+            memcpy(&m_SendData[6], m_DOSet, DO_LEN); // DO??
+                                                     // AO??????
 
-            m_SendData[SEND_LEN-1] = 0;             //????
-            for (int i = 0; i < SEND_LEN-1; i++)
+            m_SendData[SEND_LEN - 1] = 0; //????
+            for (int i = 0; i < SEND_LEN - 1; i++)
             {
-                m_SendData[SEND_LEN-1] = m_SendData[SEND_LEN-1] + m_SendData[i];
+                m_SendData[SEND_LEN - 1] = m_SendData[SEND_LEN - 1] + m_SendData[i];
             }
         }
         mutex_send.unlock();
@@ -73,7 +70,7 @@ DINT IOCom::SendIO()
         }
         else
         {
-            qDebug()<<"failed to send";
+            qDebug() << "failed to send";
             return -1;
         }
     }
@@ -84,8 +81,7 @@ DINT IOCom::SendIO()
 DINT IOCom::RecvIO()
 {
 
-
-    if(m_CommState == true)
+    if (m_CommState == true)
     {
         DINT re = Recvbuffer();
         if (0 != re)
@@ -100,33 +96,32 @@ DINT IOCom::RecvIO()
                 mutex_recv.unlock();
                 return -1;
             }
-            //log->debug("recv header check success");
+            // log->debug("recv header check success");
             byte temp = 0;
-            for (int i = 0; i < 0x30; i++)//????
+            for (int i = 0; i < 0x30; i++) //????
             {
                 temp = temp + static_cast<byte>(m_RecvData[i]);
-
             }
             if ((temp ^ static_cast<byte>(m_RecvData[0x30])) != 0x00)
             {
                 mutex_recv.unlock();
                 return -1;
             }
-            //log->debug("recv sum check success");
+            // log->debug("recv sum check success");
             memcpy(m_DOState, &m_RecvData[6], DO_LEN);
-            memcpy(m_DIState, &m_RecvData[6+DO_LEN], DI_LEN);
-            memcpy(m_AISate, &m_RecvData[6+DO_LEN+DI_LEN], AI_NUM*sizeof(unsigned short));
+            memcpy(m_DIState, &m_RecvData[6 + DO_LEN], DI_LEN);
+            memcpy(m_AISate, &m_RecvData[6 + DO_LEN + DI_LEN], AI_NUM * sizeof(unsigned short));
 
             //?short??????????????????
-            for(int i=0;i<AI_NUM;i++)
+            for (int i = 0; i < AI_NUM; i++)
             {
                 m_AISate[i] = ((m_AISate[i] << 8) | (m_AISate[i] >> 8));
-//                qDebug()<<"origin m_AISate ; "<<m_AISate[i];
+                //                qDebug()<<"origin m_AISate ; "<<m_AISate[i];
             }
         }
         mutex_recv.unlock();
 
-        //log->debug("recv io action,m_AISate:{},{}",m_AISate[0],m_AISate[1]);
+        // log->debug("recv io action,m_AISate:{},{}",m_AISate[0],m_AISate[1]);
 
         return 0;
     }
@@ -144,63 +139,66 @@ DINT IOCom::SendAndRecvIO()
     return 0;
 }
 
-void IOCom::SetIO(qint8 index_port,byte value)
+void IOCom::SetIO(qint8 index_port, byte value)
 {
-    if(index_port<DO_LEN)
+    if (index_port < DO_LEN)
     {
         mutex_send.lock();
         m_DOSet[index_port] = value;
 
         mutex_send.unlock();
-    }else
-    {
-        qDebug()<<"error index_port";
     }
-
+    else
+    {
+        qDebug() << "error index_port";
+    }
 }
 
 QVector<byte> IOCom::getDIState()
 {
-   mutex_recv.lock();
-   QVector<byte> re(m_DIState,m_DIState+DI_LEN);
-   mutex_recv.unlock();
-   return  re;
+    mutex_recv.lock();
+    QVector<byte> re(m_DIState, m_DIState + DI_LEN);
+    mutex_recv.unlock();
+    return re;
 }
 
 QVector<byte> IOCom::getDOState()
 {
     mutex_recv.lock();
-    QVector<byte> re(m_DOState,m_DOState+DO_LEN);
+    QVector<byte> re(m_DOState, m_DOState + DO_LEN);
     mutex_recv.unlock();
-    return  re;
+    return re;
 }
 
 QVector<unsigned short> IOCom::getAIState()
 {
     mutex_recv.lock();
-    QVector<unsigned short> re(m_AISate,m_AISate+AI_NUM);
+    QVector<unsigned short> re(m_AISate, m_AISate + AI_NUM);
     mutex_recv.unlock();
-    return  re;
+    return re;
 }
 
-void IOCom::run() {
+void IOCom::run()
+{
     this->log->info("IOCom thread start");
     bool commState = this->getCommState();
-    while(this->is_Running){
-        if(commState){
+    while (this->is_Running)
+    {
+        if (commState)
+        {
             SendIO();
             QThread::msleep(200);
             RecvIO();
-        }else{
+        }
+        else
+        {
             this->log->error("CommState is false, please check io connection!");
         }
     }
 }
 
-void IOCom::closeThread() {
+void IOCom::closeThread()
+{
     this->is_Running = false;
     QThread::wait();
-
 }
-
-

@@ -9,58 +9,57 @@ BoardingTool::BoardingTool()
     log = spdlog::get("logger");
 }
 
-
 void BoardingTool::SetLight(quint8 index, bool On)
 {
     byte portvalue = m_cIOA.getDOState()[1];
-    if(On == true) {
-        switch (index) {
-            case 0:
-                portvalue |= 0b0000111;
-                break;
-            case 1:
-                portvalue |= 0b0000001;
-                break;
-            case 2:
-                portvalue |= 0b0000010;
-                break;
-            case 3:
-                portvalue |= 0b0000100;
-                break;
-            default:
-                log->warn("Invalid light index: {}", index);
+    if (On == true)
+    {
+        switch (index)
+        {
+        case 0:
+            portvalue |= 0b0000111;
+            break;
+        case 1:
+            portvalue |= 0b0000001;
+            break;
+        case 2:
+            portvalue |= 0b0000010;
+            break;
+        case 3:
+            portvalue |= 0b0000100;
+            break;
+        default:
+            log->warn("Invalid light index: {}", index);
         }
     }
     else
     {
         switch (index)
-            {
-                case 0:
-                    portvalue &= ~0b0000111;
-                    break;
-                case 1:
-                    portvalue &= ~0b0000001;
-                    break;
-                case 2:
-                    portvalue &= ~0b0000010;
-                    break;
-                case 3:
-                    portvalue &= ~0b0000100;
-                    break;
-                default:
-                    log->warn("Invalid light index: {}", index);
-            }
-
+        {
+        case 0:
+            portvalue &= ~0b0000111;
+            break;
+        case 1:
+            portvalue &= ~0b0000001;
+            break;
+        case 2:
+            portvalue &= ~0b0000010;
+            break;
+        case 3:
+            portvalue &= ~0b0000100;
+            break;
+        default:
+            log->warn("Invalid light index: {}", index);
+        }
     }
 
-    m_cIOA.SetIO(1,portvalue);
+    m_cIOA.SetIO(1, portvalue);
 }
-
 
 void BoardingTool::SetLaserMarker(bool On)
 {
     byte portvalue = m_cIOA.getDOState()[1];
-    if(On == true)
+    if (On == true)
     {
         portvalue |= 0b01000000;
     }
@@ -68,7 +67,7 @@ void BoardingTool::SetLaserMarker(bool On)
     {
         portvalue &= ~0b01000000;
     }
-    m_cIOA.SetIO(1,portvalue);
+    m_cIOA.SetIO(1, portvalue);
 }
 
 void BoardingTool::SetCylinder(int push)
@@ -76,58 +75,54 @@ void BoardingTool::SetCylinder(int push)
     byte portvalue = m_cIOA.getDOState()[1];
     switch (push)
     {
-        case -1:
-            portvalue |=  0b00100000;
-            portvalue &= ~0b00010000;
-            break;
-        case 0:
-            portvalue &= ~0b00110000;
-            break;
-        case 1:
-            portvalue |=  0b00010000;
-            portvalue &= ~0b00100000;
-            break;
-        default:
-            log->warn("Invalid cylinder action :push = {}", push);
-            break;
-
+    case -1:
+        portvalue |= 0b00100000;
+        portvalue &= ~0b00010000;
+        break;
+    case 0:
+        portvalue &= ~0b00110000;
+        break;
+    case 1:
+        portvalue |= 0b00010000;
+        portvalue &= ~0b00100000;
+        break;
+    default:
+        log->warn("Invalid cylinder action :push = {}", push);
+        break;
     }
-    m_cIOA.SetIO(1,portvalue);
-
-
+    m_cIOA.SetIO(1, portvalue);
 }
 QVector<double> BoardingTool::getLaserDistance()
 {
     QVector<double> re(6);
-    QVector<double> tmp(6);//转换一下
+    QVector<double> tmp(6); // 转换一下
 
     tmp[0] = m_cIOA.getAIState()[3];
     tmp[1] = m_cIOA.getAIState()[5];
     tmp[2] = m_cIOA.getAIState()[6];
     tmp[3] = m_cIOA.getAIState()[7];
 
-    //log->debug("*****LaserDistance**: {} {} {} {} ",tmp[0],tmp[1],tmp[2],tmp[3]);
+    // log->debug("*****LaserDistance**: {} {} {} {} ",tmp[0],tmp[1],tmp[2],tmp[3]);
 
     double carb_A = 0;
     double carb_B = -314;
 
-    //视觉标定板上表面为激光零点
-    std::vector<Eigen::Vector2f> cfg_laser ={
-            //      k       b
+    // 视觉标定板上表面为激光零点
+    std::vector<Eigen::Vector2f> cfg_laser = {
+        //      k       b
 
-            Eigen::Vector2f( 420,100),//carb_A对应的模拟量数值，carb_B对应的数值
-            Eigen::Vector2f(442,120),//2    // 15mm( 1965, 1968,)
-            Eigen::Vector2f(440,120),//3
-            Eigen::Vector2f(420,102),//4
+        Eigen::Vector2f(420, 100), // carb_A对应的模拟量数值，carb_B对应的数值
+        Eigen::Vector2f(442, 120), // 2    // 15mm( 1965, 1968,)
+        Eigen::Vector2f(440, 120), // 3
+        Eigen::Vector2f(420, 102), // 4
     };
-    for(int i=0;i<4;++i){
-        //换算为真实距离，单位毫米
-        re[i] = (carb_A- carb_B)/(cfg_laser[i].x()-cfg_laser[i].y())*(tmp[i]-cfg_laser[i].x())+carb_A;
-        //tmp[i] = 80.0/(cfg_laser[i].y()-  cfg_laser[i].x()) * (tmp[i] -  cfg_laser[i].x());
+    for (int i = 0; i < 4; ++i)
+    {
+        // 换算为真实距离，单位毫米
+        re[i] = (carb_A - carb_B) / (cfg_laser[i].x() - cfg_laser[i].y()) * (tmp[i] - cfg_laser[i].x()) + carb_A;
+        // tmp[i] = 80.0/(cfg_laser[i].y()-  cfg_laser[i].x()) * (tmp[i] -  cfg_laser[i].x());
     }
 
-    //log->debug("测量距离：{} {} {} {} ",re[0],re[1],re[2],re[3]);
+    // log->debug("测量距离：{} {} {} {} ",re[0],re[1],re[2],re[3]);
     return re;
 }
-
-

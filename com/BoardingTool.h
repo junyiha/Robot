@@ -20,41 +20,39 @@
 #include <QObject>
 #include <Eigen/Dense>
 
-class BoardingTool {
+class BoardingTool
+{
 public:
     BoardingTool();
-    IOCom		m_cIOA;
+    IOCom m_cIOA;
 
-//****************功能接口***************
+    //****************功能接口***************
     /**
-    * @brief  灯光控制
-    * @param  index 灯光编号0，全部 1.长边，2.短边，3.孔位
-    * @param  On    开关量
-    */
+     * @brief  灯光控制
+     * @param  index 灯光编号0，全部 1.长边，2.短边，3.孔位
+     * @param  On    开关量
+     */
     void SetLight(quint8 index, bool On);
 
     /**
-    * @brief  激光标线控制
-    * @param  On    开关量
-    */
+     * @brief  激光标线控制
+     * @param  On    开关量
+     */
     void SetLaserMarker(bool On);
 
     /**
-    * @brief  推杆控制
-    * @param  push  -1 推荐倒推，0 停止， 1推荐正推
-    **/
+     * @brief  推杆控制
+     * @param  push  -1 推荐倒推，0 停止， 1推荐正推
+     **/
     void SetCylinder(int push);
 
     QVector<double> getLaserDistance();
 
-    //关闭通讯
-    void close(){m_cIOA.close();}
+    // 关闭通讯
+    void close() { m_cIOA.close(); }
 
 protected:
     std::shared_ptr<spdlog::logger> log;
-
-
 };
 
-
-#endif //CLINTEST_BOARDINGTOOL_H
+#endif // CLINTEST_BOARDINGTOOL_H

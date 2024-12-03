@@ -1,4 +1,4 @@
-﻿//启用本地版本管理---
+﻿// 启用本地版本管理---
 #include "ComInterface.h"
 ComInterface *ComInterface::getInstance()
 {
@@ -10,8 +10,6 @@ ComInterface *ComInterface::getInstance()
 ComInterface::ComInterface(QObject *parent) : QThread(parent)
 {
     log = spdlog::get("logger");
-
-
 }
 
 ComInterface::~ComInterface()
@@ -25,25 +23,25 @@ ComInterface::~ComInterface()
     qDebug("destruct commInterface");
 }
 
-//QVector<double> ComInterface::getLasersDistance()//
+// QVector<double> ComInterface::getLasersDistance()//
 //{
-//    return m_cTools.getLaserDistance();
+//     return m_cTools.getLaserDistance();
 //
-//}
+// }
 
-QVector<double> ComInterface::getLasersDistanceBoarding()//
+QVector<double> ComInterface::getLasersDistanceBoarding() //
 {
     return m_cToolsBoarding.getLaserDistance();
-
 }
 
-QVector<double> ComInterface::getLasersDistanceBoardingByBojke()//
+QVector<double> ComInterface::getLasersDistanceBoardingByBojke() //
 {
     QVector<double> res;
     LaserMeasureData stData = m_cToolsBoardingLaser.getLaserMeasureData();
-    double layserOffset[4] = { 423, 425, 429, 431};
+    double layserOffset[4] = {423, 425, 429, 431};
 
-    for(int i=0;i<4;++i){
+    for (int i = 0; i < 4; ++i)
+    {
         res.push_back(stData.m_Laserdistance[i] * 1000.0 - layserOffset[i]);
     }
 
@@ -56,7 +54,6 @@ QVector<double> ComInterface::getLasersDistanceBoardingByBojke()//
     return res;
 }
 
-
 QVector<st_ReadAxis> ComInterface::getJointGroupStatus()
 {
     return m_cRobot.getJointGroupStatus();
@@ -64,89 +61,92 @@ QVector<st_ReadAxis> ComInterface::getJointGroupStatus()
 
 void ComInterface::run()
 {
-    //需要初始化的参数
+    // 需要初始化的参数
     const uint DEVICE_NUM = 4;
-    uint tryToConnectCount[DEVICE_NUM] = {0} ;
-    const uint COUNT_LIMIT = 100;//尝试重连次数上限
+    uint tryToConnectCount[DEVICE_NUM] = {0};
+    const uint COUNT_LIMIT = 100; // 尝试重连次数上限
 
-    while(this->running)
+    while (this->running)
     {
-        //监测机器人连接状态
-        if(m_cRobot.getCommState() == false){
+        // 监测机器人连接状态
+        if (m_cRobot.getCommState() == false)
+        {
             emit m_cRobot.sigDisconnected();
-            qDebug()<<"m_cRobot.slotStopLoop();";
-            qDebug()<<"尝试连接机器人。。。。"<<tryToConnectCount[0];
+            qDebug() << "m_cRobot.slotStopLoop();";
+            qDebug() << "尝试连接机器人。。。。" << tryToConnectCount[0];
             isRobotConnected = m_cRobot.ConnectToServer(GP::Robot_IP.c_str(), GP::Robot_Port);
-            if(tryToConnectCount[0] <= COUNT_LIMIT){
+            if (tryToConnectCount[0] <= COUNT_LIMIT)
+            {
                 ++tryToConnectCount[0];
-            }else{
+            }
+            else
+            {
                 log->error("机器人重连次数达到上限100次，放弃重连");
                 break;
             }
         }
 
-//        //监测IO板连接状态
-        if(m_cToolsBoarding.m_cIOA.getCommState() == false)
+        //        //监测IO板连接状态
+        if (m_cToolsBoarding.m_cIOA.getCommState() == false)
         {
             emit m_cToolsBoarding.m_cIOA.sigDisconnected();
-            qDebug()<<"m_cToolsBoarding.m_cIOA.StopLoop();";
-            qDebug()<<"尝试连接IO模块A。。。。"<<tryToConnectCount[1];
+            qDebug() << "m_cToolsBoarding.m_cIOA.StopLoop();";
+            qDebug() << "尝试连接IO模块A。。。。" << tryToConnectCount[1];
             isIOConnected = m_cToolsBoarding.m_cIOA.ConnectToServer(GP::IOA_IP.c_str(), GP::IOA_Port);
-            if(tryToConnectCount[1] <= COUNT_LIMIT){
+            if (tryToConnectCount[1] <= COUNT_LIMIT)
+            {
                 ++tryToConnectCount[1];
-            }else{
+            }
+            else
+            {
                 log->error("IO模块重连次数达到上限100次，放弃重连");
                 break;
             }
         }
-//        if(m_cTools.m_cIOB.getCommState() == false)
-//        {
-//            emit m_cTools.m_cIOB.sigDisconnected();
-//            qDebug()<<"m_cIOB.StopLoop();";
-//            qDebug()<<"尝试连接IO模块B。。。。"<<tryToConnectCount[2];
-//            isIOConnected = m_cTools.m_cIOB.ConnectToServer(g_str_IOBip, g_i_IOBport);
-//            if(tryToConnectCount[2] <= COUNT_LIMIT){
-//                ++tryToConnectCount[2];
-//            }else{
-//                log->error("IO模块重连次数达到上限100次，放弃重连");
-//                break;
-//            }
-//        }
+        //        if(m_cTools.m_cIOB.getCommState() == false)
+        //        {
+        //            emit m_cTools.m_cIOB.sigDisconnected();
+        //            qDebug()<<"m_cIOB.StopLoop();";
+        //            qDebug()<<"尝试连接IO模块B。。。。"<<tryToConnectCount[2];
+        //            isIOConnected = m_cTools.m_cIOB.ConnectToServer(g_str_IOBip, g_i_IOBport);
+        //            if(tryToConnectCount[2] <= COUNT_LIMIT){
+        //                ++tryToConnectCount[2];
+        //            }else{
+        //                log->error("IO模块重连次数达到上限100次，放弃重连");
+        //                break;
+        //            }
+        //        }
 
-
-
-
-        //启动遥控器com口 通过isOpen（）判断打开状态
-        if(this->m_cManual.isOpen() == false){
+        // 启动遥控器com口 通过isOpen（）判断打开状态
+        if (this->m_cManual.isOpen() == false)
+        {
             m_cManual.open("COM1");
-            qDebug()<<"重新连接遥控器";
+            qDebug() << "重新连接遥控器";
         }
 
-        if(m_cToolsBoardingLaser.isOpen() == false){
+        if (m_cToolsBoardingLaser.isOpen() == false)
+        {
             m_cToolsBoardingLaser.open("COM2");
-            qDebug()<<"连接遥点激光开始";
+            qDebug() << "连接遥点激光开始";
         }
-
 
         Sleep(1000);
     }
-    qDebug()<<"cominterface： run() stopped";
+    qDebug() << "cominterface： run() stopped";
 }
 
-void ComInterface::setLinkJointMoveAbs(uint index, double pos[],double vel[])
+void ComInterface::setLinkJointMoveAbs(uint index, double pos[], double vel[])
 {
     double end_vel[100], distance[100];
-    m_cRobot.setLinkGroupMove(index,eMC_MOV_ABS,pos,vel,end_vel,distance);
+    m_cRobot.setLinkGroupMove(index, eMC_MOV_ABS, pos, vel, end_vel, distance);
 }
 
 void ComInterface::setLinkJointMoveVel(uint index, double vel[])
 {
     double pos[100], end_vel[100], distance[100];
 
-    m_cRobot.setLinkGroupMove(index,eMC_MOV_VEL, pos, vel, end_vel, distance);
-
+    m_cRobot.setLinkGroupMove(index, eMC_MOV_VEL, pos, vel, end_vel, distance);
 }
-
 
 QVector<st_ReadAxis> ComInterface::getLinkJointStatus(uint index)
 {
@@ -161,12 +161,12 @@ StatusofLink ComInterface::getLinkStatus(uint index)
 
 void ComInterface::getManual(stManualCmd &m_Manual)
 {
-   this->m_cManual.getManualCmd(m_Manual);
+    this->m_cManual.getManualCmd(m_Manual);
 }
 
 void ComInterface::getManual(stManualOperator &m_Manual)
 {
-   this->m_cManual.getManualCmd(m_Manual);
+    this->m_cManual.getManualCmd(m_Manual);
 }
 
 void ComInterface::RobotReset()
@@ -193,7 +193,6 @@ void ComInterface::RobotStop()
 {
     m_cRobot.RobotStop();
 }
-
 
 void ComInterface::LinkReset(uint index)
 {
@@ -257,9 +256,8 @@ bool ComInterface::JointMove(uint index, eMC_Motion mode, double pos, double vel
 
 bool ComInterface::setJointGroupMove(eMC_Motion mode, const double pos[], const double vel[], double end_vel[], double distance[])
 {
-    return m_cRobot.setJointGroupMove(mode,pos,vel,end_vel,distance);
+    return m_cRobot.setJointGroupMove(mode, pos, vel, end_vel, distance);
 }
-
 
 void ComInterface::setCrossLaser(bool swit)
 {
@@ -268,12 +266,12 @@ void ComInterface::setCrossLaser(bool swit)
 
 void ComInterface::SetToolsAction(quint8 index, E_WeldAction action)
 {
-    m_cTools.SetToolsAction(index,action);
+    m_cTools.SetToolsAction(index, action);
 }
 
 void ComInterface::SetMagentAction(quint8 index, E_MagentAction action)
 {
-    m_cTools.SetMagentAction(index,action);
+    m_cTools.SetMagentAction(index, action);
 }
 
 void ComInterface::SetGunConnect(qint8 index)
@@ -281,15 +279,17 @@ void ComInterface::SetGunConnect(qint8 index)
     m_cTools.SetGunConnect(index);
 }
 
-void ComInterface::closeThread() {
+void ComInterface::closeThread()
+{
     m_cTools.m_cIOA.closeThread();
     m_cTools.m_cIOB.closeThread();
-     this->running = false;
-     QThread::wait();
-     qDebug()<<"cominterface： closeThread()";
+    this->running = false;
+    QThread::wait();
+    qDebug() << "cominterface： closeThread()";
 }
 
-bool ComInterface::getRobotConnectSta() {
+bool ComInterface::getRobotConnectSta()
+{
     bool re;
     mutex_read.lock();
     re = this->m_cRobot.getCommState();
@@ -297,17 +297,18 @@ bool ComInterface::getRobotConnectSta() {
     return re;
 }
 
-bool ComInterface::getIOConnectSta(const uint index) {
+bool ComInterface::getIOConnectSta(const uint index)
+{
     bool re;
     mutex_read.lock();
-    if(index == 0){
+    if (index == 0)
+    {
         re = m_cTools.m_cIOA.getCommState();
-    }else if(index == 1){
+    }
+    else if (index == 1)
+    {
         re = m_cTools.m_cIOB.getCommState();
     }
     mutex_read.unlock();
     return re;
 }
-
-
-

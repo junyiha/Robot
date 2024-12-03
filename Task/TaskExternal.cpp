@@ -4,9 +4,9 @@
  * @brief 状态机相关源代码
  * @version 0.1
  * @date 2024-08-28
- * 
+ *
  * @copyright Copyright (c) 2024
- * 
+ *
  */
 #include "Task.h"
 
@@ -14,35 +14,35 @@ void CTask::stateTransition()
 {
     switch (m_etopState)
     {
-        case ETopState::eManual:
-        {
-            manualStateTransition();
-            break;
-        }
-        case ETopState::eParallel:
-        {
-            parallelStateTransition();
-            break;
-        }
-        case ETopState::ePositioning:
-        {
-            positioningStateTransition();
-            break;
-        }
-        case ETopState::eFitBoard:
-        {
-            fitBoardStateTransition();
-            break;
-        }
-        case ETopState::eQuit :
-        {
-            quitStateTransition();
-            break;
-        }
-        default:
-        {
-            log->warn("第一层状态数据无效!!!");
-        }
+    case ETopState::eManual:
+    {
+        manualStateTransition();
+        break;
+    }
+    case ETopState::eParallel:
+    {
+        parallelStateTransition();
+        break;
+    }
+    case ETopState::ePositioning:
+    {
+        positioningStateTransition();
+        break;
+    }
+    case ETopState::eFitBoard:
+    {
+        fitBoardStateTransition();
+        break;
+    }
+    case ETopState::eQuit:
+    {
+        quitStateTransition();
+        break;
+    }
+    default:
+    {
+        log->warn("第一层状态数据无效!!!");
+    }
     }
 
     updateExecutionCommand();
@@ -52,20 +52,20 @@ void CTask::manualStateTransition()
 {
     switch (m_esubState)
     {
-        case ESubState::eNotReady:
-        {
-            notReadyExecutionCommand();
-            break;
-        }
-        case ESubState::eReady:
-        {
-            readyExecutionCommand();
-            break;
-        }
-        default:
-        {
-            log->warn("第二层状态数据无效!!!");
-        }
+    case ESubState::eNotReady:
+    {
+        notReadyExecutionCommand();
+        break;
+    }
+    case ESubState::eReady:
+    {
+        readyExecutionCommand();
+        break;
+    }
+    default:
+    {
+        log->warn("第二层状态数据无效!!!");
+    }
     }
 }
 
@@ -73,25 +73,25 @@ void CTask::parallelStateTransition()
 {
     switch (m_esubState)
     {
-        case ESubState::eReadyToParallel:
-        {
-            readyToParallelExecutionCommand();
-            break;
-        }
-        case ESubState::eDetection:
-        {
-            detectionInParallelExecutionCommand();
-            break;
-        }
-        case ESubState::eMotion:
-        {
-            motionInParallelExecutionCommand();
-            break;
-        }
-        default:
-        {
-            log->warn("第二层状态数据无效!!!");
-        }
+    case ESubState::eReadyToParallel:
+    {
+        readyToParallelExecutionCommand();
+        break;
+    }
+    case ESubState::eDetection:
+    {
+        detectionInParallelExecutionCommand();
+        break;
+    }
+    case ESubState::eMotion:
+    {
+        motionInParallelExecutionCommand();
+        break;
+    }
+    default:
+    {
+        log->warn("第二层状态数据无效!!!");
+    }
     }
 }
 
@@ -99,25 +99,25 @@ void CTask::positioningStateTransition()
 {
     switch (m_esubState)
     {
-        case ESubState::eReadyToPositioning:
-        {
-            readyToPositioningExecutionCommand();
-            break;
-        }
-        case ESubState::eDetection:
-        {
-            detectionInPositioningExecutionCommand();
-            break;
-        }
-        case ESubState::eMotion:
-        {
-            motionInPositioningExecutionCommand();
-            break;
-        }
-        default:
-        {
-            log->warn("第二层状态数据无效!!!");
-        }
+    case ESubState::eReadyToPositioning:
+    {
+        readyToPositioningExecutionCommand();
+        break;
+    }
+    case ESubState::eDetection:
+    {
+        detectionInPositioningExecutionCommand();
+        break;
+    }
+    case ESubState::eMotion:
+    {
+        motionInPositioningExecutionCommand();
+        break;
+    }
+    default:
+    {
+        log->warn("第二层状态数据无效!!!");
+    }
     }
 }
 
@@ -125,35 +125,35 @@ void CTask::fitBoardStateTransition()
 {
     switch (m_esubState)
     {
-        case ESubState::eReadyToFitBoard:
-        {
-            readyToFitBoardExecutionCommand();
-            break;
-        }
-        case ESubState::eDetection:
-        {
-            detectionInFitBoardExecutionCommand();
-            break;
-        }
-        case ESubState::eSidelineMotion:
-        {
-            sidelineMotionInFitBoardExecutionCommand();
-            break;
-        }
-        case ESubState::eLiftMotion:
-        {
-            liftMotionInFitBoardExecutionCommand();
-            break;
-        }
-        case ESubState::eFitBoardFinished:
-        {
-            fitBoardFinishedExecutionCommand();
-            break;
-        }
-        default:
-        {
-            log->warn("第二层状态数据无效!!!");
-        }
+    case ESubState::eReadyToFitBoard:
+    {
+        readyToFitBoardExecutionCommand();
+        break;
+    }
+    case ESubState::eDetection:
+    {
+        detectionInFitBoardExecutionCommand();
+        break;
+    }
+    case ESubState::eSidelineMotion:
+    {
+        sidelineMotionInFitBoardExecutionCommand();
+        break;
+    }
+    case ESubState::eLiftMotion:
+    {
+        liftMotionInFitBoardExecutionCommand();
+        break;
+    }
+    case ESubState::eFitBoardFinished:
+    {
+        fitBoardFinishedExecutionCommand();
+        break;
+    }
+    default:
+    {
+        log->warn("第二层状态数据无效!!!");
+    }
     }
 }
 
@@ -161,20 +161,20 @@ void CTask::quitStateTransition()
 {
     switch (m_esubState)
     {
-        case ESubState::eQuiting:
-        {
-            quitingExecutionCommand();
-            break;
-        }
-        case ESubState::ePause:
-        {
-            pauseExecutionCommand();
-            break;
-        }
-        default:
-        {
-            log->warn("第二层状态数据无效!!!");
-        }
+    case ESubState::eQuiting:
+    {
+        quitingExecutionCommand();
+        break;
+    }
+    case ESubState::ePause:
+    {
+        pauseExecutionCommand();
+        break;
+    }
+    default:
+    {
+        log->warn("第二层状态数据无效!!!");
+    }
     }
 }
 
@@ -184,34 +184,34 @@ void CTask::readyExecutionCommand()
 {
     switch (m_eexecutionCommand)
     {
-        case EExecutionCommand::eNULL:
-        {
-            break;
-        }
-        case EExecutionCommand::ePause:
-        {
-            m_Robot->setLinkHalt();
-            return;
-        }
-        case EExecutionCommand::eTerminate:
-        {
-            m_Robot->setLinkHalt();
-            return;
-        }
-        case EExecutionCommand::eParallel:
-        {
-            updateTopAndSubState(ETopState::eParallel, ESubState::eDetection);
-            return;
-        }
-        case EExecutionCommand::eFitBoard:
-        {
-            updateTopAndSubState(ETopState::eFitBoard, ESubState::eDetection);
-            return;
-        }
-        default:
-        {
-            log->warn("{}: {} 执行指令不合法!指令: {}", __LINE__, getCurrentStateString(), ExecutionCommandStringMap.find(m_eexecutionCommand)->second);
-        }
+    case EExecutionCommand::eNULL:
+    {
+        break;
+    }
+    case EExecutionCommand::ePause:
+    {
+        m_Robot->setLinkHalt();
+        return;
+    }
+    case EExecutionCommand::eTerminate:
+    {
+        m_Robot->setLinkHalt();
+        return;
+    }
+    case EExecutionCommand::eParallel:
+    {
+        updateTopAndSubState(ETopState::eParallel, ESubState::eDetection);
+        return;
+    }
+    case EExecutionCommand::eFitBoard:
+    {
+        updateTopAndSubState(ETopState::eFitBoard, ESubState::eDetection);
+        return;
+    }
+    default:
+    {
+        log->warn("{}: {} 执行指令不合法!指令: {}", __LINE__, getCurrentStateString(), ExecutionCommandStringMap.find(m_eexecutionCommand)->second);
+    }
     }
 
     Manual();
@@ -219,7 +219,7 @@ void CTask::readyExecutionCommand()
 
 void CTask::notReadyExecutionCommand()
 {
-    //log->warn("机器人未就绪，离线状态！！！");
+    // log->warn("机器人未就绪，离线状态！！！");
 
     bool robotReady;
 #ifdef TEST_TASK_STATEMACHINE_
@@ -237,29 +237,29 @@ void CTask::readyToParallelExecutionCommand()
 {
     switch (m_eexecutionCommand)
     {
-        case EExecutionCommand::eNULL:
-        {
-            break;
-        }
-        case EExecutionCommand::eParallel:
-        {
-            updateTopAndSubState(ETopState::eParallel, ESubState::eDetection);
-            break;
-        }
-        case EExecutionCommand::eTerminate:
-        {
-            terminateCommand();
-            break;
-        }
-        case EExecutionCommand::ePause:
-        {
-            log->info("{}: 暂停指令不执行任何操作", getCurrentStateString());
-            break;
-        }
-        default:
-        {
-            log->warn("{}: {} 执行指令不合法!指令: {}", __LINE__, getCurrentStateString(), ExecutionCommandStringMap.find(m_eexecutionCommand)->second);
-        }
+    case EExecutionCommand::eNULL:
+    {
+        break;
+    }
+    case EExecutionCommand::eParallel:
+    {
+        updateTopAndSubState(ETopState::eParallel, ESubState::eDetection);
+        break;
+    }
+    case EExecutionCommand::eTerminate:
+    {
+        terminateCommand();
+        break;
+    }
+    case EExecutionCommand::ePause:
+    {
+        log->info("{}: 暂停指令不执行任何操作", getCurrentStateString());
+        break;
+    }
+    default:
+    {
+        log->warn("{}: {} 执行指令不合法!指令: {}", __LINE__, getCurrentStateString(), ExecutionCommandStringMap.find(m_eexecutionCommand)->second);
+    }
     }
 }
 
@@ -276,7 +276,7 @@ void CTask::detectionInParallelExecutionCommand()
 #else
         UpdateLaserDistance();
         detectionResult = CheckParallelStateDecorator();
-#endif           
+#endif
         switch (detectionResult)
         {
         case EDetectionInParallelResult::eDeviationIsLessThanThreshold:
@@ -316,7 +316,7 @@ void CTask::detectionInParallelExecutionCommand()
 
 void CTask::motionInParallelExecutionCommand()
 {
-    static QVector<double> last_tar_position{ 0, 0, 0, 0, 0, 0 };
+    static QVector<double> last_tar_position{0, 0, 0, 0, 0, 0};
     switch (m_eexecutionCommand)
     {
     case EExecutionCommand::eNULL:
@@ -342,10 +342,10 @@ void CTask::motionInParallelExecutionCommand()
             // 计算偏差，控制机器人运动
             QVector<Eigen::Matrix4d> Dev_RT = CMeasure::calPoseDeviation(m_stMeasuredata);
             QVector<double> tar_position = m_Robot->getTargetPose(Dev_RT[0]);
-            double* tar_pos = tar_position.data();
+            double *tar_pos = tar_position.data();
 
             log->info("{} tar_pos:{},{},{},{},{},{}", __LINE__, tar_pos[0], tar_pos[1], tar_pos[2],
-                tar_pos[3] * 57.3, tar_pos[4] * 57.3, tar_pos[5] * 57.3);
+                      tar_pos[3] * 57.3, tar_pos[4] * 57.3, tar_pos[5] * 57.3);
 
             stLinkStatus linkstatus = m_Robot->getLinkSta();
             log->info("m_Robot->setLinkMoveAbs(tar_pos_differ:{},{},{},{},{},{}",
@@ -419,7 +419,7 @@ void CTask::detectionInPositioningExecutionCommand()
 #else
         VisionResult vis_res = m_vision->getVisResult();
         if (!vis_res.lineStatus)
-        { 
+        {
             log->error("视觉检测无数据，等待下一个周期!!!");
             break;
         }
@@ -465,7 +465,7 @@ void CTask::detectionInPositioningExecutionCommand()
 
 void CTask::motionInPositioningExecutionCommand()
 {
-    static QVector<double> last_tar_position{ 0, 0, 0, 0, 0, 0 };
+    static QVector<double> last_tar_position{0, 0, 0, 0, 0, 0};
     switch (m_eexecutionCommand)
     {
     case EExecutionCommand::eNULL:
@@ -478,34 +478,36 @@ void CTask::motionInPositioningExecutionCommand()
             break;
         }
 
-        static QVector<double> tar_position{ 0,0,0,0,0,0 };
-        static double tar_pos[6] = { 0,0,0,0,0,0 };
-        if (!m_position_motion_flag) {
+        static QVector<double> tar_position{0, 0, 0, 0, 0, 0};
+        static double tar_pos[6] = {0, 0, 0, 0, 0, 0};
+        if (!m_position_motion_flag)
+        {
             QVector<Eigen::Matrix4d> Dev_RT = CMeasure::calPoseDeviation(m_stMeasuredata);
-            tar_position = m_Robot->getTargetPose(Dev_RT[3]);  // 计算调整量
+            tar_position = m_Robot->getTargetPose(Dev_RT[3]); // 计算调整量
 
-            for (int i = 0; i < 6; i++) {
+            for (int i = 0; i < 6; i++)
+            {
                 tar_pos[i] = tar_position[i];
             }
 
             m_Robot->setLinkMoveAbs(tar_pos, GP::End_Vel_Position.data());
             stLinkStatus linkstatus = m_Robot->getLinkSta();
             log->info("{} tar_pos:{}, {}, {}, {}, {}, {}\ncurrent_pos: {}, {}, {}, {}, {}, {}", __LINE__,
-                tar_pos[0], tar_pos[1], tar_pos[2], tar_pos[3] * 57.3, tar_pos[4] * 57.3, tar_pos[5] * 57.3,
-                linkstatus.stLinkActKin.LinkPos[0],linkstatus.stLinkActKin.LinkPos[1],linkstatus.stLinkActKin.LinkPos[2],
-                linkstatus.stLinkActKin.LinkPos[3] * 57.3,linkstatus.stLinkActKin.LinkPos[4] * 57.3,linkstatus.stLinkActKin.LinkPos[5] * 57.3
-            );
-            log->info("{} tar_pos - current_pos:{},{},{},{},{},{}", __LINE__, 
-                tar_pos[0] - linkstatus.stLinkActKin.LinkPos[0], tar_pos[1] - linkstatus.stLinkActKin.LinkPos[1],
-                tar_pos[2] - linkstatus.stLinkActKin.LinkPos[2], tar_pos[3] * 57.3 - linkstatus.stLinkActKin.LinkPos[3] * 57.3,
-                tar_pos[4] * 57.3 - linkstatus.stLinkActKin.LinkPos[4] * 57.3, tar_pos[5] * 57.3 - linkstatus.stLinkActKin.LinkPos[5] * 57.3);
+                      tar_pos[0], tar_pos[1], tar_pos[2], tar_pos[3] * 57.3, tar_pos[4] * 57.3, tar_pos[5] * 57.3,
+                      linkstatus.stLinkActKin.LinkPos[0], linkstatus.stLinkActKin.LinkPos[1], linkstatus.stLinkActKin.LinkPos[2],
+                      linkstatus.stLinkActKin.LinkPos[3] * 57.3, linkstatus.stLinkActKin.LinkPos[4] * 57.3, linkstatus.stLinkActKin.LinkPos[5] * 57.3);
+            log->info("{} tar_pos - current_pos:{},{},{},{},{},{}", __LINE__,
+                      tar_pos[0] - linkstatus.stLinkActKin.LinkPos[0], tar_pos[1] - linkstatus.stLinkActKin.LinkPos[1],
+                      tar_pos[2] - linkstatus.stLinkActKin.LinkPos[2], tar_pos[3] * 57.3 - linkstatus.stLinkActKin.LinkPos[3] * 57.3,
+                      tar_pos[4] * 57.3 - linkstatus.stLinkActKin.LinkPos[4] * 57.3, tar_pos[5] * 57.3 - linkstatus.stLinkActKin.LinkPos[5] * 57.3);
             m_position_motion_flag = true;
         }
         if (m_LinkStatus.eLinkActState == eLINK_STANDSTILL &&
             m_Robot->isEndReached(tar_position))
         {
             static int cnt = 0;
-            if (cnt > 100) {
+            if (cnt > 100)
+            {
                 cnt = 0;
                 m_position_motion_flag = false;
                 log->warn("{} 定位运动完成，状态跳转: 定位--检测", __LINE__);
@@ -652,7 +654,7 @@ void CTask::sidelineMotionInFitBoardExecutionCommand()
     {
     case EExecutionCommand::eNULL:
     {
-        QVector<double> tar_position{ 0,0,0,0,0,0 };
+        QVector<double> tar_position{0, 0, 0, 0, 0, 0};
         for (int i = 0; i < m_fit_board_target_pose.size(); i++)
         {
             tar_position[i] = m_fit_board_target_pose.at(i);
@@ -786,7 +788,7 @@ void CTask::quitingExecutionCommand()
     {
         // 推缸退出
         m_Comm->SetCylinder(-1);
-        if (cnt > 200)  // 10s
+        if (cnt > 200) // 10s
         {
             updateTopAndSubState(ETopState::eManual, ESubState::eReady);
             cnt = 0;
@@ -838,7 +840,7 @@ void CTask::pauseExecutionCommand()
     default:
     {
         log->warn("{}: {} 执行指令不合法!指令: {}", __LINE__, getCurrentStateString(), ExecutionCommandStringMap.find(m_eexecutionCommand)->second);
-        }
+    }
     }
 }
 
@@ -853,16 +855,16 @@ void CTask::terminateCommand()
 
 void CTask::CalculatedAdjustmentOfSideline()
 {
-    //计算调整量
+    // 计算调整量
     std::vector<double> laserDistance(std::begin(m_stMeasuredata.m_LaserDistance), std::end(m_stMeasuredata.m_LaserDistance));
     double average_distance = std::accumulate(laserDistance.begin(), laserDistance.end(), 0.0) / laserDistance.size();
 
     QVector<Eigen::Matrix4d> Dev_RT = CMeasure::calPoseDeviation(m_stMeasuredata, average_distance);
-    QVector<double> tar_position{ 0,0,0,0,0,0 };
-    tar_position = m_Robot->getTargetPose(Dev_RT[5]);  // 计算调整量
+    QVector<double> tar_position{0, 0, 0, 0, 0, 0};
+    tar_position = m_Robot->getTargetPose(Dev_RT[5]); // 计算调整量
     log->info("motion index: {}", m_motion_index);
 
-    for (int i = 0; i < m_fit_board_target_pose.size(); i++) 
+    for (int i = 0; i < m_fit_board_target_pose.size(); i++)
     {
         m_fit_board_target_pose[i] = tar_position[i];
     }
@@ -893,7 +895,7 @@ void CTask::CalculatedAdjustmentOfLift()
 
 void CTask::UpdateLaserDistance()
 {
-    //取雷达数据
+    // 取雷达数据
     QVector<double> LaserDistance = m_Comm->getLasersDistanceBoardingByBojke();
 
     m_stMeasuredata.m_LaserDistance[0] = LaserDistance[0];
@@ -904,7 +906,7 @@ void CTask::UpdateLaserDistance()
 
 void CTask::UpdateVisionResult(VisionResult &vis_res)
 {
-    double sum{ 0.0 };
+    double sum{0.0};
     for (int i = 0; i < 4; i++)
         sum += m_stMeasuredata.m_LaserDistance[i];
 
@@ -941,7 +943,7 @@ void CTask::updateTopAndSubState(ETopState topState, ESubState subState)
     std::lock_guard<std::mutex> lock(m_mutex);
 
     log->info("状态跳转: {}--{} ==> {}--{}", TopStateStringMap[m_etopState].first, SubStateStringMap[m_esubState].first,
-        TopStateStringMap[topState].first, SubStateStringMap[subState].first);
+              TopStateStringMap[topState].first, SubStateStringMap[subState].first);
 
     m_etopState = topState;
     m_esubState = subState;
@@ -989,59 +991,59 @@ void CTask::TranslateManualTaskIndexNumberToCMD()
 {
     switch (static_cast<stManualOperator::ETaskIndex>(m_manualOperator.TaskIndex))
     {
-        case stManualOperator::ETaskIndex::None:
-        {
-            updateExecutionCommand(EExecutionCommand::eNULL);
-            break;
-        }
-        case stManualOperator::ETaskIndex::Parallel:
-        {
-            updateExecutionCommand(EExecutionCommand::eParallel);
-            break;
-        }
-        case stManualOperator::ETaskIndex::Positioning:
-        {
-            updateExecutionCommand(EExecutionCommand::ePositioning);
-            break;
-        }
-        case stManualOperator::ETaskIndex::FitBoard:
-        {
-            updateExecutionCommand(EExecutionCommand::eFitBoard);
-            break;
-        }
-        case stManualOperator::ETaskIndex::MagentOn:
-        {
-            updateExecutionCommand(EExecutionCommand::eMagentOn);
-            break;
-        }
-        case stManualOperator::ETaskIndex::DoWeld:
-        {
-            updateExecutionCommand(EExecutionCommand::eAutoWeld);
-            break;
-        }
-        case stManualOperator::ETaskIndex::MagentOff:
-        {
-            updateExecutionCommand(EExecutionCommand::eMagentOff);
-            break;
-        }
-        case stManualOperator::ETaskIndex::Quit:
-        {
-            updateExecutionCommand(EExecutionCommand::eQuit);
-            break;
-        }
-        case stManualOperator::ETaskIndex::Pause:
-        {
-            updateExecutionCommand(EExecutionCommand::ePause);
-            break;
-        }
-        case stManualOperator::ETaskIndex::Terminate:
-        {
-            updateExecutionCommand(EExecutionCommand::eTerminate);
-            break;
-        }
-        default:
-        {
-            log->error("{} invalid task index: {}", __LINE__, m_manualOperator.TaskIndex);
-        }
+    case stManualOperator::ETaskIndex::None:
+    {
+        updateExecutionCommand(EExecutionCommand::eNULL);
+        break;
+    }
+    case stManualOperator::ETaskIndex::Parallel:
+    {
+        updateExecutionCommand(EExecutionCommand::eParallel);
+        break;
+    }
+    case stManualOperator::ETaskIndex::Positioning:
+    {
+        updateExecutionCommand(EExecutionCommand::ePositioning);
+        break;
+    }
+    case stManualOperator::ETaskIndex::FitBoard:
+    {
+        updateExecutionCommand(EExecutionCommand::eFitBoard);
+        break;
+    }
+    case stManualOperator::ETaskIndex::MagentOn:
+    {
+        updateExecutionCommand(EExecutionCommand::eMagentOn);
+        break;
+    }
+    case stManualOperator::ETaskIndex::DoWeld:
+    {
+        updateExecutionCommand(EExecutionCommand::eAutoWeld);
+        break;
+    }
+    case stManualOperator::ETaskIndex::MagentOff:
+    {
+        updateExecutionCommand(EExecutionCommand::eMagentOff);
+        break;
+    }
+    case stManualOperator::ETaskIndex::Quit:
+    {
+        updateExecutionCommand(EExecutionCommand::eQuit);
+        break;
+    }
+    case stManualOperator::ETaskIndex::Pause:
+    {
+        updateExecutionCommand(EExecutionCommand::ePause);
+        break;
+    }
+    case stManualOperator::ETaskIndex::Terminate:
+    {
+        updateExecutionCommand(EExecutionCommand::eTerminate);
+        break;
+    }
+    default:
+    {
+        log->error("{} invalid task index: {}", __LINE__, m_manualOperator.TaskIndex);
+    }
     }
 }

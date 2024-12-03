@@ -8,17 +8,16 @@
 #include <spdlog/spdlog.h>
 #include <QTimer>
 #include <QMutex>
-#include<iostream>
+#include <iostream>
 
-
-
-typedef struct LaserMeasureData {
+typedef struct LaserMeasureData
+{
     double m_Laserdistance[4] = {0};
-    bool  m_bLaserdistance[4] = {false};
+    bool m_bLaserdistance[4] = {false};
 };
 
-
-class LaserDistanceBojke: public CSerialCom{
+class LaserDistanceBojke : public CSerialCom
+{
 public:
     LaserDistanceBojke();
     ~LaserDistanceBojke();
@@ -26,22 +25,16 @@ public:
     LaserMeasureData m_LaserMeasureData_copy;
     QMutex mutex;
 
-
     std::vector<uint8_t> laserID;
-
-
 
     void run();
     unsigned laserNums = 4;
-
 
     bool getConnectState();
     bool isConnected = false;
     std::shared_ptr<spdlog::logger> log;
 
     LaserMeasureData getLaserMeasureData();
-
-
 
 protected:
     /**
@@ -60,10 +53,7 @@ protected:
      * @brief CRC校验计算
      * @return [0]
      */
-     quint16 CTCCalculate(const uint8_t* data, uint16_t length);
-
-
-
+    quint16 CTCCalculate(const uint8_t *data, uint16_t length);
 
     //*************子线程循环发送接口函数*************
     /**
@@ -76,13 +66,7 @@ protected:
      */
     void slotStopLoop();
 
-
     void sendAndRecvDataBatch();
-
-
-
-
 };
 
-
-#endif //PDROBOT_MASTER_LASERDISTANCEBOJKE_H
+#endif // PDROBOT_MASTER_LASERDISTANCEBOJKE_H

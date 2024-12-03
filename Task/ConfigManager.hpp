@@ -1,10 +1,10 @@
-/*****************************************************************//**
- * \file   ConfigManager.hpp
- * \brief  ´¦ÀíÅäÖÃÎÄ¼ş
- * 
- * \author anony
- * \date   October 2024
- *********************************************************************/
+/*****************************************************************/ /**
+																	 * \file   ConfigManager.hpp
+																	 * \brief  å¤„ç†é…ç½®æ–‡ä»¶
+																	 *
+																	 * \author anony
+																	 * \date   October 2024
+																	 *********************************************************************/
 #pragma once
 
 #include <vector>
@@ -24,12 +24,12 @@ namespace Config
 
 	private:
 		/**
-		 * @brief ¼ÓÔØ²ÎÊıÅäÖÃÎÄ¼ş.
+		 * @brief åŠ è½½å‚æ•°é…ç½®æ–‡ä»¶.
 		 */
 		bool LoadConfiguration();
 
 		/**
-		 * @brief ½âÎö²ÎÊıÅäÖÃÎÄ¼ş£¬³õÊ¼»¯È«¾Ö²ÎÊı.
+		 * @brief è§£æå‚æ•°é…ç½®æ–‡ä»¶ï¼Œåˆå§‹åŒ–å…¨å±€å‚æ•°.
 		 */
 		void ParseConfiguration();
 
@@ -37,23 +37,23 @@ namespace Config
 
 	public:
 		/**
-		 * @brief ÖØĞÂ¼ÓÔØ²ÎÊıÅäÖÃÎÄ¼ş.
+		 * @brief é‡æ–°åŠ è½½å‚æ•°é…ç½®æ–‡ä»¶.
 		 */
 		bool ReloadConfiguration();
 
 		/**
-		 * @brief ¸üĞÂÖ¸¶¨²ÎÊı(¸¡µãÊı).
+		 * @brief æ›´æ–°æŒ‡å®šå‚æ•°(æµ®ç‚¹æ•°).
 		 */
 		bool UpdateValue(const std::string key, const double value);
 
 		/**
-		 * @brief ¸üĞÂÖ¸¶¨²ÎÊı(Êı×é).
+		 * @brief æ›´æ–°æŒ‡å®šå‚æ•°(æ•°ç»„).
 		 */
 		bool UpdateValue(const std::string key, const std::vector<double> value);
 
 	private:
 		YAML::Node m_root;
-		std::string m_path{ "D:/Robot/config.yaml" };
+		std::string m_path{"D:/Robot/config.yaml"};
 		std::shared_ptr<spdlog::logger> log;
 	};
 }

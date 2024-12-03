@@ -1,11 +1,11 @@
-/*****************************************************************//**
+/*****************************************************************
  * \file   GlobalParameter.hpp
- * \brief  
- * 
+ * \brief
+ *
  * \author anony
  * \date   October 2024
  *********************************************************************/
-#pragma once 
+#pragma once
 
 #include <QVector>
 
@@ -13,37 +13,37 @@ namespace GP
 {
 	static const int DOF = 11;
 
-	extern double velLine;		//½çÃæµã¶¯ÏŞËÙ£ºÆ½ÒÆ
-	extern double velRotate;	//½çÃæµã¶¯ÏŞËÙ£ºĞı×ª
+	extern double velLine;	 // ç•Œé¢ç‚¹åŠ¨é™é€Ÿï¼šå¹³ç§»
+	extern double velRotate; // ç•Œé¢ç‚¹åŠ¨é™é€Ÿï¼šæ—‹è½¬
 
-	extern std::size_t CYLINDER_INDEX;			// ÍÆ¸Ë¹Ø½ÚÖáºÅË÷Òı
-	extern std::size_t STEER_LEFT_INDEX;		// ×ó¶æÂÖË÷Òı
-	extern std::size_t STEER_RIGHT_INDEX;		// ÓÒ¶æÂÖË÷Òı
-	extern std::size_t WHEEL_LEFT_INDEX;		// ×óĞĞ×ßÂÖË÷Òı
-	extern std::size_t WHEEL_RIGHT_INDEX;		// ÓÒĞĞ×ßÂÖË÷Òı
-	extern std::size_t TOOL_LIFTING;			// ¹¤¾ßÉı½µË÷Òı
+	extern std::size_t CYLINDER_INDEX;	  // æ¨æ†å…³èŠ‚è½´å·ç´¢å¼•
+	extern std::size_t STEER_LEFT_INDEX;  // å·¦èˆµè½®ç´¢å¼•
+	extern std::size_t STEER_RIGHT_INDEX; // å³èˆµè½®ç´¢å¼•
+	extern std::size_t WHEEL_LEFT_INDEX;  // å·¦è¡Œèµ°è½®ç´¢å¼•
+	extern std::size_t WHEEL_RIGHT_INDEX; // å³è¡Œèµ°è½®ç´¢å¼•
+	extern std::size_t TOOL_LIFTING;	  // å·¥å…·å‡é™ç´¢å¼•
 
-	extern double Lift_Distance_In_Parallel;	// µ÷Æ½×´Ì¬ÏÂ¾ÙÉıµÄÎ»ÖÃ
-	extern double Max_Deviation_In_Parallel;	// µ÷Æ½ÔÊĞí×î´óÆ«²î
-	extern double Min_Deviation_In_Parallel;	// µ÷Æ½ÔÊĞí×îĞ¡Æ«²î
+	extern double Lift_Distance_In_Parallel; // è°ƒå¹³çŠ¶æ€ä¸‹ä¸¾å‡çš„ä½ç½®
+	extern double Max_Deviation_In_Parallel; // è°ƒå¹³å…è®¸æœ€å¤§åå·®
+	extern double Min_Deviation_In_Parallel; // è°ƒå¹³å…è®¸æœ€å°åå·®
 
-	extern double Distance_work;				//Î»ÖÃ
+	extern double Distance_work; // ä½ç½®
 
-	extern double Lift_Distance_In_FitBoard;    // ÌùºÏ×´Ì¬ÏÂ¾ÙÉıµÄÎ»ÖÃ
-	extern double Max_Deviation_In_FitBoard;	// ÌùºÏÔÊĞíÆ«²î
-	extern double Min_Deviation_In_FitBoard;    // ÌùºÏÔÊĞíÆ«²î
+	extern double Lift_Distance_In_FitBoard; // è´´åˆçŠ¶æ€ä¸‹ä¸¾å‡çš„ä½ç½®
+	extern double Max_Deviation_In_FitBoard; // è´´åˆå…è®¸åå·®
+	extern double Min_Deviation_In_FitBoard; // è´´åˆå…è®¸åå·®
 
-	extern double Line_Deviation_Threshold;		//±ßÏßµ÷ÕûÔÊĞíÆ«²î
+	extern double Line_Deviation_Threshold; // è¾¹çº¿è°ƒæ•´å…è®¸åå·®
 
-	// »úÆ÷ÈË: ×¼±¸Î»
+	// æœºå™¨äºº: å‡†å¤‡ä½
 	extern std::vector<double> Home_Position;
 	extern QVector<double> Home_Position_QV;
 
-	// »úÆ÷ÈË: ¾ÙÉıÎ»
+	// æœºå™¨äºº: ä¸¾å‡ä½
 	extern std::vector<double> Prepare_Position;
 	extern QVector<double> Prepare_Position_QV;
 
-	// ¹Ø½ÚÄ©¶ËÔË¶¯ÏŞËÙ
+	// å…³èŠ‚æœ«ç«¯è¿åŠ¨é™é€Ÿ
 	extern std::vector<double> End_Vel_Limit;
 	extern std::vector<double> End_Vel_Position;
 

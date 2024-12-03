@@ -5,6 +5,4 @@
  *
  */
 
-
-
 #endif // TASKPARAMETER_H

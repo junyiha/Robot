@@ -1,6 +1,6 @@
 #include "Task.h"
 
-CTask::CTask(ComInterface* comm,CRobot* robot,VisionInterface* vision,QObject *parent)
+CTask::CTask(ComInterface *comm, CRobot *robot, VisionInterface *vision, QObject *parent)
 {
     m_Comm = comm;
     m_Robot = robot;
@@ -10,7 +10,7 @@ CTask::CTask(ComInterface* comm,CRobot* robot,VisionInterface* vision,QObject *p
     std::memset(&m_Manual, 0, sizeof(stManualData));
     std::memset(&m_preManual, 0, sizeof(stManualData));
 
-    for(int i = 0;i<7;i++)
+    for (int i = 0; i < 7; i++)
     {
         m_TargetDeviation.push_back(Eigen::Matrix4d::Identity());
     }
@@ -21,11 +21,11 @@ CTask::CTask(ComInterface* comm,CRobot* robot,VisionInterface* vision,QObject *p
 
 void CTask::run()
 {
-    //初始参数初始化
+    // 初始参数初始化
     log->info("Task 启动运行....");
 
-    //周期函数
-    while(this->c_running)
+    // 周期函数
+    while (this->c_running)
     {
         log->trace("Task 启动运行...");
 
@@ -50,9 +50,9 @@ void CTask::updateCmdandStatus()
     // 更新指令，遥控器+界面
     m_Comm->getManual(m_manualOperator);
 
-    //根据界面指令修改遥控器指令
+    // 根据界面指令修改遥控器指令
     int tmp_val = static_cast<int>(ActionIndex.loadRelaxed());
-    switch(ActionIndex.loadRelaxed())
+    switch (ActionIndex.loadRelaxed())
     {
     case 1:
         m_manualOperator.TaskIndex = static_cast<int>(stManualOperator::ETaskIndex::Parallel);
@@ -72,23 +72,23 @@ void CTask::updateCmdandStatus()
     case 6:
         m_manualOperator.TaskIndex = static_cast<int>(stManualOperator::ETaskIndex::Quit);
         break;
-    case 7: //暂停
+    case 7: // 暂停
         m_manualOperator.TaskIndex = static_cast<int>(stManualOperator::ETaskIndex::Pause);
         break;
-    case 8: //终止
+    case 8: // 终止
         m_manualOperator.TaskIndex = static_cast<int>(stManualOperator::ETaskIndex::Terminate);
         break;
 
-    case 9: //举升
+    case 9: // 举升
         m_manualOperator.Ready = 1;
         break;
-    case 10://放钉
+    case 10: // 放钉
         m_manualOperator.Ready = 2;
         break;
-    case 11://停止
+    case 11: // 停止
         m_manualOperator.HaltCommand = true;
         break;
-    case 12://急停
+    case 12: // 急停
         m_manualOperator.TaskIndex = 128;
         m_manualOperator.StopCommand = true;
         break;
@@ -106,47 +106,47 @@ void CTask::Manual()
 {
     if (m_manualOperator.StopCommand)
     {
-        log->info("{},{}: m_Robot->setLinkStop();", __FILE__,__LINE__);
+        log->info("{},{}: m_Robot->setLinkStop();", __FILE__, __LINE__);
         m_Robot->setLinkStop();
-        m_preManualOperator = m_manualOperator ;
+        m_preManualOperator = m_manualOperator;
         return;
     }
 
     if (m_manualOperator.HaltCommand)
     {
-        log->info("{},{}: m_Robot->setLinkHalt();", __FILE__,__LINE__);
+        log->info("{},{}: m_Robot->setLinkHalt();", __FILE__, __LINE__);
         m_Robot->setLinkHalt();
-        m_preManualOperator = m_manualOperator ;
+        m_preManualOperator = m_manualOperator;
         return;
     }
 
-    if (std::fabs(m_manualOperator.VechDirect -  m_JointGroupStatus[GP::STEER_LEFT_INDEX].Position) > 3)
+    if (std::fabs(m_manualOperator.VechDirect - m_JointGroupStatus[GP::STEER_LEFT_INDEX].Position) > 3)
     {
-        const double velocity{ 8.0 };
+        const double velocity{8.0};
         // 当前指令和上一个指令的VechDirect都为零，判断条件始终成立
-         m_Robot->setJointMoveAbs(GP::STEER_LEFT_INDEX, m_manualOperator.VechDirect, velocity);//速度需改为参数
-         m_Robot->setJointMoveAbs(GP::STEER_RIGHT_INDEX, m_manualOperator.VechDirect, velocity);//速度需改为参数
+        m_Robot->setJointMoveAbs(GP::STEER_LEFT_INDEX, m_manualOperator.VechDirect, velocity);  // 速度需改为参数
+        m_Robot->setJointMoveAbs(GP::STEER_RIGHT_INDEX, m_manualOperator.VechDirect, velocity); // 速度需改为参数
 
-         log->info("舵轮旋转目标位置: {}, 速度{}", m_manualOperator.VechDirect, velocity);
+        log->info("舵轮旋转目标位置: {}, 速度{}", m_manualOperator.VechDirect, velocity);
     }
 
-    double vel_left,vel_right ;
+    double vel_left, vel_right;
 
     if (m_manualOperator.bVechFlag || m_manualOperator.bRotateFlag)
     {
-        //计算轮速
-        if(fabs(m_manualOperator.VechDirect)>M_PI/6)//舵轮角度大于45°时禁止差速转向
+        // 计算轮速
+        if (fabs(m_manualOperator.VechDirect) > M_PI / 6) // 舵轮角度大于45°时禁止差速转向
         {
             m_manualOperator.VechDirect = 0;
         }
         // 速度待修改 2024.09.03
-        vel_left = m_manualOperator.VechVel * 100 - m_manualOperator.RotateVel * 30; //正转为逆时针
+        vel_left = m_manualOperator.VechVel * 100 - m_manualOperator.RotateVel * 30; // 正转为逆时针
         vel_right = m_manualOperator.VechVel * 100 + m_manualOperator.RotateVel * 30;
 
-        log->info("{},{}: m_Robot->setJointMoveVel(GP::WHEEL_LEFT_INDEX, {});", __FILE__,__LINE__,vel_left);
-         m_Robot->setJointMoveVel(GP::WHEEL_LEFT_INDEX, -vel_left);
-        log->info("{},{}: m_Robot->setJointMoveVel(GP::WHEEL_RIGHT_INDEX, {});", __FILE__,__LINE__,vel_right);
-         m_Robot->setJointMoveVel(GP::WHEEL_RIGHT_INDEX, -vel_right);
+        log->info("{},{}: m_Robot->setJointMoveVel(GP::WHEEL_LEFT_INDEX, {});", __FILE__, __LINE__, vel_left);
+        m_Robot->setJointMoveVel(GP::WHEEL_LEFT_INDEX, -vel_left);
+        log->info("{},{}: m_Robot->setJointMoveVel(GP::WHEEL_RIGHT_INDEX, {});", __FILE__, __LINE__, vel_right);
+        m_Robot->setJointMoveVel(GP::WHEEL_RIGHT_INDEX, -vel_right);
     }
     else
     {
@@ -162,13 +162,13 @@ void CTask::Manual()
 
     if (m_manualOperator.bLinkMoveFlag && m_manualOperator.Ready != 0)
     {
-        log->info("{},{}: m_Robot->setLinkHalt();", __FILE__,__LINE__);
+        log->info("{},{}: m_Robot->setLinkHalt();", __FILE__, __LINE__);
         m_Robot->setLinkHalt();
     }
     else if (m_manualOperator.Ready == 1)
     {
         // 移动到举升位置
-        log->info("{},{}: m_Robot->setLinkMoveAbs(Postion_Prepare,GP::End_Vel_Limit.data());", __FILE__,__LINE__);
+        log->info("{},{}: m_Robot->setLinkMoveAbs(Postion_Prepare,GP::End_Vel_Limit.data());", __FILE__, __LINE__);
 #ifdef TEST_TASK_STATEMACHINE_
 #else
         std::vector<double> TEMP_LINK_0_JOINT_MAX_VEL_FOR_READY_POINT(MAX_FREEDOM_LINK, 0.0);
@@ -179,7 +179,7 @@ void CTask::Manual()
     else if (m_manualOperator.Ready == 2)
     {
         // 移动到装扮位置
-        log->info("{},{}: m_Robot->setLinkMoveAbs(Postion_Home,GP::End_Vel_Limit.data());", __FILE__,__LINE__);
+        log->info("{},{}: m_Robot->setLinkMoveAbs(Postion_Home,GP::End_Vel_Limit.data());", __FILE__, __LINE__);
 #ifdef TEST_TASK_STATEMACHINE_
 #else
         std::vector<double> TEMP_LINK_0_JOINT_MAX_VEL_FOR_SET_POINT(MAX_FREEDOM_LINK, 0.0);
@@ -191,107 +191,107 @@ void CTask::Manual()
     {
         if (m_manualOperator.bEndMove != m_preManualOperator.bEndMove)
         {
-            log->info("{},{}: m_Robot->setLinkHalt();", __FILE__,__LINE__);
-             m_Robot->setLinkHalt();
+            log->info("{},{}: m_Robot->setLinkHalt();", __FILE__, __LINE__);
+            m_Robot->setLinkHalt();
         }
         else
         {
             std::vector<double> jointvel(20, 0);
-            double endvel[6] ={0,0,0,0,0,0};
+            double endvel[6] = {0, 0, 0, 0, 0, 0};
             if (m_manualOperator.bEndMove)
             {
                 // 末端运动
-                for(int i= 0;i<6;i++)
+                for (int i = 0; i < 6; i++)
                 {
-                    endvel[i] = m_manualOperator.LinkMove[i]* GP::End_Vel_Limit.at(i);
+                    endvel[i] = m_manualOperator.LinkMove[i] * GP::End_Vel_Limit.at(i);
                 }
-                log->info("{},{}: m_Robot->setLinkMoveVel(endvel): {},{},{},{},{},{}", __FILE__,__LINE__,
-                endvel[0],endvel[1],endvel[2],endvel[3],endvel[4],endvel[5]);
-                 m_Robot->setLinkMoveVel(endvel);
+                log->info("{},{}: m_Robot->setLinkMoveVel(endvel): {},{},{},{},{},{}", __FILE__, __LINE__,
+                          endvel[0], endvel[1], endvel[2], endvel[3], endvel[4], endvel[5]);
+                m_Robot->setLinkMoveVel(endvel);
             }
             else
             {
                 // 单轴运动，轴索引待定
-                jointvel[0] = m_manualOperator.LinkMove[0] * LINK_0_JOINT_MAX_VEL[0];		// 底升
-                jointvel[3] = m_manualOperator.LinkMove[1] * LINK_0_JOINT_MAX_VEL[3];	    // 腰
-                jointvel[5] = m_manualOperator.LinkMove[2] * LINK_0_JOINT_MAX_VEL[5];		// 大臂俯仰
-                jointvel[6] = m_manualOperator.LinkMove[3] * LINK_0_JOINT_MAX_VEL[6];		// 伸缩
-                jointvel[8] = m_manualOperator.LinkMove[4] * LINK_0_JOINT_MAX_VEL[8];		// 腕俯仰
-                jointvel[9] = m_manualOperator.LinkMove[5] * LINK_0_JOINT_MAX_VEL[9];		// 工装(工具)
+                jointvel[0] = m_manualOperator.LinkMove[0] * LINK_0_JOINT_MAX_VEL[0]; // 底升
+                jointvel[3] = m_manualOperator.LinkMove[1] * LINK_0_JOINT_MAX_VEL[3]; // 腰
+                jointvel[5] = m_manualOperator.LinkMove[2] * LINK_0_JOINT_MAX_VEL[5]; // 大臂俯仰
+                jointvel[6] = m_manualOperator.LinkMove[3] * LINK_0_JOINT_MAX_VEL[6]; // 伸缩
+                jointvel[8] = m_manualOperator.LinkMove[4] * LINK_0_JOINT_MAX_VEL[8]; // 腕俯仰
+                jointvel[9] = m_manualOperator.LinkMove[5] * LINK_0_JOINT_MAX_VEL[9]; // 工装(工具)
                 log->info("m_Robot->setJointGroupMoveVel: {},{},{},{},{},{}",
-                                jointvel[0],jointvel[3],jointvel[5],jointvel[6],jointvel[8],jointvel[9]);
-                 m_Robot->setJointGroupMoveVel(jointvel.data());
+                          jointvel[0], jointvel[3], jointvel[5], jointvel[6], jointvel[8], jointvel[9]);
+                m_Robot->setJointGroupMoveVel(jointvel.data());
             }
         }
     }
-    else if( (m_manualOperator.Ready == 0 &&  m_preManualOperator.Ready !=0) || ((m_manualOperator.bLinkMoveFlag == false) && m_preManualOperator.bLinkMoveFlag))
+    else if ((m_manualOperator.Ready == 0 && m_preManualOperator.Ready != 0) || ((m_manualOperator.bLinkMoveFlag == false) && m_preManualOperator.bLinkMoveFlag))
     {
         m_Robot->setLinkHalt();
     }
 
     switch (m_manualOperator.TaskIndex)
     {
-        case stManualOperator::None:
-        {
-            updateExecutionCommand(EExecutionCommand::eNULL);
-            break;
-        }
-        case stManualOperator::SecondPush:
-        {
-            double second_push_point = 208.93;  // 底部升降位置
-            m_Robot->setJointMoveAbs(0, second_push_point, LINK_0_JOINT_MAX_VEL[0]);
-            break;
-        }
-        case stManualOperator::SecondQuit:
-        {
-            double second_push_point = 100.0;  // 底部升降位置
-            m_Robot->setJointMoveAbs(0, second_push_point, LINK_0_JOINT_MAX_VEL[0]);
-            break;
-        }
-        case stManualOperator::Parallel:
-        {
-            updateExecutionCommand(EExecutionCommand::eParallel);
-            break;
-        }
-        case stManualOperator::Positioning:
-        {
-            updateExecutionCommand(EExecutionCommand::ePositioning);
-            break;
-        }
-        case stManualOperator::DoWeld:
-        {
-            updateExecutionCommand(EExecutionCommand::eAutoWeld);
-            break;
-        }
-        case stManualOperator::MagentOn:
-        {
-            updateExecutionCommand(EExecutionCommand::eMagentOn);
-            break;
-        }
-        case stManualOperator::MagentOff:
-        {
-            updateExecutionCommand(EExecutionCommand::eMagentOff);
-            break;
-        }
-        case stManualOperator::Quit:
-        {
-            updateExecutionCommand(EExecutionCommand::eQuit);
-            break;
-        }
-        case stManualOperator::Pause:
-        {
-            updateExecutionCommand(EExecutionCommand::ePause);
-            break;
-        }
-        case stManualOperator::Terminate:
-        {
-            updateExecutionCommand(EExecutionCommand::eTerminate);
-            break;
-        }
-        default:
-        {
-            log->warn("invalid task index: {}", m_manualOperator.TaskIndex);
-        }
+    case stManualOperator::None:
+    {
+        updateExecutionCommand(EExecutionCommand::eNULL);
+        break;
+    }
+    case stManualOperator::SecondPush:
+    {
+        double second_push_point = 208.93; // 底部升降位置
+        m_Robot->setJointMoveAbs(0, second_push_point, LINK_0_JOINT_MAX_VEL[0]);
+        break;
+    }
+    case stManualOperator::SecondQuit:
+    {
+        double second_push_point = 100.0; // 底部升降位置
+        m_Robot->setJointMoveAbs(0, second_push_point, LINK_0_JOINT_MAX_VEL[0]);
+        break;
+    }
+    case stManualOperator::Parallel:
+    {
+        updateExecutionCommand(EExecutionCommand::eParallel);
+        break;
+    }
+    case stManualOperator::Positioning:
+    {
+        updateExecutionCommand(EExecutionCommand::ePositioning);
+        break;
+    }
+    case stManualOperator::DoWeld:
+    {
+        updateExecutionCommand(EExecutionCommand::eAutoWeld);
+        break;
+    }
+    case stManualOperator::MagentOn:
+    {
+        updateExecutionCommand(EExecutionCommand::eMagentOn);
+        break;
+    }
+    case stManualOperator::MagentOff:
+    {
+        updateExecutionCommand(EExecutionCommand::eMagentOff);
+        break;
+    }
+    case stManualOperator::Quit:
+    {
+        updateExecutionCommand(EExecutionCommand::eQuit);
+        break;
+    }
+    case stManualOperator::Pause:
+    {
+        updateExecutionCommand(EExecutionCommand::ePause);
+        break;
+    }
+    case stManualOperator::Terminate:
+    {
+        updateExecutionCommand(EExecutionCommand::eTerminate);
+        break;
+    }
+    default:
+    {
+        log->warn("invalid task index: {}", m_manualOperator.TaskIndex);
+    }
     }
 
     m_preManualOperator = m_manualOperator;
@@ -299,21 +299,21 @@ void CTask::Manual()
 
 bool CTask::doWeldAction(qint8 execute)
 {
-    static quint8  index_tool = 1; //执行焊枪编号范围1~5
-    static quint8  index_act  = 0;
-    static quint8  time_cnt = 0; //周期计数，控制动作间隔
+    static quint8 index_tool = 1; // 执行焊枪编号范围1~5
+    static quint8 index_act = 0;
+    static quint8 time_cnt = 0; // 周期计数，控制动作间隔
 
     //=====================结束碰钉 ==========================
-    if(execute == -1)
+    if (execute == -1)
     {
-        unsigned char tem = ActionList[index_act]&0b00100011;//关闭打磨、碰钉、定位气缸、打磨降
-        tem |= 0b00100000; //碰钉枪下降
-        m_Comm->SetToolsAction(index_tool,(E_WeldAction)tem);
-        m_Comm->SetToolsAction(11-index_tool,(E_WeldAction)tem);
-        m_Comm->SetGunConnect(0);//关闭接触器
+        unsigned char tem = ActionList[index_act] & 0b00100011; // 关闭打磨、碰钉、定位气缸、打磨降
+        tem |= 0b00100000;                                      // 碰钉枪下降
+        m_Comm->SetToolsAction(index_tool, (E_WeldAction)tem);
+        m_Comm->SetToolsAction(11 - index_tool, (E_WeldAction)tem);
+        m_Comm->SetGunConnect(0); // 关闭接触器
 
         index_tool = 1;
-        index_act  = 0;
+        index_act = 0;
         time_cnt = 0;
         log->info("结束碰钉作业");
         return true;
@@ -321,74 +321,73 @@ bool CTask::doWeldAction(qint8 execute)
 
     //=====================暂停碰钉 ==========================
     static quint32 pause_cnt = 0;
-    if(execute == 0)
-     {
-         pause_cnt++;
-         if(pause_cnt>600)//暂停时间过长，停止
-         {
-             unsigned char tem = ActionList[index_act]&0b10111111;//关闭打磨
-             m_Comm->SetToolsAction(index_tool,(E_WeldAction)tem);
-             m_Comm->SetToolsAction(11-index_tool,(E_WeldAction)tem);
-             m_Comm->SetGunConnect(0);//关闭接触器
+    if (execute == 0)
+    {
+        pause_cnt++;
+        if (pause_cnt > 600) // 暂停时间过长，停止
+        {
+            unsigned char tem = ActionList[index_act] & 0b10111111; // 关闭打磨
+            m_Comm->SetToolsAction(index_tool, (E_WeldAction)tem);
+            m_Comm->SetToolsAction(11 - index_tool, (E_WeldAction)tem);
+            m_Comm->SetGunConnect(0); // 关闭接触器
 
-             pause_cnt = 0;
-             log->warn("暂停时间过长，关闭打磨及接触器");
-         }
-         log->info("自动碰钉暂停");
-         return true;
-     }
+            pause_cnt = 0;
+            log->warn("暂停时间过长，关闭打磨及接触器");
+        }
+        log->info("自动碰钉暂停");
+        return true;
+    }
 
     //=============== 执行10把焊枪轮次焊接1~5,6~10 ==============
-    if(index_act<ActionList.size())
+    if (index_act < ActionList.size())
     {
-        if(time_cnt == 0)
+        if (time_cnt == 0)
         {
-            //执行动作
-            m_Comm->SetToolsAction(index_tool,ActionList[index_act]); //1~5号枪动作
-            m_Comm->SetToolsAction(11-index_tool,ActionList[index_act]);//6~10号枪动作
-            log->info("焊枪{}执行动作:{} {}",index_tool,index_act,ActionName[index_act]);
+            // 执行动作
+            m_Comm->SetToolsAction(index_tool, ActionList[index_act]);      // 1~5号枪动作
+            m_Comm->SetToolsAction(11 - index_tool, ActionList[index_act]); // 6~10号枪动作
+            log->info("焊枪{}执行动作:{} {}", index_tool, index_act, ActionName[index_act]);
 
-            //在特定动作连接焊枪
-            if(ActionList[index_act] == eWeld_Up )
+            // 在特定动作连接焊枪
+            if (ActionList[index_act] == eWeld_Up)
             {
                 m_Comm->SetGunConnect(index_tool);
-                m_Comm->SetGunConnect(11-index_tool);
-                log->debug("接触器吸合" );
+                m_Comm->SetGunConnect(11 - index_tool);
+                log->debug("接触器吸合");
             }
-            if(ActionList[index_act] == eWeld_Down)
+            if (ActionList[index_act] == eWeld_Down)
             {
                 m_Comm->SetGunConnect(0);
-                log->debug("接触器断开" );
+                log->debug("接触器断开");
             }
             time_cnt++;
-
-
-        }else
+        }
+        else
         {
-            //计数等待
-            time_cnt ++;
+            // 计数等待
+            time_cnt++;
 
-            if(time_cnt > ActionTime[index_act])//等待结束，进入下一个动作
+            if (time_cnt > ActionTime[index_act]) // 等待结束，进入下一个动作
             {
                 index_act++;
                 time_cnt = 0;
             }
         }
 
-        return  false;
-
-    }else
+        return false;
+    }
+    else
     {
-        //完成所有动作，切换到下一把焊枪
-        log->info("完成焊枪：{}",index_tool);
+        // 完成所有动作，切换到下一把焊枪
+        log->info("完成焊枪：{}", index_tool);
 
-        m_Comm->SetToolsAction(index_tool,eInitAction); //1~5号枪动作
-        m_Comm->SetToolsAction(11-index_tool,eInitAction);//6~10号枪动作
+        m_Comm->SetToolsAction(index_tool, eInitAction);      // 1~5号枪动作
+        m_Comm->SetToolsAction(11 - index_tool, eInitAction); // 6~10号枪动作
 
         index_act = 0;
         index_tool++;
 
-        if(index_tool > 5) //所有焊枪动作完成
+        if (index_tool > 5) // 所有焊枪动作完成
         {
             index_tool = 1;
             log->info("所有焊枪动作完成");
@@ -397,30 +396,31 @@ bool CTask::doWeldAction(qint8 execute)
 
         return false;
     }
-
 }
 
 bool CTask::doMagentOff()
 {
     static quint8 act_index = 0;
-    static quint8 time_cnt  = 0; //周期计数，控制动作间隔
-    if(act_index == 0){
-        log->info("doMagentOff--time_cnt:{}",time_cnt);
+    static quint8 time_cnt = 0; // 周期计数，控制动作间隔
+    if (act_index == 0)
+    {
+        log->info("doMagentOff--time_cnt:{}", time_cnt);
     }
 
-    switch (act_index) {
-    case 0://磁铁断电
-        if(time_cnt == 0)
+    switch (act_index)
+    {
+    case 0: // 磁铁断电
+        if (time_cnt == 0)
         {
-            m_Comm->SetMagentAction(0,eMag_Off);
-            time_cnt ++;
+            m_Comm->SetMagentAction(0, eMag_Off);
+            time_cnt++;
             log->info("eMag_Off");
         }
         else
         {
-            //计数等待
-            time_cnt ++;
-            if(time_cnt > 50)//等待结束，进入下一个动作
+            // 计数等待
+            time_cnt++;
+            if (time_cnt > 50) // 等待结束，进入下一个动作
             {
                 act_index = 1;
                 time_cnt = 0;
@@ -428,19 +428,19 @@ bool CTask::doMagentOff()
         }
         return false;
 
-    case 1:  //推缸缩
-        if(time_cnt == 0)
+    case 1: // 推缸缩
+        if (time_cnt == 0)
         {
-            m_Comm->SetMagentAction(0,eMag_Off);
-            m_Comm->SetMagentAction(0,eMag_Down);
-            time_cnt ++;
+            m_Comm->SetMagentAction(0, eMag_Off);
+            m_Comm->SetMagentAction(0, eMag_Down);
+            time_cnt++;
             log->info("eMag_Down");
         }
         else
         {
-            //计数等待
-            time_cnt ++;
-            if(time_cnt > 200)//等待结束，进入下一个动作
+            // 计数等待
+            time_cnt++;
+            if (time_cnt > 200) // 等待结束，进入下一个动作
             {
                 act_index = 0;
                 time_cnt = 0;
@@ -460,25 +460,27 @@ bool CTask::doMagentOff()
 bool CTask::doMagentOn()
 {
     static quint8 act_index = 0;
-    static quint8 time_cnt  = 0; //周期计数，控制动作间隔
+    static quint8 time_cnt = 0; // 周期计数，控制动作间隔
 
-    if(act_index == 0){
-        log->info("doMagentOn--time_cnt:{}",time_cnt);
+    if (act_index == 0)
+    {
+        log->info("doMagentOn--time_cnt:{}", time_cnt);
     }
 
-    switch (act_index) {
-    case 0:  //磁铁举升
-        if(time_cnt == 0)
+    switch (act_index)
+    {
+    case 0: // 磁铁举升
+        if (time_cnt == 0)
         {
-            m_Comm->SetMagentAction(0,eMag_Off);
-            time_cnt ++;
+            m_Comm->SetMagentAction(0, eMag_Off);
+            time_cnt++;
             log->info("eMag_Off");
         }
         else
         {
-            //计数等待
-            time_cnt ++;
-            if(time_cnt > 20)//等待结束，进入下一个动作
+            // 计数等待
+            time_cnt++;
+            if (time_cnt > 20) // 等待结束，进入下一个动作
             {
                 act_index = 1;
                 time_cnt = 0;
@@ -486,25 +488,25 @@ bool CTask::doMagentOn()
         }
         return false;
     case 1:
-        if(time_cnt == 0)
+        if (time_cnt == 0)
         {
-            m_Comm->SetMagentAction(0,eMag_Up);
+            m_Comm->SetMagentAction(0, eMag_Up);
             log->info("eMag_Up");
-            time_cnt ++;
+            time_cnt++;
         }
         else
         {
-            //计数等待
-            time_cnt ++;
-            if(time_cnt > 100)//等待结束，进入下一个动作
+            // 计数等待
+            time_cnt++;
+            if (time_cnt > 100) // 等待结束，进入下一个动作
             {
                 act_index = 2;
                 time_cnt = 0;
             }
         }
         return false;
-    case 2://磁铁吸合
-        m_Comm->SetMagentAction(0,eMag_On);
+    case 2: // 磁铁吸合
+        m_Comm->SetMagentAction(0, eMag_On);
         act_index = 0;
         time_cnt = 0;
         log->info("eMag_On");
@@ -514,7 +516,6 @@ bool CTask::doMagentOn()
         time_cnt = 0;
         return false;
     }
-
 }
 
 stMeasureData CTask::getStMeasureData()
@@ -527,41 +528,41 @@ stMeasureData CTask::getStMeasureData()
     return re;
 }
 
-void CTask::closeThread() {
+void CTask::closeThread()
+{
     this->c_running = false;
     QThread::wait();
-
 }
 
-//修改827
+// 修改827
 int CTask::CheckParallelState(std::vector<double> laserDistance, int max_deviation, int min_deviation, int lift_distance)
 {
-    //检查输入数据
-    if(laserDistance.size() < 4) 
+    // 检查输入数据
+    if (laserDistance.size() < 4)
     {
         log->error("激光数据数量输入有误");
         return -1;
     }
-    for(int i=0;i<4;++i) 
+    for (int i = 0; i < 4; ++i)
     {
-        if(laserDistance[i] > 450 || laserDistance[i] < -3)
+        if (laserDistance[i] > 450 || laserDistance[i] < -3)
         {
-            log->error("{}激光数据有误,或壁面距离太远",i);
+            log->error("{}激光数据有误,或壁面距离太远", i);
             return -1;
         }
     }
 
-    //计算激光距离最大偏差
+    // 计算激光距离最大偏差
     auto max_res = std::max_element(laserDistance.begin(), laserDistance.end());
     auto min_res = std::min_element(laserDistance.begin(), laserDistance.end());
 
-    if(*max_res - *min_res > max_deviation && *min_res / *max_res < 0.5)
+    if (*max_res - *min_res > max_deviation && *min_res / *max_res < 0.5)
     {
         log->error("激光距离最大偏差大于{}mm", max_deviation);
         return -1;
     }
-    //判断是否完成调平
-    if (*max_res - *min_res< min_deviation && *min_res < lift_distance)  //最大偏差小于阈值
+    // 判断是否完成调平
+    if (*max_res - *min_res < min_deviation && *min_res < lift_distance) // 最大偏差小于阈值
         return 1;
     else
         return 0;
@@ -569,7 +570,7 @@ int CTask::CheckParallelState(std::vector<double> laserDistance, int max_deviati
 
 EDetectionInParallelResult CTask::CheckParallelStateDecorator()
 {
-    EDetectionInParallelResult result{ EDetectionInParallelResult::eNoWallDetected };
+    EDetectionInParallelResult result{EDetectionInParallelResult::eNoWallDetected};
     std::vector<double> laserDistance(std::begin(m_stMeasuredata.m_LaserDistance), std::end(m_stMeasuredata.m_LaserDistance));
 
     int res = CheckParallelState(laserDistance, GP::Max_Deviation_In_Parallel, GP::Min_Deviation_In_Parallel, GP::Lift_Distance_In_Parallel);
@@ -608,26 +609,25 @@ int CTask::CheckSidelineState()
     int re_line = -1;
 
     // 判断长边合法性
-    if((m_stMeasuredata.m_bLineDistance[0]==false && m_stMeasuredata.m_bLineDistance[2]==false) &&
-       (m_stMeasuredata.m_bLineDistance[1]==false && m_stMeasuredata.m_bLineDistance[3]==false)
-            ){
+    if ((m_stMeasuredata.m_bLineDistance[0] == false && m_stMeasuredata.m_bLineDistance[2] == false) &&
+        (m_stMeasuredata.m_bLineDistance[1] == false && m_stMeasuredata.m_bLineDistance[3] == false))
+    {
         log->error("检测到的边线数据长边不满足调整需求");
         return -1;
     }
     // 判断短边合法性
-    if((m_stMeasuredata.m_bLineDistance[4]==false && m_stMeasuredata.m_bLineDistance[5]==false)){
+    if ((m_stMeasuredata.m_bLineDistance[4] == false && m_stMeasuredata.m_bLineDistance[5] == false))
+    {
         log->error("检测到的边线数据短边不满足调整需求");
         return -1;
     }
 
-    //计算边线偏差
-    double line_dis_1 = ((m_stMeasuredata.m_LineDistance[0] - 15) * m_stMeasuredata.m_bLineDistance[0] - (m_stMeasuredata.m_LineDistance[1] - 15) * m_stMeasuredata.m_bLineDistance[1]) / (static_cast<int>(m_stMeasuredata.m_bLineDistance[0] )+ static_cast<int>(m_stMeasuredata.m_bLineDistance[1]));
-    double line_dis_2 = ((m_stMeasuredata.m_LineDistance[2] - 15) * m_stMeasuredata.m_bLineDistance[2] - (m_stMeasuredata.m_LineDistance[3] - 15) * m_stMeasuredata.m_bLineDistance[3]) / (static_cast<int>(m_stMeasuredata.m_bLineDistance[2] )+ static_cast<int>(m_stMeasuredata.m_bLineDistance[3]));
-    double line_dis_3 = ((m_stMeasuredata.m_LineDistance[4] - 15) * m_stMeasuredata.m_bLineDistance[4] - (m_stMeasuredata.m_LineDistance[5] - 15) * m_stMeasuredata.m_bLineDistance[5]) / (static_cast<int>(m_stMeasuredata.m_bLineDistance[4] )+ static_cast<int>(m_stMeasuredata.m_bLineDistance[5]));
+    // 计算边线偏差
+    double line_dis_1 = ((m_stMeasuredata.m_LineDistance[0] - 15) * m_stMeasuredata.m_bLineDistance[0] - (m_stMeasuredata.m_LineDistance[1] - 15) * m_stMeasuredata.m_bLineDistance[1]) / (static_cast<int>(m_stMeasuredata.m_bLineDistance[0]) + static_cast<int>(m_stMeasuredata.m_bLineDistance[1]));
+    double line_dis_2 = ((m_stMeasuredata.m_LineDistance[2] - 15) * m_stMeasuredata.m_bLineDistance[2] - (m_stMeasuredata.m_LineDistance[3] - 15) * m_stMeasuredata.m_bLineDistance[3]) / (static_cast<int>(m_stMeasuredata.m_bLineDistance[2]) + static_cast<int>(m_stMeasuredata.m_bLineDistance[3]));
+    double line_dis_3 = ((m_stMeasuredata.m_LineDistance[4] - 15) * m_stMeasuredata.m_bLineDistance[4] - (m_stMeasuredata.m_LineDistance[5] - 15) * m_stMeasuredata.m_bLineDistance[5]) / (static_cast<int>(m_stMeasuredata.m_bLineDistance[4]) + static_cast<int>(m_stMeasuredata.m_bLineDistance[5]));
 
-    if (fabs(line_dis_1) < GP::Line_Deviation_Threshold
-        && fabs(line_dis_2) < GP::Line_Deviation_Threshold
-        && fabs(line_dis_3) < GP::Line_Deviation_Threshold)
+    if (fabs(line_dis_1) < GP::Line_Deviation_Threshold && fabs(line_dis_2) < GP::Line_Deviation_Threshold && fabs(line_dis_3) < GP::Line_Deviation_Threshold)
     {
         log->info("完成装板定位，边线距离为：{},{},{},{},{},{}", m_stMeasuredata.m_LineDistance[0], m_stMeasuredata.m_LineDistance[1], m_stMeasuredata.m_LineDistance[2], m_stMeasuredata.m_LineDistance[3], m_stMeasuredata.m_LineDistance[4], m_stMeasuredata.m_LineDistance[5]);
         re_line = 1;
@@ -648,26 +648,26 @@ EDetectionInPositioningResult CTask::CheckSidelineStateDecorator()
 
     switch (res)
     {
-        case -1:
-        {
-            result = EDetectionInPositioningResult::eDataIsInvalid;
-            break;
-        }
-        case 0:
-        {
-            result = EDetectionInPositioningResult::eEndAdjustmentDataIsValid;
-            break;
-        }
-        case 1:
-        {
-            result = EDetectionInPositioningResult::eDeviationIsLessThanThreshold;
-            break;
-        }
-        default:
-        {
-            result = EDetectionInPositioningResult::eDataIsInvalid;
-            log->error("{} invalid value: {} ", __LINE__, res);
-        }
+    case -1:
+    {
+        result = EDetectionInPositioningResult::eDataIsInvalid;
+        break;
+    }
+    case 0:
+    {
+        result = EDetectionInPositioningResult::eEndAdjustmentDataIsValid;
+        break;
+    }
+    case 1:
+    {
+        result = EDetectionInPositioningResult::eDeviationIsLessThanThreshold;
+        break;
+    }
+    default:
+    {
+        result = EDetectionInPositioningResult::eDataIsInvalid;
+        log->error("{} invalid value: {} ", __LINE__, res);
+    }
     }
 
     return result;
@@ -675,7 +675,7 @@ EDetectionInPositioningResult CTask::CheckSidelineStateDecorator()
 
 EDetectionInFitBoardResult CTask::CheckFitBoardState()
 {
-    EDetectionInFitBoardResult result{ EDetectionInFitBoardResult::eDataIsInvalid };
+    EDetectionInFitBoardResult result{EDetectionInFitBoardResult::eDataIsInvalid};
     std::vector<double> laserDistance(std::begin(m_stMeasuredata.m_LaserDistance), std::end(m_stMeasuredata.m_LaserDistance));
 
     int res = CheckParallelState(laserDistance, GP::Max_Deviation_In_FitBoard, GP::Min_Deviation_In_FitBoard, GP::Lift_Distance_In_FitBoard);

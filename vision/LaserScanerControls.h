@@ -4,39 +4,36 @@
 #ifndef PDROBOT_LASERSCANERCONTROLS_H
 #define PDROBOT_LASERSCANERCONTROLS_H
 
-#include"MyBestfitLaserScaner.h"
-#include<string>
-#include<iostream>
-#include<opencv2/opencv.hpp>
-#include<QThread>
-#include<spdlog/spdlog.h>
+#include "MyBestfitLaserScaner.h"
+#include <string>
+#include <iostream>
+#include <opencv2/opencv.hpp>
+#include <QThread>
+#include <spdlog/spdlog.h>
 
+// struct LidarData{
+//     float dist;
+//     float angle;
+//     float gap;
+//     bool flag=0;//是否有效
+//     cv::Mat show;
+//     QString error;
+// };
 
-
-//struct LidarData{
-//    float dist;
-//    float angle;
-//    float gap;
-//    bool flag=0;//是否有效
-//    cv::Mat show;
-//    QString error;
-//};
-
-class LaserScanerControls:public QThread{
+class LaserScanerControls : public QThread
+{
     Q_OBJECT
 public:
     //
     std::string goc_name;
-    //相关配置
-    std::map<std::string ,std::string> ip_config;
-     std::map<std::string ,bool> direct_config;
+    // 相关配置
+    std::map<std::string, std::string> ip_config;
+    std::map<std::string, bool> direct_config;
 
-
-    //创建雷达对象
-    std::map<std::string, MyBestfitLaserScaner*> scaners;
+    // 创建雷达对象
+    std::map<std::string, MyBestfitLaserScaner *> scaners;
     std::map<std::string, cv::Mat> pointCloudMasks;
     std::shared_ptr<spdlog::logger> logger;
-
 
     LaserScanerControls();
     ~LaserScanerControls();
@@ -46,12 +43,9 @@ public:
     void closeAllLaserScaner();
     std::vector<bool> getLayserScannerConnectStates();
 
-    //open Layser scaner;
+    // open Layser scaner;
     void setLaserOn(std::vector<std::string> laser_name);
     void setLaserOff(std::vector<std::string> laser_name);
     void reconnectLaser(std::string laser_name);
-
-
 };
 #endif PDROBOT_LASERSCANERCONTROLS_H
-
