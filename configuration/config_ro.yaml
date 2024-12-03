@@ -1,74 +1,74 @@
 title : "####################--Robot'configuration--##################"
 line0 : "#############################################################"
 
-velLine : 
+velLine :
     brief:  ""
-    value: 1          
-    
-velRotate : 
-    brief:  ""
-    value: 0.05       
+    value: 1
 
-end_vel_limit: 
+velRotate :
+    brief:  ""
+    value: 0.05
+
+end_vel_limit:
     brief: "velocity in cartesian space"
     value: [1,1,1,0.05,0.05,0.05]
 
-end_vel_position: 
+end_vel_position:
     brief: "velocity in cartesian space"
     value: [1,1,1,0.05,0.05,0.05]
 
 line1 : "#############################################################"
 
-CYLINDER_INDEX : 
+CYLINDER_INDEX :
     brief:  "cylinder index"
-    value: 5     
-STEER_LEFT_INDEX : 
+    value: 5
+STEER_LEFT_INDEX :
     brief:  "steer left index"
     value: 11
-STEER_RIGHT_INDEX : 
+STEER_RIGHT_INDEX :
     brief:  "steer right index"
     value: 13
-WHEEL_LEFT_INDEX : 
+WHEEL_LEFT_INDEX :
     brief:  "wheel left index"
     value: 12
-WHEEL_RIGHT_INDEX : 
+WHEEL_RIGHT_INDEX :
     brief:  "wheel right index"
     value: 14
-TOOL_LIFTING: 
+TOOL_LIFTING:
     brief:  "tool lifting"
-    value: 4      
+    value: 4
 
 Laser_Valid_Threshold :
     brief: "less than the value, the value is valid"
     value: 300
 
-Lift_Distance_In_Parallel : 
+Lift_Distance_In_Parallel :
     brief:  "lift distance in parallel"
     value: 11.0
-Max_Deviation_In_Parallel : 
+Max_Deviation_In_Parallel :
     brief:  "max deviation in parallel"
-    value: 50.0    
-Min_Deviation_In_Parallel : 
+    value: 50.0
+Min_Deviation_In_Parallel :
     brief:  "min deviation in parallel"
-    value: 3.0     
+    value: 3.0
 
-Distance_work : 
+Distance_work :
     brief:  "lift distance in position"
-    value: 10        
+    value: 10
 
-Lift_Distance_In_FitBoard : 
+Lift_Distance_In_FitBoard :
     brief:  "lift distance in fitboard"
-    value: 6.0     
-Max_Deviation_In_FitBoard : 
+    value: 6.0
+Max_Deviation_In_FitBoard :
     brief:  "max deviation in fitboard"
-    value: 20.0    
-Min_Deviation_In_FitBoard : 
+    value: 20.0
+Min_Deviation_In_FitBoard :
     brief:  "min deviation in fitboard"
-    value: 6.0     
+    value: 6.0
 
-Line_Deviation_Threshold : 
+Line_Deviation_Threshold :
     brief:  "line deviation threshold in vision algorithm"
-    value: 2.0     
+    value: 2.0
 
 Do_Weld_Parallel_Condition :
     brief: "do weld parallel condition, count value"
@@ -76,7 +76,7 @@ Do_Weld_Parallel_Condition :
 
 line2 : "#############################################################"
 
-robot_ip: 
+robot_ip:
     brief:  "robot ip"
     value: "192.168.1.130"
 
@@ -85,19 +85,19 @@ robot_port:
     value: 6999
 
 
-IOA_ip: 
+IOA_ip:
     brief:  "IOA ip"
     value: "192.168.1.201"
 
-IOA_port: 
+IOA_port:
     brief:  "IOA port"
     value: 5999
 
 IOB_ip:
-    brief: "IOB ip"    
+    brief: "IOB ip"
     value: "192.168.1.202"
 
-IOB_port: 
+IOB_port:
     brief:  "IOB port"
     value: 5999
 
