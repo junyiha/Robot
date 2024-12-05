@@ -17,9 +17,9 @@
 #include <Eigen/Dense>
 #include <Eigen/Geometry>
 
-#include "../com/ComInterface.h"
+#include "ComInterface.h"
 #include "RobotKinectModel.h"
-#include "../Task/Measure.h"
+#include "Measure.h"
 
 class CRobot : public QThread
 {

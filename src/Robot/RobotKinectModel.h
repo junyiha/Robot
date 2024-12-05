@@ -10,7 +10,7 @@
 #include <QDebug>
 #include <qmath.h>
 #include "Transformation.h"
-#include "../GVL.h"
+#include "GVL.h"
 #include <spdlog/spdlog.h>
 
 class CRobotKinectModel

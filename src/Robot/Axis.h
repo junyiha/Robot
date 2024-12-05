@@ -6,7 +6,7 @@
 
 *************************************************************************/
 #pragma once
-#include "robot/RobotModuleServices.h"
+#include "RobotModuleServices.h"
 
 #include "DataStruct.h"
 #pragma pack(push)

@@ -8,10 +8,8 @@
  * @copyright Copyright (c) 2024
  *
  */
-#include "mainwindow.h"
 #include <QApplication>
 #include <string>
-#include "vision/VisionInterface.h"
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
@@ -21,6 +19,8 @@
 #include <clocale>
 #include <Eigen/Eigen>
 
+#include "mainwindow.h"
+#include "VisionInterface.h"
 #include "SceneSelectionWindow.hpp"
 
 void initLog()

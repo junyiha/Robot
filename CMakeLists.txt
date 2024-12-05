@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.8)
 project(PDRobot-master)
 
+set(CMAKE_BUILD_TYPE Release)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -136,20 +137,20 @@ find_package(Qt5 COMPONENTS
 qt5_add_resources(${QRC_SOURCE_FILE})
 
 aux_source_directory(${CMAKE_SOURCE_DIR}/ src)
-aux_source_directory(${CMAKE_SOURCE_DIR}/com src)
-aux_source_directory(${CMAKE_SOURCE_DIR}/robot src)
-aux_source_directory(${CMAKE_SOURCE_DIR}/Task src)
-aux_source_directory(${CMAKE_SOURCE_DIR}/vision src)
-aux_source_directory(${CMAKE_SOURCE_DIR}/HMI src)
+aux_source_directory(${CMAKE_SOURCE_DIR}/src/Com src)
+aux_source_directory(${CMAKE_SOURCE_DIR}/src/Robot src)
+aux_source_directory(${CMAKE_SOURCE_DIR}/src/Task src)
+aux_source_directory(${CMAKE_SOURCE_DIR}/src/Vision src)
+aux_source_directory(${CMAKE_SOURCE_DIR}/src/HMI src)
 
 add_executable(${PROJECT_NAME} ${src} ${QRC_SOURCE_FILE})
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/
-                                                  ${CMAKE_SOURCE_DIR}/com
-                                                  ${CMAKE_SOURCE_DIR}/robot
-                                                  ${CMAKE_SOURCE_DIR}/Task
-                                                  ${CMAKE_SOURCE_DIR}/vision
-                                                  ${CMAKE_SOURCE_DIR}/HMI
+                                                  ${CMAKE_SOURCE_DIR}/src/Com
+                                                  ${CMAKE_SOURCE_DIR}/src/Robot
+                                                  ${CMAKE_SOURCE_DIR}/src/Task
+                                                  ${CMAKE_SOURCE_DIR}/src/Vision
+                                                  ${CMAKE_SOURCE_DIR}/src/HMI
                                                   ${CMAKE_SOURCE_DIR}/ThirdParty/yaml-cpp-0.8.0/include/
 )
 

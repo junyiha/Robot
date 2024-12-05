@@ -37,7 +37,7 @@
 #include <qvector.h>
 #include <QAtomicInteger>
 
-#include "../robot/DataStruct.h"
+#include "DataStruct.h"
 #include "TcpCom_IO.h"
 
 #define SEND_LEN 0x0f
@@ -46,6 +46,8 @@
 #define DO_LEN 8  // DO数组数据长度
 #define DI_LEN 2  // DI数组数据长度
 #define AI_NUM 16 // AI数量
+
+using byte = unsigned char;
 
 class IOCom : public TcpCom_IO
 {

@@ -11,7 +11,7 @@
 #include "LineDetector.h"
 #include "LineDetectorRunner.h"
 #include "ShareData.h"
-#include "../Task/Measure.h"
+#include "Measure.h"
 #include <QMutex>
 #include "Parameters.h"
 #include "CameraCalibrationLine.h"

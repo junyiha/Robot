@@ -8,13 +8,13 @@
 #include <functional>
 #include <fstream>
 
-#include "../robot/robot.h"
-#include "../com/ComInterface.h"
-#include "../com/Manual.h"
+#include "robot.h"
+#include "ComInterface.h"
+#include "Manual.h"
 #include <QAtomicInt>
 #include <QLineEdit>
 #include <spdlog/spdlog.h>
-#include "../vision/VisionInterface.h"
+#include "VisionInterface.h"
 #include "TaskExternal.hpp"
 
 // 碰钉动作序列，及动作周期数(50ms)，根据实际工艺调整；eWeld_Up eWeld_Down绑定了接触器，必须保留

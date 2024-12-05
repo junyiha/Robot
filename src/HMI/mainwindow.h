@@ -25,14 +25,13 @@
 #include <QTextCodec>
 #include <QTextBrowser>
 //--------------机器人部分--------------//
-#include "com/ComInterface.h"
-#include "robot/robot.h"
-#include "GVL.h"
+#include "ComInterface.h"
+#include "robot.h"
 //--------------视觉部分--------------//
-#include "vision/VisionInterface.h"
+#include "VisionInterface.h"
 
 //--------------任务部分--------------//
-#include "Task/Task.h"
+#include "Task.h"
 #include <QAtomicInt>
 #include "ConfigManager.hpp"
 

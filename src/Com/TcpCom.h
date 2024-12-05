@@ -18,7 +18,7 @@
 #include <mutex>
 #include <QTcpSocket>
 #include <QDebug>
-#include "../robot/DataStruct.h"
+#include "DataStruct.h"
 #include <iostream>
 #include <spdlog/spdlog.h>
 #pragma comment(lib, "ws2_32.lib")

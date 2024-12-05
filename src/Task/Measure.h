@@ -6,7 +6,7 @@
 #include <QVector>
 #include <QDebug>
 
-#include "../GVL.h"
+#include "GVL.h"
 
 // typedef struct DataofMeasurement
 //{

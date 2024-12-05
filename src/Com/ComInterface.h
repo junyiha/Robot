@@ -15,8 +15,8 @@
 #include "RobotCom.h"
 #include "Tools.h"
 #include "Manual.h"
-#include "../GVL.h"
-#include "../Task/Measure.h"
+#include "GVL.h"
+#include "Measure.h"
 #include <spdlog/spdlog.h>
 #include <QMutex>
 

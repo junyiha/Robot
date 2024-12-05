@@ -4,16 +4,17 @@
 import os
 import zipfile
 from pathlib import Path
+from get_path import GetRootDir
 
-root_dir = Path(__file__).resolve().parent
-print("当前脚本所在目录是:", root_dir)
+root_dir = GetRootDir()
+print("当前项目所在根目录目录是:", root_dir)
 
 file_list = os.listdir(root_dir)
 new_list = []
 for i in file_list:
     if i == '.vscode' or i == 'build' or i == "package":
         continue
-
+    temp_path = Path(root_dir) / i
     new_list.append(i)
 
 script_dir = Path(root_dir) / "package/robot.zip"
