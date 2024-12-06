@@ -8,12 +8,13 @@
 #include <functional>
 #include <fstream>
 
-#include "robot.h"
-#include "ComInterface.h"
-#include "Manual.h"
 #include <QAtomicInt>
 #include <QLineEdit>
 #include <spdlog/spdlog.h>
+
+#include "robot.h"
+#include "ComInterface.h"
+#include "Manual.h"
 #include "VisionInterface.h"
 #include "TaskExternal.hpp"
 

@@ -137,6 +137,7 @@ find_package(Qt5 COMPONENTS
 qt5_add_resources(${QRC_SOURCE_FILE})
 
 aux_source_directory(${CMAKE_SOURCE_DIR}/ src)
+aux_source_directory(${CMAKE_SOURCE_DIR}/src/Utils src)
 aux_source_directory(${CMAKE_SOURCE_DIR}/src/Com src)
 aux_source_directory(${CMAKE_SOURCE_DIR}/src/Robot src)
 aux_source_directory(${CMAKE_SOURCE_DIR}/src/Task src)
@@ -151,6 +152,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/
                                                   ${CMAKE_SOURCE_DIR}/src/Task
                                                   ${CMAKE_SOURCE_DIR}/src/Vision
                                                   ${CMAKE_SOURCE_DIR}/src/HMI
+                                                  ${CMAKE_SOURCE_DIR}/src/Utils
                                                   ${CMAKE_SOURCE_DIR}/ThirdParty/yaml-cpp-0.8.0/include/
 )
 
