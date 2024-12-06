@@ -600,7 +600,7 @@ QPushButton::pressed{
                 </property>
                 <property name="styleSheet">
                  <string notr="true">QLabel {
-	background-color: rgb(255, 0, 0);
+	background-color: rgb(255,  255, 255);
     border: 2px solid black;
     text-align: left;
 }</string>
@@ -750,7 +750,7 @@ QPushButton::pressed{
                 <property name="styleSheet">
                  <string notr="true">QLabel {
     border: 2px solid black;
-	background-color: rgb(255, 0, 0);
+	background-color: rgb(255, 255, 255);
     text-align: left;
 }</string>
                 </property>
@@ -934,7 +934,7 @@ QPushButton::pressed{
                 </property>
                 <property name="styleSheet">
                  <string notr="true">QLabel {
-	background-color: rgb(255, 0, 0);
+	background-color: rgb(255, 255, 255);
     border: 2px solid black;
     text-align: left;
 }</string>
@@ -1083,7 +1083,7 @@ QPushButton::pressed{
                 <property name="styleSheet">
                  <string notr="true">QLabel {
     border: 2px solid black;
-	background-color: rgb(255, 0, 0);
+	background-color: rgb(255, 255, 255);
     text-align: left;
 }</string>
                 </property>

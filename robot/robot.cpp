@@ -175,6 +175,7 @@ void CRobot::UpdateStatus()
         vJointValue.push_back(std::make_pair(m_ActJoints[i], true));
     }
     vJointValue[4].second = false; // 腰俯仰不参与联动
+    vJointValue[1].second = false; // 前后不参与联动
 
     m_ActJoints[m_Freedom] = m_JointGroupStatus[m_Freedom].Position;
     m_ActJoints[m_Freedom + 1] = m_JointGroupStatus[m_Freedom + 1].Position;

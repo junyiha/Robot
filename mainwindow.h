@@ -103,18 +103,6 @@ public:
 
     // 操作按钮索引配置
     std::map<std::string, unsigned int> m_btnIndex = {
-        //作业操作模块
-//      {"btn_preparation_pos",     1},   // 准备
-//      {"btn_add_nail",            2},   // 放板
-//      {"btn_leveling_",           3},   //调平
-//      {"btn_sideline_",           4},   //对齐边线
-//      {"btn_auto_laminate",       5},   //贴合
-//      {"btn_magnet_exit",         6},   //退出
-//      {"btn_magnet_pause_",       7},   //暂停
-//      {"btn_knock_suspend_",      8},   // 终止
-//      {"btn_magnet_stop_",        9},   // 停止
-//      {"btn_magent_crash_stop_", 10},   // 急停
-
         {"btn_location_",     0},   // 位置准备
         {"btn_lift_",         1},   // 举升
         {"btn_leveling_",     2},   //调平
@@ -197,17 +185,6 @@ public:
 
     // 工作作业按钮名称-索引值
     std::map<std::string, unsigned int> m_jobBtnIndex = {
-//        {"btn_preparation_pos", 1},        // 位置准备
-//        {"btn_add_nail",        2},        // 放板
-//        {"btn_leveling_",       3},        // 调平
-//        {"btn_sideline_",       4},        // 对齐边线
-//        {"btn_auto_laminate",   5},        // 贴合
-//        {"btn_magnet_exit",     6},        // 退出
-//        {"btn_magnet_pause_",   7},        // 暂停
-//        {"btn_knock_suspend_",  8},        // 终止
-//        {"btn_magnet_stop_",    9},        // 停止
-//        {"btn_magent_crash_stop_", 10}     // 急停
-
             {"btn_leveling_",      1},          // 调平
             {"btn_sideline_",      2},          // 对齐边线
             {"btn_magnet_open_",   3},          // 吸合
@@ -222,10 +199,6 @@ public:
             {"btn_magent_crash_stop_", 12}      // 急停
 
     };
-
-
-
-
 
 private:
     Ui::MainWindow *ui;

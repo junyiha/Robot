@@ -16,7 +16,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W0")
 set(QRC_SOURCE_FILE ${CMAKE_SOURCE_DIR}/res.qrc)
 
 
-add_definitions(-DVISION_MODEL_PATH="${CMAKE_SOURCE_DIR}/models/mlsd_model_tiny_20241011.onnx")
+add_definitions(-DVISION_MODEL_PATH="${CMAKE_SOURCE_DIR}/models/pp_liteseg_stdc1_softmax_20241021.onnx")
 add_definitions(-DCONFIG_PATH="${CMAKE_SOURCE_DIR}/config.yaml")
 # add_definitions(-DSTATE_MACHINE_TEST=1)
 

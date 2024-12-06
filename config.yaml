@@ -1,105 +1,93 @@
-title : "####################--Robot'configuration--##################"
-line0 : "#############################################################"
-
-velLine : 
-    brief:  "界面点动限速：平移(毫米)"
-    value: 1          
-    
-velRotate : 
-    brief:  "界面点动限速：旋转(度)"
-    value: 0.05       
-
-end_vel_limit: 
-    brief: "关节运动限速"
-    value: [1,1,1,0.05,0.05,0.05]
-
-end_vel_position: 
-    brief: "末端运动限速"
-    value: [1,1,1,0.05,0.05,0.05]
-
-line1 : "#############################################################"
-
-CYLINDER_INDEX : 
-    brief:  "推杆关节轴号索引"
-    value: 5     
-STEER_LEFT_INDEX : 
-    brief:  "左舵轮索引"
-    value: 11    
-STEER_RIGHT_INDEX : 
-    brief:  "右舵轮索引"
-    value: 13    
-WHEEL_LEFT_INDEX : 
-    brief:  "左行走轮索引"
-    value: 12    
-WHEEL_RIGHT_INDEX : 
-    brief:  "右行走轮索引"
-    value: 14    
-TOOL_LIFTING: 
-    brief:  "工具升降索引"
-    value: 9      
-
-Lift_Distance_In_Parallel : 
-    brief:  "调平状态下举升的位置"
-    value: 90.0
-Max_Deviation_In_Parallel : 
-    brief:  "调平允许最大偏差"
-    value: 50.0    
-Min_Deviation_In_Parallel : 
-    brief:  "调平允许最小偏差"
-    value: 5.0     
-
-Distance_work : 
-    brief:  "位置"
-    value: 90        
-
-Lift_Distance_In_FitBoard : 
-    brief:  "贴合状态下举升的位置"
-    value: 6.0     
-Max_Deviation_In_FitBoard : 
-    brief:  "贴合允许偏差"
-    value: 20.0    
-Min_Deviation_In_FitBoard : 
-    brief:  "贴合允许偏差"
-    value: 6.0     
-
-Line_Deviation_Threshold : 
-    brief:  "边线调整允许偏差"
-    value: 2.0     
-
-line2 : "#############################################################"
-
-
-
-home_point: 
-    brief: "准备位置(装板)"
-    value: [2.21, -0.25, 1.84, 10, 76.41, 817.17, 1142.71, 1.86, -4.23, 901.36 , 561.06]
-
-prepare_point: 
-    brief: "举升位置(装板)"
-    value: [97.45, 46.27, 11.63, 9.75, 78.81, 1043.36, 1194.38, 0.55, -62.84, 885.0 , 554.58]
-
-# 准备位置(碰钉)
-# home_point: [16.020,-90,0,10.23,76,801, 1095, 0, -12, 1109]
-# 举升位置(碰钉)
-# prepare_point: [16.02,-30,0,10.23,76.01,1034.45,1177.37, 0.8, -71.17, 1162.56]
-
-line3 : "#############################################################"
-
-robot_ip: 
-    brief:  "机器人下位机IP"
-    value: "192.168.1.130"
-
+title: "####################--Robot'configuration--##################"
+line0: "#############################################################"
+velLine:
+  brief: 界面点动限速：平移(毫米)
+  value: 1
+velRotate:
+  brief: 界面点动限速：旋转(度)
+  value: 0.05
+end_vel_limit:
+  brief: 关节运动限速
+  value: [1, 1, 1, 0.05, 0.05, 0.05]
+end_vel_position:
+  brief: 末端运动限速
+  value: [1, 1, 1, 0.05, 0.05, 0.05]
+line1: "#############################################################"
+CYLINDER_INDEX:
+  brief: 推杆关节轴号索引
+  value: 5
+STEER_LEFT_INDEX:
+  brief: 左舵轮索引
+  value: 11
+STEER_RIGHT_INDEX:
+  brief: 右舵轮索引
+  value: 13
+WHEEL_LEFT_INDEX:
+  brief: 左行走轮索引
+  value: 12
+WHEEL_RIGHT_INDEX:
+  brief: 右行走轮索引
+  value: 14
+TOOL_LIFTING:
+  brief: 工具升降索引
+  value: 9
+Lift_Distance_In_Parallel:
+  brief: 调平状态下举升的位置
+  value: 90.0
+Max_Deviation_In_Parallel:
+  brief: 调平允许最大偏差
+  value: 50.0
+Min_Deviation_In_Parallel:
+  brief: 调平允许最小偏差
+  value: 10.0
+Distance_work:
+  brief: 位置
+  value: 90
+Lift_Distance_In_FitBoard:
+  brief: 贴合状态下举升的位置
+  value: 6.0
+Max_Deviation_In_FitBoard:
+  brief: 贴合允许偏差
+  value: 20.0
+Min_Deviation_In_FitBoard:
+  brief: 贴合允许偏差
+  value: 6.0
+Line_Deviation_Threshold:
+  brief: 边线调整允许偏差
+  value: 2.0
+line2: "#############################################################"
+home_point:
+  brief: 准备位置(装板)
+  value: [2.21, -0.25, 1.84, 10, 76.41, 817.17, 1142.71, 1.86, -4.23, 901.36, 561.06]
+prepare_point:
+  brief: 举升位置(装板)
+  value:
+    - 54.696310424804693
+    - 68.518867492675781
+    - -47.904301881790161
+    - 1.951882946940845
+    - 91.961695068760918
+    - 1031.0058413233075
+    - 1157.2461039225261
+    - -0.41605911260551171
+    - 13.628852643464741
+    - 885.000010172526
+    - 561.57920072419302
+    - 0.83545498287887199
+    - -1.6032524972884383e-05
+    - 0.83527108063202571
+    - 4.0972008264037871e-05
+line3: "#############################################################"
+robot_ip:
+  brief: 机器人下位机IP
+  value: 192.168.1.130
 robot_port:
-    brief:  "机器人下位机端口"
-    value: 6999
-
-
-IOA_ip: 
-    brief:  "IOA板IP"
-    value: "192.168.1.201"
-
-IOA_port: 
-    brief:  "IOA板端口"
-    value: 5999
-
-line4 : "#############################################################"
+  brief: 机器人下位机端口
+  value: 6999
+IOA_ip:
+  brief: IOA板IP
+  value: 192.168.1.201
+IOA_port:
+  brief: IOA板端口
+  value: 5999
+line4: "#############################################################"

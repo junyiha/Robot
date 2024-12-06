@@ -58,7 +58,7 @@ void LineDetectorRunner::run() {
                 auto end_time = std::chrono::high_resolution_clock::now();
                  auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
 //                double time_cost = std::chrono::duration<double,std::milli>(end_time-start_time).count();
-                this->logger->info("Line detect cost {} ms",duration.count());
+                // this->logger->info("Line detect cost {} ms",duration.count());
 //                QMutexLocker locker(&this->sharedData->mutex);
                 if(temp_results.empty()){
                     continue;

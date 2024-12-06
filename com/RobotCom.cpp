@@ -104,7 +104,7 @@ DINT RobotCom::RecvData()
 
 DINT RobotCom::SendData()
 {
-    log->info("**************send data******************");
+    //log->info("**************send data******************");
     if (m_CommState == true)
     {
         m_UpperHeartbeat = GetTime();

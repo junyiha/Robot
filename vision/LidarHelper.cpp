@@ -75,7 +75,7 @@ void get_connected_components_info(cv::Mat imageBW, cv::Mat &outImage, cv::Mat &
         //��Ӿ���
         cv::Rect rect(x, y, w, h);
         cv::rectangle(show_rect, rect, cv::Scalar(255,255,0), 2, 8, 0);
-        std::cout << "count:" << i << "  area:" << area << std::endl;
+        //std::cout << "count:" << i << "  area:" << area << std::endl;
     }
 
 
@@ -208,7 +208,7 @@ void LidarHelper::lidarDetecter(cv::Mat img,bool isleft,bool revAngle, \
     //------------筛选出两条直线，得到直线关系,  用于后续测量板间隙任务--------------
     if (linesEnd.size() < 2) {
         error = "没有检测到两条直线";
-        std::cout << "没有检测到两条直线" << std::endl;
+        //std::cout << "没有检测到两条直线" << std::endl;
         return;
     }
 
@@ -218,13 +218,13 @@ void LidarHelper::lidarDetecter(cv::Mat img,bool isleft,bool revAngle, \
 
     if(board.empty()){
         error = "没有检测到绝缘板边";
-        std::cout << "没有检测到绝缘板边" << std::endl;
+        //std::cout << "没有检测到绝缘板边" << std::endl;
         return ;
     }
 
     if(ref.empty()){
         error = "没有检测到已装板线";
-        std::cout << "没有检测到已装板线" << std::endl;
+        //std::cout << "没有检测到已装板线" << std::endl;
         return ;
     }
 
@@ -260,14 +260,14 @@ void LidarHelper::lidarDetecter(cv::Mat img,bool isleft,bool revAngle, \
             }
         }
     }
-    std::cout << "----------------------------------" << std::endl;
-    std::cout << "board_point.x:" << board_point.x <<"\n"<<"ref_point.x:"<<  ref_point.x << std::endl;
-    std::cout <<"refAngle:"<<refAngle << std::endl;
+    // std::cout << "----------------------------------" << std::endl;
+    // std::cout << "board_point.x:" << board_point.x <<"\n"<<"ref_point.x:"<<  ref_point.x << std::endl;
+    // std::cout <<"refAngle:"<<refAngle << std::endl;
 
     lidarDist = (board_point.y - ref_point.y) * cos(refAngle / 57.3) / 10.0;
     gap = fabs(board_point.x - ref_point.x) / 10.0;
-    std::cout << "lidarDist:" << lidarDist << std::endl;
-    std::cout << "gap:" << gap << std::endl;
+    // std::cout << "lidarDist:" << lidarDist << std::endl;
+    // std::cout << "gap:" << gap << std::endl;
     this->resultFlag = true;
     this->show = showImg(board, ref);
 }

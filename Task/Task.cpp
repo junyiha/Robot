@@ -106,7 +106,6 @@ void CTask::Manual()
 {
     if (m_manualOperator.StopCommand)
     {
-        log->info("{},{}: m_Robot->setLinkStop();", __FILE__, __LINE__);
         m_Robot->setLinkStop();
         m_preManualOperator = m_manualOperator;
         return;
@@ -114,7 +113,6 @@ void CTask::Manual()
 
     if (m_manualOperator.HaltCommand)
     {
-        log->info("{},{}: m_Robot->setLinkHalt();", __FILE__, __LINE__);
         m_Robot->setLinkHalt();
         m_preManualOperator = m_manualOperator;
         return;
@@ -126,8 +124,6 @@ void CTask::Manual()
         // 当前指令和上一个指令的VechDirect都为零，判断条件始终成立
         m_Robot->setJointMoveAbs(GP::STEER_LEFT_INDEX, m_manualOperator.VechDirect, velocity);  // 速度需改为参数
         m_Robot->setJointMoveAbs(GP::STEER_RIGHT_INDEX, m_manualOperator.VechDirect, velocity); // 速度需改为参数
-
-        log->info("舵轮旋转目标位置: {}, 速度{}", m_manualOperator.VechDirect, velocity);
     }
 
     double vel_left, vel_right;
@@ -143,9 +139,18 @@ void CTask::Manual()
         vel_left = m_manualOperator.VechVel * 100 - m_manualOperator.RotateVel * 30; // 正转为逆时针
         vel_right = m_manualOperator.VechVel * 100 + m_manualOperator.RotateVel * 30;
 
-        log->info("{},{}: m_Robot->setJointMoveVel(GP::WHEEL_LEFT_INDEX, {});", __FILE__, __LINE__, vel_left);
+        // 解决过速度保护问题
+        if (vel_left > 0)
+            vel_left = (vel_left > 90.0) ? 90 : vel_left;
+        else
+            vel_left = (vel_left < -90.0) ? -90 : vel_left;
+
+        if (vel_right > 0)
+            vel_right = (vel_right > 90.0) ? 90 : vel_right;
+        else
+            vel_right = (vel_right < -90.0) ? -90 : vel_right;
+
         m_Robot->setJointMoveVel(GP::WHEEL_LEFT_INDEX, -vel_left);
-        log->info("{},{}: m_Robot->setJointMoveVel(GP::WHEEL_RIGHT_INDEX, {});", __FILE__, __LINE__, vel_right);
         m_Robot->setJointMoveVel(GP::WHEEL_RIGHT_INDEX, -vel_right);
     }
     else
@@ -162,13 +167,11 @@ void CTask::Manual()
 
     if (m_manualOperator.bLinkMoveFlag && m_manualOperator.Ready != 0)
     {
-        log->info("{},{}: m_Robot->setLinkHalt();", __FILE__, __LINE__);
         m_Robot->setLinkHalt();
     }
     else if (m_manualOperator.Ready == 1)
     {
         // 移动到举升位置
-        log->info("{},{}: m_Robot->setLinkMoveAbs(Postion_Prepare,GP::End_Vel_Limit.data());", __FILE__, __LINE__);
 #ifdef TEST_TASK_STATEMACHINE_
 #else
         std::vector<double> TEMP_LINK_0_JOINT_MAX_VEL_FOR_READY_POINT(MAX_FREEDOM_LINK, 0.0);
@@ -179,7 +182,6 @@ void CTask::Manual()
     else if (m_manualOperator.Ready == 2)
     {
         // 移动到装扮位置
-        log->info("{},{}: m_Robot->setLinkMoveAbs(Postion_Home,GP::End_Vel_Limit.data());", __FILE__, __LINE__);
 #ifdef TEST_TASK_STATEMACHINE_
 #else
         std::vector<double> TEMP_LINK_0_JOINT_MAX_VEL_FOR_SET_POINT(MAX_FREEDOM_LINK, 0.0);
@@ -191,7 +193,6 @@ void CTask::Manual()
     {
         if (m_manualOperator.bEndMove != m_preManualOperator.bEndMove)
         {
-            log->info("{},{}: m_Robot->setLinkHalt();", __FILE__, __LINE__);
             m_Robot->setLinkHalt();
         }
         else
@@ -547,7 +548,7 @@ int CTask::CheckParallelState(std::vector<double> laserDistance, int max_deviati
     {
         if (laserDistance[i] > 450 || laserDistance[i] < -3)
         {
-            log->error("{}激光数据有误,或壁面距离太远", i);
+            log->error("{}: 激光数据有误,或壁面距离太远, 激光编号: {}, 数值: {}", __LINE__, i, laserDistance.at(i));
             return -1;
         }
     }

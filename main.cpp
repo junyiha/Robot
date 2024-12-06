@@ -94,7 +94,7 @@ void laserDemo()
 
 int RunRobot(int argc, char* argv[])
 {
-    QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8")); // 设置中文编码
+    // QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8")); // 设置中文编码
     QApplication a(argc, argv);
     MainWindow w;
     w.setWindowTitle("LNG Panel Loading Robot");

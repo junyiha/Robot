@@ -549,7 +549,7 @@ void MainWindow::slotUpdateUIAll() {
 
     // 8.0 更新指令流转状态
     std::string currentState = m_Task->getCurrentStateString();
-    ui->label_state_transition->setText(QString::fromStdString(currentState));
+    ui->label_state_transition->setText(QString::fromLocal8Bit(currentState.c_str()));
 
 
 }
@@ -687,12 +687,6 @@ void MainWindow::updateAxisStatus() {
 }
 
 void MainWindow::updateLineDetectResults() {
-//
-//    bool isEnable = m_VisionInterface->camera_controls->camerasIsOpened();
-//    if(isEnable){
-////        this->logger->info("相机未全部开启成功,请检查相机连接！");
-//        return;
-//    }
     unsigned pageIndex = ui->stackedWidget_view->currentIndex();
     bool lineStatus = this->getLineStatus();
     if (!lineStatus) { // 实时相机实时检测结果显示
@@ -702,7 +696,6 @@ void MainWindow::updateLineDetectResults() {
         } else if (pageIndex == 1) {
             prefix = "label_line_dist"; // debug页面结果展示
         } else {
-//            this->logger->info("相机页面选择错误");
             return;
         }
         //计算比例系数  结果待确认
@@ -712,10 +705,7 @@ void MainWindow::updateLineDetectResults() {
             laserDisAve += laserdis[i];
         }
         laserDisAve = laserDisAve / laserdis.size();
-//        logger->info("********************ave:{}*************************:", laserDisAve);
         double scale = (laserDisAve + 460) / 470;
-//        double scale = (laserDisAve+465)/1677;
-//        logger->info("********************scale:{}*************************:", scale);
 
         VisionResult visResult = m_VisionInterface->getVisResult();
         if (visResult.lineStatus) {
@@ -744,21 +734,6 @@ void MainWindow::updateLineDetectResults() {
                 }
             }
         }
-
-
-
-
-
-
-//        std::map<std::string, LineDetectRes> res = m_VisionInterface->getLineRes();
-//        for(const auto &item : res){
-//            std::string prefix =  item.first;
-//            size_t index = prefix.find("_");
-//            int number = prefix[index+1]-'0';
-//            float dist = item.second.dist;
-//            // 更新直线检测结果
-//            findChild<QLabel*>("label_cam_dist" + QString::number(number-1))->setText("Dist " + QString::number(number) + ":" + QString::number(dist));
-//        }
     }
 
 }
@@ -1213,11 +1188,6 @@ void MainWindow::updateConnectSta() {
 }
 
 void MainWindow::on_btn_line_detect_clicked() {
-//    bool isEnable = ui->btn_camera_open->isEnabled();
-//    if(isEnable){
-//        this->logger->info("相机未开启");
-//        return;
-//    }
     unsigned pageIndex = ui->stackedWidget_view->currentIndex();
     if (pageIndex != 1) {
         return;
@@ -1635,11 +1605,11 @@ void MainWindow::slots_btn_save_prepare_position_clicked()
     std::vector<double> data;
     for (auto& i : status)
     {
-        if (i.eState != eAxis_STANDSTILL)
-        {
-            res = false;
-            break;
-        }
+        // if (i.eState != eAxis_STANDSTILL)
+        // {
+        //     res = false;
+        //     break;
+        // }
         data.push_back(i.Position);
     }
     if (!res)
