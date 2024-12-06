@@ -53,7 +53,7 @@ namespace Config
 
 	private:
 		YAML::Node m_root;
-		std::string m_path{"D:/Robot/config.yaml"};
+		std::string m_path{ CONFIG_PATH };
 		std::shared_ptr<spdlog::logger> log;
 	};
 }

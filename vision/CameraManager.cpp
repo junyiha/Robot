@@ -4,206 +4,172 @@
 
 #include "CameraManager.h"
 
-bool CameraManager::openCamera(std::string camera_name)
-{
+bool CameraManager::openCamera(std::string camera_name) {
 
-    if (this->cameraList.find(camera_name) != this->cameraList.end())
-    {
+    if(this->cameraList.find(camera_name) != this->cameraList.end()){
         this->cameraList[camera_name]->openCamera();
-        if (this->cameraList[camera_name]->open_status)
-        {
+        if(this->cameraList[camera_name]->open_status){
             this->cameraList[camera_name]->start();
             this->logger->info("open camera {} success", camera_name);
             return true;
-        }
-        else
-        {
+        }else{
             this->logger->error("open camera {} failed", camera_name);
             return false;
         }
-    }
-    else
-    {
+    }else{
         this->logger->error("camera {} not exist", camera_name);
         return false;
     }
 }
 
-CameraManager::CameraManager()
-{
+
+CameraManager::CameraManager() {
+
 
     // ��־�ļ�
     this->logger = spdlog::get("logger");
 
     this->serial2names = {
-        {"DA2603734", "LineCam_1"}, // ok
-        {"DA2720095", "LineCam_2"}, // ok
-        {"DA2720134", "LineCam_3"}, // ok
-        {"DA2720128", "LineCam_4"}, // ok
-        {"DA2461731", "LineCam_5"}, // ok
-        {"DA2461742", "LineCam_6"}, // ok
-        {"DA3218695", "HoleCam_7"}, // ok
-        {"DA3218718", "HoleCam_8"}, // ok
-        {"DA3218690", "HoleCam_9"},
-        {"DA2723075", "HoleCam_10"}};
+            {"DA2603734", "LineCam_1"},  // ok
+            {"DA2720095", "LineCam_2"},  // ok
+            {"DA2720134", "LineCam_3"}, // ok
+            {"DA2720128", "LineCam_4"},  // ok
+            {"DA2461731", "LineCam_5"},  // ok
+            {"DA2461742", "LineCam_6"},  // ok
+            {"DA3218695", "HoleCam_7"},  // ok
+            {"DA3218718", "HoleCam_8"},  // ok
+            {"DA3218690", "HoleCam_9"},
+            {"DA2723075", "HoleCam_10"}
+    };
 
     // this->cameraInfoMap ��ʼ��
     MV_CC_DEVICE_INFO null_dev;
     memset(&null_dev, 0, sizeof(MV_CC_DEVICE_INFO));
     this->cameraInfoMap = {
-        {"LineCam_1", null_dev},
-        {"LineCam_2", null_dev},
-        {"LineCam_3", null_dev},
-        {"LineCam_4", null_dev},
-        {"LineCam_5", null_dev},
-        {"LineCam_6", null_dev},
-        {"HoleCam_7", null_dev},
-        {"HoleCam_8", null_dev},
-        {"HoleCam_9", null_dev},
-        {"HoleCam_10", null_dev},
+            {"LineCam_1",  null_dev},
+            {"LineCam_2",  null_dev},
+            {"LineCam_3",  null_dev},
+            {"LineCam_4",  null_dev},
+            {"LineCam_5",  null_dev},
+            {"LineCam_6",  null_dev},
+            {"HoleCam_7",  null_dev},
+            {"HoleCam_8",  null_dev},
+            {"HoleCam_9",  null_dev},
+            {"HoleCam_10",  null_dev},
     };
 
     this->camera_info = {
-        //            {"cam_1",  "192.168.1.118"},
-        //            {"cam_2",  "192.168.1.115"},
-        //            {"cam_2",  "192.168.1.116"},
-        //            {"cam_3",  "192.168.1.117"},
-        //            {"cam_4",  "192.168.1.112"},
-        //            {"cam_05",  "192.168.1.114"},
-        //            {"cam_06",  "192.168.1.115"}
+//            {"cam_1",  "192.168.1.118"},
+//            {"cam_2",  "192.168.1.115"},
+//            {"cam_2",  "192.168.1.116"},
+//            {"cam_3",  "192.168.1.117"},
+//            {"cam_4",  "192.168.1.112"},
+//            {"cam_05",  "192.168.1.114"},
+//            {"cam_06",  "192.168.1.115"}
     };
 
-    // �Զ�ö�پ������ڵ��������cameraInfoMap���и�ֵ
+    //�Զ�ö�پ������ڵ��������cameraInfoMap���и�ֵ
     this->getDeviceList();
 
-    if (this->m_stDevList.nDeviceNum == 0)
-    {
+    if(this->m_stDevList.nDeviceNum==0){
         this->logger->info("no device found");
-        //        return ;
+//        return ;
     }
     // ��ʼ���������
-    for (auto &camera_info : this->cameraInfoMap)
-    {
-        //        this->cameraList[camera_info.first] = new HKCameraControls(camera_info.first.data(), camera_info.second.data(), this->ethIp);
+    for (auto &camera_info : this->cameraInfoMap) {
+//        this->cameraList[camera_info.first] = new HKCameraControls(camera_info.first.data(), camera_info.second.data(), this->ethIp);
         this->cameraList[camera_info.first] = new HKCameraControls(camera_info.second, camera_info.first.data());
-        //        this->cameraList[camera_info.first]->start();
+//        this->cameraList[camera_info.first]->start();
     }
     // �����߳�, ���������
     this->openCameraAll();
+
 }
 
-bool CameraManager::closeCamera(std::string camera_name)
-{
-    if (this->cameraList.find(camera_name) != this->cameraList.end())
-    {
+bool CameraManager::closeCamera(std::string camera_name) {
+    if(this->cameraList.find(camera_name) != this->cameraList.end()){
         this->cameraList[camera_name]->closeCamera();
         this->logger->info("close camera {} success", camera_name);
         return true;
-    }
-    else
-    {
+    }else{
         this->logger->error("camera {} not exist", camera_name);
         return false;
     }
 }
 
-cv::Mat CameraManager::getImage(std::string camera_name)
-{
+cv::Mat CameraManager::getImage(std::string camera_name) {
     cv::Mat image;
-    if (this->cameraList.find(camera_name) != this->cameraList.end())
-    {
+    if(this->cameraList.find(camera_name) != this->cameraList.end()){
         image = this->cameraList[camera_name]->getFrame();
     }
     return image;
 }
 
-void CameraManager::openCameraAll()
-{
+void CameraManager::openCameraAll() {
     this->start();
 }
 
-CameraManager::~CameraManager()
-{
-    for (auto &camera : this->cameraList)
-    {
-        this->cameraList[camera.first]->closeCamera();
-        delete this->cameraList[camera.first];
-    }
+CameraManager::~CameraManager() {
+     for (auto &camera : this->cameraList) {
+         this->cameraList[camera.first]->closeCamera();
+         delete this->cameraList[camera.first];
+     }
 }
 
-void CameraManager::getImageAll(std::string camType)
-{
+void CameraManager::getImageAll(std::string camType) {
     // ��ȡ�������ͼ��
     this->dataMutex.lock();
-    if (this->cameraImages.size() > 0)
-    {
+    if(this->cameraImages.size()>0){
         this->cameraImages.clear();
     }
 
-    for (auto &camera : this->cameraList)
-    {
+    for (auto &camera : this->cameraList) {
         cv::Mat image = this->cameraList[camera.first]->getFrame();
 
-        if (camType == "Line")
-        { // �˳���λ���
-            if (camera.first.find("HoleCam") != std::string::npos)
-            {
+        if(camType =="Line"){ // �˳���λ���
+            if(camera.first.find("HoleCam") != std::string::npos){
                 continue;
             }
         }
 
-        if (camType == "Hole")
-        { // �˳���λ���
-            if (camera.first.find("LineCam") != std::string::npos)
-            {
+        if(camType =="Hole"){// �˳���λ���
+            if(camera.first.find("LineCam") != std::string::npos){
                 continue;
             }
         }
 
-        if (!image.empty())
-        {
+        if(!image.empty()){
             this->cameraImages[camera.first] = image;
-        }
-        else
-        {
+        }else{
             image = cv::Mat();
-            //            this->cameraImages[camera.first] = image;
+//            this->cameraImages[camera.first] = image;
             this->logger->error("********************get image from camera {} failed**************************", camera.first);
         }
     }
     this->dataMutex.unlock();
 }
 
-bool CameraManager::closeCameraAll()
-{
-    for (auto &camera : this->cameraList)
-    {
+bool CameraManager::closeCameraAll() {
+    for (auto &camera : this->cameraList) {
         this->cameraList[camera.first]->closeCamera();
         this->logger->info("close camera {} successed", camera.first);
     }
     return 0;
 }
 
-std::map<std::string, cv::Mat> CameraManager::getCameraImages(std::string camType)
-{
+std::map<std::string, cv::Mat> CameraManager::getCameraImages(std::string camType){
     std::map<std::string, cv::Mat> cameraImages;
     this->dataMutex.lock();
-    if (this->cameraImages.size() > 0)
-    {
-        for (auto &item : this->cameraImages)
-        {
-            if (camType == "Line")
-            { // �˳���λ���
-                if (item.first.find("HoleCam") != std::string::npos)
-                {
+    if(this->cameraImages.size()>0){
+        for(auto &item : this->cameraImages){
+            if(camType =="Line"){ // �˳���λ���
+                if(item.first.find("HoleCam") != std::string::npos){
                     continue;
                 }
             }
 
-            if (camType == "Hole")
-            { // �˳���λ���
-                if (item.first.find("LineCam") != std::string::npos)
-                {
+            if(camType =="Hole"){// �˳���λ���
+                if(item.first.find("LineCam") != std::string::npos){
                     continue;
                 }
             }
@@ -214,109 +180,97 @@ std::map<std::string, cv::Mat> CameraManager::getCameraImages(std::string camTyp
     return cameraImages;
 }
 
-void CameraManager::getDeviceList()
-{
+void CameraManager::getDeviceList() {
     int nRet;
     nRet = MV_CC_EnumDevices(MV_GIGE_DEVICE | MV_USB_DEVICE, &m_stDevList);
-    if (nRet != MV_OK)
-    {
+    if (nRet != MV_OK){
         this->logger->info("MV_CC_EnumDevices failed!");
-        return;
+        return ;
     }
     this->logger->info("find {} device", m_stDevList.nDeviceNum);
     // �Զ�������
-    for (int i = 0; i < m_stDevList.nDeviceNum; i++)
-    {
+    for (int i = 0; i < m_stDevList.nDeviceNum; i++) {
         MV_CC_DEVICE_INFO stDevInfo;
         memcpy(&stDevInfo, m_stDevList.pDeviceInfo[i], sizeof(MV_CC_DEVICE_INFO));
-        std::string serial_number = reinterpret_cast<const char *>(m_stDevList.pDeviceInfo[i]->SpecialInfo.stGigEInfo.chSerialNumber);
-        if (this->serial2names.find(serial_number) == this->serial2names.end())
-        {
+        std::string serial_number =  reinterpret_cast<const char*>(m_stDevList.pDeviceInfo[i]->SpecialInfo.stGigEInfo.chSerialNumber);
+        if(this->serial2names.find(serial_number) == this->serial2names.end()){
             this->logger->error("camera {} not in serial2names", serial_number);
             continue;
+
         }
         this->cameraInfoMap[this->serial2names[serial_number]] = stDevInfo;
-    }
+   }
+
 }
 
-void CameraManager::closeAllCameraThread()
-{
+void CameraManager::closeAllCameraThread() {
 
-    if (this->cameraList.size() > 0)
-    {
-        for (auto &camera : this->cameraList)
-        {
+    if(this->cameraList.size()>0){
+        for (auto &camera : this->cameraList) {
             this->cameraList[camera.first]->closeThread();
         }
     }
 }
 
-void CameraManager::run()
-{
+void CameraManager::run() {
 
     // �����߳�, ���������
-    for (auto &camera : this->cameraList)
-    {
+    for (auto &camera : this->cameraList) {
         this->cameraList[camera.first]->openCamera();
-        if (!this->cameraList[camera.first]->open_status)
-        {
+        if(!this->cameraList[camera.first]->open_status){
             this->logger->info("open camera {} failed", camera.first);
-            continue;
-        }
-        else
-        {
+            continue ;
+        }else{
             this->cameraList[camera.first]->start();
             this->logger->info("open camera {} successed", camera.first);
         }
+
     }
 }
 
-std::vector<bool> CameraManager::checkCameraIsAccessible()
-{
+std::vector<bool> CameraManager::checkCameraIsAccessible() {
     std::vector<bool> isAccessible;
-    for (const auto &camera : this->cameraList)
-    {
+    for(const auto &camera : this->cameraList){
         size_t index = camera.first.find("_");
-        int number = camera.first[index + 1] - '0';
+        int number = camera.first[index+1]-'0';
         bool is_Acc = camera.second->cameraIsAccessible();
-        isAccessible[number - 1] = is_Acc;
+        isAccessible[number-1] = is_Acc;
     }
     return isAccessible;
 }
 
-std::vector<bool> CameraManager::getCameraOpenedInfo()
-{
+std::vector<bool> CameraManager::getCameraOpenedInfo() {
     std::vector<bool> isOpened(this->cameraList.size());
-    for (const auto &camera : this->cameraList)
-    {
-        //        size_t index = camera.first.find("_");
-        //        int number = camera.first[index+1]-'0';
-        //        if(index!=prefix_.size()-1){
-        //            number = (prefix_[index]-'0')*10+(prefix_[index+1]-'0');
-        //        }
+    for(const auto &camera : this->cameraList){
+//        size_t index = camera.first.find("_");
+//        int number = camera.first[index+1]-'0';
+//        if(index!=prefix_.size()-1){
+//            number = (prefix_[index]-'0')*10+(prefix_[index+1]-'0');
+//        }
 
         std::string prefix_ = camera.first;
-        size_t index = prefix_.find("_") + 1;
-        int number = prefix_[index] - '0';
-        if (index != prefix_.size() - 1)
-        {
-            number = (prefix_[index] - '0') * 10 + (prefix_[index + 1] - '0');
+        size_t index = prefix_.find("_")+1;
+        int number = prefix_[index]-'0';
+        if(index!=prefix_.size()-1){
+            number = (prefix_[index]-'0')*10+(prefix_[index+1]-'0');
         }
 
-        isOpened[number - 1] = camera.second->getDeviceConnectStatus();
+
+        isOpened[number-1] = camera.second->getDeviceConnectStatus();
     }
     return isOpened;
 }
 
-bool CameraManager::camerasIsOpened()
-{
+bool CameraManager::camerasIsOpened() {
     std::vector<bool> res = this->getCameraOpenedInfo();
-    for (int i = 0; i < res.size(); i++)
-    {
-        if (!res[i])
-        {
+    for(int i=0; i<res.size(); i++){
+        if(!res[i]){
             return false;
         }
     }
     return true;
 }
+
+
+
+

@@ -35,7 +35,7 @@ void initLog()
     auto rotating_sink = std::make_shared<spdlog::sinks::rotating_file_sink_mt>("logs/rotating.txt", 1048576 * 5, 100);
 
     // 同步记录器，
-    std::vector<spdlog::sink_ptr> sinks{console_sink, rotating_sink};
+    std::vector<spdlog::sink_ptr> sinks{ console_sink, rotating_sink };
     auto logger = std::make_shared<spdlog::logger>("logger", sinks.begin(), sinks.end());
 
     spdlog::register_logger(logger);              // 注册为全局日志，通过log_write访问;
@@ -74,7 +74,7 @@ void line_detect_demo()
 void laserDemo()
 {
 
-    const char *port = "COM2";
+    const char* port = "COM2";
     LaserDistanceBojke laserTool;
     bool ret = laserTool.open(port);
 
@@ -92,7 +92,7 @@ void laserDemo()
     QThread::sleep(3000 * 10);
 }
 
-int RunRobot(int argc, char *argv[])
+int RunRobot(int argc, char* argv[])
 {
     QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8")); // 设置中文编码
     QApplication a(argc, argv);
@@ -102,7 +102,7 @@ int RunRobot(int argc, char *argv[])
     return a.exec();
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
     return RunRobot(argc, argv);
 
