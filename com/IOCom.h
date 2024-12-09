@@ -47,6 +47,8 @@
 #define DI_LEN 2  // DI数组数据长度
 #define AI_NUM 16 // AI数量
 
+using byte = unsigned char;
+
 class IOCom : public TcpCom_IO
 {
     Q_OBJECT
@@ -109,7 +111,7 @@ private:
     byte m_DIState[DI_LEN];
     unsigned short m_AISate[AI_NUM];
 
-    QTimer *m_cIOSendAndRecvTimer;
+    QTimer* m_cIOSendAndRecvTimer;
 
     QMutex mutex_send;
     QMutex mutex_recv;

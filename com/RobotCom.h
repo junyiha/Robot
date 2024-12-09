@@ -17,7 +17,7 @@
 #include <QAtomicPointer>
 #include <QMutex>
 
-#include "TcpCom.h"
+#include "com/TcpCom.h"
 
 #define endPosAdjMaxCount 100
 
@@ -46,9 +46,9 @@ private:
     ULONG m_Hour;
     ULONG m_endhour;
 
-    QTimer *m_crobotSendTimer;
-    QTimer *m_crobotRecvTimer;
-    QTimer *m_endPosSendTimer;
+    QTimer* m_crobotSendTimer;
+    QTimer* m_crobotRecvTimer;
+    QTimer* m_endPosSendTimer;
 
     QMutex mutex_send;
     QMutex mutex_Read;
@@ -67,7 +67,7 @@ public:
      * @param distance 方向
      * @return [不确定]
      */
-    // bool setJointMotionRT(uint joint_index, eMC_Motion mode, double pos, double vel, double end_vel, double distance);
+     // bool setJointMotionRT(uint joint_index, eMC_Motion mode, double pos, double vel, double end_vel, double distance);
 
 public slots:
     //****************通信相关接口函数***************
@@ -118,7 +118,7 @@ public:
      * @param underTool 是否在工具系下
      * @attention 函数实现需下位机编写相关程序
      */
-    void EndPosMove(double *dp, bool underTool = false);
+    void EndPosMove(double* dp, bool underTool = false);
 
     /**
      * @brief RobotReset 机器人重置函数 控制整体运动
@@ -157,15 +157,15 @@ public:
      * @param vel 速度
      * @param freedom 自由度
      */
-    // void RobotMove(E_MotionMode mode, double pos[], double vel[], uint freedom);
+     // void RobotMove(E_MotionMode mode, double pos[], double vel[], uint freedom);
 
-    //************臂/车控制相关接口函数*************
+     //************臂/车控制相关接口函数*************
 
-    /**
-     * @brief LinkReset link重置函数
-     * @param index 轴索引序号
-     * @attention 原定参数无误返回true
-     */
+     /**
+      * @brief LinkReset link重置函数
+      * @param index 轴索引序号
+      * @attention 原定参数无误返回true
+      */
     void LinkReset(uint index);
 
     /**

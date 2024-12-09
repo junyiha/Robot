@@ -16,7 +16,7 @@
 #ifndef CLINTEST_BOARDINGTOOL_H
 #define CLINTEST_BOARDINGTOOL_H
 
-#include "IOCom.h"
+#include "com/IOCom.h"
 #include <QObject>
 #include <Eigen/Dense>
 

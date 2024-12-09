@@ -6,21 +6,7 @@
 #include <QVector>
 #include <QDebug>
 
-#include "../GVL.h"
-
-// typedef struct DataofMeasurement
-//{
-//     double          m_LaserDistance[8];     //点激光数据，前4个为大量程点激光，后4个为小量程点激光
-//     bool            m_bLaserDistance[8];    //点激光数据有效性
-//     double          m_LineDistance[10];     //边线距离
-//     bool            m_bLineDistance[10];    //边线距离数据有效性
-//     double          m_LaserGapHeight[5];    //板高差
-//     double          m_LaserGapDistance[5];  //板间距
-//     bool            m_bLaserProfile[5];     //板高差数据有效性
-//     Eigen::Vector2f m_HoleDev[4];           //孔偏差
-//     bool            m_bHoleDev[4];          //孔偏差
-//     double          m_JointStatusTool;         //工具在关节空间的当前坐标
-// }stMeasureData;
+#include "GVL.h"
 
 typedef struct DataofMeasurement
 {
@@ -36,7 +22,7 @@ typedef struct DataofMeasurement
     double m_JointStatusTool;     // 工具在关节空间的当前坐标
 
     // 重载赋值运算符
-    DataofMeasurement &operator=(const DataofMeasurement &other)
+    DataofMeasurement& operator=(const DataofMeasurement& other)
     {
         if (this != &other) // 防止自赋值
         {

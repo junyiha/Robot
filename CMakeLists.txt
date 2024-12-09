@@ -6,10 +6,8 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-# set(CMAKE_PREFIX_PATH "D:/soft/Qt5.14.0/5.14.0/msvc2017_64")
 set(BaseDIR D:/)
 set(CMAKE_PREFIX_PATH "D:/soft/qt5.14/5.14.0/msvc2017_64")
-#set(BaseDIR E:/znzz/codes/qt/PDRootV1)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W0")
 

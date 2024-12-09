@@ -8,10 +8,8 @@
  * @copyright Copyright (c) 2024
  *
  */
-#include "mainwindow.h"
 #include <QApplication>
 #include <string>
-#include "vision/VisionInterface.h"
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
@@ -20,8 +18,10 @@
 #include <QTextCodec>
 #include <clocale>
 #include <Eigen/Eigen>
-#include "com/LaserDistanceBojke.h"
 
+#include "mainwindow.h"
+#include "vision/VisionInterface.h"
+#include "com/LaserDistanceBojke.h"
 #include "cxxopts.hpp"
 
 void initLog()
@@ -47,7 +47,6 @@ void initLog()
 
 void line_detect_demo()
 {
-
     std::string path = "E:\\ZBRobot\\Robot\\cache\\Image_20241011110413922.bmp";
     cv::Mat img = cv::imread(path);
     LineDetector line_tool;
@@ -73,7 +72,6 @@ void line_detect_demo()
 
 void laserDemo()
 {
-
     const char* port = "COM2";
     LaserDistanceBojke laserTool;
     bool ret = laserTool.open(port);
@@ -94,7 +92,6 @@ void laserDemo()
 
 int RunRobot(int argc, char* argv[])
 {
-    // QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8")); // 设置中文编码
     QApplication a(argc, argv);
     MainWindow w;
     w.setWindowTitle("LNG Panel Loading Robot");

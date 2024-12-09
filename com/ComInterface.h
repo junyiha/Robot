@@ -27,10 +27,10 @@ class ComInterface : public QThread
     Q_OBJECT
 public:
     //饿汉式单例模式
-    static ComInterface *getInstance();
+    static ComInterface* getInstance();
     ComInterface(const ComInterface&) = delete;
     ComInterface& operator = (const ComInterface&) = delete;
-    explicit ComInterface(QObject *parent = nullptr);
+    explicit ComInterface(QObject* parent = nullptr);
     ~ComInterface();
     void closeThread();
     CManual     m_cManual;
@@ -85,7 +85,7 @@ public:
      * @brief getLasersStatus 获取点激光的测距数据
      * @return 长度为5的double向量，前四个为高精度点激光,[4]为距离均值，[5],最大偏差
      */
-    //QVector<double> getLasersDistance();
+     //QVector<double> getLasersDistance();
 
 
     QVector<double> getLasersDistanceBoardingByBojke();
@@ -104,7 +104,7 @@ public:
     * @param vel:   设定速度
     * @return
     */
-    void setLinkJointMoveAbs(uint index, double pos[],double vel[]);
+    void setLinkJointMoveAbs(uint index, double pos[], double vel[]);
 
     /**
     * @brief 轴组关节速度
@@ -134,8 +134,8 @@ public:
      *
      * @param m_Manual: 遥控器指令数据
      */
-    void getManual(stManualCmd &m_Manual);
-    void getManual(stManualOperator &m_Manual);
+    void getManual(stManualCmd& m_Manual);
+    void getManual(stManualOperator& m_Manual);
     //xxxxxxxxx未定义
 
     //*************机器人控制相关接口信号*************
@@ -287,7 +287,7 @@ public:
      * @param distance 方向
      * @return [不确定]
      */
-    bool setJointGroupMove(eMC_Motion mode, const double pos[] = NULL, const double vel[]=NULL, double end_vel[]=NULL, double distance[]=NULL);
+    bool setJointGroupMove(eMC_Motion mode, const double pos[] = NULL, const double vel[] = NULL, double end_vel[] = NULL, double distance[] = NULL);
 
 
 
@@ -303,14 +303,14 @@ public:
      * @brief getCommState_Robot 获取机器人连接状态
      * @return 已连接则true
      */
-    bool getCommState_Robot(){return m_cRobot.getCommState();}
+    bool getCommState_Robot() { return m_cRobot.getCommState(); }
 
     /**
      * @brief getCommState_IOA 获取IOA板子连接状态
      * @return 已连接则true
      */
-    bool getCommState_IOA(){return m_cToolsBoarding.m_cIOA.getCommState();}
-    bool getCommState_IOB(){return m_cTools.m_cIOB.getCommState();}
+    bool getCommState_IOA() { return m_cToolsBoarding.m_cIOA.getCommState(); }
+    bool getCommState_IOB() { return m_cTools.m_cIOB.getCommState(); }
 
     /**
      * @brief 激光控制

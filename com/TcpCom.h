@@ -18,9 +18,10 @@
 #include <mutex>
 #include <QTcpSocket>
 #include <QDebug>
-#include "../robot/DataStruct.h"
 #include <iostream>
 #include <spdlog/spdlog.h>
+
+#include "robot/DataStruct.h"
 #pragma comment(lib, "ws2_32.lib")
 
 #define CONNECT_TIMES 10
@@ -41,7 +42,7 @@ public:
      * @param port
      * @return
      */
-    int ConnectToServer(const char *IpAdr, const int port);
+    int ConnectToServer(const char* IpAdr, const int port);
 
     /**
      * @brief close

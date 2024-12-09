@@ -36,18 +36,18 @@ enum ECommadforTask
 };
 
 // 装板机器人
-const std::vector<double> BOARDING_MOTION_QUE = {60, 30, 20, 15, 10, 5, 0}; // 贴合运动序列
+const std::vector<double> BOARDING_MOTION_QUE = { 60, 30, 20, 15, 10, 5, 0 }; // 贴合运动序列
 
 // 碰钉动作序列，及动作周期数(50ms)，根据实际工艺调整；eWeld_Up eWeld_Down绑定了接触器，必须保留
-const QVector<E_WeldAction> ActionList = {eGrind_MovorOff, eGrind_OnorDown, eGrind_Up, eGrind_OnorDown, eGrind_MovorOff, eWeld_MovorDwon, eWeld_Fix, eWeld_Up, eWeld_On, eWeld_Down, eInitAction};
-const QVector<int> ActionTime = {40, 20, 100, 20, 20, 40, 40, 40, 40, 40, 5};
-const QVector<std::string> ActionName = {"GrindMovorOff", "Grind_OnorDown", "Grind_Up", "Weld_MovorDwon", "Grind_MovorOff", "Weld_MovorDwon", "Weld_Fix", "Weld_Up", "Weld_On", "Weld_Down", "InitAction"};
+const QVector<E_WeldAction> ActionList = { eGrind_MovorOff, eGrind_OnorDown, eGrind_Up, eGrind_OnorDown, eGrind_MovorOff, eWeld_MovorDwon, eWeld_Fix, eWeld_Up, eWeld_On, eWeld_Down, eInitAction };
+const QVector<int> ActionTime = { 40, 20, 100, 20, 20, 40, 40, 40, 40, 40, 5 };
+const QVector<std::string> ActionName = { "GrindMovorOff", "Grind_OnorDown", "Grind_Up", "Weld_MovorDwon", "Grind_MovorOff", "Weld_MovorDwon", "Weld_Fix", "Weld_Up", "Weld_On", "Weld_Down", "InitAction" };
 
 class CTask : public QThread
 {
     Q_OBJECT
 public:
-    explicit CTask(ComInterface *comm, CRobot *robot, VisionInterface *vision, QObject *parent = nullptr);
+    explicit CTask(ComInterface* comm, CRobot* robot, VisionInterface* vision, QObject* parent = nullptr);
 
     /**
      * @brief 传感器状态值.
@@ -66,9 +66,9 @@ public:
     QAtomicInt ButtonIndex; // 当前点击按钮索引
 
 protected:
-    CRobot *m_Robot{nullptr};
-    ComInterface *m_Comm{nullptr};
-    VisionInterface *m_vision{nullptr};
+    CRobot* m_Robot{ nullptr };
+    ComInterface* m_Comm{ nullptr };
+    VisionInterface* m_vision{ nullptr };
 
     stLinkStatus m_LinkStatus;                  // 机器人状态状态
     QVector<st_ReadAxis> m_JointGroupStatus;    // 轴组状态
@@ -84,7 +84,7 @@ protected:
 
     //  机器人
     QMutex mutex_read;
-    bool c_running{true};
+    bool c_running{ true };
     std::shared_ptr<spdlog::logger> log;
 
 protected:
@@ -102,11 +102,11 @@ protected:
     /**
      * @brief 自动作业过程
      */
-    // void AutoProgrcess();
+     // void AutoProgrcess();
 
-    /**
-     * @brief 手动操作指令处理
-     */
+     /**
+      * @brief 手动操作指令处理
+      */
     void Manual();
 
     /**
@@ -313,7 +313,7 @@ private:
     /**
      * @brief 更新视觉数据.
      */
-    void UpdateVisionResult(VisionResult &vis_res);
+    void UpdateVisionResult(VisionResult& vis_res);
 
 public:
     /**
@@ -362,16 +362,16 @@ private:
     void TranslateManualTaskIndexNumberToCMD();
 
 private:
-    ETopState m_etopState{ETopState::eManual};
-    ESubState m_esubState{ESubState::eNotReady};
-    EExecutionCommand m_eexecutionCommand{EExecutionCommand::eNULL};
+    ETopState m_etopState{ ETopState::eManual };
+    ESubState m_esubState{ ESubState::eNotReady };
+    EExecutionCommand m_eexecutionCommand{ EExecutionCommand::eNULL };
 
 private:
     std::mutex m_mutex;
-    bool m_position_motion_flag{false};
-    uint m_motion_index{0};
-    std::vector<double> m_fit_board_target_pose{0, 0, 0, 0, 0, 0};
-    double m_lift_tool{0.0};
+    bool m_position_motion_flag{ false };
+    uint m_motion_index{ 0 };
+    std::vector<double> m_fit_board_target_pose{ 0, 0, 0, 0, 0, 0 };
+    double m_lift_tool{ 0.0 };
 
     std::map<ETopState, std::pair<std::string, std::string>> TopStateStringMap{
         {ETopState::eManual, {"手动", "Manual"}},
@@ -380,7 +380,7 @@ private:
         {ETopState::eFitBoard, {"贴合", "FitBoard"}},
         {ETopState::eReadToMagentOn, {"待吸合", "ReadToMagentOn"}},
         {ETopState::eDoWeld, {"碰钉", "DoWeld"}},
-        {ETopState::eQuit, {"退出", "Quit"}}};
+        {ETopState::eQuit, {"退出", "Quit"}} };
     std::map<ESubState, std::pair<std::string, std::string>> SubStateStringMap{
         {ESubState::eNULL, {"空状态", "NULL"}},
         {ESubState::eNotReady, {"未就绪", "NotReady"}},
@@ -397,7 +397,7 @@ private:
         {ESubState::eDoingWeld, {"碰钉中", "DoingWeld"}},
         {ESubState::eStopWeld, {"碰钉停止", "StopWeld"}},
         {ESubState::eQuiting, {"退出中", "Quiting"}},
-        {ESubState::ePause, {"暂停", "Pause"}}};
+        {ESubState::ePause, {"暂停", "Pause"}} };
     std::map<EExecutionCommand, std::string> ExecutionCommandStringMap{
         {EExecutionCommand::eNULL, "空指令"},
         {EExecutionCommand::eManual, "手动指令"},
@@ -410,7 +410,7 @@ private:
         {EExecutionCommand::eQuit, "退出"},
         {EExecutionCommand::eAutoWeld, "自动碰钉"},
         {EExecutionCommand::eMagentOff, "脱开"},
-        {EExecutionCommand::eStopWeld, "停止碰钉"}};
+        {EExecutionCommand::eStopWeld, "停止碰钉"} };
 };
 
 #endif // CTASK_H

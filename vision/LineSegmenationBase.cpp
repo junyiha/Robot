@@ -7,7 +7,8 @@
 using namespace std;
 using namespace Ort;
 
-LineSegmenationBase::LineSegmenationBase() {
+LineSegmenationBase::LineSegmenationBase()
+{
 
     // std::string model_path = "../models/pp_liteseg_stdc1_softmax_20241021.onnx";
     std::string model_path = "E:/projects/zjy/Robot-zb/models/pp_liteseg_stdc1_softmax_20241021.onnx";
@@ -23,12 +24,15 @@ LineSegmenationBase::LineSegmenationBase() {
 
     std::vector<std::string> availableProviders = Ort::GetAvailableProviders();
     auto cudaAvailable = std::find(availableProviders.begin(), availableProviders.end(), "CUDAExecutionProvider");
-    if (onnx_provider == OnnxProviders::CUDA.c_str()) {  // strcmp(provider, OnnxProviders::CUDA.c_str()) == true strcmp(provider, "cuda") // (providerStr == "cuda")
-        if (cudaAvailable == availableProviders.end()) {
+    if (onnx_provider == OnnxProviders::CUDA.c_str())
+    {  // strcmp(provider, OnnxProviders::CUDA.c_str()) == true strcmp(provider, "cuda") // (providerStr == "cuda")
+        if (cudaAvailable == availableProviders.end())
+        {
             std::cout << "CUDA is not supported by your ONNXRuntime build. Fallback to CPU." << std::endl;
             //std::cout << "Inference device: CPU" << std::endl;
         }
-        else {
+        else
+        {
             std::cout << "Inference device: GPU" << std::endl;
             OrtCUDAProviderOptions cuda_options{ 0 };
             //            cuda_options.gpu_mem_limit = 10*1024*1024*1024; // 显存限制在10G
@@ -38,8 +42,9 @@ LineSegmenationBase::LineSegmenationBase() {
             sessionOptions.AppendExecutionProvider_CUDA(cuda_options);
         }
     }
-    else if (onnx_provider == OnnxProviders::CPU.c_str()) {  // strcmp(provider, OnnxProviders::CPU.c_str()) == true) (providerStr == "cpu") {
-        // "cpu" by default
+    else if (onnx_provider == OnnxProviders::CPU.c_str())
+    {  // strcmp(provider, OnnxProviders::CPU.c_str()) == true) (providerStr == "cpu") {
+// "cpu" by default
     }
     else
     {
@@ -72,39 +77,47 @@ LineSegmenationBase::LineSegmenationBase() {
     this->inpWidth = input_node_dims[0][3];
 }
 
-void LineSegmenationBase::init_model() {
+void LineSegmenationBase::init_model()
+{
 
     std::cout << "init model" << std::endl;
     std::cout << "input_names: " << input_names[0] << std::endl;
-    for (int i = 0; i < output_node_dims.size(); i++) {
+    for (int i = 0; i < output_node_dims.size(); i++)
+    {
         std::cout << "input_node_dims: " << output_node_dims[i][0] << " " << output_node_dims[i][1] << " " << output_node_dims[i][2] << std::endl;
     }
 }
 
 // 批量对图像进行推理
-LineSegmenationBase::~LineSegmenationBase() {
+LineSegmenationBase::~LineSegmenationBase()
+{
 
 }
 
-cv::Mat LineSegmenationBase::get_input_tensor(cv::Mat inputImg) {
+cv::Mat LineSegmenationBase::get_input_tensor(cv::Mat inputImg)
+{
 
     // 图像预处理
     cv::Mat img_resize, img;
     cv::Mat blob;
 
-    if (inputImg.channels() == 1) {
+    if (inputImg.channels() == 1)
+    {
         cv::cvtColor(inputImg, img, cv::COLOR_GRAY2RGB);
     }
-    else {
+    else
+    {
         img = inputImg;
     }
 
     int imgW = img.cols;
     int imgH = img.rows;
-    if (imgW == this->inpWidth && imgH == this->inpHeight) {
+    if (imgW == this->inpWidth && imgH == this->inpHeight)
+    {
         img_resize = img;
     }
-    else {
+    else
+    {
         cv::resize(img, img_resize, cv::Size(this->inpWidth, this->inpHeight));
     }
 
@@ -116,7 +129,8 @@ cv::Mat LineSegmenationBase::get_input_tensor(cv::Mat inputImg) {
 
 
 
-void LineSegmenationBase::Normalize(cv::Mat src, cv::Mat& dst) {
+void LineSegmenationBase::Normalize(cv::Mat src, cv::Mat& dst)
+{
 
     //    vector<float> mean_value{0.406, 0.456, 0.485};
     //    vector<float> std_value{0.225, 0.224, 0.229};
@@ -134,7 +148,8 @@ void LineSegmenationBase::Normalize(cv::Mat src, cv::Mat& dst) {
 }
 
 
-cv::Mat LineSegmenationBase::computeArgmax(const cv::Mat& input) {   //softmax 函数实现
+cv::Mat LineSegmenationBase::computeArgmax(const cv::Mat& input)
+{   //softmax 函数实现
 
     int rows = input.rows;
     int cols = input.cols;
@@ -142,13 +157,17 @@ cv::Mat LineSegmenationBase::computeArgmax(const cv::Mat& input) {   //softmax �
 
     cv::Mat argmaxImage(rows, cols, CV_8UC1); // 创建一个用于存储每像素最大值通道索引的矩阵，类型为32位有符号整数
 
-    for (int row = 0; row < rows; ++row) {
-        for (int col = 0; col < cols; ++col) {
+    for (int row = 0; row < rows; ++row)
+    {
+        for (int col = 0; col < cols; ++col)
+        {
             float* ptr_ = const_cast<float*>(input.ptr<float>(row, col));
             int maxIdx = 0;
             float maxValue = ptr_[0];
-            for (int channel = 1; channel < channels; ++channel) {
-                if (ptr_[channel] > maxValue) {
+            for (int channel = 1; channel < channels; ++channel)
+            {
+                if (ptr_[channel] > maxValue)
+                {
                     maxValue = ptr_[channel];
                     maxIdx = channel;
                 }
@@ -160,7 +179,8 @@ cv::Mat LineSegmenationBase::computeArgmax(const cv::Mat& input) {   //softmax �
 }
 
 
-cv::Mat LineSegmenationBase::predict(cv::Mat img) {
+cv::Mat LineSegmenationBase::predict(cv::Mat img)
+{
 
     cv::Mat input_img = this->get_input_tensor(img);
 
@@ -185,7 +205,8 @@ cv::Mat LineSegmenationBase::predict(cv::Mat img) {
     return mask_index;
 }
 
-cv::Mat LineSegmenationBase::post_process(cv::Mat res) {
+cv::Mat LineSegmenationBase::post_process(cv::Mat res)
+{
     cv::Mat argmax;
     res = res.reshape(0, { outputChannels, outputHeight * outputWidth }).t();
     res = res.reshape(outputChannels, { outputHeight, outputWidth });
@@ -193,7 +214,8 @@ cv::Mat LineSegmenationBase::post_process(cv::Mat res) {
     return argmax;
 }
 
-void LineSegmenationBase::imageEnhance(cv::Mat& img) {
+void LineSegmenationBase::imageEnhance(cv::Mat& img)
+{
 
     // 直方图均衡化
     cv::equalizeHist(img, img);

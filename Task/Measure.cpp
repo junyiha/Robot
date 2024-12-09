@@ -1,6 +1,4 @@
 ﻿#include "Measure.h"
-#include "qdebug.h"
-#include "../robot/robot.h"
 
 // 2024年5月14日 17点11分
 /* 碰钉偏差计算
@@ -9,7 +7,7 @@
  */
 QVector<Eigen::Matrix4d> CMeasure::calPoseDeviation(stMeasureData data, double tar_distance)
 {
-    std::vector<int> stepValid = {-2, -2, -2, -2, -2, -2};
+    std::vector<int> stepValid = { -2, -2, -2, -2, -2, -2 };
 
     QVector<Eigen::Matrix4d> Result(7);
     std::vector<Eigen::Vector3d> laserDistance(4);
@@ -18,9 +16,6 @@ QVector<Eigen::Matrix4d> CMeasure::calPoseDeviation(stMeasureData data, double t
 
     /* TarPose0 轮廓激光虚拟平面计算 ************************************************************/
     // 输入：4个轮廓激光数据+测距激光(近似使用)，无轮廓激光时仅调平
-
-    // qDebug()<<"m_bLaserDistance:  "<<data.m_bLaserDistance[0]<<"   "<<data.m_bLaserDistance[1]<<"   "<<data.m_bLaserDistance[2]<<"   "<<data.m_bLaserDistance[3]<<"   "<<"\n\n";
-    // qDebug()<<"m_LaserDistance:  "<<data.m_LaserDistance[0]<<"   "<<data.m_LaserDistance[1]<<"   "<<data.m_LaserDistance[2]<<"   "<<data.m_LaserDistance[3]<<"   "<<"\n\n";
 
     if (data.m_bLaserDistance[0] && data.m_bLaserDistance[1] && data.m_bLaserDistance[2] && data.m_bLaserDistance[3]) // 4个点激光均有效
     {
@@ -124,7 +119,7 @@ QVector<Eigen::Matrix4d> CMeasure::calPoseDeviation(stMeasureData data, double t
     Eigen::Vector4f linesDist[3] = {
         Eigen::Vector4f(validDistance[0], validDistance[1], data.m_bLineDistance[0], data.m_bLineDistance[1]),
         Eigen::Vector4f(validDistance[2], validDistance[3], data.m_bLineDistance[2], data.m_bLineDistance[3]),
-        Eigen::Vector4f(validDistance[5], validDistance[4], data.m_bLineDistance[5], data.m_bLineDistance[4])};
+        Eigen::Vector4f(validDistance[5], validDistance[4], data.m_bLineDistance[5], data.m_bLineDistance[4]) };
 
     stepValid[3] = true;
     for (int i = 0; i < 3; ++i)

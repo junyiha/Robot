@@ -48,7 +48,7 @@ typedef struct _st_SetAxis
 	double Torque;
 	double EndVelocity;
 	double Distance;
-} st_SetAxis, *Pst_SetAxis;
+} st_SetAxis, * Pst_SetAxis;
 
 typedef struct _st_ReadAxis
 {
@@ -63,7 +63,7 @@ typedef struct _st_ReadAxis
 	bool Error;
 	bool bHomed;
 	unsigned char reserved1[2];
-} st_ReadAxis, *Pst_ReadAxis;
+} st_ReadAxis, * Pst_ReadAxis;
 
 typedef struct _stAction
 {
@@ -81,7 +81,7 @@ typedef struct _stAction
 	double DA2;
 	double DA03;
 
-	_stAction &operator=(const _stAction &A)
+	_stAction& operator=(const _stAction& A)
 	{
 		DO0 = A.DO0;
 		DO1 = A.DO1;
@@ -104,7 +104,7 @@ typedef struct _stAction
 		return *this;
 	}
 
-} stAction, *PstAction;
+} stAction, * PstAction;
 
 typedef struct _st_AxisGroupSet
 {
@@ -113,7 +113,7 @@ typedef struct _st_AxisGroupSet
 	st_SetAxis AxisGroup[20];
 	stAction RobotSetAction;
 	stAction LinkSetActions[6];
-} st_AxisGroupSet, *Pst_AxisGroupSet;
+} st_AxisGroupSet, * Pst_AxisGroupSet;
 
 typedef struct _st_AxisGroupRead
 {
@@ -122,7 +122,7 @@ typedef struct _st_AxisGroupRead
 	st_ReadAxis AxisGroup[20];
 	stAction RobotActAction;
 	stAction LinkActActions[6];
-} st_AxisGroupRead, *Pst_AxisGroupRead;
+} st_AxisGroupRead, * Pst_AxisGroupRead;
 
 typedef BYTE Recvbuff[3000];
 
@@ -140,4 +140,4 @@ typedef struct _st_InitParameter
 	ULONG JointsNum;
 	ULONG RecvSize;
 	ULONG SendSize;
-} st_InitParameter, *Pst_InitParameter;
+} st_InitParameter, * Pst_InitParameter;

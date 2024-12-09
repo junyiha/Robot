@@ -18,7 +18,7 @@ namespace Config
 
 	bool ConfigManager::LoadConfiguration()
 	{
-		bool res{true};
+		bool res{ true };
 		try
 		{
 			m_root = YAML::LoadFile(m_path);
@@ -80,7 +80,7 @@ namespace Config
 
 	bool ConfigManager::WriteToFile()
 	{
-		bool res{false};
+		bool res{ false };
 
 		std::ofstream fout(m_path);
 		if (fout)
@@ -100,7 +100,7 @@ namespace Config
 
 	bool ConfigManager::UpdateValue(const std::string key, const double value)
 	{
-		bool res{false};
+		bool res{ false };
 
 		if (m_root[key])
 		{
@@ -114,7 +114,7 @@ namespace Config
 
 	bool ConfigManager::UpdateValue(const std::string key, const std::vector<double> value)
 	{
-		bool res{false};
+		bool res{ false };
 
 		if (m_root[key])
 		{

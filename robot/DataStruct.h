@@ -186,26 +186,26 @@ class AnyType
 {
 public:
 	template <typename RealDataType>
-	AnyType(RealDataType *data) // 构造函数，初始化私有变量m_RealData为data
+	AnyType(RealDataType* data) // 构造函数，初始化私有变量m_RealData为data
 		: m_RealData(data)
 	{
 	}
 	template <typename RealDataType> // 创建RealDataType模板
-	RealDataType &GetRealDataType()
+	RealDataType& GetRealDataType()
 	{
 		//////D_CHECK(m_RealData);
-		return *reinterpret_cast<RealDataType *>(m_RealData); // 将m_RealData指针对象的类型修改为RealDataType
+		return *reinterpret_cast<RealDataType*>(m_RealData); // 将m_RealData指针对象的类型修改为RealDataType
 	}
 
 	template <typename RealDataType>
-	const RealDataType &GetRealDataType() const
+	const RealDataType& GetRealDataType() const
 	{
 		//////D_CHECK(m_RealData);
-		return *reinterpret_cast<const RealDataType *>(m_RealData);
+		return *reinterpret_cast<const RealDataType*>(m_RealData);
 	}
 
 	template <typename RealDataType>
-	AnyType &operator=(RealDataType *_Data)
+	AnyType& operator=(RealDataType* _Data)
 	{
 		Set<RealDataType>(_Data);
 		return *this;
@@ -213,13 +213,13 @@ public:
 
 private:
 	template <typename RealDataType>
-	void Set(RealDataType *_Data)
+	void Set(RealDataType* _Data)
 	{
-		m_RealData = reinterpret_cast<void *>(_Data);
+		m_RealData = reinterpret_cast<void*>(_Data);
 	}
 
 private:
-	void *m_RealData;
+	void* m_RealData;
 };
 
 typedef AnyType InputParam;

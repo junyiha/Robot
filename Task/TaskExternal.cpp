@@ -219,8 +219,6 @@ void CTask::readyExecutionCommand()
 
 void CTask::notReadyExecutionCommand()
 {
-    // log->warn("机器人未就绪，离线状态！！！");
-
     bool robotReady;
 #ifdef TEST_TASK_STATEMACHINE_
     robotReady = true;
@@ -316,7 +314,6 @@ void CTask::detectionInParallelExecutionCommand()
 
 void CTask::motionInParallelExecutionCommand()
 {
-    static QVector<double> last_tar_position{0, 0, 0, 0, 0, 0};
     switch (m_eexecutionCommand)
     {
     case EExecutionCommand::eNULL:
@@ -342,7 +339,7 @@ void CTask::motionInParallelExecutionCommand()
             // 计算偏差，控制机器人运动
             QVector<Eigen::Matrix4d> Dev_RT = CMeasure::calPoseDeviation(m_stMeasuredata);
             QVector<double> tar_position = m_Robot->getTargetPose(Dev_RT[0]);
-            double *tar_pos = tar_position.data();
+            double* tar_pos = tar_position.data();
 
             log->info("{} tar_pos:{},{},{},{},{},{}", __LINE__, tar_pos[0], tar_pos[1], tar_pos[2],
                       tar_pos[3] * 57.3, tar_pos[4] * 57.3, tar_pos[5] * 57.3);
@@ -419,10 +416,8 @@ void CTask::detectionInPositioningExecutionCommand()
 #else
         VisionResult vis_res = m_vision->getVisResult();
         if (!vis_res.lineStatus)
-        {
-            log->error("视觉检测无数据，等待下一个周期!!!");
             break;
-        }
+
         UpdateVisionResult(vis_res);
         detectResult = CheckSidelineStateDecorator();
 #endif
@@ -465,7 +460,6 @@ void CTask::detectionInPositioningExecutionCommand()
 
 void CTask::motionInPositioningExecutionCommand()
 {
-    static QVector<double> last_tar_position{0, 0, 0, 0, 0, 0};
     switch (m_eexecutionCommand)
     {
     case EExecutionCommand::eNULL:
@@ -478,8 +472,8 @@ void CTask::motionInPositioningExecutionCommand()
             break;
         }
 
-        static QVector<double> tar_position{0, 0, 0, 0, 0, 0};
-        static double tar_pos[6] = {0, 0, 0, 0, 0, 0};
+        static QVector<double> tar_position{ 0, 0, 0, 0, 0, 0 };
+        static double tar_pos[6] = { 0, 0, 0, 0, 0, 0 };
         if (!m_position_motion_flag)
         {
             QVector<Eigen::Matrix4d> Dev_RT = CMeasure::calPoseDeviation(m_stMeasuredata);
@@ -594,7 +588,6 @@ void CTask::detectionInFitBoardExecutionCommand()
             updateTopAndSubState(ETopState::eManual, ESubState::eReady);
             break;
         }
-
         // 判断板壁距离
         if (CheckFitBoardState() == EDetectionInFitBoardResult::eDeviationIsLessThanThreshold)
         {
@@ -654,13 +647,9 @@ void CTask::sidelineMotionInFitBoardExecutionCommand()
     {
     case EExecutionCommand::eNULL:
     {
-        QVector<double> tar_position{0, 0, 0, 0, 0, 0};
-        for (int i = 0; i < m_fit_board_target_pose.size(); i++)
-        {
-            tar_position[i] = m_fit_board_target_pose.at(i);
-        }
         m_Robot->setLinkMoveAbs(m_fit_board_target_pose.data(), GP::End_Vel_Position.data());
 
+        QVector<double> tar_position(m_fit_board_target_pose.begin(), m_fit_board_target_pose.end());
         if (m_LinkStatus.eLinkActState == eLINK_STANDSTILL &&
             m_Robot->isEndReached(tar_position))
         {
@@ -781,7 +770,7 @@ void CTask::fitBoardFinishedExecutionCommand()
 
 void CTask::quitingExecutionCommand()
 {
-    static int cnt{0};
+    static int cnt{ 0 };
     switch (m_eexecutionCommand)
     {
     case EExecutionCommand::eNULL:
@@ -858,16 +847,11 @@ void CTask::CalculatedAdjustmentOfSideline()
     // 计算调整量
     std::vector<double> laserDistance(std::begin(m_stMeasuredata.m_LaserDistance), std::end(m_stMeasuredata.m_LaserDistance));
     double average_distance = std::accumulate(laserDistance.begin(), laserDistance.end(), 0.0) / laserDistance.size();
-
     QVector<Eigen::Matrix4d> Dev_RT = CMeasure::calPoseDeviation(m_stMeasuredata, average_distance);
-    QVector<double> tar_position{0, 0, 0, 0, 0, 0};
+    QVector<double> tar_position{ 0, 0, 0, 0, 0, 0 };
     tar_position = m_Robot->getTargetPose(Dev_RT[5]); // 计算调整量
-    log->info("motion index: {}", m_motion_index);
-
-    for (int i = 0; i < m_fit_board_target_pose.size(); i++)
-    {
-        m_fit_board_target_pose[i] = tar_position[i];
-    }
+    m_fit_board_target_pose = tar_position.toStdVector();
+    log->info("{}: motion index: {}", __LINE__, m_motion_index);
 }
 
 void CTask::CalculatedAdjustmentOfLift()
@@ -882,7 +866,7 @@ void CTask::CalculatedAdjustmentOfLift()
         if (BOARDING_MOTION_QUE[i] + 2 < *minDistance)
         {
             motion_index = i;
-            log->info("贴合调整目标距离为：{}", BOARDING_MOTION_QUE[i]);
+            log->info("{}: 贴合调整目标距离为：{}", __LINE__, BOARDING_MOTION_QUE[i]);
             break;
         }
     }
@@ -904,9 +888,9 @@ void CTask::UpdateLaserDistance()
     m_stMeasuredata.m_LaserDistance[3] = LaserDistance[3];
 }
 
-void CTask::UpdateVisionResult(VisionResult &vis_res)
+void CTask::UpdateVisionResult(VisionResult& vis_res)
 {
-    double sum{0.0};
+    double sum{ 0.0 };
     for (int i = 0; i < 4; i++)
         sum += m_stMeasuredata.m_LaserDistance[i];
 

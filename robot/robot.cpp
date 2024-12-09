@@ -1,7 +1,7 @@
 ﻿#include "robot.h"
 
-CRobot::CRobot(ComInterface *comm, QObject *parent)
-    : QThread{parent}
+CRobot::CRobot(ComInterface* comm, QObject* parent)
+    : QThread{ parent }
 {
     // 修改827
     m_Index = 0; // link索引
@@ -592,7 +592,7 @@ void CRobot::MoveLineAbsBase(Eigen::VectorXd car_pos, Eigen::VectorXd vel_max)
     /*  下发关节速度指令****************************************************
      */
 
-    // 角度单位：弧度->deg
+     // 角度单位：弧度->deg
     joint_pos[3] *= 57.2957795;
     joint_pos[4] *= 57.2957795;
     joint_pos[7] *= 57.2957795;
@@ -824,7 +824,7 @@ void CRobot::setJointMoveAbs(uint index, double pos, double vel)
 
 void CRobot::setJointGroupMoveVel(double vel[])
 {
-    double pos[20] = {0};
+    double pos[20] = { 0 };
     m_Comm->setJointGroupMove(eMC_MOV_VEL, pos, vel);
 }
 

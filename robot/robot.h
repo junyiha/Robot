@@ -20,13 +20,12 @@
 #include "../com/ComInterface.h"
 #include "RobotKinectModel.h"
 #include "../Task/Measure.h"
-// #include "../vision/VisionControls.h"
 
 class CRobot : public QThread
 {
     Q_OBJECT
 public:
-    explicit CRobot(ComInterface *comm, QObject *parent = nullptr);
+    explicit CRobot(ComInterface* comm, QObject* parent = nullptr);
     ~CRobot();
 
     /**
@@ -72,9 +71,9 @@ protected:
     int m_Index;
     int m_Freedom; // 机器人自由度，不包括工具、底盘
     int m_ToolFreedom;
-    CRobotKinectModel *m_LinkModel;
+    CRobotKinectModel* m_LinkModel;
 
-    ComInterface *m_Comm;  // 通讯模块索引
+    ComInterface* m_Comm;  // 通讯模块索引
     bool m_running = true; // 运行状态标志/控制位
 
     stLinkCommand m_LinkCmd; // 任务部分下发的指令
@@ -258,7 +257,7 @@ public:
      * @return  目标位置（基坐标系）
      */
 
-    /** end 外部接口函数************************/
+     /** end 外部接口函数************************/
 
 private:
     // 日志相关，【后续从这里分离出去，单独封装到一个类里】

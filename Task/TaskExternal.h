@@ -12,7 +12,7 @@
 #ifndef TASK_EXTERNAL_H
 #define TASK_EXTERNAL_H
 
-// 测试状态机的宏指令
+ // 测试状态机的宏指令
 #ifndef TEST_TASK_STATEMACHINE_
 // #define TEST_TASK_STATEMACHINE_
 #endif

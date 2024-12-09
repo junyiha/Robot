@@ -1,6 +1,6 @@
 #include "Task.h"
 
-CTask::CTask(ComInterface *comm, CRobot *robot, VisionInterface *vision, QObject *parent)
+CTask::CTask(ComInterface* comm, CRobot* robot, VisionInterface* vision, QObject* parent)
 {
     m_Comm = comm;
     m_Robot = robot;
@@ -120,7 +120,7 @@ void CTask::Manual()
 
     if (std::fabs(m_manualOperator.VechDirect - m_JointGroupStatus[GP::STEER_LEFT_INDEX].Position) > 3)
     {
-        const double velocity{8.0};
+        const double velocity{ 8.0 };
         // 当前指令和上一个指令的VechDirect都为零，判断条件始终成立
         m_Robot->setJointMoveAbs(GP::STEER_LEFT_INDEX, m_manualOperator.VechDirect, velocity);  // 速度需改为参数
         m_Robot->setJointMoveAbs(GP::STEER_RIGHT_INDEX, m_manualOperator.VechDirect, velocity); // 速度需改为参数
@@ -175,7 +175,7 @@ void CTask::Manual()
 #ifdef TEST_TASK_STATEMACHINE_
 #else
         std::vector<double> TEMP_LINK_0_JOINT_MAX_VEL_FOR_READY_POINT(MAX_FREEDOM_LINK, 0.0);
-        TEMP_LINK_0_JOINT_MAX_VEL_FOR_READY_POINT = {3, 3, 3, 1, 0.3, 10, 5, 0.5, 4, 1, 3};
+        TEMP_LINK_0_JOINT_MAX_VEL_FOR_READY_POINT = { 3, 3, 3, 1, 0.3, 10, 5, 0.5, 4, 1, 3 };
         m_Robot->setJointGroupMoveAbs(GP::Prepare_Position.data(), TEMP_LINK_0_JOINT_MAX_VEL_FOR_READY_POINT.data());
 #endif
     }
@@ -185,7 +185,7 @@ void CTask::Manual()
 #ifdef TEST_TASK_STATEMACHINE_
 #else
         std::vector<double> TEMP_LINK_0_JOINT_MAX_VEL_FOR_SET_POINT(MAX_FREEDOM_LINK, 0.0);
-        TEMP_LINK_0_JOINT_MAX_VEL_FOR_SET_POINT = {3, 3, 3, 1, 0.3, 10, 5, 0.5, 2, 6, 3};
+        TEMP_LINK_0_JOINT_MAX_VEL_FOR_SET_POINT = { 3, 3, 3, 1, 0.3, 10, 5, 0.5, 2, 6, 3 };
         m_Robot->setJointGroupMoveAbs(GP::Home_Position.data(), TEMP_LINK_0_JOINT_MAX_VEL_FOR_SET_POINT.data());
 #endif
     }
@@ -198,7 +198,7 @@ void CTask::Manual()
         else
         {
             std::vector<double> jointvel(20, 0);
-            double endvel[6] = {0, 0, 0, 0, 0, 0};
+            double endvel[6] = { 0, 0, 0, 0, 0, 0 };
             if (m_manualOperator.bEndMove)
             {
                 // 末端运动
@@ -571,7 +571,7 @@ int CTask::CheckParallelState(std::vector<double> laserDistance, int max_deviati
 
 EDetectionInParallelResult CTask::CheckParallelStateDecorator()
 {
-    EDetectionInParallelResult result{EDetectionInParallelResult::eNoWallDetected};
+    EDetectionInParallelResult result{ EDetectionInParallelResult::eNoWallDetected };
     std::vector<double> laserDistance(std::begin(m_stMeasuredata.m_LaserDistance), std::end(m_stMeasuredata.m_LaserDistance));
 
     int res = CheckParallelState(laserDistance, GP::Max_Deviation_In_Parallel, GP::Min_Deviation_In_Parallel, GP::Lift_Distance_In_Parallel);
@@ -676,7 +676,7 @@ EDetectionInPositioningResult CTask::CheckSidelineStateDecorator()
 
 EDetectionInFitBoardResult CTask::CheckFitBoardState()
 {
-    EDetectionInFitBoardResult result{EDetectionInFitBoardResult::eDataIsInvalid};
+    EDetectionInFitBoardResult result{ EDetectionInFitBoardResult::eDataIsInvalid };
     std::vector<double> laserDistance(std::begin(m_stMeasuredata.m_LaserDistance), std::end(m_stMeasuredata.m_LaserDistance));
 
     int res = CheckParallelState(laserDistance, GP::Max_Deviation_In_FitBoard, GP::Min_Deviation_In_FitBoard, GP::Lift_Distance_In_FitBoard);
