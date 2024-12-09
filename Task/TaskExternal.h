@@ -22,8 +22,6 @@ enum class ETopState
     eManual = 0,     // 手动
     eParallel,       // 调平
     ePositioning,    // 定位
-    eReadToMagentOn, // 待吸合
-    eDoWeld,         // 碰钉
     eFitBoard,       // 贴合
     eQuit            // 退出
 };
@@ -39,10 +37,6 @@ enum class ESubState
     eDetection,       // 检测
 
     eReadyToPositioning, // 待定位
-
-    eReadyToDoWeld, // 待碰钉
-    eDoingWeld,     // 碰钉中
-    eStopWeld,      // 碰钉停止
 
     eReadyToFitBoard,  // 待贴合
     eSidelineMotion,   // 对边运动
@@ -61,12 +55,8 @@ enum class EExecutionCommand
     eTerminate,   // 终止
     ePause,       // 暂停
     ePositioning, // 定位
-    eMagentOn,    // 吸合
     eQuit,        // 退出
-    eAutoWeld,    // 自动碰钉
     eFitBoard,    // 贴合
-    eMagentOff,   // 脱开
-    eStopWeld,    // 停止碰钉
     eSideline,    // 对齐边线 == 定位(ePositioning)
     eLift,        // 举升 (手动指令中的)
     eAddNail,     // 放钉 (手动指令中的)

@@ -13,36 +13,6 @@
 #include "com/ComInterface.h"
 #include "com/Manual.h"
 
-enum AutoProcessStage
-{
-    eEnd = 0,
-    eA = 1,
-    eB1 = 2,
-    eB2 = 3,
-    eC1 = 4,
-    eC2 = 5,
-    eD1 = 6,
-    eD2 = 7,
-};
-
-enum ECommadforTask
-{
-    eNONE = 0,
-    eStart = 1,
-    eCLOSE = 2,
-    eReset = 3,
-    eStop = 4
-
-};
-
-// 装板机器人
-const std::vector<double> BOARDING_MOTION_QUE = { 60, 30, 20, 15, 10, 5, 0 }; // 贴合运动序列
-
-// 碰钉动作序列，及动作周期数(50ms)，根据实际工艺调整；eWeld_Up eWeld_Down绑定了接触器，必须保留
-const QVector<E_WeldAction> ActionList = { eGrind_MovorOff, eGrind_OnorDown, eGrind_Up, eGrind_OnorDown, eGrind_MovorOff, eWeld_MovorDwon, eWeld_Fix, eWeld_Up, eWeld_On, eWeld_Down, eInitAction };
-const QVector<int> ActionTime = { 40, 20, 100, 20, 20, 40, 40, 40, 40, 40, 5 };
-const QVector<std::string> ActionName = { "GrindMovorOff", "Grind_OnorDown", "Grind_Up", "Weld_MovorDwon", "Grind_MovorOff", "Weld_MovorDwon", "Weld_Fix", "Weld_Up", "Weld_On", "Weld_Down", "InitAction" };
-
 class CTask : public QThread
 {
     Q_OBJECT
@@ -50,42 +20,10 @@ public:
     explicit CTask(ComInterface* comm, CRobot* robot, VisionInterface* vision, QObject* parent = nullptr);
 
     /**
-     * @brief 传感器状态值.
-     */
-    stMeasureData getStMeasureData();
-
-    /**
      * @brief 结束任务线程
      *
      */
     void closeThread();
-
-public:
-    bool m_bMagnetOn;       // 磁铁吸合状态
-    QAtomicInt ActionIndex; // 半自动、按钮测试用
-    QAtomicInt ButtonIndex; // 当前点击按钮索引
-
-protected:
-    CRobot* m_Robot{ nullptr };
-    ComInterface* m_Comm{ nullptr };
-    VisionInterface* m_vision{ nullptr };
-
-    stLinkStatus m_LinkStatus;                  // 机器人状态状态
-    QVector<st_ReadAxis> m_JointGroupStatus;    // 轴组状态
-    QVector<Eigen::Matrix4d> m_TargetDeviation; // 目标位姿（工具系下）
-    stManualCmd m_Manual;                       // 遥控器指令
-    stManualCmd m_preManual;                    // 上一帧遥控器指令
-
-    stManualOperator m_manualOperator;
-    stManualOperator m_preManualOperator;
-
-    stMeasureData m_stMeasuredata; // 传感器状态反馈
-    stMeasureData _stMeasuredata;  // 传感器状态反馈
-
-    //  机器人
-    QMutex mutex_read;
-    bool c_running{ true };
-    std::shared_ptr<spdlog::logger> log;
 
 protected:
     /**
@@ -100,32 +38,10 @@ protected:
     void updateCmdandStatus();
 
     /**
-     * @brief 自动作业过程
+     * @brief 手动操作指令处理
      */
-     // void AutoProgrcess();
-
-     /**
-      * @brief 手动操作指令处理
-      */
     void Manual();
 
-    /**
-     * @brief 自动碰钉函数
-     * @param execute   -1:结束，0:暂停， 1：执行
-     */
-    bool doWeldAction(qint8 execute);
-
-    /**
-     * @brief 吸合磁铁
-     */
-    bool doMagentOn();
-
-    /**
-     * @brief 磁体相关
-     */
-    bool doMagentOff();
-
-    ///////////////////////////////////////////--0827新增函数--//////////////////////////////////////////////////////
 private:
     /**
      * @brief 调平检测函数，根据激光测距数据判断是否具备调平条件或完成调平
@@ -366,20 +282,37 @@ private:
     ESubState m_esubState{ ESubState::eNotReady };
     EExecutionCommand m_eexecutionCommand{ EExecutionCommand::eNULL };
 
+public:
+    QAtomicInt ActionIndex; // 半自动、按钮测试用
+    QAtomicInt ButtonIndex; // 当前点击按钮索引
+
+protected:
+    CRobot* m_Robot{ nullptr };
+    ComInterface* m_Comm{ nullptr };
+    VisionInterface* m_vision{ nullptr };
+    stLinkStatus m_LinkStatus;                  // 机器人状态状态
+    QVector<st_ReadAxis> m_JointGroupStatus;    // 轴组状态
+    stManualOperator m_manualOperator;
+    stManualOperator m_preManualOperator;
+    stMeasureData m_stMeasuredata; // 传感器状态反馈
+
+    //  机器人
+    bool c_running{ true };
+    std::shared_ptr<spdlog::logger> log;
+
 private:
     std::mutex m_mutex;
     bool m_position_motion_flag{ false };
     uint m_motion_index{ 0 };
     std::vector<double> m_fit_board_target_pose{ 0, 0, 0, 0, 0, 0 };
     double m_lift_tool{ 0.0 };
+    const std::vector<double> BOARDING_MOTION_QUE = { 60, 30, 20, 15, 10, 5, 0 }; // 贴合运动序列
 
     std::map<ETopState, std::pair<std::string, std::string>> TopStateStringMap{
         {ETopState::eManual, {"手动", "Manual"}},
         {ETopState::eParallel, {"调平", "Parallel"}},
         {ETopState::ePositioning, {"定位", "Positioning"}},
         {ETopState::eFitBoard, {"贴合", "FitBoard"}},
-        {ETopState::eReadToMagentOn, {"待吸合", "ReadToMagentOn"}},
-        {ETopState::eDoWeld, {"碰钉", "DoWeld"}},
         {ETopState::eQuit, {"退出", "Quit"}} };
     std::map<ESubState, std::pair<std::string, std::string>> SubStateStringMap{
         {ESubState::eNULL, {"空状态", "NULL"}},
@@ -393,9 +326,6 @@ private:
         {ESubState::eLiftMotion, {"举升运动", "LiftMotion"}},
         {ESubState::eFitBoardFinished, {"贴合完成", "FitBoardFinished"}},
         {ESubState::eReadyToPositioning, {"待定位", "ReadyToPositioning"}},
-        {ESubState::eReadyToDoWeld, {"待碰钉", "ReadyToDoWeld"}},
-        {ESubState::eDoingWeld, {"碰钉中", "DoingWeld"}},
-        {ESubState::eStopWeld, {"碰钉停止", "StopWeld"}},
         {ESubState::eQuiting, {"退出中", "Quiting"}},
         {ESubState::ePause, {"暂停", "Pause"}} };
     std::map<EExecutionCommand, std::string> ExecutionCommandStringMap{
@@ -406,11 +336,8 @@ private:
         {EExecutionCommand::ePause, "暂停"},
         {EExecutionCommand::ePositioning, "定位"},
         {EExecutionCommand::eFitBoard, "贴合"},
-        {EExecutionCommand::eMagentOn, "吸合"},
-        {EExecutionCommand::eQuit, "退出"},
-        {EExecutionCommand::eAutoWeld, "自动碰钉"},
-        {EExecutionCommand::eMagentOff, "脱开"},
-        {EExecutionCommand::eStopWeld, "停止碰钉"} };
+        {EExecutionCommand::eQuit, "退出"}
+    };
 };
 
 #endif // CTASK_H

@@ -29,7 +29,7 @@ struct stManualOperator
     double VechDirect; // 舵轮: 舵轮控制 9~10
 
     // 机械臂运动指令
-    std::vector<double> LinkMove{0.0, 0.0, 0.0, 0.0, 0.0, 0.0}; // 机器人关节角/末端位置 11~22
+    std::vector<double> LinkMove{ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 }; // 机器人关节角/末端位置 11~22
     bool bLinkMoveFlag;                                         // 机器人运动标志位 all int16 = 0 ? false:true
     bool bEndMove;                                              // 模式: 切换推杆模式 true--末端 | false--单轴 保开1 buffer[8] bit0,bit1
 

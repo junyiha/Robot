@@ -999,21 +999,6 @@ void CTask::TranslateManualTaskIndexNumberToCMD()
         updateExecutionCommand(EExecutionCommand::eFitBoard);
         break;
     }
-    case stManualOperator::ETaskIndex::MagentOn:
-    {
-        updateExecutionCommand(EExecutionCommand::eMagentOn);
-        break;
-    }
-    case stManualOperator::ETaskIndex::DoWeld:
-    {
-        updateExecutionCommand(EExecutionCommand::eAutoWeld);
-        break;
-    }
-    case stManualOperator::ETaskIndex::MagentOff:
-    {
-        updateExecutionCommand(EExecutionCommand::eMagentOff);
-        break;
-    }
     case stManualOperator::ETaskIndex::Quit:
     {
         updateExecutionCommand(EExecutionCommand::eQuit);

@@ -409,8 +409,6 @@ void MainWindow::on_btn_magnet_open_clicked()
     // 开启磁铁
     setButtonIndex();
     setActionIndex();
-    m_Task->m_bMagnetOn = true;
-    this->logger->info("磁铁吸合");
 }
 
 void MainWindow::on_btn_auto_knock_clicked()
@@ -444,7 +442,6 @@ void MainWindow::on_btn_magnet_close_clicked()
     // 关闭磁铁
     setButtonIndex();
     setActionIndex();
-    m_Task->m_bMagnetOn = false;
     this->logger->info("磁铁脱开");
 }
 

@@ -1,36 +1,19 @@
 #include "Task.h"
 
 CTask::CTask(ComInterface* comm, CRobot* robot, VisionInterface* vision, QObject* parent)
+    : m_Comm(comm), m_Robot(robot), m_vision(vision)
 {
-    m_Comm = comm;
-    m_Robot = robot;
-    m_vision = vision;
-
     std::memset(&m_LinkStatus, 0, sizeof(m_LinkStatus));
-    std::memset(&m_Manual, 0, sizeof(stManualData));
-    std::memset(&m_preManual, 0, sizeof(stManualData));
-
-    for (int i = 0; i < 7; i++)
-    {
-        m_TargetDeviation.push_back(Eigen::Matrix4d::Identity());
-    }
-
     log = spdlog::get("logger");
-    m_bMagnetOn = false;
 }
 
 void CTask::run()
 {
     while (this->c_running)
     {
-        log->trace("Task 启动运行...");
-
         updateCmdandStatus();
-
         TranslateManualTaskIndexNumberToCMD();
-
         stateTransition();
-
         Sleep(50);
     }
 }
@@ -54,14 +37,8 @@ void CTask::updateCmdandStatus()
     case 2:
         m_manualOperator.TaskIndex = static_cast<int>(stManualOperator::ETaskIndex::Positioning);
         break;
-    case 3:
-        m_manualOperator.TaskIndex = static_cast<int>(stManualOperator::ETaskIndex::MagentOn);
-        break;
     case 4:
         m_manualOperator.TaskIndex = static_cast<int>(stManualOperator::ETaskIndex::FitBoard);
-        break;
-    case 5:
-        m_manualOperator.TaskIndex = static_cast<int>(stManualOperator::ETaskIndex::MagentOff);
         break;
     case 6:
         m_manualOperator.TaskIndex = static_cast<int>(stManualOperator::ETaskIndex::Quit);
@@ -72,7 +49,6 @@ void CTask::updateCmdandStatus()
     case 8: // 终止
         m_manualOperator.TaskIndex = static_cast<int>(stManualOperator::ETaskIndex::Terminate);
         break;
-
     case 9: // 举升
         m_manualOperator.Ready = 1;
         break;
@@ -90,10 +66,6 @@ void CTask::updateCmdandStatus()
         break;
     }
     ActionIndex.storeRelaxed(0);
-
-    this->mutex_read.lock();
-    _stMeasuredata = m_stMeasuredata;
-    this->mutex_read.unlock();
 }
 
 void CTask::Manual()
@@ -120,8 +92,6 @@ void CTask::Manual()
         m_Robot->setJointMoveAbs(GP::STEER_RIGHT_INDEX, m_manualOperator.VechDirect, velocity); // 速度需改为参数
     }
 
-    double vel_left, vel_right;
-
     if (m_manualOperator.bVechFlag || m_manualOperator.bRotateFlag)
     {
         // 计算轮速
@@ -129,7 +99,7 @@ void CTask::Manual()
         {
             m_manualOperator.VechDirect = 0;
         }
-        // 速度待修改 2024.09.03
+        double vel_left, vel_right;
         vel_left = m_manualOperator.VechVel * 100 - m_manualOperator.RotateVel * 30; // 正转为逆时针
         vel_right = m_manualOperator.VechVel * 100 + m_manualOperator.RotateVel * 30;
 
@@ -165,7 +135,6 @@ void CTask::Manual()
     }
     else if (m_manualOperator.Ready == 1)
     {
-        // 移动到举升位置
 #ifdef TEST_TASK_STATEMACHINE_
 #else
         std::vector<double> TEMP_LINK_0_JOINT_MAX_VEL_FOR_READY_POINT(MAX_FREEDOM_LINK, 0.0);
@@ -175,7 +144,6 @@ void CTask::Manual()
     }
     else if (m_manualOperator.Ready == 2)
     {
-        // 移动到装扮位置
 #ifdef TEST_TASK_STATEMACHINE_
 #else
         std::vector<double> TEMP_LINK_0_JOINT_MAX_VEL_FOR_SET_POINT(MAX_FREEDOM_LINK, 0.0);
@@ -253,19 +221,9 @@ void CTask::Manual()
         updateExecutionCommand(EExecutionCommand::ePositioning);
         break;
     }
-    case stManualOperator::DoWeld:
+    case stManualOperator::FitBoard:
     {
-        updateExecutionCommand(EExecutionCommand::eAutoWeld);
-        break;
-    }
-    case stManualOperator::MagentOn:
-    {
-        updateExecutionCommand(EExecutionCommand::eMagentOn);
-        break;
-    }
-    case stManualOperator::MagentOff:
-    {
-        updateExecutionCommand(EExecutionCommand::eMagentOff);
+        updateExecutionCommand(EExecutionCommand::eFitBoard);
         break;
     }
     case stManualOperator::Quit:
@@ -290,237 +248,6 @@ void CTask::Manual()
     }
 
     m_preManualOperator = m_manualOperator;
-}
-
-bool CTask::doWeldAction(qint8 execute)
-{
-    static quint8 index_tool = 1; // 执行焊枪编号范围1~5
-    static quint8 index_act = 0;
-    static quint8 time_cnt = 0; // 周期计数，控制动作间隔
-
-    //=====================结束碰钉 ==========================
-    if (execute == -1)
-    {
-        unsigned char tem = ActionList[index_act] & 0b00100011; // 关闭打磨、碰钉、定位气缸、打磨降
-        tem |= 0b00100000;                                      // 碰钉枪下降
-        m_Comm->SetToolsAction(index_tool, (E_WeldAction)tem);
-        m_Comm->SetToolsAction(11 - index_tool, (E_WeldAction)tem);
-        m_Comm->SetGunConnect(0); // 关闭接触器
-
-        index_tool = 1;
-        index_act = 0;
-        time_cnt = 0;
-        log->info("结束碰钉作业");
-        return true;
-    }
-
-    //=====================暂停碰钉 ==========================
-    static quint32 pause_cnt = 0;
-    if (execute == 0)
-    {
-        pause_cnt++;
-        if (pause_cnt > 600) // 暂停时间过长，停止
-        {
-            unsigned char tem = ActionList[index_act] & 0b10111111; // 关闭打磨
-            m_Comm->SetToolsAction(index_tool, (E_WeldAction)tem);
-            m_Comm->SetToolsAction(11 - index_tool, (E_WeldAction)tem);
-            m_Comm->SetGunConnect(0); // 关闭接触器
-
-            pause_cnt = 0;
-            log->warn("暂停时间过长，关闭打磨及接触器");
-        }
-        log->info("自动碰钉暂停");
-        return true;
-    }
-
-    //=============== 执行10把焊枪轮次焊接1~5,6~10 ==============
-    if (index_act < ActionList.size())
-    {
-        if (time_cnt == 0)
-        {
-            // 执行动作
-            m_Comm->SetToolsAction(index_tool, ActionList[index_act]);      // 1~5号枪动作
-            m_Comm->SetToolsAction(11 - index_tool, ActionList[index_act]); // 6~10号枪动作
-            log->info("焊枪{}执行动作:{} {}", index_tool, index_act, ActionName[index_act]);
-
-            // 在特定动作连接焊枪
-            if (ActionList[index_act] == eWeld_Up)
-            {
-                m_Comm->SetGunConnect(index_tool);
-                m_Comm->SetGunConnect(11 - index_tool);
-                log->debug("接触器吸合");
-            }
-            if (ActionList[index_act] == eWeld_Down)
-            {
-                m_Comm->SetGunConnect(0);
-                log->debug("接触器断开");
-            }
-            time_cnt++;
-        }
-        else
-        {
-            // 计数等待
-            time_cnt++;
-
-            if (time_cnt > ActionTime[index_act]) // 等待结束，进入下一个动作
-            {
-                index_act++;
-                time_cnt = 0;
-            }
-        }
-
-        return false;
-    }
-    else
-    {
-        // 完成所有动作，切换到下一把焊枪
-        log->info("完成焊枪：{}", index_tool);
-
-        m_Comm->SetToolsAction(index_tool, eInitAction);      // 1~5号枪动作
-        m_Comm->SetToolsAction(11 - index_tool, eInitAction); // 6~10号枪动作
-
-        index_act = 0;
-        index_tool++;
-
-        if (index_tool > 5) // 所有焊枪动作完成
-        {
-            index_tool = 1;
-            log->info("所有焊枪动作完成");
-            return true;
-        }
-
-        return false;
-    }
-}
-
-bool CTask::doMagentOff()
-{
-    static quint8 act_index = 0;
-    static quint8 time_cnt = 0; // 周期计数，控制动作间隔
-    if (act_index == 0)
-    {
-        log->info("doMagentOff--time_cnt:{}", time_cnt);
-    }
-
-    switch (act_index)
-    {
-    case 0: // 磁铁断电
-        if (time_cnt == 0)
-        {
-            m_Comm->SetMagentAction(0, eMag_Off);
-            time_cnt++;
-            log->info("eMag_Off");
-        }
-        else
-        {
-            // 计数等待
-            time_cnt++;
-            if (time_cnt > 50) // 等待结束，进入下一个动作
-            {
-                act_index = 1;
-                time_cnt = 0;
-            }
-        }
-        return false;
-
-    case 1: // 推缸缩
-        if (time_cnt == 0)
-        {
-            m_Comm->SetMagentAction(0, eMag_Off);
-            m_Comm->SetMagentAction(0, eMag_Down);
-            time_cnt++;
-            log->info("eMag_Down");
-        }
-        else
-        {
-            // 计数等待
-            time_cnt++;
-            if (time_cnt > 200) // 等待结束，进入下一个动作
-            {
-                act_index = 0;
-                time_cnt = 0;
-                return true;
-            }
-        }
-        return false;
-
-    default:
-        log->warn("无效指令");
-        act_index = 0;
-        time_cnt = 0;
-        return false;
-    }
-}
-
-bool CTask::doMagentOn()
-{
-    static quint8 act_index = 0;
-    static quint8 time_cnt = 0; // 周期计数，控制动作间隔
-
-    if (act_index == 0)
-    {
-        log->info("doMagentOn--time_cnt:{}", time_cnt);
-    }
-
-    switch (act_index)
-    {
-    case 0: // 磁铁举升
-        if (time_cnt == 0)
-        {
-            m_Comm->SetMagentAction(0, eMag_Off);
-            time_cnt++;
-            log->info("eMag_Off");
-        }
-        else
-        {
-            // 计数等待
-            time_cnt++;
-            if (time_cnt > 20) // 等待结束，进入下一个动作
-            {
-                act_index = 1;
-                time_cnt = 0;
-            }
-        }
-        return false;
-    case 1:
-        if (time_cnt == 0)
-        {
-            m_Comm->SetMagentAction(0, eMag_Up);
-            log->info("eMag_Up");
-            time_cnt++;
-        }
-        else
-        {
-            // 计数等待
-            time_cnt++;
-            if (time_cnt > 100) // 等待结束，进入下一个动作
-            {
-                act_index = 2;
-                time_cnt = 0;
-            }
-        }
-        return false;
-    case 2: // 磁铁吸合
-        m_Comm->SetMagentAction(0, eMag_On);
-        act_index = 0;
-        time_cnt = 0;
-        log->info("eMag_On");
-        return true;
-    default:
-        act_index = 0;
-        time_cnt = 0;
-        return false;
-    }
-}
-
-stMeasureData CTask::getStMeasureData()
-{
-    stMeasureData re;
-    this->mutex_read.lock();
-    re = m_stMeasuredata;
-    this->mutex_read.unlock();
-
-    return re;
 }
 
 void CTask::closeThread()
