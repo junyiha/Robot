@@ -3,15 +3,15 @@
 
 #include <map>
 #include <mutex>
-
-#include "../robot/robot.h"
-#include "../com/ComInterface.h"
-#include "../com/Manual.h"
 #include <QAtomicInt>
 #include <QLineEdit>
 #include <spdlog/spdlog.h>
-#include "../vision/VisionInterface.h"
-#include "TaskExternal.h"
+
+#include "vision/VisionInterface.h"
+#include "Task/TaskExternal.h"
+#include "robot/robot.h"
+#include "com/ComInterface.h"
+#include "com/Manual.h"
 
 enum AutoProcessStage
 {

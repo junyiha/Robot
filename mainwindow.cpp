@@ -14,7 +14,6 @@ MainWindow::MainWindow(QWidget* parent)
     //4.0 初始化机器人、视觉、任务
     m_Com = ComInterface::getInstance();
     m_Robot = new CRobot(m_Com);
-    m_VisionInterface = new VisionInterface();
     m_Task = new CTask(m_Com, m_Robot, m_VisionInterface);
     m_config_ptr = std::make_unique<Config::ConfigManager>();
 
@@ -28,10 +27,8 @@ MainWindow::MainWindow(QWidget* parent)
     this->logger->trace("启动功能对象...");
     m_Com->start();
     m_Robot->start();
-    m_VisionInterface->start();
     m_Task->start();
     updateUiTimer->start();
-
 }
 
 void MainWindow::initUiForm()
@@ -69,6 +66,12 @@ void MainWindow::initUiWiget()
     QList.clear();
     QList << tr("eNONE_Magent") << tr("eMag_On") << tr("eMag_Off") << tr("eMag_Up") << tr("eMag_Down");
     ui->comboBox_magents_action->addItems(QList);
+}
+
+void MainWindow::InitVision()
+{
+    m_VisionInterface = new VisionInterface();
+    m_VisionInterface->start();
 }
 
 void MainWindow::connectSlotFunctions()
@@ -514,11 +517,14 @@ void MainWindow::slotUpdateUIAll()
     // 1.0 更新点激光测量值
     updateLaserData();
 
+#ifdef STATE_MACHINE_TEST
+#else
     // 2.0 更新相机图像帧
     updateCameraData();
 
     // 3.0 更新边线检测实时测量值
     updateLineDetectResults();
+#endif
 
     // 4.0 更新轴状态信息
     updateAxisStatus();
@@ -527,7 +533,7 @@ void MainWindow::slotUpdateUIAll()
     updateConnectSta();
 
     // 7.0 更新硬件设备连接状态，并通过指示灯显示
-    updataDeviceConnectState();
+    // updataDeviceConnectState();
 
     // 8.0 更新指令流转状态
     std::string currentState = m_Task->getCurrentStateString();
@@ -769,7 +775,6 @@ void MainWindow::updateCameraData()
     bool isEnable = m_VisionInterface->camera_controls->camerasIsOpened();
     if (!isEnable)
     {
-        //       this->logger->info("相机未全部开启,请检查相机连接！");
         return;
     }
 
@@ -1261,7 +1266,8 @@ void MainWindow::on_btn_camera_capture_clicked()
 
 void MainWindow::on_btn_camera_save_clicked()
 {
-    std::string saveRoot = "../cache/";
+    std::string saveRoot{ ROOT_PATH };
+    saveRoot += "cache/";
     this->m_VisionInterface->camera_controls->getImageAll();
     std::map<std::string, cv::Mat> cameraData = this->m_VisionInterface->camera_controls->getCameraImages();
     for (const auto& item : cameraData)

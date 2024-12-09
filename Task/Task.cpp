@@ -21,10 +21,6 @@ CTask::CTask(ComInterface* comm, CRobot* robot, VisionInterface* vision, QObject
 
 void CTask::run()
 {
-    // 初始参数初始化
-    log->info("Task 启动运行....");
-
-    // 周期函数
     while (this->c_running)
     {
         log->trace("Task 启动运行...");
@@ -37,8 +33,6 @@ void CTask::run()
 
         Sleep(50);
     }
-
-    log->info("Task 退出运行....");
 }
 
 void CTask::updateCmdandStatus()

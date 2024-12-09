@@ -47,8 +47,6 @@
 #define DI_LEN 2  // DI数组数据长度
 #define AI_NUM 16 // AI数量
 
-using byte = unsigned char;
-
 class IOCom : public TcpCom_IO
 {
     Q_OBJECT
@@ -61,10 +59,10 @@ public:
      * @param index_port DO端子编号0~7   （共7个端子，从0开始）
      * @param value      端子输出状态（注意电气图纸是1-8编号）
      */
-    void SetIO(qint8 index_port, byte value);
+    void SetIO(qint8 index_port, unsigned char value);
 
-    QVector<byte> getDIState();
-    QVector<byte> getDOState();
+    QVector<unsigned char> getDIState();
+    QVector<unsigned char> getDOState();
     QVector<unsigned short> getAIState();
     void closeThread();
     bool is_Running = true;
@@ -106,9 +104,9 @@ protected slots:
     void slotStopLoop();
 
 private:
-    byte m_DOSet[DO_LEN];
-    byte m_DOState[DO_LEN];
-    byte m_DIState[DI_LEN];
+    unsigned char m_DOSet[DO_LEN];
+    unsigned char m_DOState[DO_LEN];
+    unsigned char m_DIState[DI_LEN];
     unsigned short m_AISate[AI_NUM];
 
     QTimer* m_cIOSendAndRecvTimer;

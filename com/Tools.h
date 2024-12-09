@@ -22,7 +22,7 @@
 #include <QObject>
 #include <Eigen/Dense>
 
-enum E_WeldAction : byte
+enum E_WeldAction : unsigned char
 {
     eInitAction = 0,              // 初始姿态
     eGrind_MovorOff = 0b00000001, // 移动到打磨位 or 打磨关闭

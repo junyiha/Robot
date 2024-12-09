@@ -46,7 +46,7 @@ public slots:
      * @param port
      * @return
      */
-    int ConnectToServer(const char *IpAdr, const int port);
+    int ConnectToServer(const char* IpAdr, const int port);
 
     /**
      * @brief close

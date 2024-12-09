@@ -66,6 +66,7 @@ private:
     void setButtonIndex();  // 记录当前触发按钮索引
     void setActionIndex();  // 记录当前触发动作索引(工作流程记录)
     void closeEvent(QCloseEvent* event);
+    void InitVision();
 
 protected:
     void mousePressEvent(QMouseEvent* event) override;

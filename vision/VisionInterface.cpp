@@ -6,8 +6,6 @@
 
 VisionInterface::VisionInterface()
 {
-
-
     this->camera_controls = new CameraManager();  // 相机管理类
     this->line_helper = new LineDetector();       // 边线检测功能类
     this->sharedDataLine = new SharedData();      // 共享数据类
@@ -16,14 +14,11 @@ VisionInterface::VisionInterface()
     this->lidar_helper = new LidarHelper();
     this->sharedDataLaser = new SharedData();
 
-
-
     // 相机读取+边线检测 端到端处理类(线程)
     this->line_handler = new LineDetectorRunner(this->line_helper, this->camera_controls, this->sharedDataLine);
     this->lidar_handler = new LidarHandler(this->lidar_helper, this->laser_controls, this->sharedDataLaser);
     this->line_handler->start();
     this->lidar_handler->start();
-
 
     this->scales_line = {
             {"LineCam_1", 0.275862069},

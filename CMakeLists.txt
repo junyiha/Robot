@@ -8,21 +8,12 @@ set(CMAKE_AUTOUIC ON)
 
 set(BaseDIR D:/)
 set(CMAKE_PREFIX_PATH "D:/soft/qt5.14/5.14.0/msvc2017_64")
-
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W0")
-
 set(QRC_SOURCE_FILE ${CMAKE_SOURCE_DIR}/res.qrc)
 
-
-add_definitions(-DVISION_MODEL_PATH="${CMAKE_SOURCE_DIR}/models/pp_liteseg_stdc1_softmax_20241021.onnx")
+add_definitions(-DSTATE_MACHINE_TEST=1)
+add_definitions(-DROOT_PATH="${CMAKE_SOURCE_DIR}/")
 add_definitions(-DCONFIG_PATH="${CMAKE_SOURCE_DIR}/config.yaml")
-# add_definitions(-DSTATE_MACHINE_TEST=1)
-
-# ffmpeg
-#file(COPY ${BaseDIR}/packages/ffmpeg/bin/avcodec-59.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/)
-#file(COPY ${BaseDIR}/packages/ffmpeg/bin/avformat-59.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/)
-#file(COPY ${BaseDIR}/packages/ffmpeg/bin/avformat-59.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/)
-#file(COPY ${BaseDIR}/packages/ffmpeg/bin/swresample-4.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/)
+add_definitions(-DVISION_MODEL_PATH="${CMAKE_SOURCE_DIR}/models/pp_liteseg_stdc1_softmax_20241021.onnx")
 
 # opencv
 file(COPY ${BaseDIR}/packages/opencv4.55/build/x64/vc15/bin/opencv_world455d.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/)
@@ -39,10 +30,6 @@ file(COPY ${CMAKE_PREFIX_PATH}/plugins/platforms DESTINATION ${CMAKE_BINARY_DIR}
 
 # HK
 file(COPY ${BaseDIR}/packages/HK_SDK/Libraries/win64/MvCameraControl.lib DESTINATION ${CMAKE_BINARY_DIR}/Debug//)
-
-# GoSdk
-#file(COPY ${BaseDIR}/packages/GocatorSDK/bin/win64/kApi.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug//)
-#file(COPY ${BaseDIR}/packages/GocatorSDK/bin/win64/GoSdk.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug//)
 
 # BestfitLaserScanner
 file(COPY ${BaseDIR}/packages/BestfitLayserScaner/lib/bin/BestfitLaserScanerSDK.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug//)
@@ -65,14 +52,6 @@ include_directories(${BaseDIR}/packages)
 #HK SDK  Setting
 include_directories(${BaseDIR}/packages/HK_SDK/Includes)
 link_directories(${BaseDIR}/packages/HK_SDK/Libraries/win64)
-
-## ffmpeg setting
-#include_directories(${BaseDIR}/packages/ffmpeg/include)
-#link_directories(${BaseDIR}/packages/ffmpeg/lib)
-#
-## Gocator setting
-#include_directories(${BaseDIR}/packages/GocatorSDK/include)
-#link_directories(${BaseDIR}/packages/GocatorSDK/lib/win64d)
 
 # onnxruntime setting
 include_directories(${BaseDIR}/packages/OnnxRuntime/Microsoft.ML.OnnxRuntime.Gpu.1.8.0/build/native/include)
@@ -136,17 +115,6 @@ target_link_libraries(${PROJECT_NAME}
         MvCameraControl.lib
 )
 
-# ffmpeg
-#target_link_libraries(${PROJECT_NAME}
-#        avcodec.lib
-#        avdevice.lib
-#        avfilter.lib
-#        avformat.lib
-#        avutil.lib
-#        postproc.lib
-#        swresample.lib
-#        swscale.lib
-#)
 # onnxruntime
 target_link_libraries(${PROJECT_NAME}
         onnxruntime.dll

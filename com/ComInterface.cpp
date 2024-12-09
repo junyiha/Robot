@@ -1,13 +1,13 @@
 ﻿// 启用本地版本管理---
 #include "ComInterface.h"
-ComInterface *ComInterface::getInstance()
+ComInterface* ComInterface::getInstance()
 {
     static ComInterface instance;
 
     return &instance;
 }
 
-ComInterface::ComInterface(QObject *parent) : QThread(parent)
+ComInterface::ComInterface(QObject* parent) : QThread(parent)
 {
     log = spdlog::get("logger");
 }
@@ -23,12 +23,6 @@ ComInterface::~ComInterface()
     qDebug("destruct commInterface");
 }
 
-// QVector<double> ComInterface::getLasersDistance()//
-//{
-//     return m_cTools.getLaserDistance();
-//
-// }
-
 QVector<double> ComInterface::getLasersDistanceBoarding() //
 {
     return m_cToolsBoarding.getLaserDistance();
@@ -38,14 +32,14 @@ QVector<double> ComInterface::getLasersDistanceBoardingByBojke() //
 {
     QVector<double> res;
     LaserMeasureData stData = m_cToolsBoardingLaser.getLaserMeasureData();
-    double layserOffset[4] = {423, 425, 429, 431};
+    double layserOffset[4] = { 423, 425, 429, 431 };
 
     for (int i = 0; i < 4; ++i)
     {
         res.push_back(stData.m_Laserdistance[i] * 1000.0 - layserOffset[i]);
     }
 
-    QVector<double> temp{res};
+    QVector<double> temp{ res };
     res[0] = temp[2];
     res[1] = temp[3];
     res[2] = temp[0];
@@ -63,7 +57,7 @@ void ComInterface::run()
 {
     // 需要初始化的参数
     const uint DEVICE_NUM = 4;
-    uint tryToConnectCount[DEVICE_NUM] = {0};
+    uint tryToConnectCount[DEVICE_NUM] = { 0 };
     const uint COUNT_LIMIT = 100; // 尝试重连次数上限
 
     while (this->running)
@@ -72,8 +66,6 @@ void ComInterface::run()
         if (m_cRobot.getCommState() == false)
         {
             emit m_cRobot.sigDisconnected();
-            qDebug() << "m_cRobot.slotStopLoop();";
-            qDebug() << "尝试连接机器人。。。。" << tryToConnectCount[0];
             isRobotConnected = m_cRobot.ConnectToServer(GP::Robot_IP.c_str(), GP::Robot_Port);
             if (tryToConnectCount[0] <= COUNT_LIMIT)
             {
@@ -90,8 +82,6 @@ void ComInterface::run()
         if (m_cToolsBoarding.m_cIOA.getCommState() == false)
         {
             emit m_cToolsBoarding.m_cIOA.sigDisconnected();
-            qDebug() << "m_cToolsBoarding.m_cIOA.StopLoop();";
-            qDebug() << "尝试连接IO模块A。。。。" << tryToConnectCount[1];
             isIOConnected = m_cToolsBoarding.m_cIOA.ConnectToServer(GP::IOA_IP.c_str(), GP::IOA_Port);
             if (tryToConnectCount[1] <= COUNT_LIMIT)
             {
@@ -103,36 +93,20 @@ void ComInterface::run()
                 break;
             }
         }
-        //        if(m_cTools.m_cIOB.getCommState() == false)
-        //        {
-        //            emit m_cTools.m_cIOB.sigDisconnected();
-        //            qDebug()<<"m_cIOB.StopLoop();";
-        //            qDebug()<<"尝试连接IO模块B。。。。"<<tryToConnectCount[2];
-        //            isIOConnected = m_cTools.m_cIOB.ConnectToServer(g_str_IOBip, g_i_IOBport);
-        //            if(tryToConnectCount[2] <= COUNT_LIMIT){
-        //                ++tryToConnectCount[2];
-        //            }else{
-        //                log->error("IO模块重连次数达到上限100次，放弃重连");
-        //                break;
-        //            }
-        //        }
 
         // 启动遥控器com口 通过isOpen（）判断打开状态
         if (this->m_cManual.isOpen() == false)
         {
             m_cManual.open("COM1");
-            qDebug() << "重新连接遥控器";
         }
 
         if (m_cToolsBoardingLaser.isOpen() == false)
         {
             m_cToolsBoardingLaser.open("COM2");
-            qDebug() << "连接遥点激光开始";
         }
 
         Sleep(1000);
     }
-    qDebug() << "cominterface： run() stopped";
 }
 
 void ComInterface::setLinkJointMoveAbs(uint index, double pos[], double vel[])
@@ -159,12 +133,12 @@ StatusofLink ComInterface::getLinkStatus(uint index)
     return m_cRobot.getLinkStatus(index);
 }
 
-void ComInterface::getManual(stManualCmd &m_Manual)
+void ComInterface::getManual(stManualCmd& m_Manual)
 {
     this->m_cManual.getManualCmd(m_Manual);
 }
 
-void ComInterface::getManual(stManualOperator &m_Manual)
+void ComInterface::getManual(stManualOperator& m_Manual)
 {
     this->m_cManual.getManualCmd(m_Manual);
 }
