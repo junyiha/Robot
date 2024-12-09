@@ -5,12 +5,12 @@ namespace GP
 	double velLine{ 0.0 };
 	double velRotate{ 0.0 };
 
-	std::size_t CYLINDER_INDEX{ 0 };
-	std::size_t STEER_LEFT_INDEX{ 0 };
-	std::size_t STEER_RIGHT_INDEX{ 0 };
-	std::size_t WHEEL_LEFT_INDEX{ 0 };
-	std::size_t WHEEL_RIGHT_INDEX{ 0 };
-	std::size_t TOOL_LIFTING{ 0 };
+	uint CYLINDER_INDEX{ 0 };
+	uint STEER_LEFT_INDEX{ 0 };
+	uint STEER_RIGHT_INDEX{ 0 };
+	uint WHEEL_LEFT_INDEX{ 0 };
+	uint WHEEL_RIGHT_INDEX{ 0 };
+	uint TOOL_LIFTING{ 0 };
 
 	double Lift_Distance_In_Parallel{ 0.0 };
 	double Max_Deviation_In_Parallel{ 0.0 };

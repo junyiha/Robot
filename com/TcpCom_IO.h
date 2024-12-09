@@ -19,9 +19,10 @@
 #include <mutex>
 #include <QTcpSocket>
 #include <QDebug>
-#include "../robot/DataStruct.h"
 #include <spdlog/spdlog.h>
 #include <QThread>
+#include "robot/DataStruct.h"
+
 #pragma comment(lib, "ws2_32.lib")
 
 #define CONNECT_TIMES 10
@@ -46,7 +47,7 @@ public slots:
      * @param port
      * @return
      */
-    int ConnectToServer(const char* IpAdr, const int port);
+    int ConnectToServer(const char* IpAdr, const std::size_t port);
 
     /**
      * @brief close

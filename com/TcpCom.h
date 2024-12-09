@@ -26,7 +26,10 @@
 
 #define CONNECT_TIMES 10
 #define TIMEOUT_LIMIT 10
-#define DATA_SIZE 20000
+
+#ifndef TCPCOM_DATA_SIZE
+#define TCPCOM_DATA_SIZE 20000
+#endif  // TCPCOM_DATA_SIZE
 
 class TcpCom : public QObject
 {
@@ -42,7 +45,7 @@ public:
      * @param port
      * @return
      */
-    int ConnectToServer(const char* IpAdr, const int port);
+    int ConnectToServer(const char* IpAdr, const std::size_t port);
 
     /**
      * @brief close
@@ -73,8 +76,8 @@ protected:
     ULONG m_SendSize;
     ULONG m_RecvSize;
 
-    char m_RecvData[DATA_SIZE];
-    char m_SendData[DATA_SIZE];
+    char m_RecvData[TCPCOM_DATA_SIZE];
+    char m_SendData[TCPCOM_DATA_SIZE];
 
     SOCKET m_SockClient;
     SOCKADDR_IN m_AdrServer;

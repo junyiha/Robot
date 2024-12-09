@@ -3,10 +3,10 @@
 TcpCom::TcpCom()
 {
     m_CommState = false;
-    memset(m_SendData, 0, DATA_SIZE);
-    memset(m_RecvData, 0, DATA_SIZE);
-    m_SendSize = DATA_SIZE;
-    m_RecvSize = DATA_SIZE;
+    memset(m_SendData, 0, TCPCOM_DATA_SIZE);
+    memset(m_RecvData, 0, TCPCOM_DATA_SIZE);
+    m_SendSize = TCPCOM_DATA_SIZE;
+    m_RecvSize = TCPCOM_DATA_SIZE;
 
     log = spdlog::get("logger");
 }
@@ -17,7 +17,7 @@ TcpCom::~TcpCom()
         close();
 }
 
-int TcpCom::ConnectToServer(const char *IpAdr, const int port)
+int TcpCom::ConnectToServer(const char* IpAdr, const std::size_t port)
 {
     qDebug() << "connect current threadID:" << GetCurrentThreadId();
     unsigned long ul = 1;
@@ -34,7 +34,7 @@ int TcpCom::ConnectToServer(const char *IpAdr, const int port)
 
         qDebug() << "try connect Robot";
         int re;
-        re = ::connect(m_SockClient, (SOCKADDR *)&m_AdrServer, sizeof(SOCKADDR));
+        re = ::connect(m_SockClient, (SOCKADDR*)&m_AdrServer, sizeof(SOCKADDR));
         qDebug() << "connect over Robot";
         if (-1 == re)
         {
@@ -59,8 +59,8 @@ int TcpCom::ConnectToServer(const char *IpAdr, const int port)
         {
             int SendTimeout = 10; // 1000ms
             int RecvTimeout = 10; // 1000ms
-            setsockopt(m_SockClient, SOL_SOCKET, SO_RCVTIMEO, (char *)&RecvTimeout, sizeof(int));
-            setsockopt(m_SockClient, SOL_SOCKET, SO_SNDTIMEO, (char *)&SendTimeout, sizeof(int));
+            setsockopt(m_SockClient, SOL_SOCKET, SO_RCVTIMEO, (char*)&RecvTimeout, sizeof(int));
+            setsockopt(m_SockClient, SOL_SOCKET, SO_SNDTIMEO, (char*)&SendTimeout, sizeof(int));
             m_CommState = true;
 
             std::cout << "m_CommState : " << m_CommState << std::endl;
@@ -83,7 +83,7 @@ int TcpCom::Sendbuffer()
     // put data to buffer
     int sendnum = 0;
     ULONG datalen = 0;
-    char sendbuff[DATA_SIZE];
+    char sendbuff[TCPCOM_DATA_SIZE];
     while (datalen < m_SendSize)
     {
         memcpy(sendbuff, m_SendData + datalen, m_SendSize - datalen);
@@ -125,7 +125,7 @@ DINT TcpCom::Recvbuffer()
         return -1;
     }
 
-    char recvbuff[DATA_SIZE];
+    char recvbuff[TCPCOM_DATA_SIZE];
     int recvnum = 0;
     ULONG datalen = 0;
     int cnt = 0;

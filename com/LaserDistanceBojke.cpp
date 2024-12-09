@@ -135,9 +135,9 @@ double LaserDistanceBojke::RecvData()
         if ((buffData[0] == 0x01 | buffData[0] == 0x02 | buffData[0] == 0x03 | buffData[0] == 0x04) && buffData[1] == 0x04)
         { // 校验数据帧前两位
             result = (static_cast<uint32_t>(buffData[3]) << 24) |
-                     (static_cast<uint32_t>(buffData[4]) << 16) |
-                     (static_cast<uint32_t>(buffData[5]) << 8) |
-                     static_cast<uint32_t>(buffData[6]);
+                (static_cast<uint32_t>(buffData[4]) << 16) |
+                (static_cast<uint32_t>(buffData[5]) << 8) |
+                static_cast<uint32_t>(buffData[6]);
         }
     }
     if (result != -1)
@@ -150,7 +150,7 @@ double LaserDistanceBojke::RecvData()
     }
 }
 
-quint16 LaserDistanceBojke::CTCCalculate(const uint8_t *data, uint16_t length)
+quint16 LaserDistanceBojke::CTCCalculate(const uint8_t* data, uint16_t length)
 {
 
     uint16_t crc = 0xFFFF; // 初始值

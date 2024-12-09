@@ -616,7 +616,7 @@ void MainWindow::updateAxisStatus()
 
     if (stJointstatus.size() > 0)
     {
-        for (int i = 0; i < jointNum; i++)
+        for (unsigned int i = 0; i < jointNum; i++)
         {
             //更新单轴坐标
             findChild<QLabel*>("label_pos_shaft" + QString::number(i))->setText(
@@ -661,7 +661,7 @@ void MainWindow::updateAxisStatus()
     stLinkStatus linkstatus = m_Robot->getLinkSta();
 
     double robotActPose[6];
-    for (int i = 0; i < freeJointNum; ++i)
+    for (unsigned int i = 0; i < freeJointNum; ++i)
     {
         if (i > 2)
         {
@@ -711,7 +711,7 @@ void MainWindow::updateLineDetectResults()
         VisionResult visResult = m_VisionInterface->getVisResult();
         if (visResult.lineStatus)
         {
-            for (int i = 0; i < cameraNum; i++)
+            for (unsigned int i = 0; i < cameraNum; i++)
             {
                 float dist = visResult.stData.m_LineDistance[i] * scale;
                 dist = std::isinf(dist) ? 0 : dist;
@@ -753,7 +753,7 @@ void MainWindow::updateLaserData()
     QVector laserdis = m_Com->getLasersDistanceBoardingByBojke();
     if (laserdis.size() > 0)
     {
-        for (int i = 0; i < larserNum; i++)
+        for (unsigned int i = 0; i < larserNum; i++)
         {
             findChild<QLabel*>("label_laserDist" + QString::number(i))->setText(
                     "Laser " + QString::number(i) + " Value :" + QString::number(laserdis[i]));
@@ -869,8 +869,8 @@ void MainWindow::btn_moveFwd_shaft_pressed()
     setButtonIndex();
 
     // 获取按钮在数组中的索引
-    int index = -1;
-    for (int i = 0; i < jointNum; i++)
+    unsigned int index = 0;
+    for (unsigned int i = 0; i < jointNum; i++)
     {
         if (pressedButton == findChild<QPushButton*>("btn_moveFwd_shaft" + QString::number(i)))
         {
@@ -957,8 +957,8 @@ void MainWindow::btn_moveBwd_shaft_pressed()
     setButtonIndex();
 
     // 获取按钮在数组中的索引
-    int index = -1;
-    for (int i = 0; i < jointNum; i++)
+    unsigned int index = 0;
+    for (unsigned int i = 0; i < jointNum; i++)
     {
         if (pressedButton == findChild<QPushButton*>("btn_moveBwd_shaft" + QString::number(i)))
         {
@@ -990,8 +990,8 @@ void MainWindow::on_moveRel_shaft_clicked()
     setButtonIndex();
 
     // 获取按钮在数组中的索引
-    int index = -1;
-    for (int i = 0; i < jointNum; i++)
+    unsigned int index = 0;
+    for (unsigned int i = 0; i < jointNum; i++)
     {
         if (pressedButton == findChild<QPushButton*>("btn_moveRel_shaft" + QString::number(i)))
         {
@@ -1119,7 +1119,7 @@ void MainWindow::on_moveRel_end_clicked()
 
     // 获取按钮在数组中的索引
     int index = -1;
-    for (int i = 0; i < jointNum; i++)
+    for (unsigned int i = 0; i < jointNum; i++)
     {
         if (pressedButton == findChild<QPushButton*>("btn_moveRel_end" + QString::number(i)))
         {

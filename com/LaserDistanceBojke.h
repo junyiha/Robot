@@ -12,9 +12,9 @@
 
 typedef struct LaserMeasureData
 {
-    double m_Laserdistance[4] = {0};
-    bool m_bLaserdistance[4] = {false};
-};
+    double m_Laserdistance[4] = { 0 };
+    bool m_bLaserdistance[4] = { false };
+} LaserMeasureData_t;
 
 class LaserDistanceBojke : public CSerialCom
 {
@@ -53,7 +53,7 @@ protected:
      * @brief CRC校验计算
      * @return [0]
      */
-    quint16 CTCCalculate(const uint8_t *data, uint16_t length);
+    quint16 CTCCalculate(const uint8_t* data, uint16_t length);
 
     //*************子线程循环发送接口函数*************
     /**

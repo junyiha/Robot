@@ -58,12 +58,12 @@ namespace Config
 			GP::Prepare_Position_QV[i] = GP::Prepare_Position.at(i);
 		}
 
-		GP::CYLINDER_INDEX = m_root["CYLINDER_INDEX"]["value"].as<std::size_t>();
-		GP::STEER_LEFT_INDEX = m_root["STEER_LEFT_INDEX"]["value"].as<std::size_t>();
-		GP::STEER_RIGHT_INDEX = m_root["STEER_RIGHT_INDEX"]["value"].as<std::size_t>();
-		GP::WHEEL_LEFT_INDEX = m_root["WHEEL_LEFT_INDEX"]["value"].as<std::size_t>();
-		GP::WHEEL_RIGHT_INDEX = m_root["WHEEL_RIGHT_INDEX"]["value"].as<std::size_t>();
-		GP::TOOL_LIFTING = m_root["TOOL_LIFTING"]["value"].as<std::size_t>();
+		GP::CYLINDER_INDEX = m_root["CYLINDER_INDEX"]["value"].as<uint>();
+		GP::STEER_LEFT_INDEX = m_root["STEER_LEFT_INDEX"]["value"].as<uint>();
+		GP::STEER_RIGHT_INDEX = m_root["STEER_RIGHT_INDEX"]["value"].as<uint>();
+		GP::WHEEL_LEFT_INDEX = m_root["WHEEL_LEFT_INDEX"]["value"].as<uint>();
+		GP::WHEEL_RIGHT_INDEX = m_root["WHEEL_RIGHT_INDEX"]["value"].as<uint>();
+		GP::TOOL_LIFTING = m_root["TOOL_LIFTING"]["value"].as<uint>();
 
 		GP::velLine = m_root["velLine"]["value"].as<double>();
 		GP::velRotate = m_root["velRotate"]["value"].as<double>() / 57.3;

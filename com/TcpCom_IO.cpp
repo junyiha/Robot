@@ -15,7 +15,7 @@ TcpCom_IO::~TcpCom_IO()
     close();
 }
 
-int TcpCom_IO::ConnectToServer(const char *IpAdr, const int port)
+int TcpCom_IO::ConnectToServer(const char* IpAdr, const std::size_t port)
 {
     qDebug() << "connect current threadID:" << GetCurrentThreadId();
     unsigned long ul = 1;
@@ -31,7 +31,7 @@ int TcpCom_IO::ConnectToServer(const char *IpAdr, const int port)
 
         qDebug() << "try connect IO板";
         int re;
-        re = ::connect(m_SockClient, (SOCKADDR *)&m_AdrServer, sizeof(SOCKADDR));
+        re = ::connect(m_SockClient, (SOCKADDR*)&m_AdrServer, sizeof(SOCKADDR));
         qDebug() << "connect over IO板";
         if (-1 == re)
         {
@@ -54,8 +54,8 @@ int TcpCom_IO::ConnectToServer(const char *IpAdr, const int port)
         {
             int SendTimeout = 10; // 1000ms
             int RecvTimeout = 10; // 1000ms
-            setsockopt(m_SockClient, SOL_SOCKET, SO_RCVTIMEO, (char *)&RecvTimeout, sizeof(int));
-            setsockopt(m_SockClient, SOL_SOCKET, SO_SNDTIMEO, (char *)&SendTimeout, sizeof(int));
+            setsockopt(m_SockClient, SOL_SOCKET, SO_RCVTIMEO, (char*)&RecvTimeout, sizeof(int));
+            setsockopt(m_SockClient, SOL_SOCKET, SO_SNDTIMEO, (char*)&SendTimeout, sizeof(int));
             m_CommState = true;
             emit sigConnected();
             return 0;

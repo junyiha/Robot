@@ -51,7 +51,7 @@ int CManual::RecvData()
 
         if (recvlen >= 16)
         {
-            for (int i = 0; i < recvlen; i++)
+            for (unsigned int i = 0; i < recvlen; i++)
             {
                 if (buffData[i] == 0x55)
                 {
@@ -149,7 +149,7 @@ int CManual::RecvData()
     return -1;
 }
 
-void CManual::getManualCmd(stManualCmd &cmd)
+void CManual::getManualCmd(stManualCmd& cmd)
 {
     mutex_cmd.lock();
     std::memcpy(&cmd, &_OutCmd, sizeof(stManualCmd));

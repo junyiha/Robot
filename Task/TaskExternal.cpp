@@ -854,13 +854,13 @@ void CTask::CalculatedAdjustmentOfSideline()
     QVector<Eigen::Matrix4d> Dev_RT = CMeasure::calPoseDeviation(m_stMeasuredata, average_distance);
     QVector<double> tar_position{ 0, 0, 0, 0, 0, 0 };
     tar_position = m_Robot->getTargetPose(Dev_RT[5]); // 计算调整量
-    m_fit_board_target_pose = tar_position.toStdVector();
+    m_fit_board_target_pose = std::vector(tar_position.begin(), tar_position.end());
     log->info("{}: motion index: {}", __LINE__, m_motion_index);
 }
 
 void CTask::CalculatedAdjustmentOfLift()
 {
-    int motion_index = BOARDING_MOTION_QUE.size();
+    auto motion_index = BOARDING_MOTION_QUE.size();
 
     // 计算运动索引
     std::vector<double> laserDistance(std::begin(m_stMeasuredata.m_LaserDistance), std::end(m_stMeasuredata.m_LaserDistance));

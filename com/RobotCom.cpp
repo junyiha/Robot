@@ -12,12 +12,12 @@ RobotCom::RobotCom()
     }
     m_Hour = 0;
     m_endhour = 0;
-    m_SysTime = {0};
+    m_SysTime = { 0 };
     m_SendSize = sizeof(DINT) + sizeof(stRobotCommand) + m_LinkNum * sizeof(stLinkCommand) + m_JointNum * sizeof(st_SetAxis);
     m_RecvSize = sizeof(DINT) + sizeof(stRobotStatus) + m_LinkNum * sizeof(stLinkStatus) + m_JointNum * sizeof(st_ReadAxis);
-    if (m_SendSize > DATA_SIZE || m_RecvSize > DATA_SIZE)
+    if (m_SendSize > TCPCOM_DATA_SIZE || m_RecvSize > TCPCOM_DATA_SIZE)
     {
-        qDebug() << "Error recv length is bigger than DATA_SIZE";
+        qDebug() << "Error recv length is bigger than TCPCOM_DATA_SIZE";
     }
 
     m_UpperHeartbeat = 0;
@@ -184,7 +184,7 @@ void RobotCom::EndVelMove(uint i, double vel, bool direction, bool underTool)
     mutex_send.unlock();
 }
 
-void RobotCom::EndPosMove(double *dp, bool underTool)
+void RobotCom::EndPosMove(double* dp, bool underTool)
 {
     mutex_send.lock();
 
@@ -466,12 +466,12 @@ QVector<st_ReadAxis> RobotCom::getLinkJointStatus(uint index)
     QVector<st_ReadAxis> re;
     uint joint_index = 0;
     uint freedom = LINK_FREEDOM[index];
-    for (int i = 0; i < index; i++)
+    for (uint i = 0; i < index; i++)
     {
         joint_index += LINK_FREEDOM[i];
     }
     mutex_Read.lock();
-    for (int i = joint_index; i < joint_index + freedom; i++)
+    for (uint i = joint_index; i < joint_index + freedom; i++)
     {
         re.push_back(m_AxisStatus[i]);
     }
