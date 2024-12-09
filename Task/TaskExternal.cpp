@@ -702,6 +702,10 @@ void CTask::liftMotionInFitBoardExecutionCommand()
                 updateTopAndSubState(ETopState::eFitBoard, ESubState::eDetection);
                 lift_motion_flag = false;
             }
+            else if (!flag_motion && flag_state)
+            {
+                lift_motion_flag = false;
+            }
         }
 
         break;
