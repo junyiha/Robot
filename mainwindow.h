@@ -62,15 +62,21 @@ public:
 
 private:
     void initUiForm();
+    void InitVision();
+    void setButtonIndex();  // 记录当前触发按钮索引
+    void setActionIndex();  // 记录当前触发动作索引(工作流程记录)
+    void closeEvent(QCloseEvent* event);
+    void connectSlotFunctions();
+    void slotUpdateUIAll();
+
+private:
+    void updateLineDetectResults();
+    void updataDeviceConnectState();
     void updateCameraData();//更新相机数据
     void updateLaserData();//更新点激光数值
     void updateAxisStatus();//更新单轴连接状态
     void updateConnectSta();//更新硬件连接状态
-    void setButtonIndex();  // 记录当前触发按钮索引
-    void setActionIndex();  // 记录当前触发动作索引(工作流程记录)
-    void closeEvent(QCloseEvent* event);
-    void InitVision();
-    void connectSlotFunctions();
+    void updateTaskStateMachineStatus();
 
 protected:
     void mousePressEvent(QMouseEvent* event) override;
@@ -103,8 +109,6 @@ private slots:
     void slots_on_btn_magnet_exit_clicked();
     void slots_on_btn_add_nail_clicked();
     void slots_on_btn_auto_laminate_clicked();// 自动贴合
-    //3.0 update the UI
-    void slotUpdateUIAll();
 
     //4.0
     void btn_moveFwd_shaft_pressed();
@@ -154,14 +158,13 @@ private slots:
     void slots_btn_load_configuration_clicked();
     void slots_btn_save_home_position_clicked();
     void slots_btn_save_prepare_position_clicked();
-    void updateLineDetectResults();
     void slots_on_line_results_dis_clicked();
-    void updataDeviceConnectState();
     void clearFlowButtonStyle();
 
     void slots_btn_joint_test_clicked();
     void slots_btn_move_zero_clicked();
     void slots_btn_move_zero_select_all_clicked();
+    void slots_btn_joint_text_terminate_clicked();
 
 private:
     double m_wheelVel{ 30.0 };

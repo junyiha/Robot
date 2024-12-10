@@ -196,6 +196,7 @@ void MainWindow::connectSlotFunctions()
     connect(ui->btn_joint_test, &QPushButton::clicked, this, &MainWindow::slots_btn_joint_test_clicked, Qt::UniqueConnection);
     connect(ui->btn_move_zero, &QPushButton::clicked, this, &MainWindow::slots_btn_move_zero_clicked, Qt::UniqueConnection);
     connect(ui->btn_move_zero_select_all, &QPushButton::clicked, this, &MainWindow::slots_btn_move_zero_select_all_clicked, Qt::UniqueConnection);
+    connect(ui->btn_joint_text_terminate, &QPushButton::clicked, this, &MainWindow::slots_btn_joint_text_terminate_clicked, Qt::UniqueConnection);
 }
 
 MainWindow::~MainWindow()
@@ -478,16 +479,31 @@ void MainWindow::clearFlowButtonStyle()
 void MainWindow::slots_btn_joint_test_clicked()
 {
     logger->info("joint test thread start ...");
+    m_thread_exit_flag = false;
     auto temp = new std::thread([this]() {
-        int index{ 1 };
-        float pos{ 110.0 };
-        bool flag{ true };
-        std::vector<std::pair<int, float>> cmd_container{
-            {1, 110.0},
-            {1, -110.0},
-            {2, 110.0},
-            {2, -110.0},
-        };
+        std::vector<int> list;
+        auto check_boxes = ui->page_config->findChildren<QCheckBox*>(QRegularExpression("^checkBox_joint_*"));
+
+        for (int i = 0; i < check_boxes.size(); i++)
+        {
+            std::string name = "checkBox_joint_" + std::to_string(i);
+            auto temp_ptr = findChild<QCheckBox*>(name.c_str());
+            if (temp_ptr->isChecked())
+            {
+                list.push_back(i);
+                temp_ptr->setCheckState(Qt::CheckState::Unchecked);
+            }
+        }
+        std::vector<std::pair<int, std::pair<float, float>>> cmd_container;
+        for (auto& i : list)
+        {
+            auto max_pos_vel = std::make_pair(RobotConfigMap.at(i).max_pos, RobotConfigMap.at(i).max_velocity * 0.1);
+            cmd_container.push_back(std::make_pair(i, max_pos_vel));
+
+            auto min_pos_vel = std::make_pair(RobotConfigMap.at(i).min_pos, RobotConfigMap.at(i).max_velocity * 0.1);
+            cmd_container.push_back(std::make_pair(i, min_pos_vel));
+        }
+
         while (true)
         {
             if (m_thread_exit_flag)
@@ -495,12 +511,15 @@ void MainWindow::slots_btn_joint_test_clicked()
 
             for (auto& cmd : cmd_container)
             {
-                m_Robot->setJointMoveAbs(cmd.first, cmd.second, 4);
-                logger->info("{}: index: {}, position: {}", __LINE__, cmd.first, cmd.second);
+                m_Robot->setJointMoveAbs(cmd.first, cmd.second.first, cmd.second.second);
+                logger->info("{}: index: {}, position: {}", __LINE__, cmd.first, cmd.second.first);
                 while (true)
                 {
+                    if (m_thread_exit_flag)
+                        return;
+
                     auto status = m_Robot->getJointGroupSta();
-                    if (std::fabs(std::fabs(status.at(cmd.first).Position) - std::fabs(cmd.second)) < 1)
+                    if (std::fabs(std::fabs(status.at(cmd.first).Position) - std::fabs(cmd.second.first)) < 1)
                     {
                         break;
                     }
@@ -534,15 +553,34 @@ void MainWindow::slots_btn_move_zero_clicked()
         m_Robot->setJointMoveAbs(i, RobotConfigMap.at(i).zero_pos, RobotConfigMap.at(i).max_velocity * 0.5);
         logger->info("{}: index: {}, zero position: {}, velocity: {}", __LINE__, i, RobotConfigMap.at(i).zero_pos, RobotConfigMap.at(i).max_velocity * 0.5);
     }
+
+    ui->btn_move_zero_select_all->setText(QString::fromLocal8Bit("全选"));
 }
 
 void MainWindow::slots_btn_move_zero_select_all_clicked()
 {
     auto check_boxes = ui->page_config->findChildren<QCheckBox*>(QRegularExpression("^checkBox_joint_*"));
+    bool flag;
+    if (ui->btn_move_zero_select_all->text() == QString::fromLocal8Bit("全选"))
+    {
+        flag = true;
+        ui->btn_move_zero_select_all->setText(QString::fromLocal8Bit("取消全选"));
+    }
+    else
+    {
+        flag = false;
+        ui->btn_move_zero_select_all->setText(QString::fromLocal8Bit("全选"));
+    }
     for (auto& box : check_boxes)
     {
-        box->setChecked(true);
+        box->setChecked(flag);
     }
+}
+
+void MainWindow::slots_btn_joint_text_terminate_clicked()
+{
+    m_thread_exit_flag = true;
+    m_Robot->setRobotHalt();
 }
 
 void MainWindow::on_btn_magnet_stop_clicked()
@@ -585,8 +623,7 @@ void MainWindow::slotUpdateUIAll()
     updateConnectSta();
 
     // 8.0 更新指令流转状态
-    std::string currentState = m_Task->getCurrentStateString();
-    ui->label_state_transition->setText(QString::fromLocal8Bit(currentState.c_str()));
+    updateTaskStateMachineStatus();
 }
 
 void MainWindow::updataDeviceConnectState()
@@ -1179,6 +1216,12 @@ void MainWindow::updateConnectSta()
             findChild<QLabel*>(item.first)->setStyleSheet("image: url(:/img/images/icon_greenLight.png);");
         }
     }
+}
+
+void MainWindow::updateTaskStateMachineStatus()
+{
+    std::string currentState = m_Task->getCurrentStateString();
+    ui->label_state_transition->setText(QString::fromLocal8Bit(currentState.c_str()));
 }
 
 void MainWindow::on_btn_line_detect_clicked()
