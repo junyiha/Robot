@@ -24,27 +24,6 @@
 #include "com/LaserDistanceBojke.h"
 #include "cxxopts.hpp"
 
-void initLog()
-{
-    // 创建控制台日志记录器
-    auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
-    console_sink->set_level(spdlog::level::debug);
-    console_sink->set_pattern("[%Y-%m-%d %H:%M:%S:%e] [%^%l%$] %v");
-
-    // 创建文件日志记录器: 滚动记录，最大文件5M，文件数量100个
-    auto rotating_sink = std::make_shared<spdlog::sinks::rotating_file_sink_mt>("logs/rotating.txt", 1048576 * 5, 100);
-
-    // 同步记录器，
-    std::vector<spdlog::sink_ptr> sinks{ console_sink, rotating_sink };
-    auto logger = std::make_shared<spdlog::logger>("logger", sinks.begin(), sinks.end());
-
-    spdlog::register_logger(logger);              // 注册为全局日志，通过log_write访问;
-    spdlog::flush_every(std::chrono::seconds(3)); // 每3s刷新一次
-    // 根据需要调整记录级别：调试debug，发布info
-    spdlog::set_level(spdlog::level::debug);
-    std::shared_ptr<spdlog::logger> log = spdlog::get("logger");
-}
-
 void line_detect_demo()
 {
     std::string path = "E:\\ZBRobot\\Robot\\cache\\Image_20241011110413922.bmp";

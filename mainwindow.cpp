@@ -220,7 +220,9 @@ void MainWindow::initLog()
     console_sink->set_pattern("[%Y-%m-%d %H:%M:%S.%e][thread %t][%@,%!] [%l] : %v");
 
     // 创建文件日志记录器: 滚动记录，最大文件5M，文件数量100个
-    auto rotating_sink = std::make_shared<spdlog::sinks::rotating_file_sink_mt>("logs/rotating.txt", 1048576 * 5, 100);
+    std::string log_path = ROOT_PATH;
+    log_path += "logs/rotating.txt";
+    auto rotating_sink = std::make_shared<spdlog::sinks::rotating_file_sink_mt>(log_path, 1048576 * 5, 100);
 
     //同步记录器，
     std::vector<spdlog::sink_ptr> sinks{ console_sink, rotating_sink };
