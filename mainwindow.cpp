@@ -195,6 +195,7 @@ void MainWindow::connectSlotFunctions()
 
     connect(ui->btn_joint_test, &QPushButton::clicked, this, &MainWindow::slots_btn_joint_test_clicked, Qt::UniqueConnection);
     connect(ui->btn_move_zero, &QPushButton::clicked, this, &MainWindow::slots_btn_move_zero_clicked, Qt::UniqueConnection);
+    connect(ui->btn_move_zero_select_all, &QPushButton::clicked, this, &MainWindow::slots_btn_move_zero_select_all_clicked, Qt::UniqueConnection);
 }
 
 MainWindow::~MainWindow()
@@ -512,10 +513,10 @@ void MainWindow::slots_btn_joint_test_clicked()
 
 void MainWindow::slots_btn_move_zero_clicked()
 {
-    std::vector<uint> list;
+    std::vector<int> list;
     auto check_boxes = ui->page_config->findChildren<QCheckBox*>(QRegularExpression("^checkBox_joint_*"));
 
-    for (uint i = 0; i < check_boxes.size(); i++)
+    for (int i = 0; i < check_boxes.size(); i++)
     {
         std::string name = "checkBox_joint_" + std::to_string(i);
         auto temp_ptr = findChild<QCheckBox*>(name.c_str());
@@ -528,7 +529,17 @@ void MainWindow::slots_btn_move_zero_clicked()
 
     for (auto& i : list)
     {
-        logger->info("{}: index: {}", __LINE__, i);
+        m_Robot->setJointMoveAbs(i, RobotConfigMap.at(i).zero_pos, RobotConfigMap.at(i).max_velocity * 0.5);
+        logger->info("{}: index: {}, zero position: {}, velocity: {}", __LINE__, i, RobotConfigMap.at(i).zero_pos, RobotConfigMap.at(i).max_velocity * 0.5);
+    }
+}
+
+void MainWindow::slots_btn_move_zero_select_all_clicked()
+{
+    auto check_boxes = ui->page_config->findChildren<QCheckBox*>(QRegularExpression("^checkBox_joint_*"));
+    for (auto& box : check_boxes)
+    {
+        box->setChecked(true);
     }
 }
 

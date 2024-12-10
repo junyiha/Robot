@@ -161,6 +161,7 @@ private slots:
 
     void slots_btn_joint_test_clicked();
     void slots_btn_move_zero_clicked();
+    void slots_btn_move_zero_select_all_clicked();
 
 private:
     double m_wheelVel{ 30.0 };

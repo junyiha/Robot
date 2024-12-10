@@ -8557,603 +8557,16 @@ QPushButton:hover {
       <property name="title">
        <string/>
       </property>
-      <widget class="QWidget" name="gridLayoutWidget">
+      <widget class="QWidget" name="verticalLayoutWidget">
        <property name="geometry">
         <rect>
-         <x>40</x>
+         <x>30</x>
          <y>20</y>
-         <width>341</width>
-         <height>241</height>
+         <width>131</width>
+         <height>401</height>
         </rect>
        </property>
-       <layout class="QGridLayout" name="gridLayout_8">
-        <item row="1" column="2">
-         <widget class="QLabel" name="label_pos_shaft10_2">
-          <property name="minimumSize">
-           <size>
-            <width>100</width>
-            <height>40</height>
-           </size>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QLabel{
-  border:1px solid black;
-}</string>
-          </property>
-          <property name="text">
-           <string>000.000</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="2">
-         <widget class="QLabel" name="label_pos_shaft10_3">
-          <property name="minimumSize">
-           <size>
-            <width>100</width>
-            <height>40</height>
-           </size>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QLabel{
-  border:1px solid black;
-}</string>
-          </property>
-          <property name="text">
-           <string>000.000</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QLabel" name="label_device_state10_2">
-          <property name="minimumSize">
-           <size>
-            <width>80</width>
-            <height>40</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>80</width>
-            <height>40</height>
-           </size>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QLabel {
-    text-align: center; /* 水平居中文本 */
-    vertical-align: middle; /* 垂直居中文本 */
-    border: 1px solid black;
-    image: url(:/img/images/icon_redLight.png);
-}</string>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="1">
-         <widget class="QLabel" name="label_sta_shaft4_2">
-          <property name="minimumSize">
-           <size>
-            <width>80</width>
-            <height>40</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>80</width>
-            <height>40</height>
-           </size>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QLabel {
-	background-color: rgb(214, 214, 214);
-    text-align: left; /* 水平居中文本 */
-    vertical-align: left; /* 垂直居中文本 */
-    border: 1px solid black;
-}</string>
-          </property>
-          <property name="text">
-           <string>3.腰转</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="0">
-         <widget class="QLabel" name="label_device_state9_2">
-          <property name="minimumSize">
-           <size>
-            <width>80</width>
-            <height>40</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>80</width>
-            <height>40</height>
-           </size>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QLabel {
-    text-align: center; /* 水平居中文本 */
-    vertical-align: middle; /* 垂直居中文本 */
-    border: 1px solid black;
-    image: url(:/img/images/icon_redLight.png);
-}</string>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="0">
-         <widget class="QLabel" name="label_device_state10_5">
-          <property name="minimumSize">
-           <size>
-            <width>80</width>
-            <height>40</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>80</width>
-            <height>40</height>
-           </size>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QLabel {
-    text-align: center; /* 水平居中文本 */
-    vertical-align: middle; /* 垂直居中文本 */
-    border: 1px solid black;
-    image: url(:/img/images/icon_redLight.png);
-}</string>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="QLabel" name="label_sta_shaft0_2">
-          <property name="minimumSize">
-           <size>
-            <width>80</width>
-            <height>40</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>80</width>
-            <height>40</height>
-           </size>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QLabel {
-	background-color: rgb(214, 214, 214);
-    text-align: left; /* 水平居中文本 */
-    vertical-align: middle; /* 垂直居中文本 */
-    border: 1px solid black;
-}</string>
-          </property>
-          <property name="text">
-           <string>0.升降</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="2">
-         <widget class="QLabel" name="label_pos_shaft10_7">
-          <property name="minimumSize">
-           <size>
-            <width>100</width>
-            <height>40</height>
-           </size>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QLabel{
-  border:1px solid black;
-}</string>
-          </property>
-          <property name="text">
-           <string>000.000</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="2">
-         <widget class="QLabel" name="label_pos_shaft10_8">
-          <property name="minimumSize">
-           <size>
-            <width>100</width>
-            <height>40</height>
-           </size>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QLabel{
-  border:1px solid black;
-}</string>
-          </property>
-          <property name="text">
-           <string>000.000</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="0">
-         <widget class="QLabel" name="label_device_state10_3">
-          <property name="minimumSize">
-           <size>
-            <width>80</width>
-            <height>40</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>80</width>
-            <height>40</height>
-           </size>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QLabel {
-    text-align: center; /* 水平居中文本 */
-    vertical-align: middle; /* 垂直居中文本 */
-    border: 1px solid black;
-    image: url(:/img/images/icon_redLight.png);
-}</string>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="0">
-         <widget class="QLabel" name="label_device_state10_4">
-          <property name="minimumSize">
-           <size>
-            <width>80</width>
-            <height>40</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>80</width>
-            <height>40</height>
-           </size>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QLabel {
-    text-align: center; /* 水平居中文本 */
-    vertical-align: middle; /* 垂直居中文本 */
-    border: 1px solid black;
-    image: url(:/img/images/icon_redLight.png);
-}</string>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="2">
-         <widget class="QLabel" name="label_pos_shaft9_2">
-          <property name="minimumSize">
-           <size>
-            <width>100</width>
-            <height>40</height>
-           </size>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QLabel{
-  border:1px solid black;
-}</string>
-          </property>
-          <property name="text">
-           <string>000.000</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="1">
-         <widget class="QLabel" name="label_sta_shaft3_2">
-          <property name="minimumSize">
-           <size>
-            <width>80</width>
-            <height>40</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>80</width>
-            <height>40</height>
-           </size>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QLabel {
-	background-color: rgb(214, 214, 214);
-    text-align: center; /* 水平居中文本 */
-    vertical-align: middle; /* 垂直居中文本 */
-    border: 1px solid black;
-}</string>
-          </property>
-          <property name="text">
-           <string>2.左右</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="1">
-         <widget class="QLabel" name="label_sta_shaft5_2">
-          <property name="minimumSize">
-           <size>
-            <width>80</width>
-            <height>40</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>80</width>
-            <height>40</height>
-           </size>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QLabel {
-	background-color: rgb(214, 214, 214);
-    text-align: left; /* 水平居中文本 */
-    vertical-align: middle; /* 垂直居中文本 */
-    border: 1px solid black;
-}</string>
-          </property>
-          <property name="text">
-           <string>4.腰俯仰</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QLabel" name="label_sta_shaft1_2">
-          <property name="minimumSize">
-           <size>
-            <width>80</width>
-            <height>40</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>80</width>
-            <height>40</height>
-           </size>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">QLabel {
-	background-color: rgb(214, 214, 214);
-    text-align: center; /* 水平居中文本 */
-    vertical-align: middle; /* 垂直居中文本 */
-    border: 1px solid black;
-}</string>
-          </property>
-          <property name="text">
-           <string>1.前后</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="3">
-         <widget class="QPushButton" name="btn_move_zero_joint_0">
-          <property name="minimumSize">
-           <size>
-            <width>42</width>
-            <height>40</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>30</width>
-            <height>30</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <family>等线</family>
-            <pointsize>14</pointsize>
-           </font>
-          </property>
-          <property name="cursor">
-           <cursorShape>PointingHandCursor</cursorShape>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">border-image: url(:/img/images/icon_moveRel.png);
-
-
-</string>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="3">
-         <widget class="QPushButton" name="btn_moveRel_shaft10_2">
-          <property name="minimumSize">
-           <size>
-            <width>42</width>
-            <height>40</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>30</width>
-            <height>30</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <family>等线</family>
-            <pointsize>14</pointsize>
-           </font>
-          </property>
-          <property name="cursor">
-           <cursorShape>PointingHandCursor</cursorShape>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">border-image: url(:/img/images/icon_moveRel.png);
-
-
-</string>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="3">
-         <widget class="QPushButton" name="btn_moveRel_shaft10_6">
-          <property name="minimumSize">
-           <size>
-            <width>42</width>
-            <height>40</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>30</width>
-            <height>30</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <family>等线</family>
-            <pointsize>14</pointsize>
-           </font>
-          </property>
-          <property name="cursor">
-           <cursorShape>PointingHandCursor</cursorShape>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">border-image: url(:/img/images/icon_moveRel.png);
-
-
-</string>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="3">
-         <widget class="QPushButton" name="btn_moveRel_shaft10_8">
-          <property name="minimumSize">
-           <size>
-            <width>42</width>
-            <height>40</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>30</width>
-            <height>30</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <family>等线</family>
-            <pointsize>14</pointsize>
-           </font>
-          </property>
-          <property name="cursor">
-           <cursorShape>PointingHandCursor</cursorShape>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">border-image: url(:/img/images/icon_moveRel.png);
-
-
-</string>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="3">
-         <widget class="QPushButton" name="btn_moveRel_shaft10_9">
-          <property name="minimumSize">
-           <size>
-            <width>42</width>
-            <height>40</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>30</width>
-            <height>30</height>
-           </size>
-          </property>
-          <property name="font">
-           <font>
-            <family>等线</family>
-            <pointsize>14</pointsize>
-           </font>
-          </property>
-          <property name="cursor">
-           <cursorShape>PointingHandCursor</cursorShape>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">border-image: url(:/img/images/icon_moveRel.png);
-
-
-</string>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="horizontalLayoutWidget_2">
-       <property name="geometry">
-        <rect>
-         <x>40</x>
-         <y>300</y>
-         <width>444</width>
-         <height>61</height>
-        </rect>
-       </property>
-       <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <layout class="QVBoxLayout" name="verticalLayout">
         <item>
          <widget class="QCheckBox" name="checkBox_joint_0">
           <property name="maximumSize">
@@ -9220,6 +8633,97 @@ QPushButton:hover {
          </widget>
         </item>
         <item>
+         <widget class="QCheckBox" name="checkBox_joint_5">
+          <property name="maximumSize">
+           <size>
+            <width>120</width>
+            <height>40</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>5. 臂俯仰</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="checkBox_joint_6">
+          <property name="maximumSize">
+           <size>
+            <width>120</width>
+            <height>40</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>6. 筒伸缩</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="checkBox_joint_7">
+          <property name="maximumSize">
+           <size>
+            <width>120</width>
+            <height>40</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>7. 筒旋转</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="checkBox_joint_8">
+          <property name="maximumSize">
+           <size>
+            <width>120</width>
+            <height>40</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>8. 腕俯仰</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="checkBox_joint_9">
+          <property name="maximumSize">
+           <size>
+            <width>120</width>
+            <height>40</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>9. 末端升降</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="checkBox_joint_10">
+          <property name="maximumSize">
+           <size>
+            <width>120</width>
+            <height>40</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>10. 末端旋转</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btn_move_zero_select_all">
+          <property name="maximumSize">
+           <size>
+            <width>120</width>
+            <height>40</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>全选</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QPushButton" name="btn_move_zero">
           <property name="maximumSize">
            <size>
@@ -9228,7 +8732,7 @@ QPushButton:hover {
            </size>
           </property>
           <property name="text">
-           <string>零位</string>
+           <string>回零位</string>
           </property>
          </widget>
         </item>

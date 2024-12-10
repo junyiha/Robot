@@ -85,7 +85,7 @@ class CLink_2 : public CLink
 	// 可重载函数====================================================//
 	// 正解
 	virtual void LinkForwardKin() const; // Link 正解
-										 // 逆解
+	// 逆解
 	virtual void MotionLineAbsolute() const; // 单轴运动
 	virtual void MotionLineVelocity() const; // 末端位置模式
 	virtual void MotionLineRelative() const; // 末端速度模式
@@ -113,7 +113,7 @@ class CLink_3 : public CLink
 	// 可重载函数====================================================//
 	// 正解
 	virtual void LinkForwardKin() const; // Link 正解
-										 // 逆解
+	// 逆解
 	virtual void MotionLineAbsolute() const; // 单轴运动
 	virtual void MotionLineVelocity() const; // 末端位置模式
 	virtual void MotionLineRelative() const; // 末端速度模式
@@ -141,7 +141,7 @@ class CLink_4 : public CLink
 	// 可重载函数====================================================//
 	// 正解
 	virtual void LinkForwardKin() const; // Link 正解
-										 // 逆解
+	// 逆解
 	virtual void MotionLineAbsolute() const; // 单轴运动
 	virtual void MotionLineVelocity() const; // 末端位置模式
 	virtual void MotionLineRelative() const; // 末端速度模式
@@ -169,7 +169,7 @@ class CLink_5 : public CLink
 	// 可重载函数====================================================//
 	// 正解
 	virtual void LinkForwardKin() const; // Link 正解
-										 // 逆解
+	// 逆解
 	virtual void MotionLineAbsolute() const; // 单轴运动
 	virtual void MotionLineVelocity() const; // 末端位置模式
 	virtual void MotionLineRelative() const; // 末端速度模式
