@@ -11,13 +11,13 @@ set(CMAKE_PREFIX_PATH "D:/soft/qt5.14/5.14.0/msvc2017_64")
 set(QRC_SOURCE_FILE ${CMAKE_SOURCE_DIR}/res.qrc)
 
 add_compile_options(/W0)
-if(MSVC)
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /O2 /GL")
-    set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /O2 /GL")
-endif()
+# if(MSVC)
+#     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /O2 /GL")
+#     set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /O2 /GL")
+# endif()
 
 
-add_definitions(-DSTATE_MACHINE_TEST=1)
+# add_definitions(-DSTATE_MACHINE_TEST=1)
 add_definitions(-DROOT_PATH="${CMAKE_SOURCE_DIR}/")
 add_definitions(-DCONFIG_PATH="${CMAKE_SOURCE_DIR}/config.yaml")
 add_definitions(-DVISION_MODEL_PATH="${CMAKE_SOURCE_DIR}/models/pp_liteseg_stdc1_softmax_20241021.onnx")

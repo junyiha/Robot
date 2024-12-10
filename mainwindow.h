@@ -96,8 +96,6 @@ private slots:
     void on_btn_knock_suspend_clicked();
     void on_btn_magnet_stop_clicked();
     void on_btn_magent_crash_stop_clicked();
-    void on_btn_SetTools_clicked();
-    void on_btn_SetMagent_clicked();
     void slots_on_btn_magnet_exit_clicked();
     void slots_on_btn_add_nail_clicked();
     void slots_on_btn_auto_laminate_clicked();// 自动贴合
@@ -152,12 +150,9 @@ private slots:
     void slots_btn_load_configuration_clicked();
     void slots_btn_save_home_position_clicked();
     void slots_btn_save_prepare_position_clicked();
-    void on_comboBox_tools_currentIndexChanged();
-    void on_comboBox_magents_currentIndexChanged();
     void updateLineDetectResults();
     void connectSlotFunctions();
     void slots_on_line_results_dis_clicked();
-    void initUiWiget();
     void updataDeviceConnectState();
     void clearFlowButtonStyle();
 

@@ -17,6 +17,8 @@ MainWindow::MainWindow(QWidget* parent)
     m_Task = new CTask(m_Com, m_Robot, m_VisionInterface);
     m_config_ptr = std::make_unique<Config::ConfigManager>();
 
+    InitVision();
+
     //5.0 计时器界面实时更新 (100ms更新一次)
     this->logger->trace("启动界面实时更新");
     this->updateUiTimer = new QTimer(this);
@@ -33,39 +35,10 @@ MainWindow::MainWindow(QWidget* parent)
 
 void MainWindow::initUiForm()
 {
-    // 1.0 初始化UI控件
-    initUiWiget();
-
     // 2.0 为按钮绑定操函数
     connectSlotFunctions();
-}
 
-void MainWindow::initUiWiget()
-{//2.0 碰钉工具测试用-----------------------------------
-    for (int i = 0; i < 10; i++)
-    {
-        ui->comboBox_tools_->addItem(tr("tool ") + QString::number(i + 1));
-    }
-    ui->comboBox_magents_->addItem(tr("all mangents "));
-    for (int i = 0; i < 4; i++)
-    {
-        ui->comboBox_magents_->addItem(tr("mangent ") + QString::number(i + 1));
-    }
-    QStringList QList;
-    QList << tr("eInitAction")
-        << tr("eGrind_MovorOff")
-        << tr("eGrind_OnorDown")
-        << tr("eGrind_Up")
-        << tr("eWeld_MovorDwon")
-        << tr("eWeld_Fix")
-        << tr("eWeld_Up")
-        << tr("eWeld_On")
-        << tr("eWeld_Down")
-        << tr("eNone_Action");
-    ui->comboBox_tools_action->addItems(QList);
-    QList.clear();
-    QList << tr("eNONE_Magent") << tr("eMag_On") << tr("eMag_Off") << tr("eMag_Up") << tr("eMag_Down");
-    ui->comboBox_magents_action->addItems(QList);
+    ui->stackedWidget_view->setCurrentWidget(ui->page_user);
 }
 
 void MainWindow::InitVision()
@@ -138,12 +111,6 @@ void MainWindow::connectSlotFunctions()
         connect(findChild<QPushButton*>("btn_moveRel_end" + QString::number(i)), &QPushButton::clicked, this,
                 &MainWindow::on_moveRel_end_clicked, Qt::UniqueConnection);
     }
-
-    // 4.0 碰钉下拉框按钮绑定
-    connect(ui->comboBox_tools_, &QComboBox::currentTextChanged, this,
-            &MainWindow::on_comboBox_tools_currentIndexChanged, Qt::UniqueConnection);
-    connect(ui->comboBox_magents_, &QComboBox::currentTextChanged, this,
-            &MainWindow::on_comboBox_magents_currentIndexChanged, Qt::UniqueConnection);
 
     // 5.0 视觉可视化区域按钮绑定
     connect(ui->btn_line_detect, &QPushButton::clicked, this, &MainWindow::on_btn_line_detect_clicked,
@@ -896,51 +863,6 @@ void MainWindow::on_btn_userMode_clicked()
     ui->stackedWidget_view->setCurrentIndex(0);
 }
 
-void MainWindow::on_comboBox_tools_currentIndexChanged()
-{
-    this->logger->info("选择工具");
-    int index = ui->comboBox_tools_->currentIndex() + 1;
-    QString action_str = ui->comboBox_tools_action->currentText();
-    E_WeldAction action = eNone_Action;
-    if (action_str == "eInitAction")action = eInitAction;
-    else if (action_str == "eGrind_MovorOff")action = eGrind_MovorOff;
-    else if (action_str == "eGrind_OnorDown")action = eGrind_OnorDown;
-    else if (action_str == "eGrind_Up")action = eGrind_Up;
-    else if (action_str == "eWeld_MovorDwon")action = eWeld_MovorDwon;
-    else if (action_str == "eWeld_Fix")action = eWeld_Fix;
-    else if (action_str == "eWeld_Up")action = eWeld_Up;
-    else if (action_str == "eWeld_On")action = eWeld_On;
-    else if (action_str == "eWeld_Down")action = eWeld_Down;
-    else action = eNone_Action;
-
-    if (ui->check_connect->isChecked())
-    {
-        m_Com->SetGunConnect(index);
-
-    }
-    else
-    {
-        m_Com->SetGunConnect(0);
-    }
-    m_Com->SetToolsAction(index, action);
-}
-
-void MainWindow::on_comboBox_magents_currentIndexChanged()
-{
-
-    int index = ui->comboBox_magents_->currentIndex();
-    QString action_str = ui->comboBox_magents_action->currentText();
-    E_MagentAction action = eNONE_Magent;
-    if (action_str == "eNONE_Magent") action = eNONE_Magent;
-    else if (action_str == "eMag_On") action = eMag_On;
-    else if (action_str == "eMag_Off") action = eMag_Off;
-    else if (action_str == "eMag_Up") action = eMag_Up;
-    else if (action_str == "eMag_Down") action = eMag_Down;
-    else action = eNONE_Magent;
-
-    m_Com->SetMagentAction(index, action);
-}
-
 void MainWindow::btn_moveFwd_shaft_released()
 {
     m_Robot->setLinkHalt();
@@ -1151,50 +1073,6 @@ void MainWindow::on_moveRel_end_clicked()
     {
         findChild<QLineEdit*>("lineEdit_setPos_end" + QString::number(i))->setText("0");
     }
-}
-
-void MainWindow::on_btn_SetTools_clicked()
-{
-    int index = ui->comboBox_tools_->currentIndex() + 1;
-    QString action_str = ui->comboBox_tools_action->currentText();
-    E_WeldAction action = eNone_Action;
-    if (action_str == "eInitAction") action = eInitAction;
-    else if (action_str == "eGrind_MovorOff")action = eGrind_MovorOff;
-    else if (action_str == "eGrind_OnorDown")action = eGrind_OnorDown;
-    else if (action_str == "eGrind_Up")action = eGrind_Up;
-    else if (action_str == "eWeld_MovorDwon")action = eWeld_MovorDwon;
-    else if (action_str == "eWeld_Fix")action = eWeld_Fix;
-    else if (action_str == "eWeld_Up")action = eWeld_Up;
-    else if (action_str == "eWeld_On")action = eWeld_On;
-    else if (action_str == "eWeld_Down")action = eWeld_Down;
-    else action = eNone_Action;
-
-
-    if (ui->check_connect->isChecked())
-    {
-        m_Com->SetGunConnect(index);
-
-    }
-    else
-    {
-        m_Com->SetGunConnect(0);
-    }
-    m_Com->SetToolsAction(index, action);
-}
-
-void MainWindow::on_btn_SetMagent_clicked()
-{
-    int index = ui->comboBox_magents_->currentIndex();
-    QString action_str = ui->comboBox_magents_action->currentText();
-    E_MagentAction action = eNONE_Magent;
-    if (action_str == "eNONE_Magent") action = eNONE_Magent;
-    else if (action_str == "eMag_On") action = eMag_On;
-    else if (action_str == "eMag_Off") action = eMag_Off;
-    else if (action_str == "eMag_Up") action = eMag_Up;
-    else if (action_str == "eMag_Down") action = eMag_Down;
-    else action = eNONE_Magent;
-
-    m_Com->SetMagentAction(index, action);
 }
 
 void MainWindow::updateConnectSta()
