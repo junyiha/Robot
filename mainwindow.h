@@ -6,7 +6,6 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <iostream>
 #include <QTime>
 #include <QThread>
 #include <QDebug>
@@ -20,10 +19,14 @@
 #include <QByteArray>
 #include <QDir>
 #include <QtMath>
-#include <cmath>
 #include <QMutex>
 #include <QAtomicInt>
+#include <QRegularExpression>
+
+#include <iostream>
+#include <cmath>
 #include <bitset>
+#include <thread>
 //--------------日志文件----------------//
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/basic_file_sink.h>
@@ -67,6 +70,7 @@ private:
     void setActionIndex();  // 记录当前触发动作索引(工作流程记录)
     void closeEvent(QCloseEvent* event);
     void InitVision();
+    void connectSlotFunctions();
 
 protected:
     void mousePressEvent(QMouseEvent* event) override;
@@ -151,10 +155,12 @@ private slots:
     void slots_btn_save_home_position_clicked();
     void slots_btn_save_prepare_position_clicked();
     void updateLineDetectResults();
-    void connectSlotFunctions();
     void slots_on_line_results_dis_clicked();
     void updataDeviceConnectState();
     void clearFlowButtonStyle();
+
+    void slots_btn_joint_test_clicked();
+    void slots_btn_move_zero_clicked();
 
 private:
     double m_wheelVel{ 30.0 };
@@ -181,6 +187,9 @@ private:
     VisionInterface* m_VisionInterface;
     std::unique_ptr<Config::ConfigManager> m_config_ptr;
     std::shared_ptr<spdlog::logger> logger;
+
+    bool m_thread_exit_flag{ false };
+    std::vector<std::thread*> m_thread_pool;
 
     // 操作按钮索引配置
     std::map<std::string, unsigned int> m_btnIndex = {

@@ -17,7 +17,10 @@ MainWindow::MainWindow(QWidget* parent)
     m_Task = new CTask(m_Com, m_Robot, m_VisionInterface);
     m_config_ptr = std::make_unique<Config::ConfigManager>();
 
+#ifdef STATE_MACHINE_TEST
+#else
     InitVision();
+#endif
 
     //5.0 计时器界面实时更新 (100ms更新一次)
     this->logger->trace("启动界面实时更新");
@@ -189,12 +192,22 @@ void MainWindow::connectSlotFunctions()
     connect(ui->btn_load_configuration, &QPushButton::clicked, this, &MainWindow::slots_btn_load_configuration_clicked, Qt::UniqueConnection);
     connect(ui->btn_save_home_position, &QPushButton::clicked, this, &MainWindow::slots_btn_save_home_position_clicked, Qt::UniqueConnection);
     connect(ui->btn_save_prepare_position, &QPushButton::clicked, this, &MainWindow::slots_btn_save_prepare_position_clicked, Qt::UniqueConnection);
+
+    connect(ui->btn_joint_test, &QPushButton::clicked, this, &MainWindow::slots_btn_joint_test_clicked, Qt::UniqueConnection);
+    connect(ui->btn_move_zero, &QPushButton::clicked, this, &MainWindow::slots_btn_move_zero_clicked, Qt::UniqueConnection);
 }
 
 MainWindow::~MainWindow()
 {
 
-
+    m_thread_exit_flag = true;
+    for (auto& t : m_thread_pool)
+    {
+        if (t->joinable())
+        {
+            t->join();
+        }
+    }
 }
 
 void MainWindow::initLog()
@@ -459,6 +472,65 @@ void MainWindow::clearFlowButtonStyle()
                                           "border-radius: 10px;");
 }
 
+void MainWindow::slots_btn_joint_test_clicked()
+{
+    logger->info("joint test thread start ...");
+    auto temp = new std::thread([this]() {
+        int index{ 1 };
+        float pos{ 110.0 };
+        bool flag{ true };
+        std::vector<std::pair<int, float>> cmd_container{
+            {1, 110.0},
+            {1, -110.0},
+            {2, 110.0},
+            {2, -110.0},
+        };
+        while (true)
+        {
+            if (m_thread_exit_flag)
+                break;
+
+            for (auto& cmd : cmd_container)
+            {
+                m_Robot->setJointMoveAbs(cmd.first, cmd.second, 4);
+                logger->info("{}: index: {}, position: {}", __LINE__, cmd.first, cmd.second);
+                while (true)
+                {
+                    auto status = m_Robot->getJointGroupSta();
+                    if (std::fabs(std::fabs(status.at(cmd.first).Position) - std::fabs(cmd.second)) < 1)
+                    {
+                        break;
+                    }
+                }
+
+                std::this_thread::sleep_for(std::chrono::seconds(1));
+            }
+        }
+    });
+    m_thread_pool.push_back(temp);
+}
+
+void MainWindow::slots_btn_move_zero_clicked()
+{
+    std::vector<uint> list;
+    auto check_boxes = ui->page_config->findChildren<QCheckBox*>(QRegularExpression("^checkBox_joint_*"));
+
+    for (uint i = 0; i < check_boxes.size(); i++)
+    {
+        std::string name = "checkBox_joint_" + std::to_string(i);
+        auto temp_ptr = findChild<QCheckBox*>(name.c_str());
+        if (temp_ptr->isChecked())
+        {
+            list.push_back(i);
+            temp_ptr->setCheckState(Qt::CheckState::Unchecked);
+        }
+    }
+
+    for (auto& i : list)
+    {
+        logger->info("{}: index: {}", __LINE__, i);
+    }
+}
 
 void MainWindow::on_btn_magnet_stop_clicked()
 {
@@ -488,6 +560,9 @@ void MainWindow::slotUpdateUIAll()
 
     // 3.0 更新边线检测实时测量值
     updateLineDetectResults();
+
+    // 7.0 更新硬件设备连接状态，并通过指示灯显示
+    updataDeviceConnectState();
 #endif
 
     // 4.0 更新轴状态信息
@@ -495,9 +570,6 @@ void MainWindow::slotUpdateUIAll()
 
     //6.0 更新设备连接状态
     updateConnectSta();
-
-    // 7.0 更新硬件设备连接状态，并通过指示灯显示
-    // updataDeviceConnectState();
 
     // 8.0 更新指令流转状态
     std::string currentState = m_Task->getCurrentStateString();
@@ -760,7 +832,7 @@ void MainWindow::updateCameraData()
         }
         else
         {
-            this->logger->info("相机页面选择错误");
+            // this->logger->info("相机页面选择错误");
             return;
         }
 
