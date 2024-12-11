@@ -43,16 +43,17 @@ struct LaserScanerDeviceInfo {
 
 
 
-class MyBestfitLaserScaner: public QThread {
+class MyBestfitLaserScaner : public QThread {
     Q_OBJECT
 public:
     std::string      laser_name;
 
     // Scanner connect and status
-    void            *m_hScanner= nullptr; //句柄
-    bool            m_bScannerConnectStatus{false};//是否连接
-    bool            m_isRunning{true};
-    bool            m_threadQuit{false};
+    void* m_hScanner = nullptr; //句柄
+    bool            m_bScannerConnectStatus{ false };//是否连接
+    bool            m_isRunning{ true };
+    bool            m_threadQuit{ false };
+    bool            m_laserState{ false };
 
     // 触感器属性相关变量
     std::string     m_strSupplier;
@@ -72,11 +73,11 @@ public:
     double          m_dXRangeAtEnd;
     double          m_dXRangeBest;
 
-    int             m_num = 0; 
+    int             m_num = 0;
 
 
     // Scanner output members (传感器获取点云数据缓存相关变量）
-    char            *m_cImgData;
+    char* m_cImgData;
     char            m_cScannerInfo[ETHERNETSCANNER_GETINFOSIZEMAX];
     double          m_dScannerBufferX[ETHERNETSCANNER_SCANXMAX * ETHERNETSCANNER_PEAKSPERCMOSSCANLINEMAX];
     double          m_dScannerBufferZ[ETHERNETSCANNER_SCANXMAX * ETHERNETSCANNER_PEAKSPERCMOSSCANLINEMAX]; // 2048*4
@@ -107,6 +108,10 @@ public:
     bool dataValid;
     void setDataValid(bool valid);
     bool isDataValid();
+    QMutex laserStateMutex;
+    void setLaserState(bool state);
+    bool getLaserState();
+
 
     // 点云数据是否有效
     cv::Mat resultMask;
@@ -125,7 +130,7 @@ public:
     cv::Mat getResultMask();
 
 
-    MyBestfitLaserScaner(const std::string scannerIP,  std::string laserName);
+    MyBestfitLaserScaner(const std::string scannerIP, std::string laserName);
     ~MyBestfitLaserScaner();
     void run() override;
     void EnumScannerDevice();
@@ -147,6 +152,10 @@ public:
     void laserOn(); // 打开激光
     void laserOff(); // 关闭激光
     void startLaserScanTask();
+    void getPointsMaskOnce();
+
+    void reconnectScanner();
+
 
 private:
     std::string  m_strScannerIP;

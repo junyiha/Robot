@@ -22,20 +22,33 @@
 //    QString error;
 //};
 
-class LaserScanerControls:public QThread{
+class LaserScanerControls :public QThread {
     Q_OBJECT
 public:
     //
     std::string goc_name;
     //相关配置
-    std::map<std::string ,std::string> ip_config;
-     std::map<std::string ,bool> direct_config;
+    std::map<std::string, std::string> ip_config;
+    std::map<std::string, bool> direct_config;
+    // 轮廓激光配置函数
+    bool CfgLidar[4][2] = {
+            {false  ,   false},
+            {true   ,   false},
+            {false   ,   false},
+            {true  ,   false},
+            //            {true   ,   false},
+    };
 
 
     //创建雷达对象
     std::map<std::string, MyBestfitLaserScaner*> scaners;
     std::map<std::string, cv::Mat> pointCloudMasks;
     std::shared_ptr<spdlog::logger> logger;
+
+
+    // 轮廓激光连接状态
+    QMutex conMutex;
+    std::vector<bool> con_states;
 
 
     LaserScanerControls();
@@ -45,6 +58,13 @@ public:
 
     void closeAllLaserScaner();
     std::vector<bool> getLayserScannerConnectStates();
+
+    std::vector<bool> getLaserConnectStates();
+
+    //open Layser scaner;
+    void setLaserOn(std::vector<std::string> laser_name);
+    void setLaserOff(std::vector<std::string> laser_name);
+    void reconnectLaser(std::string laser_name);
 
 
 };

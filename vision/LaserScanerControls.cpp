@@ -27,6 +27,7 @@ LaserScanerControls::LaserScanerControls()
             {"lida_4" ,  true},
             //            {"lida_5" ,  false}
     };
+
     this->logger = spdlog::get("logger");
     this->start(); // 启动线程，开启轮廓激光
 
@@ -49,6 +50,8 @@ void LaserScanerControls::getDataAll()
     //获取雷达数据Mat
     for (auto& item : this->scaners)
     {
+        // 软触发方式
+        item.second->getPointsMaskOnce();
         this->pointCloudMasks[item.first] = item.second->getResultMask();
     }
 }
@@ -64,15 +67,6 @@ void LaserScanerControls::closeAllLaserScaner()
 
 void LaserScanerControls::run()
 {
-
-    bool CfgLidar[4][2] = {
-            {false  ,   false},
-            {true   ,   false},
-            {true   ,   false},
-            {false  ,   false},
-            //            {true   ,   false},
-    };
-
     unsigned index = 0;
     for (auto& item : this->ip_config)
     {
@@ -84,7 +78,21 @@ void LaserScanerControls::run()
         index += 1;
         layserScaner->startLaserScanTask();
     }
+    std::vector<bool> states;
+    // 实时获取轮廓激光设备连接状态
+    while (true)
+    {
 
+        states = getLayserScannerConnectStates();
+        conMutex.lock();
+        if (con_states.size() > 0)
+        {
+            con_states.clear();
+        }
+        con_states = states;
+        conMutex.unlock();
+        QThread::msleep(200);
+    }
 }
 
 std::vector<bool> LaserScanerControls::getLayserScannerConnectStates()
@@ -97,3 +105,34 @@ std::vector<bool> LaserScanerControls::getLayserScannerConnectStates()
     }
     return con_states;
 }
+
+void LaserScanerControls::setLaserOn(std::vector<std::string> laser_name)
+{
+    for (auto& item : laser_name)
+    {
+        this->scaners[item]->laserOn();
+    }
+}
+
+void LaserScanerControls::setLaserOff(std::vector<std::string> laser_name)
+{
+    for (auto& item : laser_name)
+    {
+        this->scaners[item]->laserOff();
+    }
+}
+
+void LaserScanerControls::reconnectLaser(std::string laser_name)
+{
+    this->scaners[laser_name]->reconnectScanner();
+}
+
+std::vector<bool> LaserScanerControls::getLaserConnectStates()
+{
+    std::vector<bool> states;
+    conMutex.lock();
+    states = con_states;
+    conMutex.unlock();
+    return states;
+}
+

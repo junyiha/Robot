@@ -66,6 +66,19 @@ CameraManager::CameraManager()
             {"HoleCam_10",  null_dev},
     };
 
+    this->imageCorrectMap = {
+            {"LineCam_1",  0},
+            {"LineCam_2",  2},
+            {"LineCam_3",  0},
+            {"LineCam_4",  2},
+            {"LineCam_5",  3},
+            {"LineCam_6",  1},
+            {"HoleCam_7",  0},
+            {"HoleCam_8",  0},
+            {"HoleCam_9",  0},
+            {"HoleCam_10",  0},
+    };
+
     this->camera_info = {
         //            {"cam_1",  "192.168.1.118"},
         //            {"cam_2",  "192.168.1.115"},
@@ -75,6 +88,7 @@ CameraManager::CameraManager()
         //            {"cam_05",  "192.168.1.114"},
         //            {"cam_06",  "192.168.1.115"}
     };
+
 
     //�Զ�ö�پ������ڵ��������cameraInfoMap���и�ֵ
     this->getDeviceList();
@@ -166,7 +180,28 @@ void CameraManager::getImageAll(std::string camType)
 
         if (!image.empty())
         {
-            this->cameraImages[camera.first] = image;
+            std::string prefix = camera.first;
+            size_t index = prefix.find("_") + 1;
+            int number = prefix[index] - '0';
+            if (index != prefix.size() - 1)
+            {
+                number = (prefix[index] - '0') * 10 + (prefix[index + 1] - '0');
+            }
+            cv::Mat imgResize;
+            cv::resize(image, imgResize, cv::Size(this->imgUiW, this->imgUiH));
+            if (number == 5)
+            {
+                image_correction(imgResize, 3);
+            }
+            if (number == 6)
+            {
+                image_correction(imgResize, 1);
+            }
+            if (number == 2 || number == 4)
+            {
+                image_correction(imgResize, 2);
+            }
+            this->cameraImages[camera.first] = imgResize;
         }
         else
         {
@@ -274,7 +309,21 @@ void CameraManager::run()
             this->cameraList[camera.first]->start();
             this->logger->info("open camera {} successed", camera.first);
         }
+    }
 
+    // 获取相机连接状态
+    std::vector<bool> connectStatus;
+    while (true)
+    {
+        connectStatus = this->getCameraOpenedInfo();
+        conMutex.lock();
+        if (this->cameraConnectStatus.size() > 0)
+        {
+            this->cameraConnectStatus.clear();
+        }
+        this->cameraConnectStatus = connectStatus;
+        conMutex.unlock();
+        QThread::msleep(300);
     }
 }
 
@@ -327,6 +376,62 @@ bool CameraManager::camerasIsOpened()
         }
     }
     return true;
+}
+
+void CameraManager::getImageAllByResizeAndCorrect(std::string camType)
+{
+
+    //
+    this->dataMutex.lock();
+    if (this->cameraImages.size() > 0)
+    {
+        this->cameraImages.clear();
+    }
+
+    for (auto& camera : this->cameraList)
+    {
+        cv::Mat image = this->cameraList[camera.first]->getFrame();
+
+        if (camType == "Line")
+        { //
+            if (camera.first.find("HoleCam") != std::string::npos)
+            {
+                continue;
+            }
+        }
+
+        if (camType == "Hole")
+        {//
+            if (camera.first.find("LineCam") != std::string::npos)
+            {
+                continue;
+            }
+        }
+
+        if (!image.empty())
+        {
+            this->cameraImages[camera.first] = image;
+        }
+        else
+        {
+            image = cv::Mat();
+            //            this->cameraImages[camera.first] = image;
+            this->logger->error("********************get image from camera {} failed**************************", camera.first);
+        }
+    }
+    this->dataMutex.unlock();
+
+
+
+}
+
+std::vector<bool> CameraManager::getCameraConnectStatus()
+{
+    std::vector<bool> isConnected;
+    conMutex.lock();
+    isConnected = this->cameraConnectStatus;
+    conMutex.unlock();
+    return isConnected;
 }
 
 

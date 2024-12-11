@@ -41,8 +41,8 @@ struct VisionResult {
 
 
 
-class VisionInterface: public QThread {
-Q_OBJECT
+class VisionInterface : public QThread {
+    Q_OBJECT
 public:
 
     std::map<std::string, LineDetectRes> line_res; // LineDetectorRunner 返回结果,主要用于解析结果
@@ -53,15 +53,17 @@ public:
     std::map<std::string, float> camera_offset;  //相机与现实世界的比例系数
 
     //核心功能类
-    LineDetectorRunner*  line_handler = nullptr;
+    LineDetectorRunner* line_handler = nullptr;
     LineDetector* line_helper = nullptr;
     CameraManager* camera_controls = nullptr;
 
     //轮廓激光传感器
-    LidarHelper* lidar_helper= nullptr;
+    LidarHelper* lidar_helper = nullptr;
     LaserScanerControls* laser_controls = nullptr;
     LidarHandler* lidar_handler = nullptr;
-
+    int layer2camera[4] = {
+            4,5, 1, 3
+    };  // 轮廓激光映射到对应相机
 
 
 
@@ -69,9 +71,9 @@ public:
     QMutex mutex;
     QMutex imagesMutex;
     QMutex pointMaskMutex;
-    SharedData* sharedDataLine=nullptr;
-    SharedData* sharedDataLaser=nullptr;
-    bool isRunning= true;
+    SharedData* sharedDataLine = nullptr;
+    SharedData* sharedDataLaser = nullptr;
+    bool isRunning = true;
     bool is_Detected = true;
 
     std::shared_ptr<spdlog::logger> logger;

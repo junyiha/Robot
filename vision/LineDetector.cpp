@@ -256,12 +256,13 @@ LineSpaceResult LineDetector::getLinesDistance(cv::Mat img)
     }
 
     // 1. image enhancement
-    cv::Mat imgEqHist;
-    cv::equalizeHist(img_gray, imgEqHist);
+//    cv::Mat imgEqHist;
+//    cv::equalizeHist(img_gray, imgEqHist);
 
     // 2. get mask index
-    cv::Mat maskIndex = lineSegModel.predict(imgEqHist);
+    cv::Mat maskIndex = lineSegModel.predict(img_gray);
     double maskSum = cv::sum(maskIndex)[0];
+
     if (maskSum < 100)
     {
         lineResult.error_info = "Not detected any matching straight line";
@@ -271,7 +272,7 @@ LineSpaceResult LineDetector::getLinesDistance(cv::Mat img)
     // 3. get reference line
     std::vector<cv::Mat> masks;
     masks = getMasks(maskIndex);
-    std::vector<float> referLine = getRerferenceLine(masks[1], imgEqHist);
+    std::vector<float> referLine = getRerferenceLine(masks[1], img_gray);
     if (referLine.size() > 0)
     {
         lineResult.border_res = referLine;

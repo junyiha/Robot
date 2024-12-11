@@ -3,7 +3,7 @@
 #include<QMutex>
 #include<QWaitCondition>
 
-class SharedData {
+class SharedData{
 public:
     QMutex mutex;
     QWaitCondition dataReady; // 当有新数据时被唤醒

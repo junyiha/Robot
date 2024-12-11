@@ -14,7 +14,9 @@
 #include<opencv2/imgproc/imgproc.hpp>
 #include<vector>
 #include<time.h>
-#include <qmath.h>
+#define M_PI 3.14159265358979323846
+#include <QDebug>
+
 
 // 雷达数据结构体
 struct LidarData {
@@ -55,13 +57,12 @@ public:
 
     float getGap(std::vector<cv::Point2f> line1, std::vector<cv::Point2f> line2);  // 获取两个直线之间的距离
     cv::Mat showImg(std::vector<cv::Point2f> board, std::vector<cv::Point2f> ref); // 显示检测结果
-    void filterBorderAndReferenceLine(const cv::Mat& img, bool pIsLeft,
-                                 const std::vector<std::vector<cv::Point2f>>& linesEnd,
-                                 std::vector<cv::Point2f>& borderLine,
-                                 std::vector<cv::Point2f>& referLine);
 };
 
 
 
+
 #endif // DETECT_H
+
+
 #endif //CLION_ONNX_LIDARHELPER_H

@@ -21,9 +21,9 @@
 
 
 
-class LidarHandler: public QThread
+class LidarHandler : public QThread
 {
-//  Q_OBJECT
+    //  Q_OBJECT
 public:
 
 

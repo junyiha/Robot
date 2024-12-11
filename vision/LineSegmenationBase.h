@@ -42,7 +42,7 @@ private:
     int outputChannels;
     //ONNXRUNTIME 模型配置文件
     Ort::Env env = Ort::Env(ORT_LOGGING_LEVEL_ERROR, "PP-LiteSeg");
-    const std::string& onnx_provider = OnnxProviders::CUDA;
+    const std::string& onnx_provider = OnnxProviders::CPU;
     Ort::Session* ort_session = nullptr;
     Ort::SessionOptions sessionOptions = Ort::SessionOptions();
     std::vector<char*> input_names; // 输入的节点名称

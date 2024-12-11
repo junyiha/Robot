@@ -75,6 +75,9 @@ double perpendicularDistance(double A, double B, double C, double x1, double y1)
 double computePointToLineDistance(std::vector<float> line_1, std::vector<float> line_2);
 
 
+void image_correction(cv::Mat& img, unsigned rotate_type);
+
+
 
 
 

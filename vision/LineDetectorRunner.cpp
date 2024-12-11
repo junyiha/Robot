@@ -11,7 +11,6 @@ LineDetectorRunner::LineDetectorRunner(LineDetector* line_helper, CameraManager*
     this->line_helper = line_helper;
     this->cam_controls = cam_controls;
     this->sharedData = shared;
-
 }
 
 LineDetectorRunner::~LineDetectorRunner()
@@ -31,8 +30,6 @@ void LineDetectorRunner::run()
             std::map<std::string, LineDetectRes> temp_results;
             this->cam_controls->getImageAll("Line");
             std::map<std::string, cv::Mat> cameraData = this->cam_controls->getCameraImages("Line");
-
-
             if (cameraData.size() > 0)
             {
                 auto start_time = std::chrono::high_resolution_clock::now();
@@ -67,7 +64,7 @@ void LineDetectorRunner::run()
                 auto end_time = std::chrono::high_resolution_clock::now();
                 auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
                 //                double time_cost = std::chrono::duration<double,std::milli>(end_time-start_time).count();
-                                // this->logger->info("Line detect cost {} ms",duration.count());
+                //                this->logger->info("Line detect cost {} ms",duration.count());
                 //                QMutexLocker locker(&this->sharedData->mutex);
                 if (temp_results.empty())
                 {

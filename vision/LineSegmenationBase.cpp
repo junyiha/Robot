@@ -9,11 +9,7 @@ using namespace Ort;
 
 LineSegmenationBase::LineSegmenationBase()
 {
-
-    // std::string model_path = "../models/pp_liteseg_stdc1_softmax_20241021.onnx";
-    std::string model_path = "E:/projects/zjy/Robot-zb/models/pp_liteseg_stdc1_softmax_20241021.onnx";
-    model_path = VISION_MODEL_PATH;
-    //    std::string model_path = "../models/model_ocrnet-20241020.onnx";
+    std::string model_path{ VISION_MODEL_PATH };
     std::wstring widestr = std::wstring(model_path.begin(), model_path.end());
 
     // ONNXRUNTIME 会话相关配置
@@ -33,13 +29,15 @@ LineSegmenationBase::LineSegmenationBase()
         }
         else
         {
+#ifdef GPU_FLAG
             std::cout << "Inference device: GPU" << std::endl;
             OrtCUDAProviderOptions cuda_options{ 0 };
-            //            cuda_options.gpu_mem_limit = 10*1024*1024*1024; // 显存限制在10G
-            //            cuda_options.cudnn_conv_algo_search = OrtCudnnConvAlgoSearch::EXHAUSTIVE;
-            //            cuda_options.do_copy_in_default_stream = true;
-            //            cuda_options.arena_extend_strategy = 0;
+            cuda_options.gpu_mem_limit = 10 * 1024 * 1024 * 1024; // 显存限制在10G
+            cuda_options.cudnn_conv_algo_search = OrtCudnnConvAlgoSearch::EXHAUSTIVE;
+            cuda_options.do_copy_in_default_stream = true;
+            cuda_options.arena_extend_strategy = 0;
             sessionOptions.AppendExecutionProvider_CUDA(cuda_options);
+#endif
         }
     }
     else if (onnx_provider == OnnxProviders::CPU.c_str())
@@ -191,7 +189,6 @@ cv::Mat LineSegmenationBase::predict(cv::Mat img)
     input_tensor_.emplace_back(Value::CreateTensor<float>(allocator_info, input_img.ptr<float>(), input_img.total(), input_shape_.data(), input_shape_.size()));
 
     std::vector<Value> ort_outputs;
-
     ort_outputs = ort_session->Run(RunOptions{ nullptr }, &input_names[0], input_tensor_.data(), 1, output_names.data(), output_names.size());
     assert(ort_outputs.size() == 1 && ort_outputs.front().IsTensor());
     auto data_shape = ort_outputs.front().GetTensorTypeAndShapeInfo().GetShape();

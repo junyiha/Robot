@@ -16,13 +16,23 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/)
 
+find_program(NVIDIA_SMI nvidia-smi)
+if(NVIDIA_SMI)
+    set(BUILD_GPU_FLAG ON)
+endif()
+
+if(BUILD_GPU_FLAG)
+    message(STATUS "this is gpu version")
+    add_definitions(-DGPU_FLAG=true)
+endif()
+
 add_compile_options(/W0)
 if(MSVC)
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /O2 /GL")
     set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /O2 /GL")
 endif()
 
-add_definitions(-DSTATE_MACHINE_TEST=1)
+# add_definitions(-DSTATE_MACHINE_TEST=1)
 add_definitions(-DROOT_PATH="${CMAKE_SOURCE_DIR}/")
 add_definitions(-DCONFIG_PATH="${CMAKE_SOURCE_DIR}/config.yaml")
 add_definitions(-DVISION_MODEL_PATH="${CMAKE_SOURCE_DIR}/models/pp_liteseg_stdc1_softmax_20241021.onnx")
@@ -60,6 +70,32 @@ file(COPY ${BaseDIR}/packages/OnnxRuntime/Microsoft.ML.OnnxRuntime.Gpu.1.8.0/run
 file(COPY ${CMAKE_SOURCE_DIR}/models DESTINATION ${CMAKE_BINARY_DIR}/)
 file(COPY ${BaseDIR}/packages/opencv4.55/build/x64/vc15/bin/opencv_world455d.dll DESTINATION ${CMAKE_BINARY_DIR}/)
 file(COPY ${BaseDIR}/packages/opencv4.55/build/x64/vc15/bin/opencv_world455.dll DESTINATION ${CMAKE_BINARY_DIR}/)
+
+if(BUILD_GPU_FLAG)
+    # TensorRT
+    set(TENSORRT_PATH ${BaseDIR}/packages/TensorRT-8.6.1.6)
+    set(TENSORRT_LIBS
+            ${TENSORRT_PATH}/lib/nvinfer.lib
+            ${TENSORRT_PATH}/lib/nvonnxparser.lib
+            ${TENSORRT_PATH}/lib/nvparsers.lib
+            ${TENSORRT_PATH}/lib/nvinfer_plugin.lib
+    )
+    include_directories(${TENSORRT_PATH}/include)
+
+    #CUDA
+    set(CUDA_TOOLKIT_ROOT_DIR "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v11.3")
+    set(CUDA_INCLUDE_DIRS ${CUDA_TOOLKIT_ROOT_DIR}/include)
+    set(CUDA_LIBS_DIRS ${CUDA_TOOLKIT_ROOT_DIR}/lib/x64)
+    set(CUDA_LIBS
+            ${CUDA_LIBS_DIRS}/cublas.lib
+            ${CUDA_LIBS_DIRS}/cudnn.lib
+            ${CUDA_LIBS_DIRS}/cuda.lib
+            ${CUDA_LIBS_DIRS}/cudadevrt.lib
+            ${CUDA_LIBS_DIRS}/cudart.lib
+    )
+    include_directories(${CUDA_INCLUDE_DIRS})
+    link_directories(${CUDA_LIBS_DIRS})
+endif()
 
 # Opencv Setting
 include_directories(${BaseDIR}/packages/opencv4.55/build/include)
@@ -142,3 +178,11 @@ target_link_libraries(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME}
         BestfitLaserScanerSDK.lib
 )
+
+# tensorrt cuda
+if(BUILD_GPU_FLAG)
+target_link_libraries(PDRobot-master
+        ${TENSORRT_LIBS}
+        ${CUDA_LIBS}
+)
+endif()

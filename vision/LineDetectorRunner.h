@@ -17,8 +17,8 @@
 
 
 
-class LineDetectorRunner:public QThread {
-Q_OBJECT
+class LineDetectorRunner :public QThread {
+    Q_OBJECT
 public:
 
     //线程控制标志
@@ -28,7 +28,7 @@ public:
     std::shared_ptr<spdlog::logger> logger;
 
 
-    LineDetectorRunner(LineDetector* line_helper,CameraManager* cam_controls, SharedData* shared);
+    LineDetectorRunner(LineDetector* line_helper, CameraManager* cam_controls, SharedData* shared);
     ~LineDetectorRunner();
     void run() override;
     bool is_running = true;
@@ -37,7 +37,7 @@ public:
     std::map<std::string, LineDetectRes> results;
     std::map<std::string, LineDetectRes> getDetectResults();
     //硬件设备类
-    LineDetector* line_helper= nullptr;
+    LineDetector* line_helper = nullptr;
     CameraManager* cam_controls = nullptr;
     SharedData* sharedData = nullptr;
     QMutex imagesLock;

@@ -37,7 +37,7 @@ public:
     bool IsDeviceConnected();
 
     // ch:注册图像数据回调 | en:Register Image Data CallBack
-    int RegisterImageCallBack(void(__stdcall* cbOutput)(unsigned char * pData, MV_FRAME_OUT_INFO_EX* pFrameInfo, void* pUser), void* pUser);
+    int RegisterImageCallBack(void(__stdcall* cbOutput)(unsigned char* pData, MV_FRAME_OUT_INFO_EX* pFrameInfo, void* pUser), void* pUser);
 
     // ch:开启抓图 | en:Start Grabbing
     int StartGrabbing();
@@ -73,29 +73,29 @@ public:
 
     // ch:获取和设置Int型参数，如 Width和Height，详细内容参考SDK安装目录下的 MvCameraNode.xlsx 文件
     // en:Get Int type parameters, such as Width and Height, for details please refer to MvCameraNode.xlsx file under SDK installation directory
-    int GetIntValue(IN const char* strKey, OUT MVCC_INTVALUE_EX *pIntValue);
+    int GetIntValue(IN const char* strKey, OUT MVCC_INTVALUE_EX* pIntValue);
     int SetIntValue(IN const char* strKey, IN int64_t nValue);
 
     // ch:获取和设置Enum型参数，如 PixelFormat，详细内容参考SDK安装目录下的 MvCameraNode.xlsx 文件
     // en:Get Enum type parameters, such as PixelFormat, for details please refer to MvCameraNode.xlsx file under SDK installation directory
-    int GetEnumValue(IN const char* strKey, OUT MVCC_ENUMVALUE *pEnumValue);
+    int GetEnumValue(IN const char* strKey, OUT MVCC_ENUMVALUE* pEnumValue);
     int SetEnumValue(IN const char* strKey, IN unsigned int nValue);
     int SetEnumValueByString(IN const char* strKey, IN const char* sValue);
 
     // ch:获取和设置Float型参数，如 ExposureTime和Gain，详细内容参考SDK安装目录下的 MvCameraNode.xlsx 文件
     // en:Get Float type parameters, such as ExposureTime and Gain, for details please refer to MvCameraNode.xlsx file under SDK installation directory
-    int GetFloatValue(IN const char* strKey, OUT MVCC_FLOATVALUE *pFloatValue);
+    int GetFloatValue(IN const char* strKey, OUT MVCC_FLOATVALUE* pFloatValue);
     int SetFloatValue(IN const char* strKey, IN float fValue);
 
     // ch:获取和设置Bool型参数，如 ReverseX，详细内容参考SDK安装目录下的 MvCameraNode.xlsx 文件
     // en:Get Bool type parameters, such as ReverseX, for details please refer to MvCameraNode.xlsx file under SDK installation directory
-    int GetBoolValue(IN const char* strKey, OUT bool *pbValue);
+    int GetBoolValue(IN const char* strKey, OUT bool* pbValue);
     int SetBoolValue(IN const char* strKey, IN bool bValue);
 
     // ch:获取和设置String型参数，如 DeviceUserID，详细内容参考SDK安装目录下的 MvCameraNode.xlsx 文件UserSetSave
     // en:Get String type parameters, such as DeviceUserID, for details please refer to MvCameraNode.xlsx file under SDK installation directory
-    int GetStringValue(IN const char* strKey, MVCC_STRINGVALUE *pStringValue);
-    int SetStringValue(IN const char* strKey, IN const char * strValue);
+    int GetStringValue(IN const char* strKey, MVCC_STRINGVALUE* pStringValue);
+    int SetStringValue(IN const char* strKey, IN const char* strValue);
 
     // ch:执行一次Command型命令，如 UserSetSave，详细内容参考SDK安装目录下的 MvCameraNode.xlsx 文件
     // en:Execute Command once, such as UserSetSave, for details please refer to MvCameraNode.xlsx file under SDK installation directory
@@ -108,7 +108,7 @@ public:
     int RegisterExceptionCallBack(void(__stdcall* cbException)(unsigned int nMsgType, void* pUser), void* pUser);
 
     // ch:注册单个事件回调 | en:Register Event CallBack
-    int RegisterEventCallBack(const char* pEventName, void(__stdcall* cbEvent)(MV_EVENT_OUT_INFO * pEventInfo, void* pUser), void* pUser);
+    int RegisterEventCallBack(const char* pEventName, void(__stdcall* cbEvent)(MV_EVENT_OUT_INFO* pEventInfo, void* pUser), void* pUser);
 
     // ch:强制IP | en:Force IP
     int ForceIp(unsigned int nIP, unsigned int nSubNetMask, unsigned int nDefaultGateWay);
@@ -128,9 +128,9 @@ public:
     // ch:保存图片为文件 | en:Save the image as a file
     int SaveImageToFile(MV_SAVE_IMG_TO_FILE_PARAM* pstParam);
 
-    void*               m_hDevHandle;
+    void* m_hDevHandle;
 
-//private:
+    //private:
 
 
 

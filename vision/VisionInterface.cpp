@@ -6,6 +6,8 @@
 
 VisionInterface::VisionInterface()
 {
+
+
     this->camera_controls = new CameraManager();  // 相机管理类
     this->line_helper = new LineDetector();       // 边线检测功能类
     this->sharedDataLine = new SharedData();      // 共享数据类
@@ -14,11 +16,13 @@ VisionInterface::VisionInterface()
     this->lidar_helper = new LidarHelper();
     this->sharedDataLaser = new SharedData();
 
+
     // 相机读取+边线检测 端到端处理类(线程)
     this->line_handler = new LineDetectorRunner(this->line_helper, this->camera_controls, this->sharedDataLine);
     this->lidar_handler = new LidarHandler(this->lidar_helper, this->laser_controls, this->sharedDataLaser);
     this->line_handler->start();
     this->lidar_handler->start();
+
 
     this->scales_line = {
             {"LineCam_1", 0.275862069},
@@ -117,6 +121,32 @@ void VisionInterface::getDetectResult(VisionResult& vis_result)
     {
         vis_result.laserStatus = false;
     }
+
+
+    // 轮廓激光结果与视觉测量结果协同
+    for (int i = 0; i < 4; i++)
+    {
+        if (vis_result.stData.m_bLaserProfile[i])
+        { // 如果轮廓激光数据有效
+            if (vis_result.stData.m_bLineDistance[layer2camera[i]])
+            { // 轮廓激光对应的相机位置有效
+                if (abs(vis_result.stData.m_LineDistance[layer2camera[i]] - vis_result.stData.m_LaserGapDistance[i] + 15) < 5)
+                {
+                    vis_result.stData.m_bLineDistance[layer2camera[i]] = true;
+                    vis_result.stData.m_LineDistance[layer2camera[i]] = vis_result.stData.m_LaserGapDistance[i] - 15;
+                }
+                else
+                {
+                    // 有待于进一步观察
+                }
+            }
+            else
+            { // 相机测量数据无效
+                vis_result.stData.m_bLineDistance[layer2camera[i]] = true;
+                vis_result.stData.m_LineDistance[layer2camera[i]] = vis_result.stData.m_LaserGapDistance[i] - 15;
+            }
+        }
+    }
 }
 
 void VisionInterface::parser_result(std::string paserType, stMeasureData* stm)
@@ -173,7 +203,6 @@ void VisionInterface::parser_result(std::string paserType, stMeasureData* stm)
     }
 }
 
-
 VisionResult VisionInterface::getVisResult()
 {
     VisionResult vis_result;
@@ -184,6 +213,8 @@ VisionResult VisionInterface::getVisResult()
     return vis_result;
 }
 
+
+// 视觉检测结果线程
 void VisionInterface::run()
 {
 
@@ -199,7 +230,7 @@ void VisionInterface::run()
             this->vis_result_ = this->vis_result;
             this->mutex.unlock();
         }
-        QThread::msleep(100);
+        QThread::msleep(200);
     }
 }
 

@@ -10,7 +10,8 @@
 namespace fs = std::filesystem;
 
 
-cv::Mat rotateImage(const cv::Mat src) {
+cv::Mat rotateImage(const cv::Mat src)
+{
     //	// 获取图像尺寸
     //	int rows = src.rows;
     //	int cols = src.cols;
@@ -29,10 +30,12 @@ cv::Mat rotateImage(const cv::Mat src) {
 }
 
 // 生成唯一文件名
-std::string generateUniqueFilename(const std::string& folderPath, const std::string& baseName) {
+std::string generateUniqueFilename(const std::string& folderPath, const std::string& baseName)
+{
     int counter = 0;
     std::string filename = folderPath + "/" + baseName;
-    while (fs::exists(filename)) {
+    while (fs::exists(filename))
+    {
         std::ostringstream oss;
         oss << baseName << "_" << counter++;
         filename = folderPath + "/" + oss.str();
@@ -41,7 +44,8 @@ std::string generateUniqueFilename(const std::string& folderPath, const std::str
 }
 
 // 保存mat数组到文件
-bool saveMatWithCurrentTime(const cv::Mat& mat, const std::string goc_name, const std::string& folderPath) {
+bool saveMatWithCurrentTime(const cv::Mat& mat, const std::string goc_name, const std::string& folderPath)
+{
     // 获取当前时间
     auto now = std::chrono::system_clock::now();
     auto now_c = std::chrono::system_clock::to_time_t(now);
@@ -56,10 +60,12 @@ bool saveMatWithCurrentTime(const cv::Mat& mat, const std::string goc_name, cons
 
     // 保存图像到文件
     bool success = cv::imwrite(filename, mat);
-    if (success) {
+    if (success)
+    {
         //        std::cout << "Image saved to " << filename << std::endl;
     }
-    else {
+    else
+    {
         std::cerr << "Error saving image to " << filename << std::endl;
     }
     return success;
@@ -67,7 +73,8 @@ bool saveMatWithCurrentTime(const cv::Mat& mat, const std::string goc_name, cons
 
 
 
-std::string getCurrentTimestampString() {
+std::string getCurrentTimestampString()
+{
     // 获取当前时间
     std::time_t now = std::time(nullptr);
 
@@ -85,13 +92,15 @@ std::string getCurrentTimestampString() {
 }
 
 
-int get_index_by_string(std::string key_str) {
+int get_index_by_string(std::string key_str)
+{
 
     size_t pos = key_str.find("_");
 
     int number = key_str[pos + 1] - '0';
 
-    if (pos + 1 != key_str.size() - 1) {
+    if (pos + 1 != key_str.size() - 1)
+    {
         number = (key_str[pos + 1] - '0') * 10 + (key_str[pos + 2] - '0');
 
     }
@@ -101,7 +110,8 @@ int get_index_by_string(std::string key_str) {
 
 
 // 获取当前时间戳并构建文件名
-std::string generateFilename() {
+std::string generateFilename()
+{
     // 获取当前时间点
     auto now = std::chrono::system_clock::now();
     // 转换为time_t类型
@@ -120,17 +130,20 @@ std::string generateFilename() {
     return oss.str() + ".png";
 }
 
-void save_images(cv::Mat img, std::string data_root) {
+void save_images(cv::Mat img, std::string data_root)
+{
 
     std::string img_save_path = data_root + generateFilename(); //路径是否正确?
-    if (!img.empty()) {
+    if (!img.empty())
+    {
         cv::imwrite(img_save_path, img);
     }
 }
 
 
 /*  图像处理相关方法  */
-cv::Mat padding_hollow(cv::Mat mask, int ksize) {
+cv::Mat padding_hollow(cv::Mat mask, int ksize)
+{
 
     cv::Mat kernel = getStructuringElement(cv::MORPH_RECT, cv::Size(ksize, ksize));
     // 进行闭操作
@@ -140,7 +153,8 @@ cv::Mat padding_hollow(cv::Mat mask, int ksize) {
 
 }
 
-double calculatePointsDistance(const cv::Point2f A, const cv::Point2f B) {
+double calculatePointsDistance(const cv::Point2f A, const cv::Point2f B)
+{
     /*
       计算两个点之间的欧式距离
     */
@@ -148,7 +162,8 @@ double calculatePointsDistance(const cv::Point2f A, const cv::Point2f B) {
     return sqrt(pow(A.x - B.x, 2) + pow(A.y - B.y, 2));
 }
 
-std::vector<float> fiting_line(std::vector<cv::Point2f> points) {
+std::vector<float> fiting_line(std::vector<cv::Point2f> points)
+{
     /**
      * @brief 根据点拟合成一条直线
      *
@@ -180,7 +195,8 @@ std::vector<float> fiting_line(std::vector<cv::Point2f> points) {
     return res;
 }
 
-double calculateDistance(const std::vector<float> A, const std::vector<float> B) {
+double calculateDistance(const std::vector<float> A, const std::vector<float> B)
+{
     /**
      * @brief 计算两个向量之间的余弦相似度
      *
@@ -194,7 +210,8 @@ double calculateDistance(const std::vector<float> A, const std::vector<float> B)
 
     double sum_A = 0, sum_B = 0;
     float len = static_cast<float>(A.size());
-    for (int i = 0; i < A.size(); i++) {
+    for (int i = 0; i < A.size(); i++)
+    {
         sum_A += A[i];
         sum_B += B[i];
     }
@@ -205,7 +222,8 @@ double calculateDistance(const std::vector<float> A, const std::vector<float> B)
     return res;
 }
 
-bool check_is_boundary(cv::Mat img, cv::Vec4f line) {
+bool check_is_boundary(cv::Mat img, cv::Vec4f line)
+{
 
     /**
      * @brief 粗略评估检查是否为板线边界
@@ -269,17 +287,20 @@ bool check_is_boundary(cv::Mat img, cv::Vec4f line) {
     };
 
     float score = calculateDistance(block_1, block_2);
-    if (score < thr) {
+    if (score < thr)
+    {
         flag = false;
     }
     return flag;
 }
 
-void draw_line(std::vector<cv::Vec4f> lines, cv::Mat& img) {
+void draw_line(std::vector<cv::Vec4f> lines, cv::Mat& img)
+{
     /*
        绘制直线到图像上，便于可视化
     */
-    for (size_t i = 0; i < lines.size(); i++) {
+    for (size_t i = 0; i < lines.size(); i++)
+    {
         cv::Vec4f line = lines[i];
         line[0] = round(line[0]);
         line[1] = round(line[1]);
@@ -289,12 +310,14 @@ void draw_line(std::vector<cv::Vec4f> lines, cv::Mat& img) {
     }
 }
 
-void draw_line(std::vector<std::vector<float>> lines, cv::Mat& img) {
+void draw_line(std::vector<std::vector<float>> lines, cv::Mat& img)
+{
     /*
        绘制直线
     */
 
-    for (const auto& row : lines) {
+    for (const auto& row : lines)
+    {
         int start_x = static_cast<int>(row[0]);
         int start_y = static_cast<int>(row[1]);
         int end_x = static_cast<int>(row[2]);
@@ -309,7 +332,8 @@ void draw_line(std::vector<std::vector<float>> lines, cv::Mat& img) {
 
 
 // 函数用于获取当前时间并转换为字符串
-std::string getCurrentTimeAsString() {
+std::string getCurrentTimeAsString()
+{
     // 获取当前时间
     //auto now = std::chrono::system_clock::now();
     //// 转换为time_t以使用ctime库
@@ -323,14 +347,16 @@ std::string getCurrentTimeAsString() {
     return "";
 }
 
-bool lineIsOverlapping(std::vector<float> a, std::vector<float> b, double tolerance = 30) {
+bool lineIsOverlapping(std::vector<float> a, std::vector<float> b, double tolerance = 30)
+{
     // 这里使用简单的逻辑来判断线段是否重合
     // 你可以根据需要添加更复杂的逻辑，比如检查线段是否足够接近
     return (std::abs(a[0] - b[0]) < tolerance && std::abs(a[1] - b[1]) < tolerance &&
             std::abs(a[2] - b[2]) < tolerance && std::abs(a[3] - b[3]) < tolerance);
 }
 
-std::vector<std::vector<float>> get_line_by_lsd(cv::Mat bin_img) {
+std::vector<std::vector<float>> get_line_by_lsd(cv::Mat bin_img)
+{
 
     //基于LSD算法获取线检测点
     cv::Ptr<cv::LineSegmentDetector> detector = createLineSegmentDetector(cv::LSD_REFINE_STD);
@@ -340,7 +366,8 @@ std::vector<std::vector<float>> get_line_by_lsd(cv::Mat bin_img) {
 
 
 
-    for (size_t i = 0; i < lines.size(); i++) {
+    for (size_t i = 0; i < lines.size(); i++)
+    {
         cv::Vec4f line = {
                 round(lines[i][0]),
                 round(lines[i][1]),
@@ -360,7 +387,8 @@ std::vector<std::vector<float>> get_line_by_lsd(cv::Mat bin_img) {
         };
 
         std::vector<float> line_fited = fiting_line(points);
-        if (line_fited.size() > 0) {
+        if (line_fited.size() > 0)
+        {
             line_res.push_back(line_fited);
         }
     }
@@ -368,7 +396,8 @@ std::vector<std::vector<float>> get_line_by_lsd(cv::Mat bin_img) {
     return line_res;
 }
 
-bool compareLines(const std::vector<float>& a, const std::vector<float>& b, bool ascending) {
+bool compareLines(const std::vector<float>& a, const std::vector<float>& b, bool ascending)
+{
     /**
      * 比较两条线段的顺序。
      * @param a 第一条线段的坐标向量。
@@ -379,13 +408,15 @@ bool compareLines(const std::vector<float>& a, const std::vector<float>& b, bool
 
      // 当需要按升序比较时，比较两条线段在y轴上的最小值
 
-    if (ascending) {
+    if (ascending)
+    {
         float min_a_y = a[1] < a[3] ? a[1] : a[3];
         float min_b_y = b[1] < b[3] ? b[1] : b[3];
 
         return min_a_y < min_b_y;
     }
-    else {
+    else
+    {
         // 当需要按降序比较时，比较两条线段在y轴上的最大值
         float max_a_y = a[1] > a[3] ? a[1] : a[3];
         float max_b_y = b[1] > b[3] ? b[1] : b[3];
@@ -395,7 +426,8 @@ bool compareLines(const std::vector<float>& a, const std::vector<float>& b, bool
 }
 
 
-std::vector<std::vector<float>> linesAggregation(std::vector<std::vector<float>> lines) {
+std::vector<std::vector<float>> linesAggregation(std::vector<std::vector<float>> lines)
+{
     // 合并重合的直线
 
     int num_lines = lines.size();
@@ -403,25 +435,32 @@ std::vector<std::vector<float>> linesAggregation(std::vector<std::vector<float>>
     std::fill_n(isVisited.begin(), num_lines, false);
     std::vector<std::vector<float>> lineRes;
 
-    for (int i = 0; i < num_lines; i++) {
-        if (isVisited[i]) {
+    for (int i = 0; i < num_lines; i++)
+    {
+        if (isVisited[i])
+        {
             continue;
         }
-        else {
+        else
+        {
             isVisited[i] = true;
         }
         int index = -1;
-        for (int j = i + 1; j < num_lines; j++) {
-            if (isVisited[j]) {
+        for (int j = i + 1; j < num_lines; j++)
+        {
+            if (isVisited[j])
+            {
                 continue;
             }
-            if (lineIsOverlapping(lines[i], lines[j], 30)) { // 30为阈值，表示两个线段重合的阈值
+            if (lineIsOverlapping(lines[i], lines[j], 30))
+            { // 30为阈值，表示两个线段重合的阈值
                 isVisited[j] = true;
                 index = j;
             }
         }
 
-        if (index != -1) {
+        if (index != -1)
+        {
             std::vector<float> line = {
                     (lines[i][0] + lines[index][0]) / 2,
                     (lines[i][1] + lines[index][1]) / 2,
@@ -432,7 +471,8 @@ std::vector<std::vector<float>> linesAggregation(std::vector<std::vector<float>>
 
             lineRes.push_back(line);
         }
-        else {
+        else
+        {
             lineRes.push_back(lines[i]);
         }
     }
@@ -440,17 +480,21 @@ std::vector<std::vector<float>> linesAggregation(std::vector<std::vector<float>>
 }
 
 
-void sort_lines(std::vector<std::vector<float>>& lines, bool ascending) {
-    if (lines.empty()) {
+void sort_lines(std::vector<std::vector<float>>& lines, bool ascending)
+{
+    if (lines.empty())
+    {
         return;
     }
     std::sort(lines.begin(), lines.end(), [ascending](const std::vector<float>& a, const std::vector<float>& b) {
-        if (ascending) {
+        if (ascending)
+        {
             float min_a_y = a[1] < a[3] ? a[1] : a[3];
             float min_b_y = b[1] < b[3] ? b[1] : b[3];
             return min_a_y < min_b_y;
         }
-        else {
+        else
+        {
             // 当需要按降序比较时，比较两条线段在y轴上的最大值
             float max_a_y = a[1] > a[3] ? a[1] : a[3];
             float max_b_y = b[1] > b[3] ? b[1] : b[3];
@@ -459,17 +503,21 @@ void sort_lines(std::vector<std::vector<float>>& lines, bool ascending) {
     });
 
 }
-void sort_lines(std::vector<cv::Vec4f>& lines, bool ascending) {
-    if (lines.empty()) {
+void sort_lines(std::vector<cv::Vec4f>& lines, bool ascending)
+{
+    if (lines.empty())
+    {
         return;
     }
     std::sort(lines.begin(), lines.end(), [ascending](const cv::Vec4f& a, const cv::Vec4f& b) {
-        if (ascending) {
+        if (ascending)
+        {
             float min_a_y = a[1] < a[3] ? a[1] : a[3];
             float min_b_y = b[1] < b[3] ? b[1] : b[3];
             return min_a_y < min_b_y;
         }
-        else {
+        else
+        {
             // 当需要按降序比较时，比较两条线段在y轴上的最大值
             float max_a_y = a[1] > a[3] ? a[1] : a[3];
             float max_b_y = b[1] > b[3] ? b[1] : b[3];
@@ -479,7 +527,8 @@ void sort_lines(std::vector<cv::Vec4f>& lines, bool ascending) {
 }
 
 
-double compareHistograms(const cv::Mat& hist1, const cv::Mat& hist2) {
+double compareHistograms(const cv::Mat& hist1, const cv::Mat& hist2)
+{
     // 使用OpenCV的compareHist函数，这里选择CORREL方法（相关性）
     // 其他方法包括：CV_COMP_CHISQR, CV_COMP_CHISQR_ALT, CV_COMP_INTERSECT, CV_COMP_BHATTACHARYYA
     double similarity = cv::compareHist(hist1, hist2, cv::HISTCMP_CORREL);
@@ -487,9 +536,11 @@ double compareHistograms(const cv::Mat& hist1, const cv::Mat& hist2) {
 }
 
 
-double calculateHistogramSimilarity(const cv::Mat& img1, const cv::Mat& img2) {
+double calculateHistogramSimilarity(const cv::Mat& img1, const cv::Mat& img2)
+{
 
-    if (img1.size() != img2.size()) {
+    if (img1.size() != img2.size())
+    {
         std::cerr << "Error: Images must be of the same size!" << std::endl;
         return -1;
     }
@@ -517,7 +568,8 @@ double calculateHistogramSimilarity(const cv::Mat& img1, const cv::Mat& img2) {
     return similarity;
 }
 
-bool check_is_border_line(cv::Mat img, cv::Vec4f line, float thr) {
+bool check_is_border_line(cv::Mat img, cv::Vec4f line, float thr)
+{
     bool flag = false;
     int offset = 30; // 获取上下点的四邻域，并计算相似度；
 
@@ -534,7 +586,8 @@ bool check_is_border_line(cv::Mat img, cv::Vec4f line, float thr) {
     int  base_up_y = base_y - offset;
     int base_down_y = base_y + offset;
 
-    if (base_up_y < 0 || (base_down_y > img.rows - 1)) {
+    if (base_up_y < 0 || (base_down_y > img.rows - 1))
+    {
         return false;  // 超出边界
     }
 
@@ -566,7 +619,8 @@ bool check_is_border_line(cv::Mat img, cv::Vec4f line, float thr) {
     if (similarty > 0.6) { flag = true; }
     return flag;
 }
-bool check_is_border_line_by_hist(cv::Mat img, cv::Vec4f line, float thr) {
+bool check_is_border_line_by_hist(cv::Mat img, cv::Vec4f line, float thr)
+{
     bool flag = false;
     int offset = 30; // 获取上下点的四邻域，并计算相似度；
 
@@ -583,7 +637,8 @@ bool check_is_border_line_by_hist(cv::Mat img, cv::Vec4f line, float thr) {
     int  base_up_y = base_y - offset;
     int base_down_y = base_y + offset;
 
-    if (base_up_y < 0 || (base_down_y > img.rows - 1)) {
+    if (base_up_y < 0 || (base_down_y > img.rows - 1))
+    {
         return false;  // 超出边界
     }
 
@@ -615,7 +670,8 @@ bool check_is_border_line_by_hist(cv::Mat img, cv::Vec4f line, float thr) {
     return flag;
 }
 
-double computePointToLineDistance(std::vector<float> line_1, std::vector<float> line_2) {
+double computePointToLineDistance(std::vector<float> line_1, std::vector<float> line_2)
+{
 
     double Slope_1 = line_1[4];
     double C1 = line_1[1];
@@ -637,8 +693,29 @@ double computePointToLineDistance(std::vector<float> line_1, std::vector<float> 
     return perpendicularDistance(A2, B2, C2, X1, Y1);
 }
 
-double perpendicularDistance(double A, double B, double C, double x1, double y1) {
+double perpendicularDistance(double A, double B, double C, double x1, double y1)
+{
     return std::abs(A * x1 + B * y1 + C) / std::sqrt(A * A + B * B);
 }
 
+void image_correction(cv::Mat& img, unsigned rotate_type)
+{
+    //图像方向矫正
 
+    cv::Mat tmp2;
+    switch (rotate_type)
+    {
+    case 1://顺时针90
+        cv::transpose(img, tmp2);
+        cv::flip(tmp2, img, 1);
+        break;
+    case 2: //顺时针180°
+        cv::flip(img, tmp2, -1);
+        img = tmp2;
+        break;
+    case 3: //逆时针90
+        cv::transpose(img, tmp2);
+        cv::flip(tmp2, img, 0);
+        break;
+    }
+}
