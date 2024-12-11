@@ -28,12 +28,19 @@ MainWindow::MainWindow(QWidget* parent)
     updateUiTimer->setInterval(10);
     connect(updateUiTimer, &QTimer::timeout, this, &MainWindow::slotUpdateUIAll);
 
+    // 6.0 直线检测专用定时器
+    this->updateCameraTimer = new QTimer(this);
+    this->updateCameraTimer->setInterval(300);
+    connect(this->updateCameraTimer, &QTimer::timeout, this, &MainWindow::slotUpdateImagesAndOtherTimeConsuming);
+
+
     //7.0 启动线程
     this->logger->trace("启动功能对象...");
     m_Com->start();
     m_Robot->start();
     m_Task->start();
     updateUiTimer->start();
+    this->updateCameraTimer->start();
 }
 
 void MainWindow::initUiForm()
@@ -42,6 +49,13 @@ void MainWindow::initUiForm()
     connectSlotFunctions();
 
     ui->stackedWidget_view->setCurrentWidget(ui->page_user);
+    ui->btn_laser_upper_enable->setStyleSheet("background-color: rgb(0, 255, 0);"
+                                          "border: 2px solid blue;"
+                                          "border-radius: 10px;");
+
+    ui->btn_laser_lower_enable->setStyleSheet("background-color: rgb(0, 255, 0);"
+                                              "border: 2px solid blue;"
+                                              "border-radius: 10px;");
 }
 
 void MainWindow::InitVision()
@@ -188,6 +202,9 @@ void MainWindow::connectSlotFunctions()
     connect(ui->btn_putter_backward, &QPushButton::released, this, &MainWindow::slots_on_btn_putter_backward_released,
             Qt::UniqueConnection);
 
+    // 轮廓激光开关控制
+    connect(ui->btn_laser_upper_enable, &QPushButton::clicked, this, &MainWindow::slots_btn_laser_upper_enable_clicked, Qt::UniqueConnection);
+    connect(ui->btn_laser_lower_enable, &QPushButton::clicked, this, &MainWindow::slots_btn_laser_lower_enable_clicked, Qt::UniqueConnection);
     // 参数配置文件
     connect(ui->btn_load_configuration, &QPushButton::clicked, this, &MainWindow::slots_btn_load_configuration_clicked, Qt::UniqueConnection);
     connect(ui->btn_save_home_position, &QPushButton::clicked, this, &MainWindow::slots_btn_save_home_position_clicked, Qt::UniqueConnection);
@@ -886,7 +903,7 @@ void MainWindow::updateCameraData()
             return;
         }
 
-        m_VisionInterface->camera_controls->getImageAll();
+        m_VisionInterface->camera_controls->getImageAllByResizeAndCorrect();
         std::map<std::string, cv::Mat> cameraData = m_VisionInterface->camera_controls->getCameraImages();
         if (cameraData.size() > 0)
         {
@@ -904,6 +921,9 @@ void MainWindow::updateCameraData()
                 {
                     number = (prefix_[index] - '0') * 10 + (prefix_[index + 1] - '0');
                 }
+
+                cv::Mat inputImage;
+                inputImage = item.second;
                 if (pageIndex == 1)
                 {
                     if (item.first.find("HoleCam") != std::string::npos)
@@ -911,10 +931,32 @@ void MainWindow::updateCameraData()
                         continue;
                     }
                 }
-                cv::Mat temp;
-                cv::resize(item.second, temp, imgSize);
+                // 画面方向矫正
+                if (item.first.find("LineCam") != std::string::npos)
+                {
+                    if (number == 5)
+                    {
+                        image_correction(inputImage, 3);
+                    }
+                    if (number == 6)
+                    {
+                        image_correction(inputImage, 1);
+                    }
+                    if (number == 2 || number == 4)
+                    {
+                        image_correction(inputImage, 2);
+                    }
+
+                }
+                cv::Mat temp = inputImage;
+                //                cv::resize(inputImage, temp, imgSize);
                 QImage img = QImage((uchar*)temp.data, temp.cols, temp.rows, QImage::Format_RGB888);
-                findChild<QLabel*>(prefix + QString::number(number - 1))->setPixmap(QPixmap::fromImage(img));
+                QLabel* dis_label = findChild<QLabel*>(prefix + QString::number(number - 1));
+                dis_label->setPixmap(QPixmap::fromImage(img));
+                dis_label->setScaledContents(true);
+
+                //                findChild<QLabel *>(prefix + QString::number(number - 1))->setPixmap(QPixmap::fromImage(img))resize(inputImage.size());
+                //                this->logger->info("相机{}数据获取成功**************************************", item.first);
             }
         }
         else
@@ -1715,3 +1757,66 @@ void MainWindow::slots_on_line_results_dis_clicked()
 {
     ui->stackedWidget_view->setCurrentIndex(1);
 }
+
+void MainWindow::slots_btn_laser_upper_enable_clicked()
+{
+
+    std::vector<std::string> laser_name_upper = {
+            "lida_1",
+            "lida_2"
+    };
+    if (this->laserOnUpperEnable)
+    {
+        m_VisionInterface->laser_controls->setLaserOn(laser_name_upper);
+        this->laserOnUpperEnable = false;
+        ui->btn_laser_upper_enable->setStyleSheet("background-color: rgb(0, 255, 0);"
+                                                  "border: 2px solid blue;"
+                                                  "border-radius: 10px;");
+    }
+    else
+    {
+        m_VisionInterface->laser_controls->setLaserOff(laser_name_upper);
+        this->laserOnUpperEnable = true;
+        ui->btn_laser_upper_enable->setStyleSheet("border: 2px solid blue;"
+                                                  "border-radius: 10px;");
+    }
+}
+
+void MainWindow::slots_btn_laser_lower_enable_clicked()
+{
+
+    std::vector<std::string> laser_name_lower = {
+            "lida_3",
+            "lida_4"
+    };
+    if (this->laserOnLowerEnable)
+    {
+        m_VisionInterface->laser_controls->setLaserOn(laser_name_lower);
+        this->laserOnLowerEnable = false;
+        ui->btn_laser_lower_enable->setStyleSheet("background-color: rgb(0, 255, 0);"
+                                                  "border: 2px solid blue;"
+                                                  "border-radius: 10px;");
+    }
+    else
+    {
+        m_VisionInterface->laser_controls->setLaserOff(laser_name_lower);
+        this->laserOnLowerEnable = true;
+        ui->btn_laser_lower_enable->setStyleSheet("border: 2px solid blue;"
+                                                  "border-radius: 10px;");
+    }
+
+}
+
+void MainWindow::slotUpdateImagesAndOtherTimeConsuming()
+{
+
+    //1.更新相机画面数据
+
+    updateCameraData();
+
+    //2.更新硬件连接状态，并通过状态更新按钮颜色
+    updataDeviceConnectState();
+
+}
+
+
