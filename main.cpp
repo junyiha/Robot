@@ -23,6 +23,7 @@
 #include "vision/VisionInterface.h"
 #include "com/LaserDistanceBojke.h"
 #include "cxxopts.hpp"
+#include "boost/filesystem.hpp"
 
 void line_detect_demo()
 {

@@ -101,6 +101,16 @@ if(BUILD_GPU_FLAG)
     link_directories(${CUDA_LIBS_DIRS})
 endif()
 
+# Boost
+find_package(Boost REQUIRED COMPONENTS system filesystem PATHS "${BaseDIR}/packages/boost_1_86_0/lib/cmake/" )
+if(Boost_FOUND)
+    include_directories(${Boost_INCLUDE_DIRS})
+
+    MESSAGE( STATUS "Boost_INCLUDE_DIRS = ${Boost_INCLUDE_DIRS}.")
+    MESSAGE( STATUS "Boost_LIBRARIES = ${Boost_LIBRARIES}.")
+    MESSAGE( STATUS "Boost_LIB_VERSION = ${Boost_LIB_VERSION}.")
+endif()
+
 # Opencv Setting
 include_directories(${BaseDIR}/packages/opencv4.55/build/include)
 link_directories(${BaseDIR}/packages/opencv4.55/build/x64/vc15/lib)
@@ -154,33 +164,21 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/
                                                   ${CMAKE_SOURCE_DIR}/vision
                                                   ${CMAKE_SOURCE_DIR}/ThirdParty/yaml-cpp-0.8.0/include/
                                                   ${CMAKE_SOURCE_DIR}/ThirdParty/cxxopts-3.2.0/include/
+                                                  ${Boost_INCLUDE_DIRS}/boost_1_86_0/include/boost-1_86/
 )
 
 # yaml-0.8.0
-target_link_libraries(${PROJECT_NAME} yaml-cpp::yaml-cpp)
-
-# qt5
-target_link_libraries(${PROJECT_NAME}
-        Qt5::Core
-        Qt5::Gui
-        Qt5::Widgets
-        Qt5::Network
-        Qt5::Xml
-)
-
-# opencv + hk sdk
-target_link_libraries(${PROJECT_NAME}
-        opencv_world455d.lib
-        MvCameraControl.lib
-)
-
-# onnxruntime
-target_link_libraries(${PROJECT_NAME}
-        onnxruntime.dll
-)
-
-target_link_libraries(${PROJECT_NAME}
-        BestfitLaserScanerSDK.lib
+target_link_libraries(${PROJECT_NAME}   yaml-cpp::yaml-cpp
+                                        Qt5::Core
+                                        Qt5::Gui
+                                        Qt5::Widgets
+                                        Qt5::Network
+                                        Qt5::Xml
+                                        opencv_world455d.lib
+                                        MvCameraControl.lib
+                                        onnxruntime.dll
+                                        BestfitLaserScanerSDK.lib
+                                        ${Boost_LIBRARIES}
 )
 
 # tensorrt cuda
