@@ -35,13 +35,11 @@ namespace GP
 
 	extern double Line_Deviation_Threshold; // 边线调整允许偏差
 
-	// 机器人: 准备位
-	extern std::vector<double> Home_Position;
-	extern QVector<double> Home_Position_QV;
-
 	// 机器人: 举升位
+	extern std::vector<double> Lift_Position;
+
+	// 机器人: 准备位
 	extern std::vector<double> Prepare_Position;
-	extern QVector<double> Prepare_Position_QV;
 
 	// 关节末端运动限速
 	extern std::vector<double> End_Vel_Limit;

@@ -11,7 +11,7 @@ print("当前脚本所在目录是:", root_dir)
 file_list = os.listdir(root_dir)
 new_list = []
 for i in file_list:
-    if i == '.vscode' or i == 'build' or i == "package":
+    if i == 'build' or i == "package":
         continue
 
     new_list.append(i)

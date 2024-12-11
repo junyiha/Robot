@@ -1457,7 +1457,7 @@ void MainWindow::on_btn_add_nail_pressed()
     {
         vel_Home[i] = LINK_0_JOINT_MAX_VEL[i] * 0.1;
     }
-    m_Robot->setJointGroupMoveAbs(GP::Home_Position.data(), vel_Home);
+    m_Robot->setJointGroupMoveAbs(GP::Lift_Position.data(), vel_Home);
 
 }
 

@@ -49,14 +49,8 @@ namespace Config
 		GP::IOA_IP = m_root["IOA_ip"]["value"].as<std::string>();
 		GP::IOA_Port = m_root["IOA_port"]["value"].as<std::size_t>();
 
-		GP::Home_Position = m_root["home_point"]["value"].as<std::vector<double>>();
-		GP::Prepare_Position = m_root["prepare_point"]["value"].as<std::vector<double>>();
-		for (int i = 0; i < GP::DOF; i++)
-		{
-			GP::Home_Position_QV[i] = GP::Home_Position.at(i);
-
-			GP::Prepare_Position_QV[i] = GP::Prepare_Position.at(i);
-		}
+		GP::Lift_Position = m_root["lift_position"]["value"].as<std::vector<double>>();
+		GP::Prepare_Position = m_root["prepare_position"]["value"].as<std::vector<double>>();
 
 		GP::CYLINDER_INDEX = m_root["CYLINDER_INDEX"]["value"].as<uint>();
 		GP::STEER_LEFT_INDEX = m_root["STEER_LEFT_INDEX"]["value"].as<uint>();
