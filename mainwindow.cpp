@@ -214,6 +214,7 @@ void MainWindow::connectSlotFunctions()
     connect(ui->btn_move_zero, &QPushButton::clicked, this, &MainWindow::slots_btn_move_zero_clicked, Qt::UniqueConnection);
     connect(ui->btn_move_zero_select_all, &QPushButton::clicked, this, &MainWindow::slots_btn_move_zero_select_all_clicked, Qt::UniqueConnection);
     connect(ui->btn_joint_text_terminate, &QPushButton::clicked, this, &MainWindow::slots_btn_joint_text_terminate_clicked, Qt::UniqueConnection);
+    connect(ui->btn_global_exit, &QPushButton::clicked, this, &MainWindow::slots_btn_global_exit_clicked, Qt::UniqueConnection);
 }
 
 MainWindow::~MainWindow()
@@ -598,6 +599,11 @@ void MainWindow::slots_btn_joint_text_terminate_clicked()
 {
     m_thread_exit_flag = true;
     m_Robot->setRobotHalt();
+}
+
+void MainWindow::slots_btn_global_exit_clicked()
+{
+    terminate();
 }
 
 void MainWindow::on_btn_magnet_stop_clicked()

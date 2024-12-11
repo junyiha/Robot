@@ -149,6 +149,7 @@ private slots:
     void on_btn_add_nail_released();
     void on_btn_preparation_pos_pressed();
     void on_btn_preparation_pos_released();
+
     // 灯光
     void slots_on_btn_camera_width_light_clicked();
     void slots_on_btn_camera_height_light_clicked();
@@ -169,6 +170,8 @@ private slots:
     void slots_btn_move_zero_clicked();
     void slots_btn_move_zero_select_all_clicked();
     void slots_btn_joint_text_terminate_clicked();
+
+    void slots_btn_global_exit_clicked();
 
 private:
     double m_wheelVel{ 30.0 };
