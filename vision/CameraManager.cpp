@@ -207,7 +207,6 @@ void CameraManager::getImageAll(std::string camType)
         {
             image = cv::Mat();
             //            this->cameraImages[camera.first] = image;
-            this->logger->error("********************get image from camera {} failed**************************", camera.first);
         }
     }
     this->dataMutex.unlock();
@@ -416,7 +415,6 @@ void CameraManager::getImageAllByResizeAndCorrect(std::string camType)
         {
             image = cv::Mat();
             //            this->cameraImages[camera.first] = image;
-            this->logger->error("********************get image from camera {} failed**************************", camera.first);
         }
     }
     this->dataMutex.unlock();

@@ -1818,5 +1818,3 @@ void MainWindow::slotUpdateImagesAndOtherTimeConsuming()
     updataDeviceConnectState();
 
 }
-
-

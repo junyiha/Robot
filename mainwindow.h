@@ -77,6 +77,7 @@ private:
     void updateAxisStatus();//更新单轴连接状态
     void updateConnectSta();//更新硬件连接状态
     void updateTaskStateMachineStatus();
+    void slotUpdateImagesAndOtherTimeConsuming();
 
 protected:
     void mousePressEvent(QMouseEvent* event) override;
@@ -128,6 +129,9 @@ private slots:
     void on_btn_camera_capture_clicked();
     void on_btn_camera_save_clicked();
 
+    void slots_btn_laser_upper_enable_clicked();
+    void slots_btn_laser_lower_enable_clicked();
+
     // 6.0 舵轮移动
     void on_btn_wheel_forward_pressed();
     void on_btn_wheel_forward_released();
@@ -178,12 +182,15 @@ private:
     bool lineCameraLightHeightEnable = true;
     bool holeCameraLightEnable = true;
     bool laserLightEnable = true;
+    bool laserOnUpperEnable = false;
+    bool laserOnLowerEnable = false;
 
     Ui::MainWindow* ui;
     QByteArray m_CrossLidar;
     QMutex m_mutex;
     QTimer* updateUiTimer;
     QAtomicInt      buttionIndex; // 按钮索引原子变量记录
+    QTimer* updateCameraTimer;
 
     ComInterface* m_Com;
     CRobot* m_Robot;

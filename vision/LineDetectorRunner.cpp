@@ -85,7 +85,6 @@ void LineDetectorRunner::run()
             }
             else
             {
-                logger->info("Gets the number of image frames 0!");
             }
         }
         QThread::msleep(200);

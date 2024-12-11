@@ -299,7 +299,6 @@ cv::Mat HKCameraControls::getFrame()
     }
     else
     {
-        this->logger->info(" HKCameraControls::getFrame()  camName: {}, get frame failed", this->stHkDev.camName);
     }
     this->data_mutex.unlock();
     return srcImage;

@@ -507,7 +507,7 @@ QPushButton::pressed{
      <string notr="true"/>
     </property>
     <property name="currentIndex">
-     <number>2</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="page_user">
      <property name="styleSheet">
@@ -3652,7 +3652,7 @@ QPushButton:pressed {
          <property name="geometry">
           <rect>
            <x>220</x>
-           <y>170</y>
+           <y>180</y>
            <width>100</width>
            <height>50</height>
           </rect>
@@ -3925,7 +3925,7 @@ QPushButton:pressed {
          <property name="geometry">
           <rect>
            <x>120</x>
-           <y>170</y>
+           <y>140</y>
            <width>100</width>
            <height>50</height>
           </rect>
@@ -3982,6 +3982,90 @@ QPushButton:pressed {
          </property>
          <property name="text">
           <string>直线检测</string>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="btn_laser_upper_enable">
+         <property name="geometry">
+          <rect>
+           <x>220</x>
+           <y>80</y>
+           <width>102</width>
+           <height>50</height>
+          </rect>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>100</width>
+           <height>50</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <family>Agency FB</family>
+           <pointsize>10</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QPushButton {
+    border: 2px solid blue;
+    border-radius: 10px;
+}
+QPushButton:hover {
+    border: 2px solid red;
+    border-radius: 10px;
+}
+
+QPushButton:pressed {
+    border: 2px solid green;
+    border-radius: 10px;
+}</string>
+         </property>
+         <property name="text">
+          <string>轮廓激光上</string>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="btn_laser_lower_enable">
+         <property name="geometry">
+          <rect>
+           <x>220</x>
+           <y>130</y>
+           <width>102</width>
+           <height>50</height>
+          </rect>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>100</width>
+           <height>50</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <family>Agency FB</family>
+           <pointsize>10</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QPushButton {
+    border: 2px solid blue;
+    border-radius: 10px;
+}
+QPushButton:hover {
+    border: 2px solid red;
+    border-radius: 10px;
+}
+
+QPushButton:pressed {
+    border: 2px solid green;
+    border-radius: 10px;
+}</string>
+         </property>
+         <property name="text">
+          <string>轮廓激光下</string>
          </property>
         </widget>
        </widget>
