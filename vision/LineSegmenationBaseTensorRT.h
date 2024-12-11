@@ -58,7 +58,7 @@ public:
 
 
 private:
-    const std::string engineFilePath = "../models/pp_liteseg_stdc1_softmax_20241021.engine";
+    const std::string engineFilePath{ VISION_MODEL_PATH };
     //    const std::string engineFilePath= VISION_ENGINE_PATH;
     Logger gLogger;
     int inputHeight;

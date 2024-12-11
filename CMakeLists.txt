@@ -35,7 +35,11 @@ endif()
 # add_definitions(-DSTATE_MACHINE_TEST=1)
 add_definitions(-DROOT_PATH="${CMAKE_SOURCE_DIR}/")
 add_definitions(-DCONFIG_PATH="${CMAKE_SOURCE_DIR}/config.yaml")
-add_definitions(-DVISION_MODEL_PATH="${CMAKE_SOURCE_DIR}/models/pp_liteseg_stdc1_softmax_20241021.onnx")
+if(BUILD_GPU_FLAG)
+        add_definitions(-DVISION_MODEL_PATH="${CMAKE_SOURCE_DIR}/models/pp_liteseg_stdc1_softmax_20241021.engine")
+else()
+        add_definitions(-DVISION_MODEL_PATH="${CMAKE_SOURCE_DIR}/models/pp_liteseg_stdc1_softmax_20241021.onnx")
+endif(BUILD_GPU_FLAG)
 
 # for vscode
 file(COPY ${BaseDIR}/packages/opencv4.55/build/x64/vc15/bin/opencv_world455d.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/)
@@ -181,7 +185,7 @@ target_link_libraries(${PROJECT_NAME}
 
 # tensorrt cuda
 if(BUILD_GPU_FLAG)
-target_link_libraries(PDRobot-master
+target_link_libraries(${PROJECT_NAME}
         ${TENSORRT_LIBS}
         ${CUDA_LIBS}
 )
