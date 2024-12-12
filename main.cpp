@@ -23,7 +23,7 @@
 #include "vision/VisionInterface.h"
 #include "com/LaserDistanceBojke.h"
 #include "cxxopts.hpp"
-#include "boost/filesystem.hpp"
+#include "Network/TcpClient.hpp"
 
 void line_detect_demo()
 {
@@ -77,6 +77,46 @@ int RunRobot(int argc, char* argv[])
     w.setWindowTitle("LNG Panel Loading Robot");
     w.show();
     return a.exec();
+}
+
+int TestBoostAsio()
+{
+    Network::TcpClient tcp_client;
+    while (true)
+    {
+        std::cerr << "input command: \n";
+        std::string cmd;
+        std::cin >> cmd;
+        if (cmd == "connect")
+        {
+            tcp_client.ConnectToServer("180.101.50.188", 80);
+        }
+        else if (cmd == "disconnect")
+        {
+            tcp_client.Disconnect();
+        }
+        else if (cmd == "recv")
+        {
+            std::vector<char> buf(1 * 1024);
+            std::size_t recv_size = tcp_client.RecvData(buf);
+            if (recv_size == 0)
+            {
+                std::cerr << "failed to receive data, error message: " << tcp_client.error_code.message() << "\n";
+            }
+            else
+            {
+                std::cerr << "receive message: " << std::string(buf.data(), buf.size()) << "\n";
+            }
+        }
+        else
+        {
+            std::cerr << "invalid command: " << cmd << "\n";
+        }
+
+        using namespace std::chrono_literals;
+        std::this_thread::sleep_for(200ms);
+    }
+    return 0;
 }
 
 int main(int argc, char* argv[])

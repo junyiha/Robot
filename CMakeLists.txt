@@ -154,6 +154,7 @@ aux_source_directory(${CMAKE_SOURCE_DIR}/com src)
 aux_source_directory(${CMAKE_SOURCE_DIR}/robot src)
 aux_source_directory(${CMAKE_SOURCE_DIR}/Task src)
 aux_source_directory(${CMAKE_SOURCE_DIR}/vision src)
+aux_source_directory(${CMAKE_SOURCE_DIR}/src/Network src)
 
 add_executable(${PROJECT_NAME} ${src} ${QRC_SOURCE_FILE})
 
@@ -162,6 +163,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/
                                                   ${CMAKE_SOURCE_DIR}/robot
                                                   ${CMAKE_SOURCE_DIR}/Task
                                                   ${CMAKE_SOURCE_DIR}/vision
+                                                  ${CMAKE_SOURCE_DIR}/src
                                                   ${CMAKE_SOURCE_DIR}/ThirdParty/yaml-cpp-0.8.0/include/
                                                   ${CMAKE_SOURCE_DIR}/ThirdParty/cxxopts-3.2.0/include/
                                                   ${Boost_INCLUDE_DIRS}/boost_1_86_0/include/boost-1_86/
