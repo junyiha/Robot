@@ -4,17 +4,18 @@
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent), ui(new Ui::MainWindow)
 {
-    // 设置窗口标志，禁止拖动
     ui->setupUi(this);
-    initLog();
+    InitLog();
+    InitUiForm();
 
-    //2.0 UI界面初始化
-    initUiForm();
-
-    //4.0 初始化机器人、视觉、任务
     m_Com = ComInterface::getInstance();
+    m_Com->start();
+
     m_Robot = new CRobot(m_Com);
+    m_Robot->start();
+
     m_Task = new CTask(m_Com, m_Robot, m_VisionInterface);
+    m_Task->start();
     m_config_ptr = std::make_unique<Config::ConfigManager>();
 
 #ifdef STATE_MACHINE_TEST
@@ -22,28 +23,11 @@ MainWindow::MainWindow(QWidget* parent)
     InitVision();
 #endif
 
-    //5.0 计时器界面实时更新 (100ms更新一次)
-    this->logger->trace("启动界面实时更新");
-    this->updateUiTimer = new QTimer(this);
-    updateUiTimer->setInterval(10);
-    connect(updateUiTimer, &QTimer::timeout, this, &MainWindow::slotUpdateUIAll);
-
-    // 6.0 直线检测专用定时器
-    this->updateCameraTimer = new QTimer(this);
-    this->updateCameraTimer->setInterval(300);
-    connect(this->updateCameraTimer, &QTimer::timeout, this, &MainWindow::slotUpdateImagesAndOtherTimeConsuming);
-
-
-    //7.0 启动线程
-    this->logger->trace("启动功能对象...");
-    m_Com->start();
-    m_Robot->start();
-    m_Task->start();
-    updateUiTimer->start();
-    this->updateCameraTimer->start();
+    InitSlotUpdateUIAllTimer();
+    InitSlotUpdateAllDevicesTimer();
 }
 
-void MainWindow::initUiForm()
+void MainWindow::InitUiForm()
 {
     // 2.0 为按钮绑定操函数
     connectSlotFunctions();
@@ -62,6 +46,22 @@ void MainWindow::InitVision()
 {
     m_VisionInterface = new VisionInterface();
     m_VisionInterface->start();
+}
+
+void MainWindow::InitSlotUpdateUIAllTimer()
+{
+    this->updateUiTimer = new QTimer(this);
+    updateUiTimer->setInterval(10);
+    connect(updateUiTimer, &QTimer::timeout, this, &MainWindow::slotUpdateUIAll);
+    updateUiTimer->start();
+}
+
+void MainWindow::InitSlotUpdateAllDevicesTimer()
+{
+    this->updateCameraTimer = new QTimer(this);
+    this->updateCameraTimer->setInterval(300);
+    connect(this->updateCameraTimer, &QTimer::timeout, this, &MainWindow::slotUpdateImagesAndOtherTimeConsuming);
+    this->updateCameraTimer->start();
 }
 
 void MainWindow::connectSlotFunctions()
@@ -230,7 +230,7 @@ MainWindow::~MainWindow()
     }
 }
 
-void MainWindow::initLog()
+void MainWindow::InitLog()
 {
     //创建控制台日志记录器
     auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
@@ -630,13 +630,13 @@ void MainWindow::slotUpdateUIAll()
 #ifdef STATE_MACHINE_TEST
 #else
     // 2.0 更新相机图像帧
-    updateCameraData();
+    // updateCameraData();
 
     // 3.0 更新边线检测实时测量值
     updateLineDetectResults();
 
     // 7.0 更新硬件设备连接状态，并通过指示灯显示
-    updataDeviceConnectState();
+    // updataDeviceConnectState();
 #endif
 
     // 4.0 更新轴状态信息
