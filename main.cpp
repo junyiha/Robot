@@ -23,7 +23,6 @@
 #include "vision/VisionInterface.h"
 #include "com/LaserDistanceBojke.h"
 #include "cxxopts.hpp"
-#include "Network/TcpClient.hpp"
 
 int line_detect_demo(int argc, char* argv[])
 {
@@ -82,54 +81,13 @@ int RunRobot(int argc, char* argv[])
     return a.exec();
 }
 
-int TestBoostAsio(int argc, char* argv[])
-{
-    Network::TcpClient tcp_client;
-    while (true)
-    {
-        std::cerr << "input command: \n";
-        std::string cmd;
-        std::cin >> cmd;
-        if (cmd == "connect")
-        {
-            tcp_client.ConnectToServer("180.101.50.188", 80);
-        }
-        else if (cmd == "disconnect")
-        {
-            tcp_client.Disconnect();
-        }
-        else if (cmd == "recv")
-        {
-            std::vector<char> buf(1 * 1024);
-            std::size_t recv_size = tcp_client.RecvData(buf);
-            if (recv_size == 0)
-            {
-                std::cerr << "failed to receive data, error message: " << tcp_client.error_code.message() << "\n";
-            }
-            else
-            {
-                std::cerr << "receive message: " << std::string(buf.data(), buf.size()) << "\n";
-            }
-        }
-        else
-        {
-            std::cerr << "invalid command: " << cmd << "\n";
-        }
-
-        using namespace std::chrono_literals;
-        std::this_thread::sleep_for(200ms);
-    }
-    return 0;
-}
-
 int main(int argc, char* argv[])
 {
     std::map<std::string, std::function<int(int, char**)>> FunctionMap =
     {
         {"robot", RunRobot},
         {"line_demo", line_detect_demo},
-        {"laser_demo", laserDemo},
-        {"test_asio", TestBoostAsio}
+        {"laser_demo", laserDemo}
     };
     cxxopts::Options options("Robot", "zbrobot's project");
     options.add_options()("m,mode", "mode", cxxopts::value<std::string>()->default_value("robot"));
