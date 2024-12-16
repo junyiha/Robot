@@ -25,7 +25,7 @@
 #include "cxxopts.hpp"
 #include "Network/TcpClient.hpp"
 
-void line_detect_demo()
+int line_detect_demo(int argc, char* argv[])
 {
     std::string path = "E:\\ZBRobot\\Robot\\cache\\Image_20241011110413922.bmp";
     cv::Mat img = cv::imread(path);
@@ -48,9 +48,11 @@ void line_detect_demo()
         cv::waitKey(0);
         std::cout << res.error_info << std::endl;
     }
+
+    return 0;
 }
 
-void laserDemo()
+int laserDemo(int argc, char* argv[])
 {
     const char* port = "COM2";
     LaserDistanceBojke laserTool;
@@ -68,6 +70,7 @@ void laserDemo()
     }
 
     QThread::sleep(3000 * 10);
+    return 0;
 }
 
 int RunRobot(int argc, char* argv[])
@@ -79,7 +82,7 @@ int RunRobot(int argc, char* argv[])
     return a.exec();
 }
 
-int TestBoostAsio()
+int TestBoostAsio(int argc, char* argv[])
 {
     Network::TcpClient tcp_client;
     while (true)
@@ -121,9 +124,34 @@ int TestBoostAsio()
 
 int main(int argc, char* argv[])
 {
-    return RunRobot(argc, argv);
-
-    // line_detect_demo();
-    // laserDemo();
-    // return 0;
+    std::map<std::string, std::function<int(int, char**)>> FunctionMap =
+    {
+        {"robot", RunRobot},
+        {"line_demo", line_detect_demo},
+        {"laser_demo", laserDemo},
+        {"test_asio", TestBoostAsio}
+    };
+    cxxopts::Options options("Robot", "zbrobot's project");
+    options.add_options()("m,mode", "mode", cxxopts::value<std::string>()->default_value("robot"));
+    std::string mode{ "robot" };
+    try
+    {
+        auto result = options.parse(argc, argv);
+        mode = result["mode"].as<std::string>();
+    }
+    catch (...)
+    {
+        std::cerr << "parse argument failed\n";
+        return -1;
+    }
+    auto it = FunctionMap.find(mode);
+    if (it != FunctionMap.end())
+    {
+        it->second(argc, argv);
+    }
+    else
+    {
+        std::cerr << "invalid argument: " << mode << "\n";
+        return -1;
+    }
 }
