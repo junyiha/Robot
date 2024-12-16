@@ -63,6 +63,7 @@ public:
 
 
     std::map<std::string, cv::Mat> getCameraImages(std::string camType = "all"); // 获取所有相机图像
+    void getImageAllNonResize(std::string camType = "all"); 
 
     void closeAllCameraThread();
 

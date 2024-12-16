@@ -507,7 +507,7 @@ QPushButton::pressed{
      <string notr="true"/>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>2</number>
     </property>
     <widget class="QWidget" name="page_user">
      <property name="styleSheet">
@@ -8862,7 +8862,7 @@ QPushButton:hover {
        </property>
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
-         <widget class="QPushButton" name="btn_save_prepare_position">
+         <widget class="QPushButton" name="btn_load_configuration">
           <property name="maximumSize">
            <size>
             <width>125</width>
@@ -8885,7 +8885,7 @@ QPushButton:pressed {
 }</string>
           </property>
           <property name="text">
-           <string>保存举升位</string>
+           <string>加载配置</string>
           </property>
          </widget>
         </item>
@@ -8918,7 +8918,7 @@ QPushButton:pressed {
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="btn_load_configuration">
+         <widget class="QPushButton" name="btn_save_prepare_position">
           <property name="maximumSize">
            <size>
             <width>125</width>
@@ -8941,7 +8941,7 @@ QPushButton:pressed {
 }</string>
           </property>
           <property name="text">
-           <string>加载配置</string>
+           <string>保存举升位</string>
           </property>
          </widget>
         </item>

@@ -108,6 +108,7 @@ void LineDetectorRunner::restartDetect()
     this->detect_control_flag = true;
 }
 
+
 std::map<std::string, LineDetectRes> LineDetectorRunner::getDetectResults()
 {
     std::map<std::string, LineDetectRes> detectRes;

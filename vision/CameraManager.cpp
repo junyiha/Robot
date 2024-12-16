@@ -135,6 +135,42 @@ cv::Mat CameraManager::getImage(std::string camera_name)
     return image;
 }
 
+
+void CameraManager::getImageAll(std::string camType) {
+    // ��ȡ�������ͼ��
+    this->dataMutex.lock();
+    if(this->cameraImages.size()>0){
+        this->cameraImages.clear();
+    }
+
+    for (auto &camera : this->cameraList) {
+        cv::Mat image = this->cameraList[camera.first]->getFrame();
+
+        if(camType =="Line"){ // �˳���λ���
+            if(camera.first.find("HoleCam") != std::string::npos){
+                continue;
+            }
+        }
+
+        if(camType =="Hole"){// �˳���λ���
+            if(camera.first.find("LineCam") != std::string::npos){
+                continue;
+            }
+        }
+
+        if(!image.empty()){
+            this->cameraImages[camera.first] = image;
+        }
+        else{
+            image = cv::Mat();
+//            this->cameraImages[camera.first] = image;
+            this->logger->error("********************get image from camera {} failed**************************", camera.first);
+        }
+    }
+    this->dataMutex.unlock();
+}
+
+
 void CameraManager::openCameraAll()
 {
     this->start();
@@ -149,7 +185,7 @@ CameraManager::~CameraManager()
     }
 }
 
-void CameraManager::getImageAll(std::string camType)
+void CameraManager::getImageAllNonResize(std::string camType)
 {
     // ��ȡ�������ͼ��
     this->dataMutex.lock();
@@ -177,31 +213,9 @@ void CameraManager::getImageAll(std::string camType)
                 continue;
             }
         }
-
-        if (!image.empty())
-        {
-            std::string prefix = camera.first;
-            size_t index = prefix.find("_") + 1;
-            int number = prefix[index] - '0';
-            if (index != prefix.size() - 1)
-            {
-                number = (prefix[index] - '0') * 10 + (prefix[index + 1] - '0');
-            }
-            cv::Mat imgResize;
-            cv::resize(image, imgResize, cv::Size(this->imgUiW, this->imgUiH));
-            if (number == 5)
-            {
-                image_correction(imgResize, 3);
-            }
-            if (number == 6)
-            {
-                image_correction(imgResize, 1);
-            }
-            if (number == 2 || number == 4)
-            {
-                image_correction(imgResize, 2);
-            }
-            this->cameraImages[camera.first] = imgResize;
+        
+        if(!image.empty()){
+            this->cameraImages[camera.first] = image;
         }
         else
         {
@@ -409,7 +423,28 @@ void CameraManager::getImageAllByResizeAndCorrect(std::string camType)
 
         if (!image.empty())
         {
-            this->cameraImages[camera.first] = image;
+            std::string prefix = camera.first;
+            size_t index = prefix.find("_") + 1;
+            int number = prefix[index] - '0';
+            if (index != prefix.size() - 1)
+            {
+                number = (prefix[index] - '0') * 10 + (prefix[index + 1] - '0');
+            }
+            cv::Mat imgResize;
+            cv::resize(image, imgResize, cv::Size(this->imgUiW, this->imgUiH));
+            if (number == 5)
+            {
+                image_correction(imgResize, 3);
+            }
+            if (number == 6)
+            {
+                image_correction(imgResize, 1);
+            }
+            if (number == 2 || number == 4)
+            {
+                image_correction(imgResize, 2);
+            }
+            this->cameraImages[camera.first] = imgResize;
         }
         else
         {

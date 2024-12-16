@@ -162,15 +162,15 @@ cv::Mat MyBestfitLaserScaner::pointCloud2Image(std::vector<cv::Point2f> pointClo
     for (int i = 0; i < pointClouds.size(); i++)
     {
 
-        if (pointClouds[i].x < -300 || pointClouds[i].x >300)
+         if (pointClouds[i].x < -110 || pointClouds[i].x >110)
         {
             continue;
         }
-        if (pointClouds[i].y > 500)
-        {
+        if (pointClouds[i].y < 170 || pointClouds[i].y >430)
+        {  // 轮廓激光有效量程范围:  x: -110~110   z: 170~430
             continue;
         }
-        m.at<char>((pointClouds[i].y - minY) * 10 + bias, (pointClouds[i].x - minX) * 10 + bias) = 255; //at <类型> (行,列) [通道(如果有通道的话)]
+        m.at<char>(int((pointClouds[i].y - minY) * 10 + bias), int((pointClouds[i].x - minX) * 10 + bias)) = 255; //at <类型> (行,列) [通道(如果有通道的话)]
     }
     return m;
 

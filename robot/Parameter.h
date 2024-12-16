@@ -35,7 +35,7 @@ const double LINK_0_JOINT_LIMIT_POS[MAX_FREEDOM_LINK] = { 250,  // 0 升降
                                                          1100, // 5 臂俯仰
                                                          1700, // 6 筒伸缩
                                                          30,   // 7 筒旋转
-                                                         60,   // 8 腕俯仰
+                                                         90,   // 8 腕俯仰
                                                          1490, // 9 末端升降
                                                          620,  // 10 末端旋转
                                                          MAX, MAX, MAX, MAX, MAX, MAX, MAX, MAX, MAX };
@@ -48,7 +48,7 @@ const double LINK_0_JOINT_LIMIT_NEG[MAX_FREEDOM_LINK] = { 0,    // 0 升降
                                                          1070, // 6 筒伸缩
                                                          -30,  // 7 筒旋转
                                                          -100, // 8 腕俯仰
-                                                         1190, // 9 末端升降
+                                                         885, // 9 末端升降
                                                          520,  // 10 末端旋转
                                                          -MIN, -MIN, -MIN, -MIN, -MIN, -MIN, -MIN, -MIN, -MIN };
 

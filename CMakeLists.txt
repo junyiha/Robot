@@ -36,7 +36,7 @@ endif()
 add_definitions(-DROOT_PATH="${CMAKE_SOURCE_DIR}/")
 add_definitions(-DCONFIG_PATH="${CMAKE_SOURCE_DIR}/config.yaml")
 if(BUILD_GPU_FLAG)
-        add_definitions(-DVISION_MODEL_PATH="${CMAKE_SOURCE_DIR}/models/pp_liteseg_stdc1_softmax_20241021.engine")
+        add_definitions(-DVISION_MODEL_PATH="${CMAKE_SOURCE_DIR}/models/model_ocrnet-20241020.engine")
 else()
         add_definitions(-DVISION_MODEL_PATH="${CMAKE_SOURCE_DIR}/models/pp_liteseg_stdc1_softmax_20241021.onnx")
 endif(BUILD_GPU_FLAG)
@@ -44,6 +44,7 @@ endif(BUILD_GPU_FLAG)
 # for vscode
 file(COPY ${BaseDIR}/packages/opencv4.55/build/x64/vc15/bin/opencv_world455d.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/)
 file(COPY ${BaseDIR}/packages/opencv4.55/build/x64/vc15/bin/opencv_world455.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/)
+
 file(COPY ${CMAKE_PREFIX_PATH}/bin/Qt5Core.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/)
 file(COPY ${CMAKE_PREFIX_PATH}/bin/Qt5Cored.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/)
 file(COPY ${CMAKE_PREFIX_PATH}/bin/Qt5Gui.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/)
@@ -166,6 +167,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/
                                                   ${CMAKE_SOURCE_DIR}/src
                                                   ${CMAKE_SOURCE_DIR}/ThirdParty/yaml-cpp-0.8.0/include/
                                                   ${CMAKE_SOURCE_DIR}/ThirdParty/cxxopts-3.2.0/include/
+                                                  ${CMAKE_SOURCE_DIR}/ThirdParty/asio-1.30.2/include
                                                   ${Boost_INCLUDE_DIRS}/boost_1_86_0/include/boost-1_86/
 )
 
@@ -177,6 +179,7 @@ target_link_libraries(${PROJECT_NAME}   yaml-cpp::yaml-cpp
                                         Qt5::Network
                                         Qt5::Xml
                                         opencv_world455d.lib
+                                        opencv_world455.dll
                                         MvCameraControl.lib
                                         onnxruntime.dll
                                         BestfitLaserScanerSDK.lib

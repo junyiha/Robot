@@ -124,29 +124,29 @@ void VisionInterface::getDetectResult(VisionResult& vis_result)
 
 
     // 轮廓激光结果与视觉测量结果协同
-    for (int i = 0; i < 4; i++)
-    {
-        if (vis_result.stData.m_bLaserProfile[i])
-        { // 如果轮廓激光数据有效
-            if (vis_result.stData.m_bLineDistance[layer2camera[i]])
-            { // 轮廓激光对应的相机位置有效
-                if (abs(vis_result.stData.m_LineDistance[layer2camera[i]] - vis_result.stData.m_LaserGapDistance[i] + 15) < 5)
-                {
-                    vis_result.stData.m_bLineDistance[layer2camera[i]] = true;
-                    vis_result.stData.m_LineDistance[layer2camera[i]] = vis_result.stData.m_LaserGapDistance[i] - 15;
-                }
-                else
-                {
-                    // 有待于进一步观察
-                }
-            }
-            else
-            { // 相机测量数据无效
-                vis_result.stData.m_bLineDistance[layer2camera[i]] = true;
-                vis_result.stData.m_LineDistance[layer2camera[i]] = vis_result.stData.m_LaserGapDistance[i] - 15;
-            }
-        }
-    }
+    // for (int i = 0; i < 4; i++)
+    // {
+    //     if (vis_result.stData.m_bLaserProfile[i])
+    //     { // 如果轮廓激光数据有效
+    //         if (vis_result.stData.m_bLineDistance[layer2camera[i]])
+    //         { // 轮廓激光对应的相机位置有效
+    //             if (abs(vis_result.stData.m_LineDistance[layer2camera[i]] - vis_result.stData.m_LaserGapDistance[i] + 15) < 5)
+    //             {
+    //                 vis_result.stData.m_bLineDistance[layer2camera[i]] = true;
+    //                 vis_result.stData.m_LineDistance[layer2camera[i]] = vis_result.stData.m_LaserGapDistance[i] - 15;
+    //             }
+    //             else
+    //             {
+    //                 // 有待于进一步观察
+    //             }
+    //         }
+    //         else
+    //         { // 相机测量数据无效
+    //             vis_result.stData.m_bLineDistance[layer2camera[i]] = true;
+    //             vis_result.stData.m_LineDistance[layer2camera[i]] = vis_result.stData.m_LaserGapDistance[i] - 15;
+    //         }
+    //     }
+    // }
 }
 
 void VisionInterface::parser_result(std::string paserType, stMeasureData* stm)

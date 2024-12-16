@@ -8,6 +8,12 @@ MainWindow::MainWindow(QWidget* parent)
     InitLog();
     InitUiForm();
 
+
+#ifdef STATE_MACHINE_TEST
+#else
+    InitVision();
+#endif
+
     m_Com = ComInterface::getInstance();
     m_Com->start();
 
@@ -17,11 +23,6 @@ MainWindow::MainWindow(QWidget* parent)
     m_Task = new CTask(m_Com, m_Robot, m_VisionInterface);
     m_Task->start();
     m_config_ptr = std::make_unique<Config::ConfigManager>();
-
-#ifdef STATE_MACHINE_TEST
-#else
-    InitVision();
-#endif
 
     InitSlotUpdateUIAllTimer();
     InitSlotUpdateAllDevicesTimer();
@@ -207,8 +208,8 @@ void MainWindow::connectSlotFunctions()
     connect(ui->btn_laser_lower_enable, &QPushButton::clicked, this, &MainWindow::slots_btn_laser_lower_enable_clicked, Qt::UniqueConnection);
     // 参数配置文件
     connect(ui->btn_load_configuration, &QPushButton::clicked, this, &MainWindow::slots_btn_load_configuration_clicked, Qt::UniqueConnection);
-    connect(ui->btn_save_home_position, &QPushButton::clicked, this, &MainWindow::slots_btn_save_home_position_clicked, Qt::UniqueConnection);
-    connect(ui->btn_save_prepare_position, &QPushButton::clicked, this, &MainWindow::slots_btn_save_prepare_position_clicked, Qt::UniqueConnection);
+    connect(ui->btn_save_home_position, &QPushButton::clicked, this, &MainWindow::slots_btn_save_prepare_position_clicked, Qt::UniqueConnection);
+    connect(ui->btn_save_prepare_position, &QPushButton::clicked, this, &MainWindow::slots_btn_save_lift_position_clicked, Qt::UniqueConnection);
 
     connect(ui->btn_joint_test, &QPushButton::clicked, this, &MainWindow::slots_btn_joint_test_clicked, Qt::UniqueConnection);
     connect(ui->btn_move_zero, &QPushButton::clicked, this, &MainWindow::slots_btn_move_zero_clicked, Qt::UniqueConnection);
@@ -360,7 +361,7 @@ void MainWindow::on_btn_lift_2clicked()
 void MainWindow::on_btn_leveling_clicked()
 {
 
-    bool isReadyLeveling = m_Task->checkSubState(ESubState::eReadyToParallel);
+    bool isReadyLeveling = m_Task->checkSubState(ESubState::eReady);
     // 调平
     setButtonIndex();
     if (isReadyLeveling)
@@ -1672,7 +1673,7 @@ void MainWindow::slots_btn_load_configuration_clicked()
     }
 }
 
-void MainWindow::slots_btn_save_home_position_clicked()
+void MainWindow::slots_btn_save_prepare_position_clicked()
 {
     bool res{ true };
     auto status = m_Robot->getJointGroupSta();
@@ -1682,7 +1683,7 @@ void MainWindow::slots_btn_save_home_position_clicked()
         data.push_back(i.Position);
     }
 
-    res = m_config_ptr->UpdateValue("home_point", data);
+    res = m_config_ptr->UpdateValue("prepare_position", data);
     if (res)
     {
         ui->btn_save_home_position->setStyleSheet("background-color: rgb(0, 255, 0);"
@@ -1699,7 +1700,7 @@ void MainWindow::slots_btn_save_home_position_clicked()
     }
 }
 
-void MainWindow::slots_btn_save_prepare_position_clicked()
+void MainWindow::slots_btn_save_lift_position_clicked()
 {
     bool res{ true };
     auto status = m_Robot->getJointGroupSta();
@@ -1716,7 +1717,7 @@ void MainWindow::slots_btn_save_prepare_position_clicked()
         );
         return;
     }
-    res = m_config_ptr->UpdateValue("prepare_point", data);
+    res = m_config_ptr->UpdateValue("lift_position", data);
 
     if (res)
     {

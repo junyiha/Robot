@@ -147,7 +147,7 @@ void CTask::Manual()
 #ifdef TEST_TASK_STATEMACHINE_
 #else
         std::vector<double> TEMP_LINK_0_JOINT_MAX_VEL_FOR_SET_POINT(MAX_FREEDOM_LINK, 0.0);
-        TEMP_LINK_0_JOINT_MAX_VEL_FOR_SET_POINT = { 3, 3, 3, 1, 0.3, 10, 5, 0.5, 2, 6, 3 };
+        TEMP_LINK_0_JOINT_MAX_VEL_FOR_SET_POINT = { 3, 3, 3, 1, 0.3, 10, 5, 0.5, 2, 2, 3 };
         m_Robot->setJointGroupMoveAbs(GP::Lift_Position.data(), TEMP_LINK_0_JOINT_MAX_VEL_FOR_SET_POINT.data());
 #endif
     }
@@ -277,6 +277,7 @@ int CTask::CheckParallelState(std::vector<double> laserDistance, int max_deviati
     // 计算激光距离最大偏差
     auto max_res = std::max_element(laserDistance.begin(), laserDistance.end());
     auto min_res = std::min_element(laserDistance.begin(), laserDistance.end());
+    auto laser_average = std::accumulate(laserDistance.begin(), laserDistance.end(), 0) / laserDistance.size();
 
     if (*max_res - *min_res > max_deviation && *min_res / *max_res < 0.5)
     {
@@ -284,7 +285,9 @@ int CTask::CheckParallelState(std::vector<double> laserDistance, int max_deviati
         return -1;
     }
     // 判断是否完成调平
-    if (*max_res - *min_res < min_deviation && *min_res < lift_distance) // 最大偏差小于阈值
+    if (std::fabs(*max_res - laser_average) < min_deviation &&
+        std::fabs(*min_res - laser_average) < min_deviation &&
+        *min_res < lift_distance) // 最大偏差小于阈值
         return 1;
     else
         return 0;

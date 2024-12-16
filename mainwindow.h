@@ -165,8 +165,8 @@ private slots:
     void slots_on_btn_putter_backward_released();
     // 参数配置文件
     void slots_btn_load_configuration_clicked();
-    void slots_btn_save_home_position_clicked();
     void slots_btn_save_prepare_position_clicked();
+    void slots_btn_save_lift_position_clicked();
     void slots_on_line_results_dis_clicked();
     void clearFlowButtonStyle();
 
