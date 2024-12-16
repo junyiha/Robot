@@ -166,7 +166,6 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/
                                                   ${CMAKE_SOURCE_DIR}/src
                                                   ${CMAKE_SOURCE_DIR}/ThirdParty/yaml-cpp-0.8.0/include/
                                                   ${CMAKE_SOURCE_DIR}/ThirdParty/cxxopts-3.2.0/include/
-                                                  ${CMAKE_SOURCE_DIR}/ThirdParty/asio-1.30.2/include
                                                   ${Boost_INCLUDE_DIRS}/boost_1_86_0/include/boost-1_86/
 )
 
