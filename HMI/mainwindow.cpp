@@ -938,25 +938,25 @@ void MainWindow::updateCameraData()
                         continue;
                     }
                 }
-//                // 画面方向矫正
-//                if (item.first.find("LineCam") != std::string::npos)
-//                {
-//                    if (number == 5)
-//                    {
-//                        image_correction(inputImage, 3);
-//                    }
-//                    if (number == 6)
-//                    {
-//                        image_correction(inputImage, 1);
-//                    }
-//                    if (number == 2 || number == 4)
-//                    {
-//                        image_correction(inputImage, 2);
-//                    }
-//
-//                }
+                //                // 画面方向矫正
+                //                if (item.first.find("LineCam") != std::string::npos)
+                //                {
+                //                    if (number == 5)
+                //                    {
+                //                        image_correction(inputImage, 3);
+                //                    }
+                //                    if (number == 6)
+                //                    {
+                //                        image_correction(inputImage, 1);
+                //                    }
+                //                    if (number == 2 || number == 4)
+                //                    {
+                //                        image_correction(inputImage, 2);
+                //                    }
+                //
+                //                }
                 cv::Mat temp = inputImage;
-//                cv::resize(inputImage, temp, imgSize);
+                //                cv::resize(inputImage, temp, imgSize);
                 QImage img = QImage((uchar*)temp.data, temp.cols, temp.rows, QImage::Format_RGB888);
                 QLabel* dis_label = findChild<QLabel*>(prefix + QString::number(number - 1));
                 dis_label->setPixmap(QPixmap::fromImage(img));

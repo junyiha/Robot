@@ -19,7 +19,7 @@
 #include <clocale>
 #include <Eigen/Eigen>
 
-#include "mainwindow.h"
+#include "HMI/SceneSelectionWindow.hpp"
 #include "vision/VisionInterface.h"
 #include "com/LaserDistanceBojke.h"
 #include "cxxopts.hpp"
@@ -169,6 +169,16 @@ int TestConfigManager(int argc, char* argv[])
     return 0;
 }
 
+int RunSceneSelect(int argc, char* argv[])
+{
+    QApplication app(argc, argv);
+
+    APP::SceneSelectionWindow scene_selection_window;
+    scene_selection_window.show();
+
+    return app.exec();
+}
+
 int main(int argc, char* argv[])
 {
     std::map<std::string, std::function<int(int, char**)>> FunctionMap =
@@ -178,7 +188,8 @@ int main(int argc, char* argv[])
         {"laser_demo", laserDemo},
         {"test_com", TestCom},
         {"TestTask", TestTask},
-        {"TestConfigManager", TestConfigManager}
+        {"TestConfigManager", TestConfigManager},
+        {"RunSceneSelect", RunSceneSelect}
     };
     cxxopts::Options options("Robot", "zbrobot's project");
     options.add_options()("m,mode", "mode", cxxopts::value<std::string>()->default_value("robot"));
