@@ -139,7 +139,7 @@ void CTask::Manual()
 #else
         std::vector<double> TEMP_LINK_0_JOINT_MAX_VEL_FOR_READY_POINT(MAX_FREEDOM_LINK, 0.0);
         TEMP_LINK_0_JOINT_MAX_VEL_FOR_READY_POINT = { 3, 3, 3, 1, 0.3, 10, 5, 0.5, 4, 1, 3 };
-        m_Robot->setJointGroupMoveAbs(GP::Prepare_Position.data(), TEMP_LINK_0_JOINT_MAX_VEL_FOR_READY_POINT.data());
+        m_Robot->setJointGroupMoveAbs(GP::Position_Map[std::make_pair(GP::Working_Scenario, GP::PositionType::Prepare)].value.data(), TEMP_LINK_0_JOINT_MAX_VEL_FOR_READY_POINT.data());
 #endif
     }
     else if (m_manualOperator.Ready == 2)
@@ -148,7 +148,7 @@ void CTask::Manual()
 #else
         std::vector<double> TEMP_LINK_0_JOINT_MAX_VEL_FOR_SET_POINT(MAX_FREEDOM_LINK, 0.0);
         TEMP_LINK_0_JOINT_MAX_VEL_FOR_SET_POINT = { 3, 3, 3, 1, 0.3, 10, 5, 0.5, 2, 2, 3 };
-        m_Robot->setJointGroupMoveAbs(GP::Lift_Position.data(), TEMP_LINK_0_JOINT_MAX_VEL_FOR_SET_POINT.data());
+        m_Robot->setJointGroupMoveAbs(GP::Position_Map[std::make_pair(GP::Working_Scenario, GP::PositionType::Lift)].value.data(), TEMP_LINK_0_JOINT_MAX_VEL_FOR_SET_POINT.data());
 #endif
     }
     else if (m_manualOperator.bLinkMoveFlag)

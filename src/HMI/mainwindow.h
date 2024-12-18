@@ -80,6 +80,7 @@ private:
     void updateLaserData();//更新点激光数值
     void updateAxisStatus();//更新单轴连接状态
     void updateConnectSta();//更新硬件连接状态
+    void updateWorkdScenario();
     void updateTaskStateMachineStatus();
     void slotUpdateImagesAndOtherTimeConsuming();
 

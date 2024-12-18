@@ -27,10 +27,6 @@ namespace GP
 
 	double Line_Deviation_Threshold{ 0.0 };
 
-	std::vector<double> Lift_Position(DOF, 0.0);
-
-	std::vector<double> Prepare_Position(DOF, 0.0);
-
 	std::vector<double> End_Vel_Limit(6, 0.0);
 	std::vector<double> End_Vel_Position(6, 0.0);
 

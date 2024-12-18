@@ -647,6 +647,8 @@ void MainWindow::slotUpdateUIAll()
 
     // 8.0 更新指令流转状态
     updateTaskStateMachineStatus();
+
+    updateWorkdScenario();
 }
 
 void MainWindow::updataDeviceConnectState()
@@ -1506,7 +1508,7 @@ void MainWindow::on_btn_add_nail_pressed()
     {
         vel_Home[i] = LINK_0_JOINT_MAX_VEL[i] * 0.1;
     }
-    m_Robot->setJointGroupMoveAbs(GP::Lift_Position.data(), vel_Home);
+    m_Robot->setJointGroupMoveAbs(GP::Position_Map[std::make_pair(GP::Working_Scenario, GP::PositionType::Lift)].value.data(), vel_Home);
 
 }
 
@@ -1524,7 +1526,7 @@ void MainWindow::on_btn_preparation_pos_pressed()
     {
         vel_pre[i] = LINK_0_JOINT_MAX_VEL[i] * 0.1;
     }
-    m_Robot->setJointGroupMoveAbs(GP::Prepare_Position.data(), vel_pre);
+    m_Robot->setJointGroupMoveAbs(GP::Position_Map[std::make_pair(GP::Working_Scenario, GP::PositionType::Prepare)].value.data(), vel_pre);
 }
 
 void MainWindow::on_btn_preparation_pos_released()
@@ -1816,11 +1818,31 @@ void MainWindow::slots_btn_laser_lower_enable_clicked()
 
 void MainWindow::slotUpdateImagesAndOtherTimeConsuming()
 {
-
     //1.更新相机画面数据
     updateCameraData();
 
     //2.更新硬件连接状态，并通过状态更新按钮颜色
     updataDeviceConnectState();
+}
 
+void MainWindow::updateWorkdScenario()
+{
+    switch (GP::Working_Scenario)
+    {
+    case GP::WorkingScenario::Top:
+    {
+        ui->btn_working_scenario->setText(QString::fromLocal8Bit("顶板场景"));
+        break;
+    }
+    case GP::WorkingScenario::Cant:
+    {
+        ui->btn_working_scenario->setText(QString::fromLocal8Bit("上斜板场景"));
+        break;
+    }
+    case GP::WorkingScenario::Side:
+    {
+        ui->btn_working_scenario->setText(QString::fromLocal8Bit("侧板场景"));
+        break;
+    }
+    }
 }
