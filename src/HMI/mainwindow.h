@@ -65,7 +65,6 @@ private:
     void closeEvent(QCloseEvent* event);
     void connectSlotFunctions();
 
-
 private:
     bool getLineStatus();
     void setLineStatus(bool lineStatus);
@@ -81,6 +80,7 @@ private:
     void updateAxisStatus();//更新单轴连接状态
     void updateConnectSta();//更新硬件连接状态
     void updateWorkdScenario();
+    void updateConfigurationView();
     void updateTaskStateMachineStatus();
     void slotUpdateImagesAndOtherTimeConsuming();
 

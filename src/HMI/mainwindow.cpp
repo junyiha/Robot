@@ -649,6 +649,8 @@ void MainWindow::slotUpdateUIAll()
     updateTaskStateMachineStatus();
 
     updateWorkdScenario();
+
+    updateConfigurationView();
 }
 
 void MainWindow::updataDeviceConnectState()
@@ -1275,6 +1277,52 @@ void MainWindow::updateTaskStateMachineStatus()
     ui->label_state_transition->setText(QString::fromLocal8Bit(currentState.c_str()));
 }
 
+void MainWindow::updateWorkdScenario()
+{
+    switch (GP::Working_Scenario)
+    {
+    case GP::WorkingScenario::Top:
+    {
+        ui->btn_working_scenario->setText(QString::fromLocal8Bit("顶板场景"));
+        break;
+    }
+    case GP::WorkingScenario::Cant:
+    {
+        ui->btn_working_scenario->setText(QString::fromLocal8Bit("上斜板场景"));
+        break;
+    }
+    case GP::WorkingScenario::Side:
+    {
+        ui->btn_working_scenario->setText(QString::fromLocal8Bit("侧板场景"));
+        break;
+    }
+    }
+}
+
+void MainWindow::updateConfigurationView()
+{
+    auto pos_vec = GP::Position_Map[std::make_pair(GP::Working_Scenario, GP::PositionType::Prepare)].value;
+    std::string btn_name{ "label_prepare_position_joint_" };
+
+    for (int i = 0; i < RobotConfigMap.size(); i++)
+    {
+        std::string temp_name = btn_name + std::to_string(i);
+        int temp_val = pos_vec.at(i) * 1000;
+
+        findChild<QLabel*>(QString(temp_name.data()))->setText(QString::number(temp_val / 1000.0));
+    }
+
+    pos_vec = GP::Position_Map[std::make_pair(GP::Working_Scenario, GP::PositionType::Lift)].value;
+    btn_name = "label_lift_position_joint_";
+    for (int i = 0; i < RobotConfigMap.size(); i++)
+    {
+        std::string temp_name = btn_name + std::to_string(i);
+        int temp_val = pos_vec.at(i) * 1000;
+
+        findChild<QLabel*>(QString(temp_name.data()))->setText(QString::number(temp_val / 1000.0));
+    }
+}
+
 void MainWindow::on_btn_line_detect_clicked()
 {
     unsigned pageIndex = ui->stackedWidget_view->currentIndex();
@@ -1823,26 +1871,4 @@ void MainWindow::slotUpdateImagesAndOtherTimeConsuming()
 
     //2.更新硬件连接状态，并通过状态更新按钮颜色
     updataDeviceConnectState();
-}
-
-void MainWindow::updateWorkdScenario()
-{
-    switch (GP::Working_Scenario)
-    {
-    case GP::WorkingScenario::Top:
-    {
-        ui->btn_working_scenario->setText(QString::fromLocal8Bit("顶板场景"));
-        break;
-    }
-    case GP::WorkingScenario::Cant:
-    {
-        ui->btn_working_scenario->setText(QString::fromLocal8Bit("上斜板场景"));
-        break;
-    }
-    case GP::WorkingScenario::Side:
-    {
-        ui->btn_working_scenario->setText(QString::fromLocal8Bit("侧板场景"));
-        break;
-    }
-    }
 }
