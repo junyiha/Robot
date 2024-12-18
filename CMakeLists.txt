@@ -141,21 +141,23 @@ find_package(Qt5 COMPONENTS
 qt5_add_resources(${QRC_SOURCE_FILE})
 
 aux_source_directory(${CMAKE_SOURCE_DIR}/ src)
-aux_source_directory(${CMAKE_SOURCE_DIR}/com src)
-aux_source_directory(${CMAKE_SOURCE_DIR}/robot src)
-aux_source_directory(${CMAKE_SOURCE_DIR}/Task src)
-aux_source_directory(${CMAKE_SOURCE_DIR}/vision src)
-aux_source_directory(${CMAKE_SOURCE_DIR}/HMI src)
+aux_source_directory(${CMAKE_SOURCE_DIR}/src/com src)
+aux_source_directory(${CMAKE_SOURCE_DIR}/src/robot src)
+aux_source_directory(${CMAKE_SOURCE_DIR}/src/Task src)
+aux_source_directory(${CMAKE_SOURCE_DIR}/src/vision src)
+aux_source_directory(${CMAKE_SOURCE_DIR}/src/HMI src)
+aux_source_directory(${CMAKE_SOURCE_DIR}/src/test src)
 aux_source_directory(${CMAKE_SOURCE_DIR}/src/Network src)
 
 add_executable(${PROJECT_NAME} ${src} ${QRC_SOURCE_FILE})
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/
-                                                  ${CMAKE_SOURCE_DIR}/com
-                                                  ${CMAKE_SOURCE_DIR}/robot
-                                                  ${CMAKE_SOURCE_DIR}/Task
-                                                  ${CMAKE_SOURCE_DIR}/vision
-                                                  ${CMAKE_SOURCE_DIR}/HMI
+                                                  ${CMAKE_SOURCE_DIR}/src/com
+                                                  ${CMAKE_SOURCE_DIR}/src/robot
+                                                  ${CMAKE_SOURCE_DIR}/src/Task
+                                                  ${CMAKE_SOURCE_DIR}/src/vision
+                                                  ${CMAKE_SOURCE_DIR}/src/HMI
+                                                  ${CMAKE_SOURCE_DIR}/src/test
                                                   ${CMAKE_SOURCE_DIR}/src
                                                   ${CMAKE_SOURCE_DIR}/ThirdParty/yaml-cpp-0.8.0/include/
                                                   ${CMAKE_SOURCE_DIR}/ThirdParty/cxxopts-3.2.0/include/
