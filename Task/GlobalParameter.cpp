@@ -2,6 +2,9 @@
 
 namespace GP
 {
+	WorkingScenario Working_Scenario{ WorkingScenario::Top };
+	PositionMap Position_Map{};
+
 	double velLine{ 0.0 };
 	double velRotate{ 0.0 };
 

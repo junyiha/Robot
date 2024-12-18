@@ -10,6 +10,7 @@
 #include <vector>
 #include <fstream>
 #include <iostream>
+#include <map>
 #include "spdlog/spdlog.h"
 #include "yaml-cpp/yaml.h"
 #include "GVL.h"
@@ -33,6 +34,9 @@ namespace Config
 		 */
 		void ParseConfiguration();
 
+		void ParseConfigurationRW();
+		void ParseConfigurationRO();
+
 		bool WriteToFile();
 
 	public:
@@ -52,8 +56,10 @@ namespace Config
 		bool UpdateValue(const std::string key, const std::vector<double> value);
 
 	private:
-		YAML::Node m_root;
-		std::string m_path{ CONFIG_PATH };
+		YAML::Node m_root_rw;
+		YAML::Node m_root_ro;
+		std::string m_path_rw{ ROOT_PATH };
+		std::string m_path_ro{ ROOT_PATH };
 		std::shared_ptr<spdlog::logger> log;
 	};
 }

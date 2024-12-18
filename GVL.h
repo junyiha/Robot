@@ -2,7 +2,7 @@
 #define GVL_H
 #include <string>
 #include "robot/Parameter.h"
-#include "GlobalParameter.hpp"
+#include "Task/GlobalParameter.hpp"
 
 const double DistanceB = 80; // 2024年5月17日20点20分 修改，原始为80
 const double DistanceC = 30;
