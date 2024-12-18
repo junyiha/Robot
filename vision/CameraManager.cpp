@@ -136,35 +136,44 @@ cv::Mat CameraManager::getImage(std::string camera_name)
 }
 
 
-void CameraManager::getImageAll(std::string camType) {
+void CameraManager::getImageAll(std::string camType)
+{
     // ��ȡ�������ͼ��
     this->dataMutex.lock();
-    if(this->cameraImages.size()>0){
+    if (this->cameraImages.size() > 0)
+    {
         this->cameraImages.clear();
     }
 
-    for (auto &camera : this->cameraList) {
+    for (auto& camera : this->cameraList)
+    {
         cv::Mat image = this->cameraList[camera.first]->getFrame();
 
-        if(camType =="Line"){ // �˳���λ���
-            if(camera.first.find("HoleCam") != std::string::npos){
+        if (camType == "Line")
+        { // �˳���λ���
+            if (camera.first.find("HoleCam") != std::string::npos)
+            {
                 continue;
             }
         }
 
-        if(camType =="Hole"){// �˳���λ���
-            if(camera.first.find("LineCam") != std::string::npos){
+        if (camType == "Hole")
+        {// �˳���λ���
+            if (camera.first.find("LineCam") != std::string::npos)
+            {
                 continue;
             }
         }
 
-        if(!image.empty()){
+        if (!image.empty())
+        {
             this->cameraImages[camera.first] = image;
         }
-        else{
+        else
+        {
             image = cv::Mat();
-//            this->cameraImages[camera.first] = image;
-            this->logger->error("********************get image from camera {} failed**************************", camera.first);
+            //            this->cameraImages[camera.first] = image;
+                        // this->logger->error("********************get image from camera {} failed**************************", camera.first);
         }
     }
     this->dataMutex.unlock();
@@ -213,8 +222,9 @@ void CameraManager::getImageAllNonResize(std::string camType)
                 continue;
             }
         }
-        
-        if(!image.empty()){
+
+        if (!image.empty())
+        {
             this->cameraImages[camera.first] = image;
         }
         else
@@ -243,6 +253,36 @@ std::map<std::string, cv::Mat> CameraManager::getCameraImages(std::string camTyp
     if (this->cameraImages.size() > 0)
     {
         for (auto& item : this->cameraImages)
+        {
+            if (camType == "Line")
+            { // �˳���λ���
+                if (item.first.find("HoleCam") != std::string::npos)
+                {
+                    continue;
+                }
+            }
+
+            if (camType == "Hole")
+            {// �˳���λ���
+                if (item.first.find("LineCam") != std::string::npos)
+                {
+                    continue;
+                }
+            }
+            cameraImages[item.first] = item.second;
+        }
+    }
+    this->dataMutex.unlock();
+    return cameraImages;
+}
+
+std::map<std::string, cv::Mat> CameraManager::getCameraImagesResized(std::string camType)
+{
+    std::map<std::string, cv::Mat> cameraImages;
+    this->dataMutex.lock();
+    if (this->cameraImagesResize.size() > 0)
+    {
+        for (auto& item : this->cameraImagesResize)
         {
             if (camType == "Line")
             { // �˳���λ���
@@ -396,9 +436,9 @@ void CameraManager::getImageAllByResizeAndCorrect(std::string camType)
 
     //
     this->dataMutex.lock();
-    if (this->cameraImages.size() > 0)
+    if (this->cameraImagesResize.size() > 0)
     {
-        this->cameraImages.clear();
+        this->cameraImagesResize.clear();
     }
 
     for (auto& camera : this->cameraList)
@@ -444,18 +484,15 @@ void CameraManager::getImageAllByResizeAndCorrect(std::string camType)
             {
                 image_correction(imgResize, 2);
             }
-            this->cameraImages[camera.first] = imgResize;
+            this->cameraImagesResize[camera.first] = imgResize;
         }
         else
         {
             image = cv::Mat();
-            //            this->cameraImages[camera.first] = image;
+            this->cameraImagesResize[camera.first] = image;
         }
     }
     this->dataMutex.unlock();
-
-
-
 }
 
 std::vector<bool> CameraManager::getCameraConnectStatus()

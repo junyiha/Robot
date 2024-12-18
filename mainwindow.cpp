@@ -8,7 +8,6 @@ MainWindow::MainWindow(QWidget* parent)
     InitLog();
     InitUiForm();
 
-
 #ifdef STATE_MACHINE_TEST
 #else
     InitVision();
@@ -654,7 +653,7 @@ void MainWindow::updataDeviceConnectState()
 {
     QString labelPrefix = "label_camera_state";
     // 相机连接状态显示
-    std::vector<bool> camera_open_sta = m_VisionInterface->camera_controls->getCameraOpenedInfo();
+    std::vector<bool> camera_open_sta = m_VisionInterface->camera_controls->getCameraConnectStatus();
     for (int i = 0; i < camera_open_sta.size(); i++)
     {
         if (camera_open_sta[i])
@@ -669,9 +668,10 @@ void MainWindow::updataDeviceConnectState()
         }
     }
 
+
     // 更新轮廓激光的连接状态
     QString laser_label = "label_laser_state_";
-    std::vector<bool> laser_open_sta = m_VisionInterface->laser_controls->getLayserScannerConnectStates();
+    std::vector<bool> laser_open_sta = m_VisionInterface->laser_controls->getLaserConnectStates();
     for (int i = 0; i < laser_open_sta.size(); i++)
     {
         if (laser_open_sta[i])
@@ -911,7 +911,7 @@ void MainWindow::updateCameraData()
         }
 
         m_VisionInterface->camera_controls->getImageAllByResizeAndCorrect();
-        std::map<std::string, cv::Mat> cameraData = m_VisionInterface->camera_controls->getCameraImages();
+        std::map<std::string, cv::Mat> cameraData = m_VisionInterface->camera_controls->getCameraImagesResized();
         if (cameraData.size() > 0)
         {
             for (const auto& item : cameraData)
@@ -938,25 +938,25 @@ void MainWindow::updateCameraData()
                         continue;
                     }
                 }
-                // 画面方向矫正
-                if (item.first.find("LineCam") != std::string::npos)
-                {
-                    if (number == 5)
-                    {
-                        image_correction(inputImage, 3);
-                    }
-                    if (number == 6)
-                    {
-                        image_correction(inputImage, 1);
-                    }
-                    if (number == 2 || number == 4)
-                    {
-                        image_correction(inputImage, 2);
-                    }
-
-                }
+//                // 画面方向矫正
+//                if (item.first.find("LineCam") != std::string::npos)
+//                {
+//                    if (number == 5)
+//                    {
+//                        image_correction(inputImage, 3);
+//                    }
+//                    if (number == 6)
+//                    {
+//                        image_correction(inputImage, 1);
+//                    }
+//                    if (number == 2 || number == 4)
+//                    {
+//                        image_correction(inputImage, 2);
+//                    }
+//
+//                }
                 cv::Mat temp = inputImage;
-                //                cv::resize(inputImage, temp, imgSize);
+//                cv::resize(inputImage, temp, imgSize);
                 QImage img = QImage((uchar*)temp.data, temp.cols, temp.rows, QImage::Format_RGB888);
                 QLabel* dis_label = findChild<QLabel*>(prefix + QString::number(number - 1));
                 dis_label->setPixmap(QPixmap::fromImage(img));
@@ -1818,7 +1818,6 @@ void MainWindow::slotUpdateImagesAndOtherTimeConsuming()
 {
 
     //1.更新相机画面数据
-
     updateCameraData();
 
     //2.更新硬件连接状态，并通过状态更新按钮颜色

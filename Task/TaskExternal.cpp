@@ -341,14 +341,14 @@ void CTask::motionInParallelExecutionCommand()
             QVector<double> tar_position = m_Robot->getTargetPose(Dev_RT[0]);
             double* tar_pos = tar_position.data();
 
-            log->info("{} tar_pos:{},{},{},{},{},{}", __LINE__, tar_pos[0], tar_pos[1], tar_pos[2],
-                      tar_pos[3] * 57.3, tar_pos[4] * 57.3, tar_pos[5] * 57.3);
+            // log->info("{} tar_pos:{},{},{},{},{},{}", __LINE__, tar_pos[0], tar_pos[1], tar_pos[2],
+            //           tar_pos[3] * 57.3, tar_pos[4] * 57.3, tar_pos[5] * 57.3);
 
-            stLinkStatus linkstatus = m_Robot->getLinkSta();
-            log->info("m_Robot->setLinkMoveAbs(tar_pos_differ:{},{},{},{},{},{}",
-                      tar_pos[0] - linkstatus.stLinkActKin.LinkPos[0], tar_pos[1] - linkstatus.stLinkActKin.LinkPos[1],
-                      tar_pos[2] - linkstatus.stLinkActKin.LinkPos[2], tar_pos[3] * 57.3 - linkstatus.stLinkActKin.LinkPos[3] * 57.3,
-                      tar_pos[4] * 57.3 - linkstatus.stLinkActKin.LinkPos[4] * 57.3, tar_pos[5] * 57.3 - linkstatus.stLinkActKin.LinkPos[5] * 57.3);
+            // stLinkStatus linkstatus = m_Robot->getLinkSta();
+            // log->info("m_Robot->setLinkMoveAbs(tar_pos_differ:{},{},{},{},{},{}",
+            //           tar_pos[0] - linkstatus.stLinkActKin.LinkPos[0], tar_pos[1] - linkstatus.stLinkActKin.LinkPos[1],
+            //           tar_pos[2] - linkstatus.stLinkActKin.LinkPos[2], tar_pos[3] * 57.3 - linkstatus.stLinkActKin.LinkPos[3] * 57.3,
+            //           tar_pos[4] * 57.3 - linkstatus.stLinkActKin.LinkPos[4] * 57.3, tar_pos[5] * 57.3 - linkstatus.stLinkActKin.LinkPos[5] * 57.3);
             m_Robot->setLinkMoveAbs(tar_pos, GP::End_Vel_Limit.data());
             break;
         }

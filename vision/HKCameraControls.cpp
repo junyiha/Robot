@@ -263,7 +263,7 @@ void HKCameraControls::run()
                 }
             }
         }
-        QThread::msleep(100);
+        QThread::msleep(200);
     }
 
     delete[] pData;

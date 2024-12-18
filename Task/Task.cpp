@@ -207,8 +207,8 @@ void CTask::Manual()
     }
     case stManualOperator::SecondQuit:
     {
-        double second_push_point = 100.0; // 底部升降位置
-        m_Robot->setJointMoveAbs(0, second_push_point, LINK_0_JOINT_MAX_VEL[0]);
+        m_Robot->setJointMoveAbs(0, 100.0, LINK_0_JOINT_MAX_VEL[0]);  // 底部升降
+        m_Robot->setJointMoveAbs(9, 1000.0, 2);  // 工具升降
         break;
     }
     case stManualOperator::Parallel:

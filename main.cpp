@@ -81,13 +81,63 @@ int RunRobot(int argc, char* argv[])
     return a.exec();
 }
 
+int TestCom(int argc, char* argv[])
+{
+    auto  m_Com = ComInterface::getInstance();
+    m_Com->start();
+    while (true)
+    {
+        std::string cmd;
+        std::cerr << "input command: \n";
+        std::cin >> cmd;
+        if (cmd == "open")
+        {
+            m_Com->SetLight(1, true);
+        }
+        else if (cmd == "close")
+        {
+            m_Com->SetLight(1, false);
+        }
+        else 
+        {
+            std::cerr << "invalid command: " << cmd << "\n";
+        }
+    }
+    // m_Com->SetLight(2, true);
+    // m_Com->SetLight(3, true);
+    return 0;
+}
+
+int TestTask(int argc, char* argv[])
+{
+    struct Data_t 
+    {
+        std::vector<double> m_LineDistance;
+        std::vector<bool> m_bLineDistance;
+    };
+    Data_t m_stMeasuredata;
+    m_stMeasuredata.m_LineDistance = {14.118399342577506,15.141133164344948,14.899653504249896,15.315110857435997,16.001300774736606,12.97208101039237};
+    m_stMeasuredata.m_bLineDistance = std::vector<bool>(6, true);
+    double line_dis_1 = ((m_stMeasuredata.m_LineDistance[0] - 15) * m_stMeasuredata.m_bLineDistance[0] - (m_stMeasuredata.m_LineDistance[1] - 15) * m_stMeasuredata.m_bLineDistance[1]) / (static_cast<int>(m_stMeasuredata.m_bLineDistance[0]) + static_cast<int>(m_stMeasuredata.m_bLineDistance[1]));
+    double line_dis_2 = ((m_stMeasuredata.m_LineDistance[2] - 15) * m_stMeasuredata.m_bLineDistance[2] - (m_stMeasuredata.m_LineDistance[3] - 15) * m_stMeasuredata.m_bLineDistance[3]) / (static_cast<int>(m_stMeasuredata.m_bLineDistance[2]) + static_cast<int>(m_stMeasuredata.m_bLineDistance[3]));
+    double line_dis_3 = ((m_stMeasuredata.m_LineDistance[4] - 15) * m_stMeasuredata.m_bLineDistance[4] - (m_stMeasuredata.m_LineDistance[5] - 15) * m_stMeasuredata.m_bLineDistance[5]) / (static_cast<int>(m_stMeasuredata.m_bLineDistance[4]) + static_cast<int>(m_stMeasuredata.m_bLineDistance[5]));
+
+    std::cerr << "line_dis_1: " << line_dis_1 << "\n"
+              << "line_dis_2: " << line_dis_2 << "\n"
+              << "line_dis_3: " << line_dis_3 << "\n";
+
+    return 0;
+}
+
 int main(int argc, char* argv[])
 {
     std::map<std::string, std::function<int(int, char**)>> FunctionMap =
     {
         {"robot", RunRobot},
         {"line_demo", line_detect_demo},
-        {"laser_demo", laserDemo}
+        {"laser_demo", laserDemo},
+        {"test_com", TestCom},
+        {"TestTask", TestTask}
     };
     cxxopts::Options options("Robot", "zbrobot's project");
     options.add_options()("m,mode", "mode", cxxopts::value<std::string>()->default_value("robot"));

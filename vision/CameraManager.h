@@ -23,6 +23,7 @@ public:
     std::map<std::string, std::string> camera_info;
     std::map<std::string, HKCameraControls*> cameraList;
     std::map<std::string, cv::Mat> cameraImages;
+    std::map<std::string, cv::Mat> cameraImagesResize;
     std::map<std::string, std::string> serial2names;
     std::map<std::string, MV_CC_DEVICE_INFO> cameraInfoMap;
     std::map<std::string, int> imageCorrectMap;
@@ -63,6 +64,7 @@ public:
 
 
     std::map<std::string, cv::Mat> getCameraImages(std::string camType = "all"); // 获取所有相机图像
+    std::map<std::string, cv::Mat> CameraManager::getCameraImagesResized(std::string camType = "all");
     void getImageAllNonResize(std::string camType = "all"); 
 
     void closeAllCameraThread();

@@ -54,7 +54,7 @@ Min_Deviation_In_FitBoard:
   value: 6.0
 Line_Deviation_Threshold:
   brief: 边线调整允许偏差
-  value: 2.0
+  value: 1.0
 line2: "#############################################################"
 prepare_position:
   brief: 准备位置(装板)
