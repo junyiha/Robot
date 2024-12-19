@@ -40,6 +40,13 @@ void MainWindow::InitUiForm()
     ui->btn_laser_lower_enable->setStyleSheet("background-color: rgb(0, 255, 0);"
                                               "border: 2px solid blue;"
                                               "border-radius: 10px;");
+
+    for (int i = 0; i < RobotConfigMap.size(); i++)
+    {
+        findChild<QLabel*>(QString("label_joint_name_") + QString::number(i))->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+        findChild<QLabel*>(QString("label_prepare_position_joint_") + QString::number(i))->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+        findChild<QLabel*>(QString("label_lift_position_joint_") + QString::number(i))->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+    }
 }
 
 void MainWindow::InitVision()
