@@ -7,5 +7,5 @@ logs
 images
 cache
 out
-models
+# models
 package/*
