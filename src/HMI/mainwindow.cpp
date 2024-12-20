@@ -622,9 +622,6 @@ void MainWindow::slotUpdateUIAll()
     // 4.0 更新轴状态信息
     updateAxisStatus();
 
-    //6.0 更新设备连接状态
-    updateConnectSta();
-
     // 8.0 更新指令流转状态
     updateTaskStateMachineStatus();
 
@@ -1226,27 +1223,6 @@ void MainWindow::on_moveRel_end_clicked()
     for (int i = 0; i < 6; i++)
     {
         findChild<QLineEdit*>("lineEdit_setPos_end" + QString::number(i))->setText("0");
-    }
-}
-
-void MainWindow::updateConnectSta()
-{
-    std::map<QString, const bool> comStatus = {
-            {"icon_connect_plc", m_Com->getCommState_Robot()},
-            {"icon_connect_io",  m_Com->getCommState_IOA()},
-            {"icon_connect_io",  m_Com->getCommState_IOB()},
-    };
-
-    for (const auto& item : comStatus)
-    {
-        if (item.second == false)
-        {
-            findChild<QLabel*>(item.first)->setStyleSheet("image: url(:/img/images/icon_redLight.png);");
-        }
-        else
-        {
-            findChild<QLabel*>(item.first)->setStyleSheet("image: url(:/img/images/icon_greenLight.png);");
-        }
     }
 }
 
