@@ -134,3 +134,29 @@ int TestConfigManager(int argc, char* argv[])
     }
     return 0;
 }
+
+int TestTcpClient(int argc, char* argv[])
+{
+    asio::io_context io_context;
+    asio::ip::tcp::resolver resolver(io_context);
+    auto address = asio::ip::make_address("127.0.0.1");
+    asio::ip::tcp::endpoint endpoint(address, 9990);
+    net::TcpClient client(io_context, endpoint);
+    std::thread t([&io_context]() { while (true) { io_context.run(); }});
+
+    std::vector<char> buf(1024);
+    while (true)
+    {
+        if (!client.IsConnect())
+        {
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+            continue;
+        }
+        std::cerr << "input message: \n";
+        std::cin.getline(buf.data(), buf.size());
+        client.Write(buf);
+        std::cerr << "receive data: " << client.Read().data() << "\n";
+    }
+
+    return 0;
+}

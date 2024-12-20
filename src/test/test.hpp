@@ -25,9 +25,10 @@
 
 #include "cxxopts.hpp"
 
-#include "HMI/SceneSelectionWindow.hpp"
+#include "hmi/SceneSelectionWindow.hpp"
 #include "vision/VisionInterface.h"
 #include "com/LaserDistanceBojke.h"
+#include "net/tcp_common.hpp"
 
 int line_detect_demo(int argc, char* argv[]);
 
@@ -41,5 +42,6 @@ int TestInitLog(int argc, char* argv[]);
 
 int TestConfigManager(int argc, char* argv[]);
 
+int TestTcpClient(int argc, char* argv[]);
 
 #endif  // TEST_HPP__

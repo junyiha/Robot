@@ -21,7 +21,7 @@
 
 #include "cxxopts.hpp"
 
-#include "HMI/SceneSelectionWindow.hpp"
+#include "hmi/SceneSelectionWindow.hpp"
 #include "vision/VisionInterface.h"
 #include "com/LaserDistanceBojke.h"
 #include "test/test.hpp"
@@ -35,7 +35,6 @@ int RunRobot(int argc, char* argv[])
     w.show();
     return a.exec();
 }
-
 
 int RunSceneSelect(int argc, char* argv[])
 {
@@ -57,7 +56,8 @@ int main(int argc, char* argv[])
         {"test_com", TestCom},
         {"TestTask", TestTask},
         {"TestConfigManager", TestConfigManager},
-        {"RunSceneSelect", RunSceneSelect}
+        {"RunSceneSelect", RunSceneSelect},
+        {"TestTcpClient", TestTcpClient},
     };
     cxxopts::Options options("Robot", "zbrobot's project");
     options.add_options()("m,mode", "mode", cxxopts::value<std::string>()->default_value("robot"));

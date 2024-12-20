@@ -16,7 +16,7 @@
 #include "Tools.h"
 #include "Manual.h"
 #include "../GVL.h"
-#include "../Task/Measure.h"
+#include "../task/Measure.h"
 #include "BoardingTool.h"
 #include <spdlog/spdlog.h>
 #include <QMutex>

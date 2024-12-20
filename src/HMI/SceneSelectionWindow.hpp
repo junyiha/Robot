@@ -7,7 +7,7 @@
  *********************************************************************/
 #pragma once
 
-#include "HMI/mainwindow.h"
+#include "hmi/mainwindow.h"
 
 namespace Ui
 {

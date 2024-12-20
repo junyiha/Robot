@@ -41,7 +41,7 @@
 #include "vision/VisionInterface.h"
 
 //--------------任务部分--------------//
-#include "Task/Task.h"
+#include "task/Task.h"
 #include "ConfigManager.hpp"
 
 

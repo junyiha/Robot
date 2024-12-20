@@ -140,24 +140,20 @@ find_package(Qt5 COMPONENTS
 #  add resources
 qt5_add_resources(${QRC_SOURCE_FILE})
 
+file(GLOB ALL_ITEMS "${CMAKE_SOURCE_DIR}/src/*")
+foreach(item ${ALL_ITEMS})
+    aux_source_directory(${item} src)
+endforeach()
+
 aux_source_directory(${CMAKE_SOURCE_DIR}/ src)
-aux_source_directory(${CMAKE_SOURCE_DIR}/src/com src)
-aux_source_directory(${CMAKE_SOURCE_DIR}/src/robot src)
-aux_source_directory(${CMAKE_SOURCE_DIR}/src/Task src)
-aux_source_directory(${CMAKE_SOURCE_DIR}/src/vision src)
-aux_source_directory(${CMAKE_SOURCE_DIR}/src/HMI src)
-aux_source_directory(${CMAKE_SOURCE_DIR}/src/test src)
-aux_source_directory(${CMAKE_SOURCE_DIR}/src/Network src)
 
 add_executable(${PROJECT_NAME} ${src} ${QRC_SOURCE_FILE})
 
+foreach(item ${ALL_ITEMS})
+    target_include_directories(${PROJECT_NAME} PUBLIC ${item})
+endforeach()
+
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/
-                                                  ${CMAKE_SOURCE_DIR}/src/com
-                                                  ${CMAKE_SOURCE_DIR}/src/robot
-                                                  ${CMAKE_SOURCE_DIR}/src/Task
-                                                  ${CMAKE_SOURCE_DIR}/src/vision
-                                                  ${CMAKE_SOURCE_DIR}/src/HMI
-                                                  ${CMAKE_SOURCE_DIR}/src/test
                                                   ${CMAKE_SOURCE_DIR}/src
                                                   ${CMAKE_SOURCE_DIR}/ThirdParty/yaml-cpp-0.8.0/include/
                                                   ${CMAKE_SOURCE_DIR}/ThirdParty/cxxopts-3.2.0/include/

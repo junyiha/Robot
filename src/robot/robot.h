@@ -19,7 +19,7 @@
 
 #include "../com/ComInterface.h"
 #include "RobotKinectModel.h"
-#include "../Task/Measure.h"
+#include "../task/Measure.h"
 
 class CRobot : public QThread
 {
