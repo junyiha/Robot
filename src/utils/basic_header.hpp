@@ -13,8 +13,11 @@
 #define BASIC_HEADER_HPP
 
 #include <iostream>
+#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_INFO
 #include <spdlog/spdlog.h>
-
+#include <spdlog/sinks/basic_file_sink.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/sinks/rotating_file_sink.h>
 
 
 #endif  // BASIC_HEADER_HPP

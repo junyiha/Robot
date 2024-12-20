@@ -38,7 +38,6 @@ namespace net
         tcp::socket socket_;
         std::atomic<bool> is_connect{ false };
         tcp::endpoint endpoint_;
-        std::shared_ptr<spdlog::logger> logger;
     };
 } // namespace net
 

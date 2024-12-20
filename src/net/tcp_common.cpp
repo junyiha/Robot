@@ -5,7 +5,6 @@ namespace net
     TcpClient::TcpClient(asio::io_context& io_context, const tcp::endpoint& endpoint)
         :io_context_(io_context), socket_(io_context), endpoint_(endpoint)
     {
-        logger = spdlog::get("logger");
         do_connect();
     }
 
@@ -14,12 +13,12 @@ namespace net
         socket_.async_connect(endpoint_, [this](std::error_code ec) {
             if (!ec)
             {
-                logger->info("connect succeeded\n");
+                SPDLOG_INFO("connect succeeded");
                 is_connect.store(true);
             }
             else
             {
-                logger->info("connect failed\n");
+                SPDLOG_WARN("connect failed");
                 is_connect.store(false);
                 do_connect();
             }
@@ -30,7 +29,7 @@ namespace net
     {
         if (!is_connect.load())
         {
-            logger->info("fatal error: not connect\n");
+            SPDLOG_WARN("fatal error: not connect");
             do_connect();
             return;
         }
@@ -40,7 +39,7 @@ namespace net
         }
         catch (asio::system_error& e)
         {
-            logger->info("catch exception, message: {}", e.what());
+            SPDLOG_WARN("catch exception, message: {}", e.what());
             is_connect.store(false);
             socket_.close();
         }
@@ -51,7 +50,7 @@ namespace net
         std::vector<char> recv_data(10 * 1024);
         if (!is_connect.load())
         {
-            logger->info("fatal error: not connect\n");
+            SPDLOG_WARN("fatal error: not connect");
             do_connect();
             return recv_data;
         }
@@ -62,7 +61,7 @@ namespace net
         }
         catch (asio::system_error& e)
         {
-            logger->info("catch exception, message: {}", e.what());
+            SPDLOG_WARN("catch exception, message: {}", e.what());
             is_connect.store(false);
             socket_.close();
         }

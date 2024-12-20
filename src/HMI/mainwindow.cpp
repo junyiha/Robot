@@ -5,7 +5,7 @@ MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    InitLog();
+    logger = spdlog::get("logger");
     InitUiForm();
 
 #ifdef STATE_MACHINE_TEST
@@ -235,30 +235,6 @@ MainWindow::~MainWindow()
             t->join();
         }
     }
-}
-
-void MainWindow::InitLog()
-{
-    //创建控制台日志记录器
-    auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
-    console_sink->set_level(spdlog::level::debug);
-
-    console_sink->set_pattern("[%Y-%m-%d %H:%M:%S.%e][thread %t][%@,%!] [%l] : %v");
-
-    // 创建文件日志记录器: 滚动记录，最大文件5M，文件数量100个
-    std::string log_path = ROOT_PATH;
-    log_path += "logs/rotating.txt";
-    auto rotating_sink = std::make_shared<spdlog::sinks::rotating_file_sink_mt>(log_path, 1048576 * 5, 100);
-
-    //同步记录器，
-    std::vector<spdlog::sink_ptr> sinks{ console_sink, rotating_sink };
-    auto logger = std::make_shared<spdlog::logger>("logger", sinks.begin(), sinks.end());
-
-    spdlog::register_logger(logger); //注册为全局日志，通过log_write访问;
-    spdlog::flush_every(std::chrono::seconds(3)); //每3s刷新一次
-    //根据需要调整记录级别：调试debug，发布info
-    spdlog::set_level(spdlog::level::debug);
-    this->logger = spdlog::get("logger");
 }
 
 //上使能函数
