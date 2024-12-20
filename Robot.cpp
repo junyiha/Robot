@@ -30,14 +30,14 @@ void initLog()
     console_sink->set_level(spdlog::level::debug);
     console_sink->set_pattern("[%Y-%m-%d %H:%M:%S:%e] [%^%l%$] %v");
 
-    std::string log_path{ROOT_PATH};
+    std::string log_path{ ROOT_PATH };
     log_path += "/logs/rotating.txt";
 
     // 创建文件日志记录器: 滚动记录，最大文件5M，文件数量100个
     auto rotating_sink = std::make_shared<spdlog::sinks::rotating_file_sink_mt>(log_path, 1048576 * 5, 100);
 
     // 同步记录器，
-    std::vector<spdlog::sink_ptr> sinks{console_sink, rotating_sink};
+    std::vector<spdlog::sink_ptr> sinks{ console_sink, rotating_sink };
     auto logger = std::make_shared<spdlog::logger>("logger", sinks.begin(), sinks.end());
 
     spdlog::register_logger(logger);              // 注册为全局日志，通过log_write访问;
@@ -91,7 +91,7 @@ void line_detect_demo()
     }
 }
 
-int RunRobot(int argc, char *argv[])
+int RunRobot(int argc, char* argv[])
 {
     QApplication app(argc, argv);
 
@@ -101,7 +101,7 @@ int RunRobot(int argc, char *argv[])
     return app.exec();
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
     return RunRobot(argc, argv);
 
