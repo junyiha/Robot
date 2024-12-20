@@ -1284,7 +1284,35 @@ void MainWindow::updateWorkdScenario()
 
 void MainWindow::updateConfigurationView()
 {
-    auto pos_vec = GP::Position_Map[std::make_pair(GP::Working_Scenario, GP::PositionType::Prepare)].value;
+    QString text = ui->comboBox->currentText();
+    std::vector<double> pos_vec;
+    if (text == QString::fromLocal8Bit("准备位置"))
+    {
+        pos_vec = GP::Position_Map[std::make_pair(GP::Working_Scenario, GP::PositionType::Prepare)].value;
+    }
+    else if (text == QString::fromLocal8Bit("举升位置"))
+    {
+        pos_vec = GP::Position_Map[std::make_pair(GP::Working_Scenario, GP::PositionType::Lift)].value;
+    }
+    else if (text == QString::fromLocal8Bit("最大限位"))
+    {
+        for (auto& it : RobotConfigMap)
+        {
+            pos_vec.push_back(it.second.max_pos);
+        }
+    }
+    else if (text == QString::fromLocal8Bit("最小限位"))
+    {
+        for (auto& it : RobotConfigMap)
+        {
+            pos_vec.push_back(it.second.min_pos);
+        }
+    }
+    else
+    {
+        return;
+    }
+
     std::string btn_name{ "label_prepare_position_joint_" };
 
     for (int i = 0; i < RobotConfigMap.size(); i++)
