@@ -15,10 +15,10 @@
 #include "asio.hpp"
 #include "utils/basic_header.hpp"
 
+using tcp = asio::ip::tcp;
+
 namespace net
 {
-    using tcp = asio::ip::tcp;
-
     class TcpClient
     {
     public:
