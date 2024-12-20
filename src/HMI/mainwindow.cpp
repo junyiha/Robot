@@ -43,10 +43,10 @@ void MainWindow::InitUiForm()
 
     for (int i = 0; i < RobotConfigMap.size(); i++)
     {
-        findChild<QLabel*>(QString("label_joint_name_") + QString::number(i))->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-        findChild<QLabel*>(QString("label_prepare_position_joint_") + QString::number(i))->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-        findChild<QLabel*>(QString("label_lift_position_joint_") + QString::number(i))->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+        findChild<QLabel*>(QString("label_position_joint_") + QString::number(i))->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+        findChild<QLabel*>(QString("label_position_joint_") + QString::number(i))->setMinimumSize(QSize(150, 30));
     }
+    ui->comboBox->setMinimumSize(QSize(150, 30));
 }
 
 void MainWindow::InitVision()
@@ -144,9 +144,6 @@ void MainWindow::connectSlotFunctions()
     connect(ui->btn_camera_capture, &QPushButton::clicked, this, &MainWindow::on_btn_camera_capture_clicked,
             Qt::UniqueConnection);
     connect(ui->btn_savePicture, &QPushButton::clicked, this, &MainWindow::on_btn_camera_save_clicked,
-            Qt::UniqueConnection);
-
-    connect(ui->btn_line_results_dis, &QPushButton::clicked, this, &MainWindow::slots_on_line_results_dis_clicked,
             Qt::UniqueConnection);
 
     // 底盘移动
@@ -848,7 +845,6 @@ void MainWindow::updateLineDetectResults()
 
 void MainWindow::updateLaserData()
 {
-
     // 更新点激光
     QVector laserdis = m_Com->getLasersDistanceBoardingByBojke();
     if (laserdis.size() > 0)
@@ -856,7 +852,7 @@ void MainWindow::updateLaserData()
         for (unsigned int i = 0; i < larserNum; i++)
         {
             findChild<QLabel*>("label_laserDist" + QString::number(i))->setText(
-                    "Laser " + QString::number(i) + " Value :" + QString::number(laserdis[i]));
+                    "Laser " + QString::number(i) + ": " + QString::number(laserdis[i]));
         }
     }
     else
@@ -1308,26 +1304,21 @@ void MainWindow::updateConfigurationView()
             pos_vec.push_back(it.second.min_pos);
         }
     }
+    else if (text == QString::fromLocal8Bit("最大速度"))
+    {
+        for (auto& it : RobotConfigMap)
+        {
+            pos_vec.push_back(it.second.max_velocity);
+        }
+    }
     else
     {
         return;
     }
 
-    std::string btn_name{ "label_prepare_position_joint_" };
-
     for (int i = 0; i < RobotConfigMap.size(); i++)
     {
-        std::string temp_name = btn_name + std::to_string(i);
-        int temp_val = pos_vec.at(i) * 1000;
-
-        findChild<QLabel*>(QString(temp_name.data()))->setText(QString::number(temp_val / 1000.0));
-    }
-
-    pos_vec = GP::Position_Map[std::make_pair(GP::Working_Scenario, GP::PositionType::Lift)].value;
-    btn_name = "label_lift_position_joint_";
-    for (int i = 0; i < RobotConfigMap.size(); i++)
-    {
-        std::string temp_name = btn_name + std::to_string(i);
+        std::string temp_name = std::string("label_position_joint_") + std::to_string(i);
         int temp_val = pos_vec.at(i) * 1000;
 
         findChild<QLabel*>(QString(temp_name.data()))->setText(QString::number(temp_val / 1000.0));
@@ -1819,11 +1810,6 @@ void MainWindow::slots_on_btn_auto_laminate_clicked()
         );
         this->logger->info("不满足待贴合初始化状态,启动待贴合失败");
     }
-}
-
-void MainWindow::slots_on_line_results_dis_clicked()
-{
-    ui->stackedWidget_view->setCurrentIndex(1);
 }
 
 void MainWindow::slots_btn_laser_upper_enable_clicked()

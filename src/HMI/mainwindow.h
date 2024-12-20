@@ -168,7 +168,6 @@ private slots:
     void slots_btn_load_configuration_clicked();
     void slots_btn_save_prepare_position_clicked();
     void slots_btn_save_lift_position_clicked();
-    void slots_on_line_results_dis_clicked();
     void clearFlowButtonStyle();
 
     void slots_btn_joint_test_clicked();
