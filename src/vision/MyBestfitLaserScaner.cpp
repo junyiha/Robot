@@ -98,6 +98,11 @@ void MyBestfitLaserScaner::run()
 
             for (int i = 0; i < dataLength; i++)
             {
+                if(m_dScannerBufferX[i]<-110 || m_dScannerBufferX[i]>110  || 
+                   m_dScannerBufferZ[i]<170 || m_dScannerBufferZ[i]>430 ){
+                    continue; 
+                }
+
                 m_vecPointClouds.push_back(cv::Point2f(m_dScannerBufferX[i], m_dScannerBufferZ[i]));
             }
         }

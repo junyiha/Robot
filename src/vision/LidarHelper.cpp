@@ -75,7 +75,7 @@ void get_connected_components_info(cv::Mat imageBW, cv::Mat &outImage, cv::Mat &
         //��Ӿ���
         cv::Rect rect(x, y, w, h);
         cv::rectangle(show_rect, rect, cv::Scalar(255,255,0), 2, 8, 0);
-//        std::cout << "count:" << i << "  area:" << area << std::endl;
+        std::cout << "count:" << i << "  area:" << area << std::endl;
     }
 
 
@@ -177,10 +177,10 @@ void LidarHelper::lidarDetecter(cv::Mat img,bool isleft,bool revAngle, \
 
     //------------1.0 图像合法性校验--------------
     if (img.empty()) {
+        // img = cv::imread("D:/_Project/Ship/program/ZBRobot/ZBRobotV23/bin/board/Lidar_test.jpg");
         error = "no image";
         std::cout << error << std::endl;
-//        img = cv::imread("D:/_Project/Ship/program/ZBRobot/ZBRobotV23/bin/board/Lidar_test.jpg");
-        return ;
+        return ; 
     }
     this->show = img.clone();
     if (img.channels() < 3) {
@@ -209,7 +209,7 @@ void LidarHelper::lidarDetecter(cv::Mat img,bool isleft,bool revAngle, \
     //------------筛选出两条直线，得到直线关系,  用于后续测量板间隙任务--------------
     if (linesEnd.size() < 2) {
         error = "没有检测到两条直线";
-//        std::cout << "没有检测到两条直线" << std::endl;
+        std::cout<<"没有检测到两条直线" << std::endl;
         return;
     }
 
@@ -285,6 +285,8 @@ void LidarHelper::filterBorderAndReferenceLine(const cv::Mat &img, bool pIsLeft,
     int imgH = img.rows;
     int border_index = -1;
     int ref_index = -1;
+    
+    std::vector<std::vector<cv::Point2f>> possRef;
 
 
     // find border line  and reference line
@@ -322,10 +324,40 @@ void LidarHelper::filterBorderAndReferenceLine(const cv::Mat &img, bool pIsLeft,
                 }
             }
         }
+
         //4. 获取已装板线
-        if(ref_index == -1 && border_index!=-1 && i!=border_index){
-            ref_index = i;
-            referLine = linesEnd[ref_index];
+        if(border_index!=-1 && i!=border_index){
+            possRef.push_back(linesEnd[i]);
+        }
+    }
+
+
+    // 筛选已装板线
+    if(possRef.size()>0){
+        double min_dist = 100000.0;
+        int refIndex = -1;
+        cv::Point2f borderEndPoint;
+        if(pIsLeft){
+            borderEndPoint = borderLine[1];
+        }else{
+            borderEndPoint = borderLine[0];
+        }
+
+        for(int i = 0; i<possRef.size();i++){
+            cv::Point2f refEndPoint;
+            if(pIsLeft){
+                refEndPoint = possRef[i][0];
+            }else{
+                refEndPoint = possRef[i][1];
+            }
+            double distTemp = abs(refEndPoint.x - borderEndPoint.x);
+            if(min_dist>distTemp){
+                refIndex = i;
+                min_dist = distTemp;
+            }
+        }
+        if(refIndex!=-1){
+            referLine = possRef[refIndex];
         }
     }
 }

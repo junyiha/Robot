@@ -14,7 +14,6 @@
 #include <QTextCodec>
 #include <clocale>
 #include <Eigen/Eigen>
-#include "cxxopts.hpp"
 
 #include "hmi/SceneSelectionWindow.hpp"
 #include "vision/VisionInterface.h"
@@ -79,7 +78,7 @@ int main(int argc, char* argv[])
         {"RunSceneSelect", RunSceneSelect},
         {"TestTcpClient", TestTcpClient},
     };
-    cxxopts::Options options("Robot", "zbrobot's project");
+    cxxopts::Options options("Robot", "boarding robot's project");
     options.add_options()("m,mode", "run mode", cxxopts::value<std::string>()->default_value("robot"));
     options.add_options()("v,verbose", "Verbose output", cxxopts::value<bool>()->default_value("false"));
     try
@@ -93,7 +92,7 @@ int main(int argc, char* argv[])
         auto it = FunctionMap.find(result["mode"].as<std::string>());
         if (it != FunctionMap.end())
         {
-            it->second(argc, argv);
+            return it->second(argc, argv);
         }
         else
         {
@@ -106,5 +105,4 @@ int main(int argc, char* argv[])
         SPDLOG_ERROR("parse argument failed");
         return -1;
     }
-
 }

@@ -548,7 +548,7 @@ void MainWindow::slots_btn_move_zero_clicked()
 
     for (auto& i : list)
     {
-        m_Robot->setJointMoveAbs(i, RobotConfigMap.at(i).zero_pos, RobotConfigMap.at(i).max_velocity * 0.5);
+        m_Robot->setJointMoveAbs(i, RobotConfigMap.at(i).zero_pos, RobotConfigMap.at(i).max_velocity * 0.1);
         logger->info("{}: index: {}, zero position: {}, velocity: {}", __LINE__, i, RobotConfigMap.at(i).zero_pos, RobotConfigMap.at(i).max_velocity * 0.5);
     }
 
@@ -1711,7 +1711,8 @@ void MainWindow::slots_btn_save_prepare_position_clicked()
         data.push_back(i.Position);
     }
 
-    res = m_config_ptr->UpdateValue("prepare_position", data);
+    GP::Position_Map[{GP::Working_Scenario, GP::PositionType::Prepare}].value = data;
+    res = m_config_ptr->UpdateValue("position_map", GP::Position_Map);    
     if (res)
     {
         ui->btn_save_home_position->setStyleSheet("background-color: rgb(0, 255, 0);"
@@ -1745,7 +1746,8 @@ void MainWindow::slots_btn_save_lift_position_clicked()
         );
         return;
     }
-    res = m_config_ptr->UpdateValue("lift_position", data);
+    GP::Position_Map[{GP::Working_Scenario, GP::PositionType::Lift}].value = data;
+    res = m_config_ptr->UpdateValue("position_map", GP::Position_Map);
 
     if (res)
     {

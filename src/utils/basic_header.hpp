@@ -19,5 +19,13 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/sinks/rotating_file_sink.h>
 
+#include "cxxopts.hpp"
+
+struct Args_t
+{
+    int argc;
+    char** argv;
+    cxxopts::ParseResult result;
+};
 
 #endif  // BASIC_HEADER_HPP

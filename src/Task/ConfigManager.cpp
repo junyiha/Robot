@@ -114,30 +114,22 @@ namespace Config
 		return LoadConfiguration();
 	}
 
-	bool ConfigManager::UpdateValue(const std::string key, const double value)
+	bool ConfigManager::UpdateValue(const std::string key, const GP::PositionMap position_map)
 	{
-		bool res{ false };
-
-		if (m_root_rw[key])
+		bool res{false};
+		YAML::Node node;
+		for (auto &it : position_map)
 		{
-			m_root_rw[key]["value"] = value;
-			if (WriteToFile())
-				res = true;
+			YAML::Node temp_node;
+			temp_node.push_back(it.second.brief);
+			temp_node.push_back(static_cast<int>(it.first.first));
+			temp_node.push_back(static_cast<int>(it.first.second));
+			temp_node.push_back(it.second.value);
+			node.push_back(temp_node);
 		}
-
-		return res;
-	}
-
-	bool ConfigManager::UpdateValue(const std::string key, const std::vector<double> value)
-	{
-		bool res{ false };
-
-		if (m_root_rw[key])
-		{
-			m_root_rw[key]["value"] = value;
-			if (WriteToFile())
-				res = true;
-		}
+		m_root_rw[key] = node;
+		if (WriteToFile())
+			res = true;
 
 		return res;
 	}

@@ -48,12 +48,7 @@ namespace Config
 		/**
 		 * @brief 更新指定参数(浮点数).
 		 */
-		bool UpdateValue(const std::string key, const double value);
-
-		/**
-		 * @brief 更新指定参数(数组).
-		 */
-		bool UpdateValue(const std::string key, const std::vector<double> value);
+		bool UpdateValue(const std::string key, const GP::PositionMap position_map);
 
 	private:
 		YAML::Node m_root_rw;
