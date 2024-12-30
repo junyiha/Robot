@@ -143,7 +143,7 @@ foreach(item ${ALL_ITEMS})
     aux_source_directory(${item} src)
 endforeach()
 
-aux_source_directory(${CMAKE_SOURCE_DIR}/ src)
+aux_source_directory(${CMAKE_SOURCE_DIR}/src/ src)
 
 add_executable(${PROJECT_NAME} ${src} ${QRC_SOURCE_FILE})
 

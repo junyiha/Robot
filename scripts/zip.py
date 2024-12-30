@@ -5,7 +5,7 @@ import os
 import zipfile
 from pathlib import Path
 
-root_dir = Path(__file__).resolve().parent
+root_dir = Path(__file__).resolve().parent.parent
 print("当前脚本所在目录是:", root_dir)
 
 file_list = os.listdir(root_dir)
@@ -14,7 +14,7 @@ for i in file_list:
     if i == 'build' or i == "package":
         continue
 
-    new_list.append(i)
+    new_list.append(root_dir / i)
 
 script_dir = Path(root_dir) / "package/robot.zip"
 print(script_dir)
