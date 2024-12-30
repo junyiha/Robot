@@ -8,13 +8,6 @@
  * @copyright Copyright (c) 2024
  *
  */
-#include <QApplication>
-#include <string>
-#include <QThread>
-#include <QTextCodec>
-#include <clocale>
-#include <Eigen/Eigen>
-
 #include "hmi/SceneSelectionWindow.hpp"
 #include "vision/VisionInterface.h"
 #include "com/LaserDistanceBojke.h"

@@ -1,17 +1,14 @@
 ﻿#ifndef CTASK_H
 #define CTASK_H
 
-#include <map>
-#include <mutex>
 #include <QAtomicInt>
 #include <QLineEdit>
-#include <spdlog/spdlog.h>
 
+#include "utils/basic_header.hpp"
 #include "vision/VisionInterface.h"
 #include "task/TaskExternal.h"
 #include "robot/robot.h"
 #include "com/ComInterface.h"
-#include "com/Manual.h"
 
 class CTask : public QThread
 {

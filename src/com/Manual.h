@@ -68,8 +68,8 @@ public:
      * @brief 外部调用接口，获取遥控器指令
      * @param cmd
      */
-    void getManualCmd(stManualCmd &cmd);
-    void getManualCmd(stManualOperator &cmd);
+    void getManualCmd(stManualCmd& cmd);
+    void getManualCmd(stManualOperator& cmd);
 
     bool getConnectState();
     bool isConnected = false;
@@ -79,7 +79,7 @@ protected:
     stManualData m_InputData;
     stManualCmd m_OutCmd;
     stManualCmd _OutCmd;
-    QTimer *m_cManualRecvTimer;
+    QTimer* m_cManualRecvTimer;
     QMutex mutex_cmd;
 
     /**

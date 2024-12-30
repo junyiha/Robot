@@ -208,7 +208,7 @@ void CTask::Manual()
             m_Robot->setJointMoveAbs(0, 188.93, RobotConfigMap.at(0).max_velocity);
             m_Robot->setJointMoveAbs(9, 950.0, RobotConfigMap.at(9).max_velocity);  // 工具升降
         }
-        else 
+        else
         {
             SPDLOG_WARN("非顶板作业场景，二次举升不执行任何动作");
         }
@@ -221,7 +221,7 @@ void CTask::Manual()
             m_Robot->setJointMoveAbs(0, 50.0, RobotConfigMap.at(0).max_velocity);  // 底部升降
             m_Robot->setJointMoveAbs(9, 885.0, RobotConfigMap.at(9).max_velocity);  // 工具升降
         }
-        else 
+        else
         {
             m_Robot->setJointMoveAbs(9, 875.0, RobotConfigMap.at(9).max_velocity);  // 工具升降
         }

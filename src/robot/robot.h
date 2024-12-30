@@ -16,10 +16,11 @@
 #include <qmath.h>
 #include <Eigen/Dense>
 #include <Eigen/Geometry>
+#include <Eigen/Eigen>
 
-#include "../com/ComInterface.h"
-#include "RobotKinectModel.h"
-#include "../task/Measure.h"
+#include "com/ComInterface.h"
+#include "robot/RobotKinectModel.h"
+#include "task/Measure.h"
 
 class CRobot : public QThread
 {

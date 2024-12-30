@@ -12,7 +12,12 @@
 #ifndef BASIC_HEADER_HPP
 #define BASIC_HEADER_HPP
 
+#include <clocale>
 #include <iostream>
+#include <map>
+#include <mutex>
+
+
 #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_INFO
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/basic_file_sink.h>

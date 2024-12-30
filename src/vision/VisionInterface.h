@@ -61,7 +61,7 @@ public:
     LidarHelper* lidar_helper = nullptr;
     LaserScanerControls* laser_controls = nullptr;
     LidarHandler* lidar_handler = nullptr;
-   
+
 
 
 

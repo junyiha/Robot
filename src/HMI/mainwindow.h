@@ -22,6 +22,9 @@
 #include <QMutex>
 #include <QAtomicInt>
 #include <QRegularExpression>
+#include <QMouseEvent>
+#include <QApplication>
+#include <QTextCodec>
 
 #include <iostream>
 #include <cmath>
@@ -32,17 +35,14 @@
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/sinks/rotating_file_sink.h>
-#include <QMouseEvent>
 //--------------机器人部分--------------//
 #include "com/ComInterface.h"
 #include "robot/robot.h"
-#include "GVL.h"
 //--------------视觉部分--------------//
 #include "vision/VisionInterface.h"
-
 //--------------任务部分--------------//
 #include "task/Task.h"
-#include "ConfigManager.hpp"
+#include "task/ConfigManager.hpp"
 
 
 QT_BEGIN_NAMESPACE
@@ -199,7 +199,7 @@ private:
     bool laserOnUpperEnable = false;
     bool laserOnLowerEnable = false;
 
-    bool m_camera_light_flag{false};
+    bool m_camera_light_flag{ false };
 
     Ui::MainWindow* ui;
     QByteArray m_CrossLidar;

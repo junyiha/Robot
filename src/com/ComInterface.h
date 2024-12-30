@@ -10,17 +10,18 @@
 
 #include <QObject>
 #include <QThread>
+#include <QMutex>
 #include <QByteArray>
 #include <Eigen/Dense>
-#include "RobotCom.h"
-#include "Tools.h"
-#include "Manual.h"
-#include "../GVL.h"
-#include "../task/Measure.h"
-#include "BoardingTool.h"
 #include <spdlog/spdlog.h>
-#include <QMutex>
-#include "LaserDistanceBojke.h"
+
+#include "GVL.h"
+#include "com/RobotCom.h"
+#include "com/Tools.h"
+#include "com/Manual.h"
+#include "task/Measure.h"
+#include "com/BoardingTool.h"
+#include "com/LaserDistanceBojke.h"
 
 class ComInterface : public QThread
 {
