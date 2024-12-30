@@ -201,9 +201,9 @@ void MainWindow::connectSlotFunctions()
             Qt::UniqueConnection);
     connect(ui->btn_laser_light, &QPushButton::clicked, this, &MainWindow::slots_btn_laser_light_clicked,
             Qt::UniqueConnection);
-    
+
     connect(ui->btn_camera_light_control, &QPushButton::clicked, this, &MainWindow::slots_btn_camera_light_clicked, Qt::UniqueConnection);
-    
+
 
     connect(ui->btn_putter_forward, &QPushButton::clicked, this, &MainWindow::slots_on_btn_putter_forward_clicked, Qt::UniqueConnection);
     connect(ui->btn_putter_backward, &QPushButton::clicked, this, &MainWindow::slots_on_btn_putter_backward_clicked, Qt::UniqueConnection);
@@ -224,7 +224,8 @@ void MainWindow::connectSlotFunctions()
 
     connect(ui->autoSaveImage, &QPushButton::clicked, this, &MainWindow::slots_btn_auto_save_image_clicked, Qt::UniqueConnection);
     connect(ui->disableAutoSaveImage, &QPushButton::clicked, this, &MainWindow::slots_btn_disable_auto_save_image_clicked, Qt::UniqueConnection);
-    
+
+    connect(ui->btn_single_side_line, &QPushButton::clicked, this, &MainWindow::slots_btn_single_side_line_clicked, Qt::UniqueConnection);
 }
 
 MainWindow::~MainWindow()
@@ -595,16 +596,24 @@ void MainWindow::slots_btn_global_exit_clicked()
 void MainWindow::slots_btn_auto_save_image_clicked()
 {
     // vision function
-    m_VisionInterface->setBadCaseSave(true); 
+    m_VisionInterface->setBadCaseSave(true);
     SPDLOG_INFO("开启图片自动保存");
 
 }
 
 void MainWindow::slots_btn_disable_auto_save_image_clicked()
 {
-    // 
-    m_VisionInterface->setBadCaseSave(false); 
+    //
+    m_VisionInterface->setBadCaseSave(false);
     SPDLOG_INFO("关闭图片自动保存");
+}
+
+void MainWindow::slots_btn_single_side_line_clicked()
+{
+    // 单次边线对齐
+    auto temp_thread = new std::thread([this]() { m_Task->SingleSideLine(); });
+    m_thread_pool.push_back(temp_thread);
+    SPDLOG_INFO("单次边线对齐");
 }
 
 void MainWindow::on_btn_magnet_stop_clicked()
@@ -728,7 +737,7 @@ void MainWindow::updataDeviceConnectState()
                                                   "border-radius: 10px;"
         );
     }
-    else 
+    else
     {
         ui->btn_camera_light_control->setStyleSheet("border: 2px solid blue;"
                                                   "border-radius: 10px;");
@@ -859,7 +868,7 @@ void MainWindow::updateLineDetectResults()
                 if (isValid)
                 {
                     float borderDist = visResult.stData.m_LaserGapHeight[i]; // 板高差
-                    float gapDist = visResult.stData.m_LaserGapDistance[i]-15; // 版间距
+                    float gapDist = visResult.stData.m_LaserGapDistance[i] - 15; // 版间距
                     labelHeight->setText(QString::number(borderDist));
                     labelGap->setText(QString::number(gapDist));
                 }
@@ -1677,26 +1686,26 @@ void MainWindow::slots_btn_camera_hole_light_clicked()
 
 void MainWindow::slots_btn_camera_light_clicked()
 {
-    auto temp_thread = new std::thread([this](){
-    if (!m_camera_light_flag)
-    {
-        m_Com->SetLight(1, true);
-        std::this_thread::sleep_for(std::chrono::milliseconds(500));
-        m_Com->SetLight(2, true);
-        std::this_thread::sleep_for(std::chrono::milliseconds(500));
-        m_Com->SetLight(3, true);
-        std::this_thread::sleep_for(std::chrono::milliseconds(500));
-    }
-    else 
-    {
-        m_Com->SetLight(1, false);
-        std::this_thread::sleep_for(std::chrono::milliseconds(500));
-        m_Com->SetLight(2, false);
-        std::this_thread::sleep_for(std::chrono::milliseconds(500));
-        m_Com->SetLight(3, false);
-        std::this_thread::sleep_for(std::chrono::milliseconds(500));
-    }
-    m_camera_light_flag = !m_camera_light_flag;
+    auto temp_thread = new std::thread([this]() {
+        if (!m_camera_light_flag)
+        {
+            m_Com->SetLight(1, true);
+            std::this_thread::sleep_for(std::chrono::milliseconds(500));
+            m_Com->SetLight(2, true);
+            std::this_thread::sleep_for(std::chrono::milliseconds(500));
+            m_Com->SetLight(3, true);
+            std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        }
+        else
+        {
+            m_Com->SetLight(1, false);
+            std::this_thread::sleep_for(std::chrono::milliseconds(500));
+            m_Com->SetLight(2, false);
+            std::this_thread::sleep_for(std::chrono::milliseconds(500));
+            m_Com->SetLight(3, false);
+            std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        }
+        m_camera_light_flag = !m_camera_light_flag;
     });
 
     m_thread_pool.push_back(temp_thread);
@@ -1731,7 +1740,7 @@ void MainWindow::slots_btn_laser_light_clicked()
 
 void MainWindow::slots_on_btn_putter_forward_clicked()
 {
-    auto temp_thread = new std::thread([this](){
+    auto temp_thread = new std::thread([this]() {
         SPDLOG_INFO("电推杠伸出开始...");
         m_Com->SetCylinder(1);
         std::this_thread::sleep_for(std::chrono::seconds(15));
@@ -1744,7 +1753,7 @@ void MainWindow::slots_on_btn_putter_forward_clicked()
 
 void MainWindow::slots_on_btn_putter_backward_clicked()
 {
-    auto temp_thread = new std::thread([this](){
+    auto temp_thread = new std::thread([this]() {
         SPDLOG_INFO("电推杠缩回开始...");
         m_Com->SetCylinder(-1);
         std::this_thread::sleep_for(std::chrono::seconds(15));
@@ -1800,7 +1809,7 @@ void MainWindow::slots_btn_save_prepare_position_clicked()
     }
 
     GP::Position_Map[{GP::Working_Scenario, GP::PositionType::Prepare}].value = data;
-    res = m_config_ptr->UpdateValue("position_map", GP::Position_Map);    
+    res = m_config_ptr->UpdateValue("position_map", GP::Position_Map);
     if (res)
     {
         ui->btn_save_home_position->setStyleSheet("background-color: rgb(0, 255, 0);"

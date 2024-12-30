@@ -200,14 +200,14 @@ int CheckParallelState(std::vector<double> laserDistance, int max_deviation, int
 int TestFitBoard(int argc, char* argv[])
 {
     const std::vector<double> BOARDING_MOTION_QUE = { 60, 40, 30, 20, 15, 10, 5, 0 }; // 贴合运动序列
-    std::vector<double> laser_distance{90, 90, 90, 90};
+    std::vector<double> laser_distance{ 90, 90, 90, 90 };
 
     auto config_ptr = std::make_unique<Config::ConfigManager>();
 
     while (true)
     {
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
-        
+
         auto motion_index = BOARDING_MOTION_QUE.size();
         auto min_distance = std::min_element(laser_distance.begin(), laser_distance.end());
         for (int i = 0; i < BOARDING_MOTION_QUE.size(); ++i)
@@ -227,11 +227,11 @@ int TestFitBoard(int argc, char* argv[])
             break;
         }
 
-        auto result = std::find_if(BOARDING_MOTION_QUE.begin(), BOARDING_MOTION_QUE.end(), [laser_distance](double val){return laser_distance.at(0) == val;});
+        auto result = std::find_if(BOARDING_MOTION_QUE.begin(), BOARDING_MOTION_QUE.end(), [laser_distance](double val) {return laser_distance.at(0) == val; });
         if (result != BOARDING_MOTION_QUE.end())
         {
             // 利用计数器，休眠1s
-            static int cnt{0};
+            static int cnt{ 0 };
             SPDLOG_INFO("Count: {}", cnt);
             if (cnt > 20)
             {
@@ -239,7 +239,7 @@ int TestFitBoard(int argc, char* argv[])
                 cnt = 0;
                 goto __NEXT;
             }
-            else 
+            else
             {
                 cnt++;
                 continue;
@@ -247,11 +247,11 @@ int TestFitBoard(int argc, char* argv[])
         }
     __NEXT:
 
-        std::for_each(laser_distance.begin(), laser_distance.end(), [](double& val){val -= 1;});
+        std::for_each(laser_distance.begin(), laser_distance.end(), [](double& val) {val -= 1; });
 
     }
 
-    std::for_each(laser_distance.begin(), laser_distance.end(), [](double& val){SPDLOG_INFO(val);});
+    std::for_each(laser_distance.begin(), laser_distance.end(), [](double& val) {SPDLOG_INFO(val); });
 
     return 0;
 }

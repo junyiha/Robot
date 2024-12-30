@@ -22,6 +22,50 @@ public:
      */
     void closeThread();
 
+    /**
+     * @brief 更新第一层和第二层状态(线程安全)
+     *
+     * @param topState
+     * @param subState
+     */
+    void updateTopAndSubState(ETopState topState, ESubState subState);
+
+    /**
+     * @brief 更新执行指令(线程安全 默认更新为空指令)
+     *
+     * @param executionCommand
+     */
+    void updateExecutionCommand(EExecutionCommand executionCommand = EExecutionCommand::eNULL);
+
+    /**
+     * @brief 获取当前状态字符串，格式: 第一层状态--第二层状态
+     *
+     * @return std::string
+     */
+    std::string getCurrentStateString() const;
+
+    /**
+     * @brief 获取当前执行指令字符串
+     *
+     * @return std::string
+     */
+    std::string getCurrentExecutionCommandString() const;
+
+    /**
+     * @brief 检测第二层状态.
+     *
+     * @param subState
+     *
+     * @return true | false
+     */
+    bool checkSubState(ESubState subState) const;
+
+    bool SingleSideLine();
+
+public:
+    QAtomicInt ActionIndex; // 半自动、按钮测试用
+    QAtomicInt ButtonIndex; // 当前点击按钮索引
+
 protected:
     /**
      * @brief 运行函数
@@ -74,7 +118,6 @@ private:
     void TaskTerminate();
 
     ///////////////////////////////////////////--状态机部分--//////////////////////////////////////////////////////
-private:
     /**
      * @brief 状态转换函数
      *
@@ -111,7 +154,6 @@ private:
      */
     void quitStateTransition();
 
-private:
     /**
      * @brief 手动指令
      *
@@ -206,7 +248,6 @@ private:
      */
     void terminateCommand();
 
-private:
     /**
      * @brief 贴合状态下计算对边运动的调整量
      *
@@ -228,46 +269,6 @@ private:
      */
     void UpdateVisionResult(VisionResult& vis_res);
 
-public:
-    /**
-     * @brief 更新第一层和第二层状态(线程安全)
-     *
-     * @param topState
-     * @param subState
-     */
-    void updateTopAndSubState(ETopState topState, ESubState subState);
-
-    /**
-     * @brief 更新执行指令(线程安全 默认更新为空指令)
-     *
-     * @param executionCommand
-     */
-    void updateExecutionCommand(EExecutionCommand executionCommand = EExecutionCommand::eNULL);
-
-    /**
-     * @brief 获取当前状态字符串，格式: 第一层状态--第二层状态
-     *
-     * @return std::string
-     */
-    std::string getCurrentStateString() const;
-
-    /**
-     * @brief 获取当前执行指令字符串
-     *
-     * @return std::string
-     */
-    std::string getCurrentExecutionCommandString() const;
-
-    /**
-     * @brief 检测第二层状态.
-     *
-     * @param subState
-     *
-     * @return true | false
-     */
-    bool checkSubState(ESubState subState) const;
-
-private:
     /**
      * @brief 将遥控器的命令转换为内部指令
      *
@@ -278,10 +279,6 @@ private:
     ETopState m_etopState{ ETopState::eManual };
     ESubState m_esubState{ ESubState::eNotReady };
     EExecutionCommand m_eexecutionCommand{ EExecutionCommand::eNULL };
-
-public:
-    QAtomicInt ActionIndex; // 半自动、按钮测试用
-    QAtomicInt ButtonIndex; // 当前点击按钮索引
 
 protected:
     CRobot* m_Robot{ nullptr };

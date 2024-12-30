@@ -64,7 +64,7 @@ void CTask::manualStateTransition()
     }
     default:
     {
-        log->warn("第二层状态数据无效!!!");
+        SPDLOG_ERROR("第二层状态数据无效!!!");
     }
     }
 }
@@ -90,7 +90,7 @@ void CTask::parallelStateTransition()
     }
     default:
     {
-        log->warn("第二层状态数据无效!!!");
+        SPDLOG_ERROR("第二层状态数据无效!!!");
     }
     }
 }
@@ -116,7 +116,7 @@ void CTask::positioningStateTransition()
     }
     default:
     {
-        log->warn("第二层状态数据无效!!!");
+        SPDLOG_ERROR("第二层状态数据无效!!!");
     }
     }
 }
@@ -152,7 +152,7 @@ void CTask::fitBoardStateTransition()
     }
     default:
     {
-        log->warn("第二层状态数据无效!!!");
+        SPDLOG_ERROR("第二层状态数据无效!!!");
     }
     }
 }
@@ -173,7 +173,7 @@ void CTask::quitStateTransition()
     }
     default:
     {
-        log->warn("第二层状态数据无效!!!");
+        SPDLOG_ERROR("第二层状态数据无效!!!");
     }
     }
 }
@@ -210,7 +210,7 @@ void CTask::readyExecutionCommand()
     }
     default:
     {
-        log->warn("{}: {} 执行指令不合法!指令: {}", __LINE__, getCurrentStateString(), ExecutionCommandStringMap.find(m_eexecutionCommand)->second);
+        SPDLOG_WARN("{} 执行指令不合法!指令: {}", getCurrentStateString(), ExecutionCommandStringMap.find(m_eexecutionCommand)->second);
     }
     }
 
@@ -251,12 +251,12 @@ void CTask::readyToParallelExecutionCommand()
     }
     case EExecutionCommand::ePause:
     {
-        log->info("{}: 暂停指令不执行任何操作", getCurrentStateString());
+        SPDLOG_INFO("{}: 暂停指令不执行任何操作", getCurrentStateString());
         break;
     }
     default:
     {
-        log->warn("{}: {} 执行指令不合法!指令: {}", __LINE__, getCurrentStateString(), ExecutionCommandStringMap.find(m_eexecutionCommand)->second);
+        SPDLOG_WARN("{} 执行指令不合法!指令: {}", getCurrentStateString(), ExecutionCommandStringMap.find(m_eexecutionCommand)->second);
     }
     }
 }
@@ -267,7 +267,7 @@ void CTask::detectionInParallelExecutionCommand()
     {
     case EExecutionCommand::eNULL:
     {
-        log->info("{} 调用函数，根据激光数值判断壁面状态", __LINE__);
+        SPDLOG_INFO("调用函数，根据激光数值判断壁面状态");
         EDetectionInParallelResult detectionResult;
 #ifdef TEST_TASK_STATEMACHINE_
         detectionResult = EDetectionInParallelResult::eDeviationIsLessThanThreshold;
@@ -307,7 +307,7 @@ void CTask::detectionInParallelExecutionCommand()
     }
     default:
     {
-        log->warn("{}: {} 执行指令不合法!指令: {}", __LINE__, getCurrentStateString(), ExecutionCommandStringMap.find(m_eexecutionCommand)->second);
+        SPDLOG_WARN("{} 执行指令不合法!指令: {}", getCurrentStateString(), ExecutionCommandStringMap.find(m_eexecutionCommand)->second);
     }
     }
 }
@@ -342,7 +342,7 @@ void CTask::motionInParallelExecutionCommand()
             double* tar_pos = tar_position.data();
 
             std::vector<double> parallel_velocity = GP::End_Vel_Limit;
-            int scalar{1};
+            int scalar{ 1 };
             scalar = GP::Working_Scenario == GP::WorkingScenario::Top ? 5 : 3;
             parallel_velocity.at(0) *= scalar;
             parallel_velocity.at(1) *= scalar;
@@ -368,7 +368,7 @@ void CTask::motionInParallelExecutionCommand()
     }
     default:
     {
-        log->warn("{}: {} 执行指令不合法!指令: {}", __LINE__, getCurrentStateString(), ExecutionCommandStringMap.find(m_eexecutionCommand)->second);
+        SPDLOG_WARN("{} 执行指令不合法!指令: {}", getCurrentStateString(), ExecutionCommandStringMap.find(m_eexecutionCommand)->second);
     }
     }
 }
@@ -393,12 +393,12 @@ void CTask::readyToPositioningExecutionCommand()
     }
     case EExecutionCommand::ePause:
     {
-        log->info("{}: 暂停指令不执行任何操作", getCurrentStateString());
+        SPDLOG_INFO("{}: 暂停指令不执行任何操作", getCurrentStateString());
         break;
     }
     default:
     {
-        log->warn("{}: {} 执行指令不合法!指令: {}", __LINE__, getCurrentStateString(), ExecutionCommandStringMap.find(m_eexecutionCommand)->second);
+        SPDLOG_WARN("{} 执行指令不合法!指令: {}", getCurrentStateString(), ExecutionCommandStringMap.find(m_eexecutionCommand)->second);
     }
     }
 }
@@ -447,12 +447,12 @@ void CTask::detectionInPositioningExecutionCommand()
     }
     case EExecutionCommand::ePause:
     {
-        log->info("{}: 暂停指令不执行任何操作", getCurrentStateString());
+        SPDLOG_INFO("{}: 暂停指令不执行任何操作", getCurrentStateString());
         break;
     }
     default:
     {
-        log->warn("{}: {} 执行指令不合法!指令: {}", __LINE__, getCurrentStateString(), ExecutionCommandStringMap.find(m_eexecutionCommand)->second);
+        SPDLOG_WARN("{} 执行指令不合法!指令: {}", getCurrentStateString(), ExecutionCommandStringMap.find(m_eexecutionCommand)->second);
     }
     }
 }
@@ -466,7 +466,7 @@ void CTask::motionInPositioningExecutionCommand()
         UpdateLaserDistance();
         if (CheckParallelStateDecorator() == EDetectionInParallelResult::eNoWallDetected)
         {
-            log->warn("{} 反馈异常，末端激光偏差过大，状态跳转: 手动--准备", __LINE__);
+            SPDLOG_WARN("反馈异常，末端激光偏差过大，状态跳转: 手动--准备");
             updateTopAndSubState(ETopState::eManual, ESubState::eReady);
             break;
         }
@@ -485,11 +485,11 @@ void CTask::motionInPositioningExecutionCommand()
 
             m_Robot->setLinkMoveAbs(tar_pos, GP::End_Vel_Position.data());
             stLinkStatus linkstatus = m_Robot->getLinkSta();
-            log->info("{} tar_pos:{}, {}, {}, {}, {}, {}\ncurrent_pos: {}, {}, {}, {}, {}, {}", __LINE__,
+            SPDLOG_INFO("tar_pos:{}, {}, {}, {}, {}, {}\ncurrent_pos: {}, {}, {}, {}, {}, {}",
                       tar_pos[0], tar_pos[1], tar_pos[2], tar_pos[3] * 57.3, tar_pos[4] * 57.3, tar_pos[5] * 57.3,
                       linkstatus.stLinkActKin.LinkPos[0], linkstatus.stLinkActKin.LinkPos[1], linkstatus.stLinkActKin.LinkPos[2],
                       linkstatus.stLinkActKin.LinkPos[3] * 57.3, linkstatus.stLinkActKin.LinkPos[4] * 57.3, linkstatus.stLinkActKin.LinkPos[5] * 57.3);
-            log->info("{} tar_pos - current_pos:{},{},{},{},{},{}", __LINE__,
+            SPDLOG_INFO("tar_pos - current_pos:{},{},{},{},{},{}",
                       tar_pos[0] - linkstatus.stLinkActKin.LinkPos[0], tar_pos[1] - linkstatus.stLinkActKin.LinkPos[1],
                       tar_pos[2] - linkstatus.stLinkActKin.LinkPos[2], tar_pos[3] * 57.3 - linkstatus.stLinkActKin.LinkPos[3] * 57.3,
                       tar_pos[4] * 57.3 - linkstatus.stLinkActKin.LinkPos[4] * 57.3, tar_pos[5] * 57.3 - linkstatus.stLinkActKin.LinkPos[5] * 57.3);
@@ -503,7 +503,7 @@ void CTask::motionInPositioningExecutionCommand()
             {
                 cnt = 0;
                 m_position_motion_flag = false;
-                log->warn("{} 定位运动完成，状态跳转: 定位--检测", __LINE__);
+                SPDLOG_WARN("{} 定位运动完成，状态跳转: 定位--检测");
                 updateTopAndSubState(ETopState::ePositioning, ESubState::eDetection);
             }
             cnt++;
@@ -515,7 +515,7 @@ void CTask::motionInPositioningExecutionCommand()
             temp_vel.at(1) = 0.5;
             temp_vel.at(2) = 0.5;
             stLinkStatus linkstatus = m_Robot->getLinkSta();
-            SPDLOG_INFO("tar_pos:{}, {}, {}, {}, {}, {}\ncurrent_pos: {}, {}, {}, {}, {}, {}", 
+            SPDLOG_INFO("tar_pos:{}, {}, {}, {}, {}, {}\ncurrent_pos: {}, {}, {}, {}, {}, {}",
                       tar_pos[0], tar_pos[1], tar_pos[2], tar_pos[3] * 57.3, tar_pos[4] * 57.3, tar_pos[5] * 57.3,
                       linkstatus.stLinkActKin.LinkPos[0], linkstatus.stLinkActKin.LinkPos[1], linkstatus.stLinkActKin.LinkPos[2],
                       linkstatus.stLinkActKin.LinkPos[3] * 57.3, linkstatus.stLinkActKin.LinkPos[4] * 57.3, linkstatus.stLinkActKin.LinkPos[5] * 57.3);
@@ -539,7 +539,7 @@ void CTask::motionInPositioningExecutionCommand()
     default:
     {
         m_position_motion_flag = false;
-        log->warn("{}: {} 执行指令不合法!指令: {}", __LINE__, getCurrentStateString(), ExecutionCommandStringMap.find(m_eexecutionCommand)->second);
+        SPDLOG_WARN("{} 执行指令不合法!指令: {}", getCurrentStateString(), ExecutionCommandStringMap.find(m_eexecutionCommand)->second);
     }
     }
 }
@@ -574,7 +574,7 @@ void CTask::readyToFitBoardExecutionCommand()
     }
     default:
     {
-        log->warn("{}: {} 执行指令不合法!指令: {}", __LINE__, getCurrentStateString(), ExecutionCommandStringMap.find(m_eexecutionCommand)->second);
+        SPDLOG_WARN("{} 执行指令不合法!指令: {}", getCurrentStateString(), ExecutionCommandStringMap.find(m_eexecutionCommand)->second);
     }
     }
 }
@@ -610,7 +610,7 @@ void CTask::detectionInFitBoardExecutionCommand()
 
         result = CheckSidelineStateDecorator();
 #endif
-        static int cnt{0};
+        static int cnt{ 0 };
         switch (result)
         {
         case EDetectionInPositioningResult::eDeviationIsLessThanThreshold:
@@ -653,7 +653,7 @@ void CTask::detectionInFitBoardExecutionCommand()
     }
     default:
     {
-        log->warn("{}: {} 执行指令不合法!指令: {}", __LINE__, getCurrentStateString(), ExecutionCommandStringMap.find(m_eexecutionCommand)->second);
+        SPDLOG_WARN("{} 执行指令不合法!指令: {}", getCurrentStateString(), ExecutionCommandStringMap.find(m_eexecutionCommand)->second);
     }
     }
 }
@@ -690,7 +690,7 @@ void CTask::sidelineMotionInFitBoardExecutionCommand()
     }
     default:
     {
-        log->warn("{}: {} 执行指令不合法!指令: {}", __LINE__, getCurrentStateString(), ExecutionCommandStringMap.find(m_eexecutionCommand)->second);
+        SPDLOG_WARN("{} 执行指令不合法!指令: {}", getCurrentStateString(), ExecutionCommandStringMap.find(m_eexecutionCommand)->second);
     }
     }
 }
@@ -706,7 +706,7 @@ void CTask::liftMotionInFitBoardExecutionCommand()
         {
             double velocity = LINK_0_JOINT_MAX_VEL[GP::TOOL_LIFTING] * 0.5;
             m_Robot->setJointMoveAbs(GP::TOOL_LIFTING, m_lift_tool, velocity);
-            log->info("{} joint: {}, target position: {}, velocity: {}", __LINE__, GP::TOOL_LIFTING, m_lift_tool, velocity);
+            SPDLOG_INFO("joint: {}, target position: {}, velocity: {}", GP::TOOL_LIFTING, m_lift_tool, velocity);
             lift_motion_flag = true;
             break;
         }
@@ -717,7 +717,7 @@ void CTask::liftMotionInFitBoardExecutionCommand()
             auto status = m_Robot->getJointGroupSta();
             bool flag_state = status[GP::TOOL_LIFTING].eState == eAxis_STANDSTILL;
             bool flag_motion = std::fabs(status[GP::TOOL_LIFTING].Position - m_lift_tool) < 1;
-            log->info("{} state: {}, position: {}", __LINE__, static_cast<int>(status[GP::TOOL_LIFTING].eState), status[GP::TOOL_LIFTING].Position);
+            SPDLOG_INFO("state: {}, position: {}", static_cast<int>(status[GP::TOOL_LIFTING].eState), status[GP::TOOL_LIFTING].Position);
             if (flag_motion && flag_state)
             {
                 updateTopAndSubState(ETopState::eFitBoard, ESubState::eDetection);
@@ -753,7 +753,7 @@ void CTask::liftMotionInFitBoardExecutionCommand()
     }
     default:
     {
-        log->warn("{}: {} 执行指令不合法!指令: {}", __LINE__, getCurrentStateString(), ExecutionCommandStringMap.find(m_eexecutionCommand)->second);
+        SPDLOG_WARN("{} 执行指令不合法!指令: {}", getCurrentStateString(), ExecutionCommandStringMap.find(m_eexecutionCommand)->second);
     }
     }
 }
@@ -778,7 +778,7 @@ void CTask::fitBoardFinishedExecutionCommand()
     }
     case EExecutionCommand::ePause:
     {
-        log->info("{}: 暂停指令不执行任何操作", getCurrentStateString());
+        SPDLOG_INFO("{}: 暂停指令不执行任何操作", getCurrentStateString());
         break;
     }
     case EExecutionCommand::eTerminate:
@@ -788,7 +788,7 @@ void CTask::fitBoardFinishedExecutionCommand()
     }
     default:
     {
-        log->warn("{}: {} 执行指令不合法!指令: {}", __LINE__, getCurrentStateString(), ExecutionCommandStringMap.find(m_eexecutionCommand)->second);
+        SPDLOG_WARN("{} 执行指令不合法!指令: {}", getCurrentStateString(), ExecutionCommandStringMap.find(m_eexecutionCommand)->second);
     }
     }
 }
@@ -828,7 +828,7 @@ void CTask::quitingExecutionCommand()
     }
     default:
     {
-        log->warn("{}: {} 执行指令不合法!指令: {}", __LINE__, getCurrentStateString(), ExecutionCommandStringMap.find(m_eexecutionCommand)->second);
+        SPDLOG_WARN("{} 执行指令不合法!指令: {}", getCurrentStateString(), ExecutionCommandStringMap.find(m_eexecutionCommand)->second);
     }
     }
 }
@@ -853,7 +853,7 @@ void CTask::pauseExecutionCommand()
     }
     default:
     {
-        log->warn("{}: {} 执行指令不合法!指令: {}", __LINE__, getCurrentStateString(), ExecutionCommandStringMap.find(m_eexecutionCommand)->second);
+        SPDLOG_WARN("{} 执行指令不合法!指令: {}", getCurrentStateString(), ExecutionCommandStringMap.find(m_eexecutionCommand)->second);
     }
     }
 }
@@ -878,7 +878,7 @@ void CTask::CalculatedAdjustmentOfSideline()
     m_fit_board_target_pose = std::vector(tar_position.begin(), tar_position.end());
 
     stLinkStatus linkstatus = m_Robot->getLinkSta();
-    SPDLOG_INFO("current_pos: {}, {}, {}, {}, {}, {}",linkstatus.stLinkActKin.LinkPos[0], linkstatus.stLinkActKin.LinkPos[1], linkstatus.stLinkActKin.LinkPos[2],
+    SPDLOG_INFO("current_pos: {}, {}, {}, {}, {}, {}", linkstatus.stLinkActKin.LinkPos[0], linkstatus.stLinkActKin.LinkPos[1], linkstatus.stLinkActKin.LinkPos[2],
                       linkstatus.stLinkActKin.LinkPos[3] * 57.3, linkstatus.stLinkActKin.LinkPos[4] * 57.3, linkstatus.stLinkActKin.LinkPos[5] * 57.3);
     SPDLOG_INFO("m_fit_board_target_pose: {},{},{},{},{},{}", m_fit_board_target_pose.at(0),
                                                               m_fit_board_target_pose.at(1),
@@ -934,65 +934,70 @@ void CTask::UpdateVisionResult(VisionResult& vis_res)
 
     for (int i = 0; i < 6; i++)
         vis_res.stData.m_LineDistance[i] *= k;
-    
+
     int laser2camera[4] = {
             4, 5, 1, 3
     };  // 轮廓激光映射到对应相机
 
 
-    
+
     //1.0 轮廓激光结果校验视觉结果
     // for (int i = 0; i < 4; i++)
-    // { 
+    // {
     //     if (vis_res.stData.m_bLaserProfile[i]) // 如果轮廓激光数据有效
-    //     { 
+    //     {
     //         double laserTemp = vis_res.stData.m_LaserGapDistance[i] - 15;
     //         if (vis_res.stData.m_bLineDistance[laser2camera[i]]) // 视觉结果有效
-    //         {   
-    //             if (abs(vis_res.stData.m_LineDistance[laser2camera[i]] -laserTemp) > 5)  // 轮廓结果与对应视觉的偏差小于5mm认为视觉数据是有效的 
+    //         {
+    //             if (abs(vis_res.stData.m_LineDistance[laser2camera[i]] -laserTemp) > 5)  // 轮廓结果与对应视觉的偏差小于5mm认为视觉数据是有效的
     //             {
     //                 vis_res.stData.m_bLineDistance[laser2camera[i]] = false;
-    //             }   
+    //             }
     //         }
     //     }
     // }
-    //2.0 检查视觉数据有效性 
+    //2.0 检查视觉数据有效性
 
-       bool visLong = (vis_res.stData.m_bLineDistance[0] && vis_res.stData.m_bLineDistance[2]) || 
-                      (vis_res.stData.m_bLineDistance[1] && vis_res.stData.m_bLineDistance[3]);
+    bool visLong = (vis_res.stData.m_bLineDistance[0] && vis_res.stData.m_bLineDistance[2]) ||
+        (vis_res.stData.m_bLineDistance[1] && vis_res.stData.m_bLineDistance[3]);
 
-       bool visShort = vis_res.stData.m_bLineDistance[4] || vis_res.stData.m_bLineDistance[5];
-       bool visDataIsValid = visLong && visShort;
+    bool visShort = vis_res.stData.m_bLineDistance[4] || vis_res.stData.m_bLineDistance[5];
+    bool visDataIsValid = visLong && visShort;
 
-    //3.0 检查轮廓激光数据有效性 
-       bool laserLong = vis_res.stData.m_bLaserProfile[2] && vis_res.stData.m_bLaserProfile[3];
-       bool laserShort = vis_res.stData.m_bLaserProfile[0] || vis_res.stData.m_bLaserProfile[1];
-       bool laserDataValid = laserLong && laserShort; 
-       laserDataValid = false; 
+    //3.0 检查轮廓激光数据有效性
+    bool laserLong = vis_res.stData.m_bLaserProfile[2] && vis_res.stData.m_bLaserProfile[3];
+    bool laserShort = vis_res.stData.m_bLaserProfile[0] || vis_res.stData.m_bLaserProfile[1];
+    bool laserDataValid = laserLong && laserShort;
+    laserDataValid = false;
 
     //4.0 融合策略
-    if(visDataIsValid){
+    if (visDataIsValid)
+    {
         // 视觉无需做任何处理
 
     }
-    else if(laserDataValid){
+    else if (laserDataValid)
+    {
         // 清除原有视觉数据
-        for(int i = 0; i<6;i++){
-            vis_res.stData.m_bLineDistance[i] = false; 
+        for (int i = 0; i < 6; i++)
+        {
+            vis_res.stData.m_bLineDistance[i] = false;
             vis_res.stData.m_LineDistance[i] = 0.0;
         }
         // 轮廓激光重新赋值
-        for(int i=0; i<4; i++){
+        for (int i = 0; i < 4; i++)
+        {
             vis_res.stData.m_bLineDistance[laser2camera[i]] = true;
-            vis_res.stData.m_LineDistance[laser2camera[i]]  = vis_res.stData.m_LaserGapDistance[i] - 15;
+            vis_res.stData.m_LineDistance[laser2camera[i]] = vis_res.stData.m_LaserGapDistance[i] - 15;
         }
     }
-    else{
+    else
+    {
         // for (int i = 0; i < 4; i++)
-        // { 
+        // {
         // // if(i==1){continue;}
         //   if (vis_res.stData.m_bLaserProfile[i]) // 如果轮廓激光数据有效
-        //   { 
+        //   {
         //     double laserTemp = vis_res.stData.m_LaserGapDistance[i] - 15;
         //     if (vis_res.stData.m_bLineDistance[laser2camera[i]]) // 视觉结果有效
         //     {   // 轮廓激光对应的相机位置有效
@@ -1004,23 +1009,23 @@ void CTask::UpdateVisionResult(VisionResult& vis_res)
         //             // vis_res.stData.m_LineDistance[laser2camera[i]] = vis_res.stData.m_LineDistance[laser2camera[i]];
         //         }
         //         else
-        //         { 
+        //         {
         //             // 有待于进一步观察
         //             if(laserTemp<70){ //限制轮廓激光结果值不要太大
         //                 // vis_res.stData.m_bLineDistance[laser2camera[i]] = true;
         //                 vis_res.stData.m_LineDistance[laser2camera[i]] = laserTemp;
         //             }
         //         }
-                
+
         //     }
         //     else
         //     { // 相机测量数据无效
-                
+
         //         if(laserTemp<70){ //限制轮廓激光结果值不要太大
         //             vis_res.stData.m_bLineDistance[laser2camera[i]] = true;
         //             vis_res.stData.m_LineDistance[laser2camera[i]] = laserTemp;
         //         }
-                
+
         //     }
         // }
 
@@ -1053,7 +1058,7 @@ void CTask::updateTopAndSubState(ETopState topState, ESubState subState)
 {
     std::lock_guard<std::mutex> lock(m_mutex);
 
-    log->info("状态跳转: {}--{} ==> {}--{}", TopStateStringMap[m_etopState].first, SubStateStringMap[m_esubState].first,
+    SPDLOG_INFO("状态跳转: {}--{} ==> {}--{}", TopStateStringMap[m_etopState].first, SubStateStringMap[m_esubState].first,
               TopStateStringMap[topState].first, SubStateStringMap[subState].first);
 
     m_etopState = topState;
@@ -1066,7 +1071,7 @@ void CTask::updateExecutionCommand(EExecutionCommand executionCommand)
 
     if (executionCommand != EExecutionCommand::eNULL)
     {
-        log->info("指令更新: {} ==> {}", ExecutionCommandStringMap[m_eexecutionCommand], ExecutionCommandStringMap[executionCommand]);
+        SPDLOG_INFO("指令更新: {} ==> {}", ExecutionCommandStringMap[m_eexecutionCommand], ExecutionCommandStringMap[executionCommand]);
     }
 
     m_eexecutionCommand = executionCommand;
@@ -1096,6 +1101,56 @@ std::string CTask::getCurrentExecutionCommandString() const
 bool CTask::checkSubState(ESubState subState) const
 {
     return subState == m_esubState;
+}
+
+bool CTask::SingleSideLine()
+{
+    UpdateLaserDistance();
+    if (CheckParallelStateDecorator() == EDetectionInParallelResult::eNoWallDetected)
+    {
+        return false;
+    }
+    if (CheckFitBoardState() == EDetectionInFitBoardResult::eDeviationIsLessThanThreshold)
+    {
+        return true;
+    }
+    VisionResult vis_res = m_vision->getVisResult();
+    if (!vis_res.lineStatus && !vis_res.laserStatus)
+    {
+        return false;
+    }
+    UpdateVisionResult(vis_res);
+
+    auto result = CheckSidelineStateDecorator();
+    if (result != EDetectionInPositioningResult::eEndAdjustmentDataIsValid)
+    {
+        return false;
+    }
+
+    CalculatedAdjustmentOfSideline();
+    int cnt{ 0 };
+    while (true)
+    {
+        if (cnt > 1000)
+        {
+            return false;
+        }
+        auto temp_vel = GP::End_Vel_Position;
+        temp_vel.at(0) = 0.5;
+        temp_vel.at(1) = 0.5;
+        temp_vel.at(2) = 0.5;
+        m_Robot->setLinkMoveAbs(m_fit_board_target_pose.data(), temp_vel.data());
+
+        QVector<double> tar_position(m_fit_board_target_pose.begin(), m_fit_board_target_pose.end());
+        if (m_LinkStatus.eLinkActState == eLINK_STANDSTILL &&
+            m_Robot->isEndReached(tar_position))
+        {
+            return true;
+        }
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        cnt++;
+    }
 }
 
 void CTask::TranslateManualTaskIndexNumberToCMD()
@@ -1139,7 +1194,7 @@ void CTask::TranslateManualTaskIndexNumberToCMD()
     }
     default:
     {
-        log->error("{} invalid task index: {}", __LINE__, m_manualOperator.TaskIndex);
+        SPDLOG_ERROR("invalid task index: {}", m_manualOperator.TaskIndex);
     }
     }
 }

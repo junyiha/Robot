@@ -184,6 +184,8 @@ private slots:
     void slots_btn_auto_save_image_clicked();
     void slots_btn_disable_auto_save_image_clicked();
 
+    void slots_btn_single_side_line_clicked();
+
 private:
     double m_wheelVel{ 30.0 };
     bool m_dragEnabled;
