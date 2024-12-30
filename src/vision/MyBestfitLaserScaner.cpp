@@ -157,25 +157,24 @@ cv::Mat MyBestfitLaserScaner::pointCloud2Image(std::vector<cv::Point2f> pointClo
     }
     this->minX = minX;
     this->minY = minY;
+    
+    int scale = 2;
+
 
     //    std::cout<<"minY:"<<minY<<"maxY"<<maxY<<"minX"<<minX<<"maxX"<<maxX<<std::endl;
         //规定row是z，col是x，且计算时要先减去最小值再乘10（放大）+偏置（为了看出整体形状）
-    int rows = (maxY - minY) * 10 + 100;
-    int cols = (maxX - minX) * 10 + 100;
+    int rows = (maxY - minY) * scale + 100;
+    int cols = (maxX - minX) * scale + 100;
+    if(rows<0 || cols<0){
+        return cv::Mat();
+    }
+
+
     cv::Mat m(rows, cols, CV_8UC1, cv::Scalar(0));
     int bias = 50;
     for (int i = 0; i < pointClouds.size(); i++)
     {
-
-         if (pointClouds[i].x < -110 || pointClouds[i].x >110)
-        {
-            continue;
-        }
-        if (pointClouds[i].y < 170 || pointClouds[i].y >430)
-        {  // 轮廓激光有效量程范围:  x: -110~110   z: 170~430
-            continue;
-        }
-        m.at<char>(int((pointClouds[i].y - minY) * 10 + bias), int((pointClouds[i].x - minX) * 10 + bias)) = 255; //at <类型> (行,列) [通道(如果有通道的话)]
+        m.at<char>(int((pointClouds[i].y - minY) * scale + bias), int((pointClouds[i].x - minX) * scale + bias)) = 255; //at <类型> (行,列) [通道(如果有通道的话)]
     }
     return m;
 
@@ -610,6 +609,10 @@ bool MyBestfitLaserScaner::getConnectState()
 }
 void MyBestfitLaserScaner::getPointsMaskOnce()
 {
+
+            // auto begin = std::chrono::system_clock::now();
+
+
     try
     {
 
@@ -645,6 +648,10 @@ void MyBestfitLaserScaner::getPointsMaskOnce()
         {
             for (int i = 0; i < dataLength; i++)
             {
+                if(m_dScannerBufferX[i]<-110 || m_dScannerBufferX[i]>110  || 
+                   m_dScannerBufferZ[i]<170 || m_dScannerBufferZ[i]>430 ){
+                    continue; 
+                }
                 m_vecPointClouds.push_back(cv::Point2f(m_dScannerBufferX[i], m_dScannerBufferZ[i]));
             }
         }
@@ -667,6 +674,9 @@ void MyBestfitLaserScaner::getPointsMaskOnce()
         std::cout << "*******************layser error:**********************:" << e.what() << std::endl;
         throw std::runtime_error(e.what());
     }
+
+            // auto duration = std::chrono::system_clock::now() - begin;
+            // SPDLOG_INFO("getPointsMaskOnce()'s duration: {}  ms", std::chrono::duration_cast<std::chrono::milliseconds>(duration).count());
 
 }
 void MyBestfitLaserScaner::setLaserState(bool state)

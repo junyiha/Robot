@@ -33,7 +33,6 @@ endif()
 
 # add_definitions(-DSTATE_MACHINE_TEST=1)
 add_definitions(-DROOT_PATH="${CMAKE_SOURCE_DIR}/")
-add_definitions(-DCONFIG_PATH="${CMAKE_SOURCE_DIR}/config.yaml")
 if(BUILD_GPU_FLAG)
         add_definitions(-DVISION_MODEL_PATH="${CMAKE_SOURCE_DIR}/models/ocrnet_model_wb_20241120.engine")
 else()

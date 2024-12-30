@@ -61,9 +61,7 @@ public:
     LidarHelper* lidar_helper = nullptr;
     LaserScanerControls* laser_controls = nullptr;
     LidarHandler* lidar_handler = nullptr;
-    int layer2camera[4] = {
-            4,5, 1, 3
-    };  // 轮廓激光映射到对应相机
+   
 
 
 
@@ -87,6 +85,7 @@ public:
     void parser_result(std::string paserType, stMeasureData* stm);
     VisionResult getVisResult();
     void closeThread();
+    void setBadCaseSave(bool value);
 
 };
 

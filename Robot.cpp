@@ -77,9 +77,10 @@ int main(int argc, char* argv[])
         {"TestConfigManager", TestConfigManager},
         {"RunSceneSelect", RunSceneSelect},
         {"TestTcpClient", TestTcpClient},
+        {"TestFitBoard", TestFitBoard}
     };
     cxxopts::Options options("Robot", "boarding robot's project");
-    options.add_options()("m,mode", "run mode", cxxopts::value<std::string>()->default_value("robot"));
+    options.add_options()("m,mode", "run mode", cxxopts::value<std::string>()->default_value("RunSceneSelect"));
     options.add_options()("v,verbose", "Verbose output", cxxopts::value<bool>()->default_value("false"));
     try
     {

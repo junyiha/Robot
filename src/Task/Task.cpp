@@ -86,7 +86,7 @@ void CTask::Manual()
 
     if (std::fabs(m_manualOperator.VechDirect - m_JointGroupStatus[GP::STEER_LEFT_INDEX].Position) > 3)
     {
-        const double velocity{ 8.0 };
+        const double velocity{ 10.0 };
         // 当前指令和上一个指令的VechDirect都为零，判断条件始终成立
         m_Robot->setJointMoveAbs(GP::STEER_LEFT_INDEX, m_manualOperator.VechDirect, velocity);  // 速度需改为参数
         m_Robot->setJointMoveAbs(GP::STEER_RIGHT_INDEX, m_manualOperator.VechDirect, velocity); // 速度需改为参数
@@ -137,18 +137,20 @@ void CTask::Manual()
     {
 #ifdef TEST_TASK_STATEMACHINE_
 #else
-        std::vector<double> TEMP_LINK_0_JOINT_MAX_VEL_FOR_READY_POINT(MAX_FREEDOM_LINK, 0.0);
-        TEMP_LINK_0_JOINT_MAX_VEL_FOR_READY_POINT = { 3, 3, 3, 1, 0.3, 10, 5, 0.5, 4, 1, 3 };
-        m_Robot->setJointGroupMoveAbs(GP::Position_Map[std::make_pair(GP::Working_Scenario, GP::PositionType::Prepare)].value.data(), TEMP_LINK_0_JOINT_MAX_VEL_FOR_READY_POINT.data());
+        std::vector<double> temp_vel(RobotConfigMap.size(), 0.0);
+        temp_vel = { 3, 3, 3, 1, 0.6, 10, 5, 0.5, 2, 4, 3 };
+        auto temp_vec = GP::Position_Map[std::make_pair(GP::Working_Scenario, GP::PositionType::Prepare)].value;
+        m_Robot->setJointGroupMoveAbs(temp_vec.data(), temp_vel.data());
 #endif
     }
     else if (m_manualOperator.Ready == 2)
     {
 #ifdef TEST_TASK_STATEMACHINE_
 #else
-        std::vector<double> TEMP_LINK_0_JOINT_MAX_VEL_FOR_SET_POINT(MAX_FREEDOM_LINK, 0.0);
-        TEMP_LINK_0_JOINT_MAX_VEL_FOR_SET_POINT = { 3, 3, 3, 1, 0.3, 10, 5, 0.5, 2, 2, 3 };
-        m_Robot->setJointGroupMoveAbs(GP::Position_Map[std::make_pair(GP::Working_Scenario, GP::PositionType::Lift)].value.data(), TEMP_LINK_0_JOINT_MAX_VEL_FOR_SET_POINT.data());
+        std::vector<double> temp_vel(RobotConfigMap.size(), 0.0);
+        temp_vel = { 3, 3, 3, 1, 0.6, 10, 5, 0.5, 4, 2, 3 };
+        auto temp_vec = GP::Position_Map[std::make_pair(GP::Working_Scenario, GP::PositionType::Lift)].value;
+        m_Robot->setJointGroupMoveAbs(temp_vec.data(), temp_vel.data());
 #endif
     }
     else if (m_manualOperator.bLinkMoveFlag)
@@ -201,14 +203,28 @@ void CTask::Manual()
     }
     case stManualOperator::SecondPush:
     {
-        double second_push_point = 208.93; // 底部升降位置
-        m_Robot->setJointMoveAbs(0, second_push_point, LINK_0_JOINT_MAX_VEL[0]);
+        if (GP::Working_Scenario == GP::WorkingScenario::Top)
+        {
+            m_Robot->setJointMoveAbs(0, 188.93, RobotConfigMap.at(0).max_velocity);
+            m_Robot->setJointMoveAbs(9, 950.0, RobotConfigMap.at(9).max_velocity);  // 工具升降
+        }
+        else 
+        {
+            SPDLOG_WARN("非顶板作业场景，二次举升不执行任何动作");
+        }
         break;
     }
     case stManualOperator::SecondQuit:
     {
-        m_Robot->setJointMoveAbs(0, 100.0, LINK_0_JOINT_MAX_VEL[0]);  // 底部升降
-        m_Robot->setJointMoveAbs(9, 1000.0, 2);  // 工具升降
+        if (GP::Working_Scenario == GP::WorkingScenario::Top)
+        {
+            m_Robot->setJointMoveAbs(0, 50.0, RobotConfigMap.at(0).max_velocity);  // 底部升降
+            m_Robot->setJointMoveAbs(9, 885.0, RobotConfigMap.at(9).max_velocity);  // 工具升降
+        }
+        else 
+        {
+            m_Robot->setJointMoveAbs(9, 875.0, RobotConfigMap.at(9).max_velocity);  // 工具升降
+        }
         break;
     }
     case stManualOperator::Parallel:
@@ -262,14 +278,14 @@ int CTask::CheckParallelState(std::vector<double> laserDistance, int max_deviati
     // 检查输入数据
     if (laserDistance.size() < 4)
     {
-        log->error("激光数据数量输入有误");
+        SPDLOG_ERROR("激光数据数量输入有误");
         return -1;
     }
     for (int i = 0; i < 4; ++i)
     {
         if (laserDistance[i] > 450 || laserDistance[i] < -3)
         {
-            log->error("{}: 激光数据有误,或壁面距离太远, 激光编号: {}, 数值: {}", __LINE__, i, laserDistance.at(i));
+            SPDLOG_ERROR("激光数据有误,或壁面距离太远, 激光编号: {}, 数值: {}", i, laserDistance.at(i));
             return -1;
         }
     }
@@ -281,7 +297,7 @@ int CTask::CheckParallelState(std::vector<double> laserDistance, int max_deviati
 
     if (*max_res - *min_res > max_deviation && *min_res / *max_res < 0.5)
     {
-        log->error("激光距离最大偏差大于{}mm", max_deviation);
+        SPDLOG_ERROR("激光距离最大偏差大于{}mm", max_deviation);
         return -1;
     }
     // 判断是否完成调平

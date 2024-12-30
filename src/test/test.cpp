@@ -2,7 +2,7 @@
 
 int line_detect_demo(int argc, char* argv[])
 {
-    std::string path = "E:\\ZBRobot\\Robot\\cache\\Image_20241011110413922.bmp";
+    std::string path = "E:\\projects\\ZBRobot\\2024-12-23\\robot\\cache\\LineCam_4_2024-12-24-19-04-41.png";
     cv::Mat img = cv::imread(path);
     LineDetector line_tool;
     auto start = std::chrono::high_resolution_clock::now();
@@ -157,6 +157,101 @@ int TestTcpClient(int argc, char* argv[])
         client.Write(buf);
         std::cerr << "receive data: " << client.Read().data() << "\n";
     }
+
+    return 0;
+}
+
+int CheckParallelState(std::vector<double> laserDistance, int max_deviation, int min_deviation, int lift_distance)
+{
+    // 检查输入数据
+    if (laserDistance.size() < 4)
+    {
+        SPDLOG_ERROR("激光数据数量输入有误");
+        return -1;
+    }
+    for (int i = 0; i < 4; ++i)
+    {
+        if (laserDistance[i] > 450 || laserDistance[i] < -3)
+        {
+            SPDLOG_ERROR("激光数据有误,或壁面距离太远, 激光编号: {}, 数值: {}", i, laserDistance.at(i));
+            return -1;
+        }
+    }
+
+    // 计算激光距离最大偏差
+    auto max_res = std::max_element(laserDistance.begin(), laserDistance.end());
+    auto min_res = std::min_element(laserDistance.begin(), laserDistance.end());
+    auto laser_average = std::accumulate(laserDistance.begin(), laserDistance.end(), 0) / laserDistance.size();
+
+    if (*max_res - *min_res > max_deviation && *min_res / *max_res < 0.5)
+    {
+        SPDLOG_ERROR("激光距离最大偏差大于{}mm", max_deviation);
+        return -1;
+    }
+    // 判断是否完成调平
+    if (std::fabs(*max_res - laser_average) < min_deviation &&
+        std::fabs(*min_res - laser_average) < min_deviation &&
+        *min_res < lift_distance) // 最大偏差小于阈值
+        return 1;
+    else
+        return 0;
+}
+
+int TestFitBoard(int argc, char* argv[])
+{
+    const std::vector<double> BOARDING_MOTION_QUE = { 60, 40, 30, 20, 15, 10, 5, 0 }; // 贴合运动序列
+    std::vector<double> laser_distance{90, 90, 90, 90};
+
+    auto config_ptr = std::make_unique<Config::ConfigManager>();
+
+    while (true)
+    {
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        
+        auto motion_index = BOARDING_MOTION_QUE.size();
+        auto min_distance = std::min_element(laser_distance.begin(), laser_distance.end());
+        for (int i = 0; i < BOARDING_MOTION_QUE.size(); ++i)
+        {
+            if (BOARDING_MOTION_QUE[i] + 2 < *min_distance)
+            {
+                motion_index = i;
+                SPDLOG_INFO("贴合调整目标距离为：{}", BOARDING_MOTION_QUE[i]);
+                break;
+            }
+        }
+
+        int res = CheckParallelState(laser_distance, GP::Max_Deviation_In_FitBoard, GP::Min_Deviation_In_FitBoard, GP::Lift_Distance_In_FitBoard);
+        if (res == 1)
+        {
+            SPDLOG_INFO("贴合--检测 ==> 贴合--贴合完成");
+            break;
+        }
+
+        auto result = std::find_if(BOARDING_MOTION_QUE.begin(), BOARDING_MOTION_QUE.end(), [laser_distance](double val){return laser_distance.at(0) == val;});
+        if (result != BOARDING_MOTION_QUE.end())
+        {
+            // 利用计数器，休眠1s
+            static int cnt{0};
+            SPDLOG_INFO("Count: {}", cnt);
+            if (cnt > 20)
+            {
+                SPDLOG_INFO("开始对边运动...");
+                cnt = 0;
+                goto __NEXT;
+            }
+            else 
+            {
+                cnt++;
+                continue;
+            }
+        }
+    __NEXT:
+
+        std::for_each(laser_distance.begin(), laser_distance.end(), [](double& val){val -= 1;});
+
+    }
+
+    std::for_each(laser_distance.begin(), laser_distance.end(), [](double& val){SPDLOG_INFO(val);});
 
     return 0;
 }

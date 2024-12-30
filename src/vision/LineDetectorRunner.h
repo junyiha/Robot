@@ -49,6 +49,12 @@ public:
     void pauseDetect();
     void restartDetect();
 
+    void setIsSave(bool value);
+    bool getIsSave();
+
+    bool isSave = false;
+    QMutex saveLock;
+
 };
 
 

@@ -56,7 +56,10 @@ std::vector<float> LineDetector::getRerferenceLine(cv::Mat referMask, cv::Mat im
         int max_index = -1;
         for (size_t i = 0; i < possibleLines.size(); ++i)
         {
-            double dist_i = calculatePointsDistance(possibleLines[i][0], possibleLines[i][1]);
+            // double dist_i = calculatePointsDistance(possibleLines[i][0], possibleLines[i][1]);
+            double dist_i =  possibleLines[i][0].y>possibleLines[i][1].y?possibleLines[i][0].y:possibleLines[i][1].y;
+            
+            calculatePointsDistance(possibleLines[i][0], possibleLines[i][1]);
             // 1.0 长度过滤
             if (dist_i < 768 * 0.15)
             { // 1. too smal line, ignore it
@@ -181,6 +184,9 @@ std::vector<float> LineDetector::getInkLine(cv::Mat inkMask, std::vector<float> 
         // 进一步筛选
         double max_dist = 0;
         int max_index = -1;
+        double min_dist = 10000;
+        int min_index = -1; 
+
         for (size_t i = 0; i < possibleLines.size(); ++i)
         {
             double dist_i = calculatePointsDistance(possibleLines[i][0], possibleLines[i][1]);
@@ -190,9 +196,9 @@ std::vector<float> LineDetector::getInkLine(cv::Mat inkMask, std::vector<float> 
                 continue;
             }
             //2. 分布位置过滤
-            double min_ref_y = referenceLine[1] < referenceLine[3] ? referenceLine[1] : referenceLine[3];
+            double max_ref_y = referenceLine[1] > referenceLine[3] ? referenceLine[1] : referenceLine[3];
             double max_ink_y = possibleLines[i][0].y < possibleLines[i][1].y ? possibleLines[i][1].y : possibleLines[i][0].y;
-            if (max_ink_y > min_ref_y)
+            if (max_ink_y > max_ref_y)
             {
                 continue;
             }
@@ -209,10 +215,17 @@ std::vector<float> LineDetector::getInkLine(cv::Mat inkMask, std::vector<float> 
                 max_dist = dist_i;
                 max_index = i;
             }
+            
+            // 寻找距离板线最近的墨迹线
+            double ref_ink_dist_y = abs(max_ink_y - max_ref_y);
+            if(min_dist>ref_ink_dist_y){
+                min_dist = ref_ink_dist_y; 
+                min_index = i;
+            } 
         }
-        if (max_index != -1)
+        if (min_index != -1)
         {
-            std::vector<float> lineRes = fiting_line(possibleLines[max_index]);
+            std::vector<float> lineRes = fiting_line(possibleLines[min_index]);
             if (lineRes[0] >= 0 && lineRes[1] >= 0 && lineRes[2] >= 0 && lineRes[3] >= 0)
             {
                 inkLine = lineRes;

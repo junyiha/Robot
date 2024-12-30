@@ -25,6 +25,10 @@ MainWindow::MainWindow(QWidget* parent)
 
     InitSlotUpdateUIAllTimer();
     InitSlotUpdateAllDevicesTimer();
+
+    m_Com->SetLight(1, false);
+    m_Com->SetLight(2, false);
+    m_Com->SetLight(3, false);
 }
 
 void MainWindow::InitUiForm()
@@ -197,14 +201,12 @@ void MainWindow::connectSlotFunctions()
             Qt::UniqueConnection);
     connect(ui->btn_laser_light, &QPushButton::clicked, this, &MainWindow::slots_btn_laser_light_clicked,
             Qt::UniqueConnection);
-    connect(ui->btn_putter_forward, &QPushButton::pressed, this, &MainWindow::slots_on_btn_putter_forward_pressed,
-            Qt::UniqueConnection);
-    connect(ui->btn_putter_forward, &QPushButton::released, this, &MainWindow::slots_on_btn_putter_forward_released,
-            Qt::UniqueConnection);
-    connect(ui->btn_putter_backward, &QPushButton::pressed, this, &MainWindow::slots_on_btn_putter_backward_pressed,
-            Qt::UniqueConnection);
-    connect(ui->btn_putter_backward, &QPushButton::released, this, &MainWindow::slots_on_btn_putter_backward_released,
-            Qt::UniqueConnection);
+    
+    connect(ui->btn_camera_light_control, &QPushButton::clicked, this, &MainWindow::slots_btn_camera_light_clicked, Qt::UniqueConnection);
+    
+
+    connect(ui->btn_putter_forward, &QPushButton::clicked, this, &MainWindow::slots_on_btn_putter_forward_clicked, Qt::UniqueConnection);
+    connect(ui->btn_putter_backward, &QPushButton::clicked, this, &MainWindow::slots_on_btn_putter_backward_clicked, Qt::UniqueConnection);
 
     // 轮廓激光开关控制
     connect(ui->btn_laser_upper_enable, &QPushButton::clicked, this, &MainWindow::slots_btn_laser_upper_enable_clicked, Qt::UniqueConnection);
@@ -219,6 +221,10 @@ void MainWindow::connectSlotFunctions()
     connect(ui->btn_move_zero_select_all, &QPushButton::clicked, this, &MainWindow::slots_btn_move_zero_select_all_clicked, Qt::UniqueConnection);
     connect(ui->btn_joint_text_terminate, &QPushButton::clicked, this, &MainWindow::slots_btn_joint_text_terminate_clicked, Qt::UniqueConnection);
     connect(ui->btn_global_exit, &QPushButton::clicked, this, &MainWindow::slots_btn_global_exit_clicked, Qt::UniqueConnection);
+
+    connect(ui->autoSaveImage, &QPushButton::clicked, this, &MainWindow::slots_btn_auto_save_image_clicked, Qt::UniqueConnection);
+    connect(ui->disableAutoSaveImage, &QPushButton::clicked, this, &MainWindow::slots_btn_disable_auto_save_image_clicked, Qt::UniqueConnection);
+    
 }
 
 MainWindow::~MainWindow()
@@ -586,6 +592,21 @@ void MainWindow::slots_btn_global_exit_clicked()
     terminate();
 }
 
+void MainWindow::slots_btn_auto_save_image_clicked()
+{
+    // vision function
+    m_VisionInterface->setBadCaseSave(true); 
+    SPDLOG_INFO("开启图片自动保存");
+
+}
+
+void MainWindow::slots_btn_disable_auto_save_image_clicked()
+{
+    // 
+    m_VisionInterface->setBadCaseSave(false); 
+    SPDLOG_INFO("关闭图片自动保存");
+}
+
 void MainWindow::on_btn_magnet_stop_clicked()
 {
     // 停止
@@ -698,6 +719,19 @@ void MainWindow::updataDeviceConnectState()
     else
     {
         ui->label_controller_state->setStyleSheet("image: url(:/img/images/icon_redLight.png);");
+    }
+
+    if (m_camera_light_flag)
+    {
+        ui->btn_camera_light_control->setStyleSheet("background-color: rgb(0, 255, 0);"
+                                                  "border: 2px solid blue;"
+                                                  "border-radius: 10px;"
+        );
+    }
+    else 
+    {
+        ui->btn_camera_light_control->setStyleSheet("border: 2px solid blue;"
+                                                  "border-radius: 10px;");
     }
 }
 
@@ -825,7 +859,7 @@ void MainWindow::updateLineDetectResults()
                 if (isValid)
                 {
                     float borderDist = visResult.stData.m_LaserGapHeight[i]; // 板高差
-                    float gapDist = visResult.stData.m_LaserGapDistance[i]; // 版间距
+                    float gapDist = visResult.stData.m_LaserGapDistance[i]-15; // 版间距
                     labelHeight->setText(QString::number(borderDist));
                     labelGap->setText(QString::number(gapDist));
                 }
@@ -1641,6 +1675,33 @@ void MainWindow::slots_btn_camera_hole_light_clicked()
     }
 }
 
+void MainWindow::slots_btn_camera_light_clicked()
+{
+    auto temp_thread = new std::thread([this](){
+    if (!m_camera_light_flag)
+    {
+        m_Com->SetLight(1, true);
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        m_Com->SetLight(2, true);
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        m_Com->SetLight(3, true);
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    }
+    else 
+    {
+        m_Com->SetLight(1, false);
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        m_Com->SetLight(2, false);
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        m_Com->SetLight(3, false);
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    }
+    m_camera_light_flag = !m_camera_light_flag;
+    });
+
+    m_thread_pool.push_back(temp_thread);
+}
+
 void MainWindow::slots_on_btn_putter_forward_pressed()
 {
     m_Com->SetCylinder(1);
@@ -1666,6 +1727,32 @@ void MainWindow::slots_btn_laser_light_clicked()
                                            "border-radius: 10px;");
     }
 
+}
+
+void MainWindow::slots_on_btn_putter_forward_clicked()
+{
+    auto temp_thread = new std::thread([this](){
+        SPDLOG_INFO("电推杠伸出开始...");
+        m_Com->SetCylinder(1);
+        std::this_thread::sleep_for(std::chrono::seconds(15));
+        m_Com->SetCylinder(0);
+        SPDLOG_INFO("电推杠伸出结束...");
+    });
+
+    m_thread_pool.push_back(temp_thread);
+}
+
+void MainWindow::slots_on_btn_putter_backward_clicked()
+{
+    auto temp_thread = new std::thread([this](){
+        SPDLOG_INFO("电推杠缩回开始...");
+        m_Com->SetCylinder(-1);
+        std::this_thread::sleep_for(std::chrono::seconds(15));
+        m_Com->SetCylinder(0);
+        SPDLOG_INFO("电推杠缩回结束...");
+    });
+
+    m_thread_pool.push_back(temp_thread);
 }
 
 void MainWindow::slots_on_btn_putter_forward_released()
@@ -1708,7 +1795,8 @@ void MainWindow::slots_btn_save_prepare_position_clicked()
     std::vector<double> data;
     for (auto& i : status)
     {
-        data.push_back(i.Position);
+        double temp = static_cast<int>(i.Position * 1000) / 1000.0;
+        data.push_back(temp);
     }
 
     GP::Position_Map[{GP::Working_Scenario, GP::PositionType::Prepare}].value = data;
@@ -1736,7 +1824,8 @@ void MainWindow::slots_btn_save_lift_position_clicked()
     std::vector<double> data;
     for (auto& i : status)
     {
-        data.push_back(i.Position);
+        double temp = static_cast<int>(i.Position * 1000) / 1000.0;
+        data.push_back(temp);
     }
     if (!res)
     {

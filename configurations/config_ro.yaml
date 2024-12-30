@@ -47,10 +47,10 @@ Lift_Distance_In_FitBoard:
   brief: 贴合状态下举升的位置
   value: 6.0
 Max_Deviation_In_FitBoard:
-  brief: 贴合允许偏差
+  brief: 贴合允许最大偏差
   value: 20.0
 Min_Deviation_In_FitBoard:
-  brief: 贴合允许偏差
+  brief: 贴合允许最小偏差
   value: 6.0
 Line_Deviation_Threshold:
   brief: 边线调整允许偏差

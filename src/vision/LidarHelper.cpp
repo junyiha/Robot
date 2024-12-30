@@ -75,7 +75,7 @@ void get_connected_components_info(cv::Mat imageBW, cv::Mat &outImage, cv::Mat &
         //��Ӿ���
         cv::Rect rect(x, y, w, h);
         cv::rectangle(show_rect, rect, cv::Scalar(255,255,0), 2, 8, 0);
-        std::cout << "count:" << i << "  area:" << area << std::endl;
+        // std::cout << "count:" << i << "  area:" << area << std::endl;
     }
 
 
@@ -199,17 +199,21 @@ void LidarHelper::lidarDetecter(cv::Mat img,bool isleft,bool revAngle, \
     cv::Mat show_rect;
     img.copyTo(show_rect);
     std::vector<int> linesIndex;
+            // auto begin = std::chrono::system_clock::now();
+
     get_connected_components_info(imageBW, outImage, stats, centroids, show_rect, linesIndex);
     //基于联通分量，直线拟合
     std::vector<std::vector<cv::Point2f>> linesEnd = get_lines_by_connected_components(linesIndex, img, outImage);
     this->show = show_rect;
 
+            // auto duration = std::chrono::system_clock::now() - begin;
+            // std::cerr <<"基于联通分量，直线拟合: "<<std::chrono::duration_cast<std::chrono::milliseconds>(duration).count()  <<"  ms";
 
 
     //------------筛选出两条直线，得到直线关系,  用于后续测量板间隙任务--------------
     if (linesEnd.size() < 2) {
         error = "没有检测到两条直线";
-        std::cout<<"没有检测到两条直线" << std::endl;
+        //std::cout<<"没有检测到两条直线" << std::endl;
         return;
     }
 
@@ -219,17 +223,29 @@ void LidarHelper::lidarDetecter(cv::Mat img,bool isleft,bool revAngle, \
 
     if(board.empty()){
         error = "没有检测到绝缘板边";
-        std::cout << "没有检测到绝缘板边" << std::endl;
+        //std::cout << "没有检测到绝缘板边" << std::endl;
         return ;
     }
 
     if(ref.empty()){
         error = "没有检测到已装板线";
-        std::cout << "没有检测到已装板线" << std::endl;
+        // std::cout << "没有检测到已装板线" << std::endl;
         return ;
     }
 
+  
 
+    // std::string img_name = getCurrentTimestampString(); 
+    // std::string img_origin_path = "E:\\projects\\csh\\points\\origin_"+img_name+".png"; 
+    // std::string img_draw_path = "E:\\projects\\csh\\points\\result_"+img_name+".png"; 
+    // cv::imwrite(img_origin_path, img);
+    // cv::Mat dis = cv::Mat::zeros(img.size(), CV_8UC3); 
+    // cv::line(dis, board[0], board[1], cv::Scalar(255,0,255),2);  
+    // cv::line(dis, ref[0], ref[1], cv::Scalar(0,0,255),2);  
+    // cv::imwrite(img_draw_path, dis);
+
+
+    
 //    //展示结果
 //    cv::Mat show_line;
 //    img.copyTo(show_line);
@@ -261,16 +277,17 @@ void LidarHelper::lidarDetecter(cv::Mat img,bool isleft,bool revAngle, \
             }
         }
     }
-    std::cout << "----------------------------------" << std::endl;
-    std::cout << "board_point.x:" << board_point.x <<"\n"<<"ref_point.x:"<<  ref_point.x << std::endl;
-    std::cout <<"refAngle:"<<refAngle << std::endl;
+    // std::cout << "----------------------------------" << std::endl;
+    // std::cout << "board_point.x:" << board_point.x <<"\n"<<"ref_point.x:"<<  ref_point.x << std::endl;
+    // std::cout <<"refAngle:"<<refAngle << std::endl;
 
-    lidarDist = (board_point.y - ref_point.y) * cos(refAngle / 57.3) / 10.0;
-    gap = fabs(board_point.x - ref_point.x) / 10.0;
-    std::cout << "lidarDist:" << lidarDist << std::endl;
-    std::cout << "gap:" << gap << std::endl;
+    lidarDist = (board_point.y - ref_point.y) * cos(refAngle / 57.3) / 2.0;
+    gap = fabs(board_point.x - ref_point.x) / 2.0;
+    // std::cout << "lidarDist:" << lidarDist << std::endl;
+    // std::cout << "gap:" << gap << std::endl;
     this->resultFlag = true;
-    this->show = showImg(board, ref);
+    this->show = img; 
+    // this->show = showImg(board, ref);
 }
 
 
@@ -306,8 +323,8 @@ void LidarHelper::filterBorderAndReferenceLine(const cv::Mat &img, bool pIsLeft,
         }
 
         // 3. 获取绝缘板线
-        double min_x = std::min(linesEnd[i][0].x, linesEnd[i][1].x);
-        double max_y = std::max(linesEnd[i][0].y, linesEnd[i][1].y);
+        double min_x = min(linesEnd[i][0].x, linesEnd[i][1].x);
+        double max_y = max(linesEnd[i][0].y, linesEnd[i][1].y);
         if(pIsLeft){
             if(border_index==-1){
                 if(min_x<imgW/2 && max_y<imgH/2){
@@ -326,14 +343,14 @@ void LidarHelper::filterBorderAndReferenceLine(const cv::Mat &img, bool pIsLeft,
         }
 
         //4. 获取已装板线
-        if(border_index!=-1 && i!=border_index){
+        if( i!=border_index){
             possRef.push_back(linesEnd[i]);
         }
     }
 
 
     // 筛选已装板线
-    if(possRef.size()>0){
+    if(possRef.size()>0 && !borderLine.empty()){
         double min_dist = 100000.0;
         int refIndex = -1;
         cv::Point2f borderEndPoint;

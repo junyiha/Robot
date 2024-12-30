@@ -341,15 +341,14 @@ void CTask::motionInParallelExecutionCommand()
             QVector<double> tar_position = m_Robot->getTargetPose(Dev_RT[0]);
             double* tar_pos = tar_position.data();
 
-            // log->info("{} tar_pos:{},{},{},{},{},{}", __LINE__, tar_pos[0], tar_pos[1], tar_pos[2],
-            //           tar_pos[3] * 57.3, tar_pos[4] * 57.3, tar_pos[5] * 57.3);
+            std::vector<double> parallel_velocity = GP::End_Vel_Limit;
+            int scalar{1};
+            scalar = GP::Working_Scenario == GP::WorkingScenario::Top ? 5 : 3;
+            parallel_velocity.at(0) *= scalar;
+            parallel_velocity.at(1) *= scalar;
+            parallel_velocity.at(2) *= scalar;
 
-            // stLinkStatus linkstatus = m_Robot->getLinkSta();
-            // log->info("m_Robot->setLinkMoveAbs(tar_pos_differ:{},{},{},{},{},{}",
-            //           tar_pos[0] - linkstatus.stLinkActKin.LinkPos[0], tar_pos[1] - linkstatus.stLinkActKin.LinkPos[1],
-            //           tar_pos[2] - linkstatus.stLinkActKin.LinkPos[2], tar_pos[3] * 57.3 - linkstatus.stLinkActKin.LinkPos[3] * 57.3,
-            //           tar_pos[4] * 57.3 - linkstatus.stLinkActKin.LinkPos[4] * 57.3, tar_pos[5] * 57.3 - linkstatus.stLinkActKin.LinkPos[5] * 57.3);
-            m_Robot->setLinkMoveAbs(tar_pos, GP::End_Vel_Limit.data());
+            m_Robot->setLinkMoveAbs(tar_pos, parallel_velocity.data());
             break;
         }
         }
@@ -415,7 +414,7 @@ void CTask::detectionInPositioningExecutionCommand()
         detectResult = EDetectionInPositioningResult::eDeviationIsLessThanThreshold;
 #else
         VisionResult vis_res = m_vision->getVisResult();
-        if (!vis_res.lineStatus)
+        if (!vis_res.lineStatus && !vis_res.laserStatus)
             break;
 
         UpdateVisionResult(vis_res);
@@ -511,7 +510,16 @@ void CTask::motionInPositioningExecutionCommand()
         }
         else
         {
-            m_Robot->setLinkMoveAbs(tar_pos, GP::End_Vel_Limit.data());
+            auto temp_vel = GP::End_Vel_Limit;
+            temp_vel.at(0) = 0.5;
+            temp_vel.at(1) = 0.5;
+            temp_vel.at(2) = 0.5;
+            stLinkStatus linkstatus = m_Robot->getLinkSta();
+            SPDLOG_INFO("tar_pos:{}, {}, {}, {}, {}, {}\ncurrent_pos: {}, {}, {}, {}, {}, {}", 
+                      tar_pos[0], tar_pos[1], tar_pos[2], tar_pos[3] * 57.3, tar_pos[4] * 57.3, tar_pos[5] * 57.3,
+                      linkstatus.stLinkActKin.LinkPos[0], linkstatus.stLinkActKin.LinkPos[1], linkstatus.stLinkActKin.LinkPos[2],
+                      linkstatus.stLinkActKin.LinkPos[3] * 57.3, linkstatus.stLinkActKin.LinkPos[4] * 57.3, linkstatus.stLinkActKin.LinkPos[5] * 57.3);
+            m_Robot->setLinkMoveAbs(tar_pos, temp_vel.data());
         }
 
         break;
@@ -584,7 +592,7 @@ void CTask::detectionInFitBoardExecutionCommand()
         UpdateLaserDistance();
         if (CheckParallelStateDecorator() == EDetectionInParallelResult::eNoWallDetected)
         {
-            log->warn("{} 反馈异常，末端激光偏差过大，状态跳转: 手动--准备", __LINE__);
+            SPDLOG_WARN("反馈异常，末端激光偏差过大，状态跳转: 手动--准备");
             updateTopAndSubState(ETopState::eManual, ESubState::eReady);
             break;
         }
@@ -596,24 +604,33 @@ void CTask::detectionInFitBoardExecutionCommand()
         }
 
         VisionResult vis_res = m_vision->getVisResult();
-        if (!vis_res.lineStatus)
+        if (!vis_res.lineStatus && !vis_res.laserStatus)
             break;
         UpdateVisionResult(vis_res);
 
         result = CheckSidelineStateDecorator();
 #endif
+        static int cnt{0};
         switch (result)
         {
         case EDetectionInPositioningResult::eDeviationIsLessThanThreshold:
         {
             CalculatedAdjustmentOfLift();
             updateTopAndSubState(ETopState::eFitBoard, ESubState::eLiftMotion);
+            cnt = 0;
             break;
         }
         case EDetectionInPositioningResult::eEndAdjustmentDataIsValid:
         {
+            if (cnt < 40) // 1000ms / 50ms
+            {
+                cnt++;
+                SPDLOG_INFO("count: {}", cnt);
+                break;
+            }
             CalculatedAdjustmentOfSideline();
             updateTopAndSubState(ETopState::eFitBoard, ESubState::eSidelineMotion);
+            cnt = 0;
             break;
         }
         case EDetectionInPositioningResult::eDataIsInvalid:
@@ -647,7 +664,11 @@ void CTask::sidelineMotionInFitBoardExecutionCommand()
     {
     case EExecutionCommand::eNULL:
     {
-        m_Robot->setLinkMoveAbs(m_fit_board_target_pose.data(), GP::End_Vel_Position.data());
+        auto temp_vel = GP::End_Vel_Position;
+        temp_vel.at(0) = 0.5;
+        temp_vel.at(1) = 0.5;
+        temp_vel.at(2) = 0.5;
+        m_Robot->setLinkMoveAbs(m_fit_board_target_pose.data(), temp_vel.data());
 
         QVector<double> tar_position(m_fit_board_target_pose.begin(), m_fit_board_target_pose.end());
         if (m_LinkStatus.eLinkActState == eLINK_STANDSTILL &&
@@ -855,7 +876,16 @@ void CTask::CalculatedAdjustmentOfSideline()
     QVector<double> tar_position{ 0, 0, 0, 0, 0, 0 };
     tar_position = m_Robot->getTargetPose(Dev_RT[5]); // 计算调整量
     m_fit_board_target_pose = std::vector(tar_position.begin(), tar_position.end());
-    log->info("{}: motion index: {}", __LINE__, m_motion_index);
+
+    stLinkStatus linkstatus = m_Robot->getLinkSta();
+    SPDLOG_INFO("current_pos: {}, {}, {}, {}, {}, {}",linkstatus.stLinkActKin.LinkPos[0], linkstatus.stLinkActKin.LinkPos[1], linkstatus.stLinkActKin.LinkPos[2],
+                      linkstatus.stLinkActKin.LinkPos[3] * 57.3, linkstatus.stLinkActKin.LinkPos[4] * 57.3, linkstatus.stLinkActKin.LinkPos[5] * 57.3);
+    SPDLOG_INFO("m_fit_board_target_pose: {},{},{},{},{},{}", m_fit_board_target_pose.at(0),
+                                                              m_fit_board_target_pose.at(1),
+                                                              m_fit_board_target_pose.at(2),
+                                                              m_fit_board_target_pose.at(3),
+                                                              m_fit_board_target_pose.at(4),
+                                                              m_fit_board_target_pose.at(5));
 }
 
 void CTask::CalculatedAdjustmentOfLift()
@@ -870,7 +900,7 @@ void CTask::CalculatedAdjustmentOfLift()
         if (BOARDING_MOTION_QUE[i] + 2 < *minDistance)
         {
             motion_index = i;
-            log->info("{}: 贴合调整目标距离为：{}", __LINE__, BOARDING_MOTION_QUE[i]);
+            SPDLOG_INFO("贴合调整目标距离为：{}", BOARDING_MOTION_QUE[i]);
             break;
         }
     }
@@ -904,6 +934,98 @@ void CTask::UpdateVisionResult(VisionResult& vis_res)
 
     for (int i = 0; i < 6; i++)
         vis_res.stData.m_LineDistance[i] *= k;
+    
+    int laser2camera[4] = {
+            4, 5, 1, 3
+    };  // 轮廓激光映射到对应相机
+
+
+    
+    //1.0 轮廓激光结果校验视觉结果
+    // for (int i = 0; i < 4; i++)
+    // { 
+    //     if (vis_res.stData.m_bLaserProfile[i]) // 如果轮廓激光数据有效
+    //     { 
+    //         double laserTemp = vis_res.stData.m_LaserGapDistance[i] - 15;
+    //         if (vis_res.stData.m_bLineDistance[laser2camera[i]]) // 视觉结果有效
+    //         {   
+    //             if (abs(vis_res.stData.m_LineDistance[laser2camera[i]] -laserTemp) > 5)  // 轮廓结果与对应视觉的偏差小于5mm认为视觉数据是有效的 
+    //             {
+    //                 vis_res.stData.m_bLineDistance[laser2camera[i]] = false;
+    //             }   
+    //         }
+    //     }
+    // }
+    //2.0 检查视觉数据有效性 
+
+       bool visLong = (vis_res.stData.m_bLineDistance[0] && vis_res.stData.m_bLineDistance[2]) || 
+                      (vis_res.stData.m_bLineDistance[1] && vis_res.stData.m_bLineDistance[3]);
+
+       bool visShort = vis_res.stData.m_bLineDistance[4] || vis_res.stData.m_bLineDistance[5];
+       bool visDataIsValid = visLong && visShort;
+
+    //3.0 检查轮廓激光数据有效性 
+       bool laserLong = vis_res.stData.m_bLaserProfile[2] && vis_res.stData.m_bLaserProfile[3];
+       bool laserShort = vis_res.stData.m_bLaserProfile[0] || vis_res.stData.m_bLaserProfile[1];
+       bool laserDataValid = laserLong && laserShort; 
+       laserDataValid = false; 
+
+    //4.0 融合策略
+    if(visDataIsValid){
+        // 视觉无需做任何处理
+
+    }
+    else if(laserDataValid){
+        // 清除原有视觉数据
+        for(int i = 0; i<6;i++){
+            vis_res.stData.m_bLineDistance[i] = false; 
+            vis_res.stData.m_LineDistance[i] = 0.0;
+        }
+        // 轮廓激光重新赋值
+        for(int i=0; i<4; i++){
+            vis_res.stData.m_bLineDistance[laser2camera[i]] = true;
+            vis_res.stData.m_LineDistance[laser2camera[i]]  = vis_res.stData.m_LaserGapDistance[i] - 15;
+        }
+    }
+    else{
+        // for (int i = 0; i < 4; i++)
+        // { 
+        // // if(i==1){continue;}
+        //   if (vis_res.stData.m_bLaserProfile[i]) // 如果轮廓激光数据有效
+        //   { 
+        //     double laserTemp = vis_res.stData.m_LaserGapDistance[i] - 15;
+        //     if (vis_res.stData.m_bLineDistance[laser2camera[i]]) // 视觉结果有效
+        //     {   // 轮廓激光对应的相机位置有效
+        //         if (abs(vis_res.stData.m_LineDistance[laser2camera[i]] -laserTemp) < 5)
+        //         {
+        //             // vis_res.stData.m_bLineDistance[laser2camera[i]] = true;
+        //             SPDLOG_INFO("vis_res.stData.m_LineDistance[laser2camera[i]]: {}\nlaserTemp: {}", vis_res.stData.m_LineDistance[laser2camera[i]], laserTemp);
+        //             // vis_res.stData.m_LineDistance[laser2camera[i]] = std::min(vis_res.stData.m_LineDistance[laser2camera[i]],laserTemp);
+        //             // vis_res.stData.m_LineDistance[laser2camera[i]] = vis_res.stData.m_LineDistance[laser2camera[i]];
+        //         }
+        //         else
+        //         { 
+        //             // 有待于进一步观察
+        //             if(laserTemp<70){ //限制轮廓激光结果值不要太大
+        //                 // vis_res.stData.m_bLineDistance[laser2camera[i]] = true;
+        //                 vis_res.stData.m_LineDistance[laser2camera[i]] = laserTemp;
+        //             }
+        //         }
+                
+        //     }
+        //     else
+        //     { // 相机测量数据无效
+                
+        //         if(laserTemp<70){ //限制轮廓激光结果值不要太大
+        //             vis_res.stData.m_bLineDistance[laser2camera[i]] = true;
+        //             vis_res.stData.m_LineDistance[laser2camera[i]] = laserTemp;
+        //         }
+                
+        //     }
+        // }
+
+        // }
+    }
 
     std::copy(std::begin(vis_res.stData.m_LineDistance), std::end(vis_res.stData.m_LineDistance), m_stMeasuredata.m_LineDistance);
     std::copy(std::begin(vis_res.stData.m_bLineDistance), std::end(vis_res.stData.m_bLineDistance), m_stMeasuredata.m_bLineDistance);
@@ -924,6 +1046,7 @@ void CTask::UpdateVisionResult(VisionResult& vis_res)
     m_stMeasuredata.m_bLineDistance[3] = temp_flag_vec.at(0);
     m_stMeasuredata.m_bLineDistance[4] = temp_flag_vec.at(5);
     m_stMeasuredata.m_bLineDistance[5] = temp_flag_vec.at(4);
+
 }
 
 void CTask::updateTopAndSubState(ETopState topState, ESubState subState)

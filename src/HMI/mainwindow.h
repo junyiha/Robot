@@ -159,8 +159,13 @@ private slots:
     void slots_on_btn_camera_height_light_clicked();
     void slots_btn_camera_hole_light_clicked();
     void slots_btn_laser_light_clicked();
+    void slots_btn_camera_light_clicked();
+
+    // 电推杠
     void slots_on_btn_putter_forward_pressed();
     void slots_on_btn_putter_forward_released();
+    void slots_on_btn_putter_forward_clicked();
+    void slots_on_btn_putter_backward_clicked();
     void slots_on_btn_putter_backward_pressed();
     void slots_on_btn_putter_backward_released();
     // 参数配置文件
@@ -176,6 +181,9 @@ private slots:
 
     void slots_btn_global_exit_clicked();
 
+    void slots_btn_auto_save_image_clicked();
+    void slots_btn_disable_auto_save_image_clicked();
+
 private:
     double m_wheelVel{ 30.0 };
     bool m_dragEnabled;
@@ -190,6 +198,8 @@ private:
     bool laserLightEnable = true;
     bool laserOnUpperEnable = false;
     bool laserOnLowerEnable = false;
+
+    bool m_camera_light_flag{false};
 
     Ui::MainWindow* ui;
     QByteArray m_CrossLidar;

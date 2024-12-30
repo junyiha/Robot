@@ -40,8 +40,16 @@ CRobot::CRobot(ComInterface* comm, QObject* parent)
     };
 
     //    DH_Parameter Tool_Mat = DH_Parameter(90 * M_PI / 180, 0, 90 * M_PI / 180, L6, Prismatic);//竖板旋转用，工具坐标系旋转90
-    CTransformation Tool_Mat = CTransformation(90 * M_PI / 180, 0, 180 * M_PI / 180, dt, Prismatic); // 装横板用，末端工具（可伸缩，但是默认不动，不需要刷新）
-    m_LinkModel = new CRobotKinectModel(DH_List, Tool_Mat);
+    if (GP::Working_Scenario == GP::WorkingScenario::Cant)
+    {
+        CTransformation Tool_Mat = CTransformation(90 * M_PI / 180, 0, -90 * M_PI / 180, dt, Prismatic); // 装横板用，末端工具（可伸缩，但是默认不动，不需要刷新）
+        m_LinkModel = new CRobotKinectModel(DH_List, Tool_Mat);
+    }
+    else 
+    {
+        CTransformation Tool_Mat = CTransformation(90 * M_PI / 180, 0, 180 * M_PI / 180, dt, Prismatic); // 装横板用，末端工具（可伸缩，但是默认不动，不需要刷新）
+        m_LinkModel = new CRobotKinectModel(DH_List, Tool_Mat);
+    }
 
     m_Comm = comm;
     m_running = false;
@@ -175,7 +183,10 @@ void CRobot::UpdateStatus()
         vJointValue.push_back(std::make_pair(m_ActJoints[i], true));
     }
     vJointValue[4].second = false; // 腰俯仰不参与联动
-    vJointValue[1].second = false; // 前后不参与联动
+    if (GP::Working_Scenario == GP::WorkingScenario::Side)
+    {
+        vJointValue[1].second = false; // 前后不参与联动
+    }
 
     m_ActJoints[m_Freedom] = m_JointGroupStatus[m_Freedom].Position;
     m_ActJoints[m_Freedom + 1] = m_JointGroupStatus[m_Freedom + 1].Position;

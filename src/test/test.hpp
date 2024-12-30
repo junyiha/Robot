@@ -44,4 +44,6 @@ int TestConfigManager(int argc, char* argv[]);
 
 int TestTcpClient(int argc, char* argv[]);
 
+int TestFitBoard(int argc, char* argv[]);
+
 #endif  // TEST_HPP__

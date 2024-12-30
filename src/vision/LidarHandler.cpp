@@ -24,6 +24,8 @@ void LidarHandler::run()
         {
             // 获取数据
             this->laser_controls->getDataAll();
+
+
             std::map<std::string, cv::Mat> lidar_data = this->laser_controls->pointCloudMasks;
             std::map<std::string, LidarData> temp_results;
             for (auto& item : lidar_data)
@@ -42,8 +44,15 @@ void LidarHandler::run()
                 else
                 {
                     MyBestfitLaserScaner* scaner_ = this->laser_controls->scaners[item.first];
+            // auto begin = std::chrono::system_clock::now();
+
                     this->lidar_helper->lidarDetecter(item.second, scaner_->isleft, scaner_->revAngle, scaner_->minX, scaner_->minY, this->laser_controls->direct_config[item.first]); //雷达成像检测
+            // auto duration = std::chrono::system_clock::now() - begin;
+            // SPDLOG_INFO("Lidar duration: {}  ms", std::chrono::duration_cast<std::chrono::milliseconds>(duration).count());
+
                     this->lidar_helper->shrink();
+
+
                     //                   if(this->lidar_helper->resultFlag){
                     //                        std::string img_path = "E:\\projects\\zjy\\Robot-zb\\out\\" + std::to_string(cout)+".png";
                     //                       cv::imwrite(img_path, item.second);

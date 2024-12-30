@@ -30,7 +30,8 @@ VisionInterface::VisionInterface()
             {"LineCam_3", 0.275862069},
             {"LineCam_4", 0.274914089},
             {"LineCam_5", 0.274914089},
-            {"LineCam_6", 0.274509804},
+            {"LineCam_6", 0.272727272},
+          
     };
 
     this->camera_offset = {
@@ -92,21 +93,7 @@ void VisionInterface::getDetectResult(VisionResult& vis_result)
     //        this->sharedDataLine->dataReady.wait(&this->sharedDataLine->mutex);
     //    }
 
-        // 获取直线检测结果
-    std::map<std::string, LineDetectRes> lineDetectRes;
-    lineDetectRes = this->line_handler->getDetectResults();
-    if (lineDetectRes.size() > 0)
-    {
-        this->line_res = lineDetectRes;
-        this->parser_result("line", &vis_result.stData);
-        vis_result.lineStatus = true;
-    }
-    else
-    {
-        vis_result.lineStatus = false;
-    }
-
-    // 获取轮廓激光测量结果
+     // 获取轮廓激光测量结果
     std::map<std::string, LidarData> lidarDetectRes;
     this->pointMaskMutex.lock();
     lidarDetectRes = this->lidar_handler->getLaserDetectResults();
@@ -123,30 +110,21 @@ void VisionInterface::getDetectResult(VisionResult& vis_result)
     }
 
 
-    // 轮廓激光结果与视觉测量结果协同
-    // for (int i = 0; i < 4; i++)
-    // {
-    //     if (vis_result.stData.m_bLaserProfile[i])
-    //     { // 如果轮廓激光数据有效
-    //         if (vis_result.stData.m_bLineDistance[layer2camera[i]])
-    //         { // 轮廓激光对应的相机位置有效
-    //             if (abs(vis_result.stData.m_LineDistance[layer2camera[i]] - vis_result.stData.m_LaserGapDistance[i] + 15) < 5)
-    //             {
-    //                 vis_result.stData.m_bLineDistance[layer2camera[i]] = true;
-    //                 vis_result.stData.m_LineDistance[layer2camera[i]] = vis_result.stData.m_LaserGapDistance[i] - 15;
-    //             }
-    //             else
-    //             {
-    //                 // 有待于进一步观察
-    //             }
-    //         }
-    //         else
-    //         { // 相机测量数据无效
-    //             vis_result.stData.m_bLineDistance[layer2camera[i]] = true;
-    //             vis_result.stData.m_LineDistance[layer2camera[i]] = vis_result.stData.m_LaserGapDistance[i] - 15;
-    //         }
-    //     }
-    // }
+    // 获取直线检测结果
+    std::map<std::string, LineDetectRes> lineDetectRes;
+    lineDetectRes = this->line_handler->getDetectResults();
+    if (lineDetectRes.size() > 0)
+    {
+        this->line_res = lineDetectRes;
+        this->parser_result("line", &vis_result.stData);
+        vis_result.lineStatus = true;
+    }
+    else
+    {
+        vis_result.lineStatus = false;
+    }
+
+   
 }
 
 void VisionInterface::parser_result(std::string paserType, stMeasureData* stm)
@@ -172,6 +150,14 @@ void VisionInterface::parser_result(std::string paserType, stMeasureData* stm)
                 //                if(number-1 == 4){
                 //                    dist = 0;
                 //                }
+                
+                // 临时过滤其他相机的结果
+                // if(number!=-1){
+                //     stm->m_LineDistance[number - 1] = 0;
+                //     stm->m_bLineDistance[number - 1] = false;
+
+                // }
+
                 if (dist < 1)
                 {
                     stm->m_LineDistance[number - 1] = 0;
@@ -258,4 +244,8 @@ void VisionInterface::closeThread()
     QThread::quit();
 
 
+}
+
+void VisionInterface::setBadCaseSave(bool value) {
+     this->line_handler->setIsSave(value);
 }

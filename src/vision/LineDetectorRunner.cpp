@@ -54,6 +54,16 @@ void LineDetectorRunner::run()
                     }
                     else
                     {
+                        // 检测失败，保存相关数据
+                        bool saveFlag = this->getIsSave();
+                        if(saveFlag){
+                             if(!image.empty()){
+                                 std::string imgPrefix = getCurrentTimestampString();
+                                 std::string saveRoot = "E:/projects/csh/lineBadCases";
+                                 std::string img_path = saveRoot+"/"+camera_name+"_"+imgPrefix+".png";
+                                 cv::imwrite(img_path, image);
+                             }
+                        }
                         vision_res.status = false;
                         vision_res.dist = -1;
                         vision_res.img_drawed = line_res.img_drawed;
@@ -120,6 +130,22 @@ std::map<std::string, LineDetectRes> LineDetectorRunner::getDetectResults()
     imagesLock.unlock();
     return detectRes;
 }
+
+void LineDetectorRunner::setIsSave(bool value) {
+
+    saveLock.lock();
+    this->isSave = value;
+    saveLock.unlock();
+}
+
+bool LineDetectorRunner::getIsSave() {
+    bool res;
+    saveLock.lock();
+    res = this->isSave;
+    saveLock.unlock();
+    return res;
+}
+
 
 
 
