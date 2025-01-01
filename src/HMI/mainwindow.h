@@ -81,6 +81,7 @@ private:
     void updateWorkdScenario();
     void updateConfigurationView();
     void updateTaskStateMachineStatus();
+    void updateEndVelocityLimit();
     void slotUpdateImagesAndOtherTimeConsuming();
 
 protected:
@@ -186,6 +187,12 @@ private slots:
     void slots_btn_disable_auto_save_image_clicked();
 
     void slots_btn_single_side_line_clicked();
+
+    void slots_btn_end_velocity_limit_increase_clicked();
+    void slots_btn_end_velocity_limit_decrease_clicked();
+    void slots_btn_end_velocity_limit_reset_clicked();
+
+    void slots_btn_single_parallel_clicked();
 
 private:
     double m_wheelVel{ 30.0 };

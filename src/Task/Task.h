@@ -62,6 +62,8 @@ public:
 
     bool SingleSideLine();
 
+    bool SingleParallel();
+
 public:
     QAtomicInt ActionIndex; // 半自动、按钮测试用
     QAtomicInt ButtonIndex; // 当前点击按钮索引

@@ -1111,15 +1111,18 @@ bool CTask::SingleSideLine()
     UpdateLaserDistance();
     if (CheckParallelStateDecorator() == EDetectionInParallelResult::eNoWallDetected)
     {
+        SPDLOG_ERROR("未检测到墙壁或者墙壁距离过远");
         return false;
     }
     if (CheckFitBoardState() == EDetectionInFitBoardResult::eDeviationIsLessThanThreshold)
     {
+        SPDLOG_INFO("板壁距离检测完成");
         return true;
     }
     VisionResult vis_res = m_vision->getVisResult();
     if (!vis_res.lineStatus && !vis_res.laserStatus)
     {
+        SPDLOG_ERROR("视觉数据无效");
         return false;
     }
     UpdateVisionResult(vis_res);
@@ -1127,6 +1130,7 @@ bool CTask::SingleSideLine()
     auto result = CheckSidelineStateDecorator();
     if (result != EDetectionInPositioningResult::eEndAdjustmentDataIsValid)
     {
+        SPDLOG_ERROR("未检测到有效数据");
         return false;
     }
 
@@ -1136,6 +1140,7 @@ bool CTask::SingleSideLine()
     {
         if (cnt > 1000)
         {
+            SPDLOG_ERROR("侧线调整超时");
             return false;
         }
         auto temp_vel = GP::End_Vel_Position;
@@ -1148,11 +1153,46 @@ bool CTask::SingleSideLine()
         if (m_LinkStatus.eLinkActState == eLINK_STANDSTILL &&
             m_Robot->isEndReached(tar_position))
         {
+            SPDLOG_INFO("板壁距离检测完成");
             return true;
         }
 
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
         cnt++;
+    }
+}
+
+bool CTask::SingleParallel()
+{
+    while (true)
+    {
+        UpdateLaserDistance();
+        auto result = CheckParallelStateDecorator();
+        if (result == EDetectionInParallelResult::eDeviationIsLessThanThreshold)
+        {
+            SPDLOG_INFO("平行度检测完成");
+            return true;
+        }
+        if (result == EDetectionInParallelResult::eNoWallDetected)
+        {
+            SPDLOG_ERROR("未检测到墙壁或者墙壁距离过远");
+            return false;
+        }
+        // 计算偏差，控制机器人运动
+        QVector<Eigen::Matrix4d> Dev_RT = CMeasure::calPoseDeviation(m_stMeasuredata);
+        QVector<double> tar_position = m_Robot->getTargetPose(Dev_RT[0]);
+        double* tar_pos = tar_position.data();
+
+        std::vector<double> parallel_velocity = GP::End_Vel_Limit;
+        int scalar{ 1 };
+        scalar = GP::Working_Scenario == GP::WorkingScenario::Top ? 5 : 3;
+        parallel_velocity.at(0) *= scalar;
+        parallel_velocity.at(1) *= scalar;
+        parallel_velocity.at(2) *= scalar;
+
+        int cnt{ 0 };
+        m_Robot->setLinkMoveAbs(tar_pos, parallel_velocity.data());
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
     }
 }
 

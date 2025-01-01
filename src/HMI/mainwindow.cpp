@@ -228,6 +228,12 @@ void MainWindow::connectSlotFunctions()
     connect(ui->disableAutoSaveImage, &QPushButton::clicked, this, &MainWindow::slots_btn_disable_auto_save_image_clicked, Qt::UniqueConnection);
 
     connect(ui->btn_single_side_line, &QPushButton::clicked, this, &MainWindow::slots_btn_single_side_line_clicked, Qt::UniqueConnection);
+    connect(ui->btn_single_side_line_2, &QPushButton::clicked, this, &MainWindow::slots_btn_single_side_line_clicked, Qt::UniqueConnection);
+    connect(ui->btn_single_parallel, &QPushButton::clicked, this, &MainWindow::slots_btn_single_parallel_clicked, Qt::UniqueConnection);
+
+    connect(ui->btn_end_velocity_limit_increase, &QPushButton::clicked, this, &MainWindow::slots_btn_end_velocity_limit_increase_clicked, Qt::UniqueConnection);
+    connect(ui->btn_end_velocity_limit_decrease, &QPushButton::clicked, this, &MainWindow::slots_btn_end_velocity_limit_decrease_clicked, Qt::UniqueConnection);
+    connect(ui->btn_end_velocity_limit_reset, &QPushButton::clicked, this, &MainWindow::slots_btn_end_velocity_limit_reset_clicked, Qt::UniqueConnection);
 }
 
 MainWindow::~MainWindow()
@@ -618,6 +624,45 @@ void MainWindow::slots_btn_single_side_line_clicked()
     SPDLOG_INFO("单次边线对齐");
 }
 
+void MainWindow::slots_btn_single_parallel_clicked()
+{
+    // 单次平行线对齐
+    auto temp_thread = new std::thread([this]() { m_Task->SingleParallel(); });
+    m_thread_pool.push_back(temp_thread);
+    SPDLOG_INFO("单次平行线对齐");
+}
+
+void MainWindow::slots_btn_end_velocity_limit_increase_clicked()
+{
+    if (GP::End_Vel_Limit.at(0) > 6)
+    {
+        SPDLOG_ERROR("End velocity limit is too low");
+        return;
+    }
+    GP::End_Vel_Limit.at(0) += 0.5;
+    GP::End_Vel_Limit.at(1) += 0.5;
+    GP::End_Vel_Limit.at(2) += 0.5;
+}
+
+void MainWindow::slots_btn_end_velocity_limit_decrease_clicked()
+{
+    if (GP::End_Vel_Limit.at(0) < 0.6)
+    {
+        SPDLOG_ERROR("End velocity limit is too low");
+        return;
+    }
+    GP::End_Vel_Limit.at(0) -= 0.5;
+    GP::End_Vel_Limit.at(1) -= 0.5;
+    GP::End_Vel_Limit.at(2) -= 0.5;
+}
+
+void MainWindow::slots_btn_end_velocity_limit_reset_clicked()
+{
+    GP::End_Vel_Limit.at(0) = 1;
+    GP::End_Vel_Limit.at(1) = 1;
+    GP::End_Vel_Limit.at(2) = 1;
+}
+
 void MainWindow::on_btn_magnet_stop_clicked()
 {
     // 停止
@@ -660,6 +705,8 @@ void MainWindow::slotUpdateUIAll()
     updateWorkdScenario();
 
     updateConfigurationView();
+
+    updateEndVelocityLimit();
 }
 
 void MainWindow::updataDeviceConnectState()
@@ -1260,6 +1307,11 @@ void MainWindow::updateTaskStateMachineStatus()
 {
     std::string currentState = m_Task->getCurrentStateString();
     ui->label_state_transition->setText(QString::fromLocal8Bit(currentState.c_str()));
+}
+
+void MainWindow::updateEndVelocityLimit()
+{
+    ui->label_end_velocity_limit->setText(QString::fromLocal8Bit("末端速度限制：") + QString::number(GP::End_Vel_Limit[0]) + QString::fromLocal8Bit("mm/s"));
 }
 
 void MainWindow::updateWorkdScenario()
