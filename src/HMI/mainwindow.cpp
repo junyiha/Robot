@@ -91,6 +91,8 @@ void MainWindow::connectSlotFunctions()
     connect(ui->btn_userMode_, &QPushButton::clicked, this, &MainWindow::on_btn_userMode_clicked,
             Qt::UniqueConnection);// 用户模式
 
+    connect(ui->btn_manual_mode, &QPushButton::clicked, this, &MainWindow::on_btn_manual_mode_clicked, Qt::UniqueConnection);
+
     // 2.0 流程操作栏按钮槽函数绑定
     connect(ui->btn_leveling_, &QPushButton::clicked, this, &MainWindow::on_btn_leveling_clicked, Qt::UniqueConnection);
     connect(ui->btn_sideline_, &QPushButton::clicked, this, &MainWindow::on_btn_sideline_clicked, Qt::UniqueConnection);
@@ -961,32 +963,12 @@ void MainWindow::updateCameraData()
                         continue;
                     }
                 }
-                //                // 画面方向矫正
-                //                if (item.first.find("LineCam") != std::string::npos)
-                //                {
-                //                    if (number == 5)
-                //                    {
-                //                        image_correction(inputImage, 3);
-                //                    }
-                //                    if (number == 6)
-                //                    {
-                //                        image_correction(inputImage, 1);
-                //                    }
-                //                    if (number == 2 || number == 4)
-                //                    {
-                //                        image_correction(inputImage, 2);
-                //                    }
-                //
-                //                }
+
                 cv::Mat temp = inputImage;
-                //                cv::resize(inputImage, temp, imgSize);
                 QImage img = QImage((uchar*)temp.data, temp.cols, temp.rows, QImage::Format_RGB888);
                 QLabel* dis_label = findChild<QLabel*>(prefix + QString::number(number - 1));
                 dis_label->setPixmap(QPixmap::fromImage(img));
                 dis_label->setScaledContents(true);
-
-                //                findChild<QLabel *>(prefix + QString::number(number - 1))->setPixmap(QPixmap::fromImage(img))resize(inputImage.size());
-                //                this->logger->info("相机{}数据获取成功**************************************", item.first);
             }
         }
         else
@@ -1049,12 +1031,17 @@ void MainWindow::btn_moveFwd_shaft_pressed()
 
 void MainWindow::on_btn_developerMode_clicked()
 {
-    ui->stackedWidget_view->setCurrentIndex(2);
+    ui->stackedWidget_view->setCurrentWidget(ui->page_config);
 }
 
 void MainWindow::on_btn_userMode_clicked()
 {
-    ui->stackedWidget_view->setCurrentIndex(0);
+    ui->stackedWidget_view->setCurrentWidget(ui->page_user);
+}
+
+void MainWindow::on_btn_manual_mode_clicked()
+{
+    ui->stackedWidget_view->setCurrentWidget(ui->page_manual);
 }
 
 void MainWindow::btn_moveFwd_shaft_released()

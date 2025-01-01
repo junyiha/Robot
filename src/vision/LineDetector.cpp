@@ -57,8 +57,8 @@ std::vector<float> LineDetector::getRerferenceLine(cv::Mat referMask, cv::Mat im
         for (size_t i = 0; i < possibleLines.size(); ++i)
         {
             // double dist_i = calculatePointsDistance(possibleLines[i][0], possibleLines[i][1]);
-            double dist_i =  possibleLines[i][0].y>possibleLines[i][1].y?possibleLines[i][0].y:possibleLines[i][1].y;
-            
+            double dist_i = possibleLines[i][0].y > possibleLines[i][1].y ? possibleLines[i][0].y : possibleLines[i][1].y;
+
             calculatePointsDistance(possibleLines[i][0], possibleLines[i][1]);
             // 1.0 长度过滤
             if (dist_i < 768 * 0.15)
@@ -185,7 +185,7 @@ std::vector<float> LineDetector::getInkLine(cv::Mat inkMask, std::vector<float> 
         double max_dist = 0;
         int max_index = -1;
         double min_dist = 10000;
-        int min_index = -1; 
+        int min_index = -1;
 
         for (size_t i = 0; i < possibleLines.size(); ++i)
         {
@@ -215,13 +215,14 @@ std::vector<float> LineDetector::getInkLine(cv::Mat inkMask, std::vector<float> 
                 max_dist = dist_i;
                 max_index = i;
             }
-            
+
             // 寻找距离板线最近的墨迹线
             double ref_ink_dist_y = abs(max_ink_y - max_ref_y);
-            if(min_dist>ref_ink_dist_y){
-                min_dist = ref_ink_dist_y; 
+            if (min_dist > ref_ink_dist_y)
+            {
+                min_dist = ref_ink_dist_y;
                 min_index = i;
-            } 
+            }
         }
         if (min_index != -1)
         {

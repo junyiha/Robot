@@ -31,7 +31,7 @@ VisionInterface::VisionInterface()
             {"LineCam_4", 0.274914089},
             {"LineCam_5", 0.274914089},
             {"LineCam_6", 0.272727272},
-          
+
     };
 
     this->camera_offset = {
@@ -124,7 +124,7 @@ void VisionInterface::getDetectResult(VisionResult& vis_result)
         vis_result.lineStatus = false;
     }
 
-   
+
 }
 
 void VisionInterface::parser_result(std::string paserType, stMeasureData* stm)
@@ -150,13 +150,7 @@ void VisionInterface::parser_result(std::string paserType, stMeasureData* stm)
                 //                if(number-1 == 4){
                 //                    dist = 0;
                 //                }
-                
-                // 临时过滤其他相机的结果
-                // if(number!=-1){
-                //     stm->m_LineDistance[number - 1] = 0;
-                //     stm->m_bLineDistance[number - 1] = false;
 
-                // }
 
                 if (dist < 1)
                 {
@@ -168,6 +162,13 @@ void VisionInterface::parser_result(std::string paserType, stMeasureData* stm)
                     stm->m_LineDistance[number - 1] = dist;
                     stm->m_bLineDistance[number - 1] = line.second.status;
                 }
+
+                // 临时过滤其他相机的结果  // TODO: 禁掉视觉检测结果
+               // if(number!=-1){
+               //     stm->m_LineDistance[number - 1] = 0;
+               //     stm->m_bLineDistance[number - 1] = false;
+
+               // }
             }
         }
     }
@@ -246,6 +247,7 @@ void VisionInterface::closeThread()
 
 }
 
-void VisionInterface::setBadCaseSave(bool value) {
-     this->line_handler->setIsSave(value);
+void VisionInterface::setBadCaseSave(bool value)
+{
+    this->line_handler->setIsSave(value);
 }

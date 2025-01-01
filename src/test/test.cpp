@@ -2,7 +2,7 @@
 
 int line_detect_demo(int argc, char* argv[])
 {
-    std::string path = "E:\\projects\\ZBRobot\\2024-12-23\\robot\\cache\\LineCam_4_2024-12-24-19-04-41.png";
+    std::string path = "C:/Users/anony/Documents/GitHub/cpp-win/data/LineCam_6_2024-12-23-15-59-55.png";
     cv::Mat img = cv::imread(path);
     LineDetector line_tool;
     auto start = std::chrono::high_resolution_clock::now();

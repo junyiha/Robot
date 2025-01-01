@@ -168,7 +168,8 @@ target_link_libraries(${PROJECT_NAME}   yaml-cpp::yaml-cpp
                                         opencv_world455d.lib
                                         opencv_world455.dll
                                         MvCameraControl.lib
-                                        onnxruntime.dll
+                                        # onnxruntime.dll
+                                        onnxruntime.lib
                                         BestfitLaserScanerSDK.lib
 )
 

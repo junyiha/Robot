@@ -922,6 +922,8 @@ void CTask::UpdateLaserDistance()
     m_stMeasuredata.m_LaserDistance[3] = LaserDistance[3];
 }
 
+
+
 void CTask::UpdateVisionResult(VisionResult& vis_res)
 {
     double sum{ 0.0 };
@@ -940,24 +942,23 @@ void CTask::UpdateVisionResult(VisionResult& vis_res)
     };  // 轮廓激光映射到对应相机
 
 
-
     //1.0 轮廓激光结果校验视觉结果
-    // for (int i = 0; i < 4; i++)
-    // {
-    //     if (vis_res.stData.m_bLaserProfile[i]) // 如果轮廓激光数据有效
-    //     {
-    //         double laserTemp = vis_res.stData.m_LaserGapDistance[i] - 15;
-    //         if (vis_res.stData.m_bLineDistance[laser2camera[i]]) // 视觉结果有效
-    //         {
-    //             if (abs(vis_res.stData.m_LineDistance[laser2camera[i]] -laserTemp) > 5)  // 轮廓结果与对应视觉的偏差小于5mm认为视觉数据是有效的
-    //             {
-    //                 vis_res.stData.m_bLineDistance[laser2camera[i]] = false;
-    //             }
-    //         }
-    //     }
-    // }
-    //2.0 检查视觉数据有效性
+    for (int i = 0; i < 4; i++)
+    {
+        if (vis_res.stData.m_bLaserProfile[i]) // 如果轮廓激光数据有效
+        {
+            double laserTemp = vis_res.stData.m_LaserGapDistance[i] - 15;
+            if (vis_res.stData.m_bLineDistance[laser2camera[i]]) // 视觉结果有效
+            {
+                if (abs(vis_res.stData.m_LineDistance[laser2camera[i]] - laserTemp) > 5)  // 轮廓结果与对应视觉的偏差小于5mm认为视觉数据是有效的
+                {
+                    vis_res.stData.m_bLineDistance[laser2camera[i]] = false;
+                }
+            }
+        }
+    }
 
+    //2.0 检查视觉数据有效性
     bool visLong = (vis_res.stData.m_bLineDistance[0] && vis_res.stData.m_bLineDistance[2]) ||
         (vis_res.stData.m_bLineDistance[1] && vis_res.stData.m_bLineDistance[3]);
 
@@ -970,11 +971,11 @@ void CTask::UpdateVisionResult(VisionResult& vis_res)
     bool laserDataValid = laserLong && laserShort;
     laserDataValid = false;
 
+    // 1. 提高优先级
     //4.0 融合策略
     if (visDataIsValid)
     {
         // 视觉无需做任何处理
-
     }
     else if (laserDataValid)
     {
@@ -993,43 +994,45 @@ void CTask::UpdateVisionResult(VisionResult& vis_res)
     }
     else
     {
-        // for (int i = 0; i < 4; i++)
-        // {
-        // // if(i==1){continue;}
-        //   if (vis_res.stData.m_bLaserProfile[i]) // 如果轮廓激光数据有效
-        //   {
-        //     double laserTemp = vis_res.stData.m_LaserGapDistance[i] - 15;
-        //     if (vis_res.stData.m_bLineDistance[laser2camera[i]]) // 视觉结果有效
-        //     {   // 轮廓激光对应的相机位置有效
-        //         if (abs(vis_res.stData.m_LineDistance[laser2camera[i]] -laserTemp) < 5)
-        //         {
-        //             // vis_res.stData.m_bLineDistance[laser2camera[i]] = true;
-        //             SPDLOG_INFO("vis_res.stData.m_LineDistance[laser2camera[i]]: {}\nlaserTemp: {}", vis_res.stData.m_LineDistance[laser2camera[i]], laserTemp);
-        //             // vis_res.stData.m_LineDistance[laser2camera[i]] = std::min(vis_res.stData.m_LineDistance[laser2camera[i]],laserTemp);
-        //             // vis_res.stData.m_LineDistance[laser2camera[i]] = vis_res.stData.m_LineDistance[laser2camera[i]];
-        //         }
-        //         else
-        //         {
-        //             // 有待于进一步观察
-        //             if(laserTemp<70){ //限制轮廓激光结果值不要太大
-        //                 // vis_res.stData.m_bLineDistance[laser2camera[i]] = true;
-        //                 vis_res.stData.m_LineDistance[laser2camera[i]] = laserTemp;
-        //             }
-        //         }
+        for (int i = 0; i < 4; i++)
+        {
+            // if(i==1){continue;}
+            if (vis_res.stData.m_bLaserProfile[i]) // 如果轮廓激光数据有效
+            {
+                double laserTemp = vis_res.stData.m_LaserGapDistance[i] - 15;
+                if (vis_res.stData.m_bLineDistance[laser2camera[i]]) // 视觉结果有效
+                {   // 轮廓激光对应的相机位置有效
+                    if (abs(vis_res.stData.m_LineDistance[laser2camera[i]] - laserTemp) < 5)
+                    {
+                        // vis_res.stData.m_bLineDistance[laser2camera[i]] = true;
+                        SPDLOG_INFO("vis_res.stData.m_LineDistance[laser2camera[i]]: {}\nlaserTemp: {}", vis_res.stData.m_LineDistance[laser2camera[i]], laserTemp);
+                        // vis_res.stData.m_LineDistance[laser2camera[i]] = std::min(vis_res.stData.m_LineDistance[laser2camera[i]],laserTemp);
+                        // vis_res.stData.m_LineDistance[laser2camera[i]] = vis_res.stData.m_LineDistance[laser2camera[i]];
+                    }
+                    else
+                    {
+                        // 有待于进一步观察
+                        if (laserTemp < 70)
+                        { //限制轮廓激光结果值不要太大
+            // vis_res.stData.m_bLineDistance[laser2camera[i]] = true;
+                            vis_res.stData.m_LineDistance[laser2camera[i]] = laserTemp;
+                        }
+                    }
 
-        //     }
-        //     else
-        //     { // 相机测量数据无效
+                }
+                else
+                { // 相机测量数据无效
 
-        //         if(laserTemp<70){ //限制轮廓激光结果值不要太大
-        //             vis_res.stData.m_bLineDistance[laser2camera[i]] = true;
-        //             vis_res.stData.m_LineDistance[laser2camera[i]] = laserTemp;
-        //         }
+                    if (laserTemp < 70)
+                    { //限制轮廓激光结果值不要太大
+                        vis_res.stData.m_bLineDistance[laser2camera[i]] = true;
+                        vis_res.stData.m_LineDistance[laser2camera[i]] = laserTemp;
+                    }
 
-        //     }
-        // }
+                }
+            }
 
-        // }
+        }
     }
 
     std::copy(std::begin(vis_res.stData.m_LineDistance), std::end(vis_res.stData.m_LineDistance), m_stMeasuredata.m_LineDistance);

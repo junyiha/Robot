@@ -95,6 +95,7 @@ private slots:
     void on_btn_setLinkHalt_clicked();
     void on_btn_developerMode_clicked();
     void on_btn_userMode_clicked();
+    void on_btn_manual_mode_clicked();
 
     //2.0
     void on_btn_openCamera_clicked();
