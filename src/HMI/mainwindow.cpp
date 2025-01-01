@@ -201,14 +201,17 @@ void MainWindow::connectSlotFunctions()
             &MainWindow::slots_on_btn_camera_height_light_clicked, Qt::UniqueConnection);
     connect(ui->btn_camera_hole_light, &QPushButton::clicked, this, &MainWindow::slots_btn_camera_hole_light_clicked,
             Qt::UniqueConnection);
-    connect(ui->btn_laser_light, &QPushButton::clicked, this, &MainWindow::slots_btn_laser_light_clicked,
-            Qt::UniqueConnection);
+    connect(ui->btn_laser_light, &QPushButton::clicked, this, &MainWindow::slots_btn_laser_light_clicked, Qt::UniqueConnection);
+    connect(ui->btn_laser_light_2, &QPushButton::clicked, this, &MainWindow::slots_btn_laser_light_clicked, Qt::UniqueConnection);
 
     connect(ui->btn_camera_light_control, &QPushButton::clicked, this, &MainWindow::slots_btn_camera_light_clicked, Qt::UniqueConnection);
+    connect(ui->btn_camera_light_control_2, &QPushButton::clicked, this, &MainWindow::slots_btn_camera_light_clicked, Qt::UniqueConnection);
 
 
     connect(ui->btn_putter_forward, &QPushButton::clicked, this, &MainWindow::slots_on_btn_putter_forward_clicked, Qt::UniqueConnection);
+    connect(ui->btn_putter_forward_2, &QPushButton::clicked, this, &MainWindow::slots_on_btn_putter_forward_clicked, Qt::UniqueConnection);
     connect(ui->btn_putter_backward, &QPushButton::clicked, this, &MainWindow::slots_on_btn_putter_backward_clicked, Qt::UniqueConnection);
+    connect(ui->btn_putter_backward_2, &QPushButton::clicked, this, &MainWindow::slots_on_btn_putter_backward_clicked, Qt::UniqueConnection);
 
     // 轮廓激光开关控制
     connect(ui->btn_laser_upper_enable, &QPushButton::clicked, this, &MainWindow::slots_btn_laser_upper_enable_clicked, Qt::UniqueConnection);
@@ -868,22 +871,38 @@ void MainWindow::updateAxisStatus()
 void MainWindow::updateLineDetectResults()
 {
     unsigned pageIndex = ui->stackedWidget_view->currentIndex();
+    auto current_page = ui->stackedWidget_view->currentWidget();
     bool lineStatus = this->getLineStatus();
     if (!lineStatus)
     { // 实时相机实时检测结果显示
-        QString prefix;
-        if (pageIndex == 0)
+        QString prefix, laser_height_prefix, laser_gap_prefix;
+        if (current_page == ui->page_user)
         {
             prefix = "label_cam_dist"; // 首页结果展示
+            laser_height_prefix = "label_heightDist_";
+            laser_gap_prefix = "label_gap_";
         }
-        else if (pageIndex == 1)
+        else if (current_page == ui->page_manual)
         {
-            prefix = "label_line_dist"; // debug页面结果展示
+            prefix = "label_manual_distance_";
+            laser_height_prefix = "label_manual_heightDist_";
+            laser_gap_prefix = "label_manual_gap_";
         }
-        else
         {
             return;
         }
+        // if (pageIndex == 0)
+        // {
+        //     prefix = "label_cam_dist"; // 首页结果展示
+        // }
+        // else if (pageIndex == 1)
+        // {
+        //     prefix = "label_line_dist"; // debug页面结果展示
+        // }
+        // else
+        // {
+        //     return;
+        // }
         //计算比例系数  结果待确认
         double laserDisAve = 0;
         QVector laserdis = m_Com->getLasersDistanceBoardingByBojke();
@@ -912,8 +931,8 @@ void MainWindow::updateLineDetectResults()
             for (int i = 0; i < 4; i++)
             {
                 bool isValid = visResult.stData.m_bLaserProfile[i];
-                QLabel* labelHeight = findChild<QLabel*>("label_heightDist_" + QString::number(i));
-                QLabel* labelGap = findChild<QLabel*>("label_gap_" + QString::number(i));
+                QLabel* labelHeight = findChild<QLabel*>(laser_height_prefix + QString::number(i));
+                QLabel* labelGap = findChild<QLabel*>(laser_gap_prefix + QString::number(i));
                 if (isValid)
                 {
                     float borderDist = visResult.stData.m_LaserGapHeight[i]; // 板高差
@@ -935,12 +954,26 @@ void MainWindow::updateLineDetectResults()
 void MainWindow::updateLaserData()
 {
     // 更新点激光
+    auto current_page = ui->stackedWidget_view->currentWidget();
+    QString prefix;
+    if (current_page == ui->page_user)
+    {
+        prefix = QString::fromLocal8Bit("label_laserDist");
+    }
+    else if (current_page == ui->page_manual)
+    {
+        prefix = QString::fromLocal8Bit("label_manual_laser_distance_");
+    }
+    else
+    {
+        return;
+    }
     QVector laserdis = m_Com->getLasersDistanceBoardingByBojke();
     if (laserdis.size() > 0)
     {
         for (unsigned int i = 0; i < larserNum; i++)
         {
-            findChild<QLabel*>("label_laserDist" + QString::number(i))->setText(
+            findChild<QLabel*>(prefix + QString::number(i))->setText(
                     "Laser " + QString::number(i) + ": " + QString::number(laserdis[i]));
         }
     }
@@ -961,26 +994,47 @@ void MainWindow::updateCameraData()
     }
 
     unsigned pageIndex = ui->stackedWidget_view->currentIndex();
+    auto current_page = ui->stackedWidget_view->currentWidget();
     bool lineStatus = this->getLineStatus();
     if (!lineStatus)
     { // 实时相机画面展示
         QString prefix;
         cv::Size imgSize;
-        if (pageIndex == 0)
+        if (current_page == ui->page_user)
         {
             prefix = "label_cam_dis";
             imgSize = cv::Size(200, 200);
         }
-        else if (pageIndex == 1)
+        else if (current_page == ui->page_vision)
         {
             prefix = "label_camera_dis";
             imgSize = cv::Size(400, 280);
+        }
+        else if (current_page == ui->page_manual)
+        {
+            prefix = "label_manual_hole_camera";
+            imgSize = cv::Size(300, 200);
         }
         else
         {
             // this->logger->info("相机页面选择错误");
             return;
         }
+        // if (pageIndex == 0)
+        // {
+        //     prefix = "label_cam_dis";
+        //     imgSize = cv::Size(200, 200);
+        // }
+        // else if (pageIndex == 1)
+        // {
+        //     prefix = "label_camera_dis";
+        //     imgSize = cv::Size(400, 280);
+        // }
+        // else
+        // {
+        //     // this->logger->info("相机页面选择错误");
+        //     return;
+        // }
 
         m_VisionInterface->camera_controls->getImageAllByResizeAndCorrect();
         std::map<std::string, cv::Mat> cameraData = m_VisionInterface->camera_controls->getCameraImagesResized();
@@ -1003,7 +1057,8 @@ void MainWindow::updateCameraData()
 
                 cv::Mat inputImage;
                 inputImage = item.second;
-                if (pageIndex == 1)
+                // if (pageIndex == 1)
+                if (current_page == ui->page_vision)
                 {
                     if (item.first.find("HoleCam") != std::string::npos)
                     {
