@@ -8843,7 +8843,7 @@ QPushButton:hover {
         <height>321</height>
        </rect>
       </property>
-      <layout class="QGridLayout" name="gridLayout_73" rowstretch="1,23,0,0">
+      <layout class="QGridLayout" name="gridLayout_73" rowstretch="1,23">
        <item row="0" column="0">
         <widget class="QLabel" name="label_manual_distance_1">
          <property name="minimumSize">
@@ -9110,6 +9110,7 @@ QPushButton:hover {
          </property>
          <property name="styleSheet">
           <string notr="true">QLabel {
+	font: 10pt &quot;黑体&quot;;
     border: 2px solid black;
 	background-color: rgb(85, 170, 255);
     text-align: left;
@@ -9130,6 +9131,7 @@ QPushButton:hover {
          </property>
          <property name="styleSheet">
           <string notr="true">QPushButton {
+	font: 12pt &quot;黑体&quot;;
     border: 2px solid blue;
     border-radius: 10px;
 }
@@ -9144,7 +9146,7 @@ QPushButton:pressed {
 }</string>
          </property>
          <property name="text">
-          <string>增大速度</string>
+          <string>高速</string>
          </property>
         </widget>
        </item>
@@ -9158,6 +9160,7 @@ QPushButton:pressed {
          </property>
          <property name="styleSheet">
           <string notr="true">QPushButton {
+	font: 12pt &quot;黑体&quot;;
     border: 2px solid blue;
     border-radius: 10px;
 }
@@ -9172,7 +9175,7 @@ QPushButton:pressed {
 }</string>
          </property>
          <property name="text">
-          <string>减小速度</string>
+          <string>中速</string>
          </property>
         </widget>
        </item>
@@ -9186,6 +9189,7 @@ QPushButton:pressed {
          </property>
          <property name="styleSheet">
           <string notr="true">QPushButton {
+	font: 12pt &quot;黑体&quot;;
     border: 2px solid blue;
     border-radius: 10px;
 }
@@ -9200,7 +9204,7 @@ QPushButton:pressed {
 }</string>
          </property>
          <property name="text">
-          <string>重置速度</string>
+          <string>低速</string>
          </property>
         </widget>
        </item>
@@ -9244,35 +9248,6 @@ QPushButton:pressed {
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="btn_single_parallel">
-         <property name="minimumSize">
-          <size>
-           <width>50</width>
-           <height>50</height>
-          </size>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">QPushButton {
-	font: 9pt &quot;黑体&quot;;
-    border: 2px solid blue;
-    border-radius: 10px;
-}
-QPushButton:hover {
-    border: 2px solid red;
-    border-radius: 10px;
-}
-
-QPushButton:pressed {
-    border: 2px solid green;
-    border-radius: 10px;
-}</string>
-         </property>
-         <property name="text">
-          <string>单次调平</string>
-         </property>
-        </widget>
-       </item>
-       <item>
         <widget class="QPushButton" name="btn_single_side_line_2">
          <property name="minimumSize">
           <size>
@@ -9304,7 +9279,36 @@ QPushButton:pressed {
 }</string>
          </property>
          <property name="text">
-          <string>单次对边</string>
+          <string>二次举升</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="btn_single_parallel">
+         <property name="minimumSize">
+          <size>
+           <width>50</width>
+           <height>50</height>
+          </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QPushButton {
+	font: 10pt &quot;黑体&quot;;
+    border: 2px solid blue;
+    border-radius: 10px;
+}
+QPushButton:hover {
+    border: 2px solid red;
+    border-radius: 10px;
+}
+
+QPushButton:pressed {
+    border: 2px solid green;
+    border-radius: 10px;
+}</string>
+         </property>
+         <property name="text">
+          <string>单次调平</string>
          </property>
         </widget>
        </item>

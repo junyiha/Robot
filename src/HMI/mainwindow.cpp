@@ -230,8 +230,8 @@ void MainWindow::connectSlotFunctions()
     connect(ui->autoSaveImage, &QPushButton::clicked, this, &MainWindow::slots_btn_auto_save_image_clicked, Qt::UniqueConnection);
     connect(ui->disableAutoSaveImage, &QPushButton::clicked, this, &MainWindow::slots_btn_disable_auto_save_image_clicked, Qt::UniqueConnection);
 
-    connect(ui->btn_single_side_line, &QPushButton::clicked, this, &MainWindow::slots_btn_single_side_line_clicked, Qt::UniqueConnection);
-    connect(ui->btn_single_side_line_2, &QPushButton::clicked, this, &MainWindow::slots_btn_single_side_line_clicked, Qt::UniqueConnection);
+    connect(ui->btn_single_side_line, &QPushButton::clicked, this, &MainWindow::slots_btn_second_push_clicked, Qt::UniqueConnection);
+    connect(ui->btn_single_side_line_2, &QPushButton::clicked, this, &MainWindow::slots_btn_second_push_clicked, Qt::UniqueConnection);
     connect(ui->btn_single_parallel, &QPushButton::clicked, this, &MainWindow::slots_btn_single_parallel_clicked, Qt::UniqueConnection);
 
     connect(ui->btn_end_velocity_limit_increase, &QPushButton::clicked, this, &MainWindow::slots_btn_end_velocity_limit_increase_clicked, Qt::UniqueConnection);
@@ -619,12 +619,12 @@ void MainWindow::slots_btn_disable_auto_save_image_clicked()
     SPDLOG_INFO("关闭图片自动保存");
 }
 
-void MainWindow::slots_btn_single_side_line_clicked()
+void MainWindow::slots_btn_second_push_clicked()
 {
-    // 单次边线对齐
-    auto temp_thread = new std::thread([this]() { m_Task->SingleSideLine(); });
+    // 二次举升
+    auto temp_thread = new std::thread([this]() { m_Task->SecondPush(); });
     m_thread_pool.push_back(temp_thread);
-    SPDLOG_INFO("单次边线对齐");
+    SPDLOG_INFO("二次举升");
 }
 
 void MainWindow::slots_btn_single_parallel_clicked()
@@ -637,33 +637,23 @@ void MainWindow::slots_btn_single_parallel_clicked()
 
 void MainWindow::slots_btn_end_velocity_limit_increase_clicked()
 {
-    if (GP::End_Vel_Limit.at(0) > 6)
-    {
-        SPDLOG_ERROR("End velocity limit is too low");
-        return;
-    }
-    GP::End_Vel_Limit.at(0) += 0.5;
-    GP::End_Vel_Limit.at(1) += 0.5;
-    GP::End_Vel_Limit.at(2) += 0.5;
+    GP::End_Vel_Limit.at(0) = 8;
+    GP::End_Vel_Limit.at(1) = 8;
+    GP::End_Vel_Limit.at(2) = 8;
 }
 
 void MainWindow::slots_btn_end_velocity_limit_decrease_clicked()
 {
-    if (GP::End_Vel_Limit.at(0) < 0.6)
-    {
-        SPDLOG_ERROR("End velocity limit is too low");
-        return;
-    }
-    GP::End_Vel_Limit.at(0) -= 0.5;
-    GP::End_Vel_Limit.at(1) -= 0.5;
-    GP::End_Vel_Limit.at(2) -= 0.5;
+    GP::End_Vel_Limit.at(0) = 5;
+    GP::End_Vel_Limit.at(1) = 5;
+    GP::End_Vel_Limit.at(2) = 5;
 }
 
 void MainWindow::slots_btn_end_velocity_limit_reset_clicked()
 {
-    GP::End_Vel_Limit.at(0) = 1;
-    GP::End_Vel_Limit.at(1) = 1;
-    GP::End_Vel_Limit.at(2) = 1;
+    GP::End_Vel_Limit.at(0) = 2;
+    GP::End_Vel_Limit.at(1) = 2;
+    GP::End_Vel_Limit.at(2) = 2;
 }
 
 void MainWindow::on_btn_magnet_stop_clicked()
@@ -788,10 +778,16 @@ void MainWindow::updataDeviceConnectState()
                                                   "border: 2px solid blue;"
                                                   "border-radius: 10px;"
         );
+        ui->btn_camera_light_control_2->setStyleSheet("background-color: rgb(0, 255, 0);"
+                                                  "border: 2px solid blue;"
+                                                  "border-radius: 10px;"
+        );
     }
     else
     {
         ui->btn_camera_light_control->setStyleSheet("border: 2px solid blue;"
+                                                  "border-radius: 10px;");
+        ui->btn_camera_light_control_2->setStyleSheet("border: 2px solid blue;"
                                                   "border-radius: 10px;");
     }
 }
@@ -888,6 +884,7 @@ void MainWindow::updateLineDetectResults()
             laser_height_prefix = "label_manual_heightDist_";
             laser_gap_prefix = "label_manual_gap_";
         }
+        else
         {
             return;
         }
@@ -921,7 +918,7 @@ void MainWindow::updateLineDetectResults()
                 float dist = visResult.stData.m_LineDistance[i] * scale;
                 dist = std::isinf(dist) ? 0 : dist;
                 findChild<QLabel*>(prefix + QString::number(i))->setText(
-                        "Dist " + QString::number(i + 1) + ":" + QString::number(dist));
+                        QString::fromLocal8Bit("线间距") + QString::number(i + 1) + " : " + QString::number(dist));
             }
         }
 
@@ -974,7 +971,7 @@ void MainWindow::updateLaserData()
         for (unsigned int i = 0; i < larserNum; i++)
         {
             findChild<QLabel*>(prefix + QString::number(i))->setText(
-                    "Laser " + QString::number(i) + ": " + QString::number(laserdis[i]));
+                    QString::fromLocal8Bit("点激光") + QString::number(i) + " : " + QString::number(laserdis[i]));
         }
     }
     else
@@ -1012,7 +1009,7 @@ void MainWindow::updateCameraData()
         }
         else if (current_page == ui->page_manual)
         {
-            prefix = "label_manual_hole_camera";
+            prefix = "label_manual_line_camera_";
             imgSize = cv::Size(300, 200);
         }
         else
@@ -1821,12 +1818,19 @@ void MainWindow::slots_btn_laser_light_clicked()
                                            "border: 2px solid blue;"
                                            "border-radius: 10px;"
         );
+        ui->btn_laser_light_2->setStyleSheet("background-color: rgb(0, 255, 0);"
+                                           "border: 2px solid blue;"
+                                           "border-radius: 10px;"
+        );
+
     }
     else
     {
         m_Com->SetLaserMarker(false);
         this->laserLightEnable = true;
         ui->btn_laser_light->setStyleSheet("border: 2px solid blue;"
+                                           "border-radius: 10px;");
+        ui->btn_laser_light_2->setStyleSheet("border: 2px solid blue;"
                                            "border-radius: 10px;");
     }
 

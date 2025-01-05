@@ -1077,6 +1077,11 @@ void CTask::updateExecutionCommand(EExecutionCommand executionCommand)
         SPDLOG_INFO("指令更新: {} ==> {}", ExecutionCommandStringMap[m_eexecutionCommand], ExecutionCommandStringMap[executionCommand]);
     }
 
+    if (executionCommand == EExecutionCommand::eTerminate)
+    {
+        m_single_job_flag.store(false);
+    }
+
     m_eexecutionCommand = executionCommand;
 }
 
@@ -1108,54 +1113,62 @@ bool CTask::checkSubState(ESubState subState) const
 
 bool CTask::SingleSideLine()
 {
-    UpdateLaserDistance();
-    if (CheckParallelStateDecorator() == EDetectionInParallelResult::eNoWallDetected)
-    {
-        SPDLOG_ERROR("未检测到墙壁或者墙壁距离过远");
-        return false;
-    }
-    if (CheckFitBoardState() == EDetectionInFitBoardResult::eDeviationIsLessThanThreshold)
-    {
-        SPDLOG_INFO("板壁距离检测完成");
-        return true;
-    }
-    VisionResult vis_res = m_vision->getVisResult();
-    if (!vis_res.lineStatus && !vis_res.laserStatus)
-    {
-        SPDLOG_ERROR("视觉数据无效");
-        return false;
-    }
-    UpdateVisionResult(vis_res);
-
-    auto result = CheckSidelineStateDecorator();
-    if (result != EDetectionInPositioningResult::eEndAdjustmentDataIsValid)
-    {
-        SPDLOG_ERROR("未检测到有效数据");
-        return false;
-    }
-
-    CalculatedAdjustmentOfSideline();
     int cnt{ 0 };
+    m_single_job_flag.store(true);
     while (true)
     {
+        if (!m_single_job_flag.load())
+        {
+            SPDLOG_WARN("终止指令,退出单次对边任务!!!");
+            m_Robot->setRobotHalt();
+            return false;
+        }
         if (cnt > 1000)
         {
             SPDLOG_ERROR("侧线调整超时");
             return false;
         }
+
+        UpdateLaserDistance();
+        if (CheckParallelStateDecorator() == EDetectionInParallelResult::eNoWallDetected)
+        {
+            SPDLOG_ERROR("未检测到墙壁或者墙壁距离过远");
+            return false;
+        }
+        if (CheckFitBoardState() == EDetectionInFitBoardResult::eDeviationIsLessThanThreshold)
+        {
+            SPDLOG_INFO("板壁距离检测完成");
+            return true;
+        }
+        VisionResult vis_res = m_vision->getVisResult();
+        if (!vis_res.lineStatus && !vis_res.laserStatus)
+        {
+            SPDLOG_ERROR("视觉数据无效");
+            return false;
+        }
+        UpdateVisionResult(vis_res);
+
+        auto result = CheckSidelineStateDecorator();
+        if (result != EDetectionInPositioningResult::eEndAdjustmentDataIsValid)
+        {
+            SPDLOG_ERROR("未检测到有效数据");
+            return false;
+        }
+
+        CalculatedAdjustmentOfSideline();
         auto temp_vel = GP::End_Vel_Position;
         temp_vel.at(0) = 0.5;
         temp_vel.at(1) = 0.5;
         temp_vel.at(2) = 0.5;
         m_Robot->setLinkMoveAbs(m_fit_board_target_pose.data(), temp_vel.data());
 
-        QVector<double> tar_position(m_fit_board_target_pose.begin(), m_fit_board_target_pose.end());
-        if (m_LinkStatus.eLinkActState == eLINK_STANDSTILL &&
-            m_Robot->isEndReached(tar_position))
-        {
-            SPDLOG_INFO("板壁距离检测完成");
-            return true;
-        }
+        // QVector<double> tar_position(m_fit_board_target_pose.begin(), m_fit_board_target_pose.end());
+        // if (m_LinkStatus.eLinkActState == eLINK_STANDSTILL &&
+        //     m_Robot->isEndReached(tar_position))
+        // {
+        //     SPDLOG_INFO("板壁距离检测完成");
+        //     return true;
+        // }
 
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
         cnt++;
@@ -1164,9 +1177,16 @@ bool CTask::SingleSideLine()
 
 bool CTask::SingleParallel()
 {
+    m_single_job_flag.store(true);
     while (true)
     {
         UpdateLaserDistance();
+        if (!m_single_job_flag.load())
+        {
+            SPDLOG_WARN("终止指令,退出单次调平任务!!!");
+            m_Robot->setRobotHalt();
+            return false;
+        }
         auto result = CheckParallelStateDecorator();
         if (result == EDetectionInParallelResult::eDeviationIsLessThanThreshold)
         {
@@ -1184,15 +1204,28 @@ bool CTask::SingleParallel()
         double* tar_pos = tar_position.data();
 
         std::vector<double> parallel_velocity = GP::End_Vel_Limit;
-        int scalar{ 1 };
-        scalar = GP::Working_Scenario == GP::WorkingScenario::Top ? 5 : 3;
-        parallel_velocity.at(0) *= scalar;
-        parallel_velocity.at(1) *= scalar;
-        parallel_velocity.at(2) *= scalar;
+        // int scalar{ 1 };
+        // scalar = GP::Working_Scenario == GP::WorkingScenario::Top ? 2 : 3;
+        // parallel_velocity.at(0) = scalar;
+        // parallel_velocity.at(1) = scalar;
+        // parallel_velocity.at(2) = scalar;
 
         int cnt{ 0 };
         m_Robot->setLinkMoveAbs(tar_pos, parallel_velocity.data());
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
+    }
+}
+
+void CTask::SecondPush()
+{
+    if (GP::Working_Scenario == GP::WorkingScenario::Top)
+    {
+        m_Robot->setJointMoveAbs(0, 150.93, RobotConfigMap.at(0).max_velocity);
+        m_Robot->setJointMoveAbs(9, 950.0, RobotConfigMap.at(9).max_velocity);  // 工具升降
+    }
+    else
+    {
+        SPDLOG_WARN("非顶板作业场景，二次举升不执行任何动作");
     }
 }
 

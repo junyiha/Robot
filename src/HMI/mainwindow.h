@@ -186,7 +186,7 @@ private slots:
     void slots_btn_auto_save_image_clicked();
     void slots_btn_disable_auto_save_image_clicked();
 
-    void slots_btn_single_side_line_clicked();
+    void slots_btn_second_push_clicked();
 
     void slots_btn_end_velocity_limit_increase_clicked();
     void slots_btn_end_velocity_limit_decrease_clicked();

@@ -64,6 +64,8 @@ public:
 
     bool SingleParallel();
 
+    void SecondPush();
+
 public:
     QAtomicInt ActionIndex; // 半自动、按钮测试用
     QAtomicInt ButtonIndex; // 当前点击按钮索引
@@ -297,6 +299,7 @@ protected:
     std::shared_ptr<spdlog::logger> log;
 
 private:
+    std::atomic<bool> m_single_job_flag{false};
     std::mutex m_mutex;
     bool m_position_motion_flag{ false };
     uint m_motion_index{ 0 };
