@@ -29,9 +29,7 @@
    <string>装板机器人</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">QWidget#centralwidget{
-	border-image: url(:/img/images/bg_blueCursor.jpg);
-}</string>
+   <string notr="true"/>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QGroupBox" name="groupBox">
