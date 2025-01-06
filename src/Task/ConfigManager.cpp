@@ -66,7 +66,6 @@ namespace Config
 	void ConfigManager::ParseConfigurationRO()
 	{
 		GP::End_Vel_Limit = m_root_ro["end_vel_limit"]["value"].as<std::vector<double>>();
-		GP::End_Vel_Position = m_root_ro["end_vel_position"]["value"].as<std::vector<double>>();
 
 		GP::Robot_IP = m_root_ro["robot_ip"]["value"].as<std::string>();
 		GP::Robot_Port = m_root_ro["robot_port"]["value"].as<std::size_t>();
@@ -92,6 +91,9 @@ namespace Config
 		GP::Max_Deviation_In_FitBoard = m_root_ro["Max_Deviation_In_FitBoard"]["value"].as<double>();
 		GP::Min_Deviation_In_FitBoard = m_root_ro["Min_Deviation_In_FitBoard"]["value"].as<double>();
 		GP::Line_Deviation_Threshold = m_root_ro["Line_Deviation_Threshold"]["value"].as<double>();
+
+		GP::Second_Push_Distance = m_root_ro["Second_Push_Distance"]["value"].as<double>();
+		GP::Second_Quit_Distance = m_root_ro["Second_Quit_Distance"]["value"].as<double>();
 	}
 
 	bool ConfigManager::WriteToFile()
@@ -116,9 +118,9 @@ namespace Config
 
 	bool ConfigManager::UpdateValue(const std::string key, const GP::PositionMap position_map)
 	{
-		bool res{false};
+		bool res{ false };
 		YAML::Node node;
-		for (auto &it : position_map)
+		for (auto& it : position_map)
 		{
 			YAML::Node temp_node;
 			temp_node.push_back(it.second.brief);

@@ -343,10 +343,10 @@ void CTask::motionInParallelExecutionCommand()
 
             std::vector<double> parallel_velocity = GP::End_Vel_Limit;
             int scalar{ 1 };
-            scalar = GP::Working_Scenario == GP::WorkingScenario::Top ? 5 : 3;
-            parallel_velocity.at(0) *= scalar;
-            parallel_velocity.at(1) *= scalar;
-            parallel_velocity.at(2) *= scalar;
+            scalar = GP::Working_Scenario == GP::WorkingScenario::Top ? 7 : 3;
+            parallel_velocity.at(0) = scalar;
+            parallel_velocity.at(1) = scalar;
+            parallel_velocity.at(2) = scalar;
 
             m_Robot->setLinkMoveAbs(tar_pos, parallel_velocity.data());
             break;
@@ -473,6 +473,7 @@ void CTask::motionInPositioningExecutionCommand()
 
         static QVector<double> tar_position{ 0, 0, 0, 0, 0, 0 };
         static double tar_pos[6] = { 0, 0, 0, 0, 0, 0 };
+        static std::vector<double> temp_vel = GP::End_Vel_Limit;
         if (!m_position_motion_flag)
         {
             QVector<Eigen::Matrix4d> Dev_RT = CMeasure::calPoseDeviation(m_stMeasuredata);
@@ -483,16 +484,21 @@ void CTask::motionInPositioningExecutionCommand()
                 tar_pos[i] = tar_position[i];
             }
 
-            m_Robot->setLinkMoveAbs(tar_pos, GP::End_Vel_Position.data());
-            stLinkStatus linkstatus = m_Robot->getLinkSta();
-            SPDLOG_INFO("tar_pos:{}, {}, {}, {}, {}, {}\ncurrent_pos: {}, {}, {}, {}, {}, {}",
-                      tar_pos[0], tar_pos[1], tar_pos[2], tar_pos[3] * 57.3, tar_pos[4] * 57.3, tar_pos[5] * 57.3,
-                      linkstatus.stLinkActKin.LinkPos[0], linkstatus.stLinkActKin.LinkPos[1], linkstatus.stLinkActKin.LinkPos[2],
-                      linkstatus.stLinkActKin.LinkPos[3] * 57.3, linkstatus.stLinkActKin.LinkPos[4] * 57.3, linkstatus.stLinkActKin.LinkPos[5] * 57.3);
-            SPDLOG_INFO("tar_pos - current_pos:{},{},{},{},{},{}",
-                      tar_pos[0] - linkstatus.stLinkActKin.LinkPos[0], tar_pos[1] - linkstatus.stLinkActKin.LinkPos[1],
-                      tar_pos[2] - linkstatus.stLinkActKin.LinkPos[2], tar_pos[3] * 57.3 - linkstatus.stLinkActKin.LinkPos[3] * 57.3,
-                      tar_pos[4] * 57.3 - linkstatus.stLinkActKin.LinkPos[4] * 57.3, tar_pos[5] * 57.3 - linkstatus.stLinkActKin.LinkPos[5] * 57.3);
+            if (std::fabs(m_LinkStatus.stLinkActKin.LinkPos[0] - tar_pos[0]) < 5 ||
+                std::fabs(m_LinkStatus.stLinkActKin.LinkPos[1] - tar_pos[1]) < 5)
+            {
+                temp_vel.at(0) *= 0.5;
+                temp_vel.at(1) *= 0.5;
+                temp_vel.at(2) *= 0.5;
+            }
+            else
+            {
+                temp_vel.at(0) *= 2;
+                temp_vel.at(1) *= 2;
+                temp_vel.at(2) *= 2;
+            }
+
+            m_Robot->setLinkMoveAbs(tar_pos, temp_vel.data());
             m_position_motion_flag = true;
         }
         if (m_LinkStatus.eLinkActState == eLINK_STANDSTILL &&
@@ -510,15 +516,9 @@ void CTask::motionInPositioningExecutionCommand()
         }
         else
         {
-            auto temp_vel = GP::End_Vel_Limit;
             temp_vel.at(0) = 0.5;
             temp_vel.at(1) = 0.5;
             temp_vel.at(2) = 0.5;
-            stLinkStatus linkstatus = m_Robot->getLinkSta();
-            SPDLOG_INFO("tar_pos:{}, {}, {}, {}, {}, {}\ncurrent_pos: {}, {}, {}, {}, {}, {}",
-                      tar_pos[0], tar_pos[1], tar_pos[2], tar_pos[3] * 57.3, tar_pos[4] * 57.3, tar_pos[5] * 57.3,
-                      linkstatus.stLinkActKin.LinkPos[0], linkstatus.stLinkActKin.LinkPos[1], linkstatus.stLinkActKin.LinkPos[2],
-                      linkstatus.stLinkActKin.LinkPos[3] * 57.3, linkstatus.stLinkActKin.LinkPos[4] * 57.3, linkstatus.stLinkActKin.LinkPos[5] * 57.3);
             m_Robot->setLinkMoveAbs(tar_pos, temp_vel.data());
         }
 
@@ -664,7 +664,7 @@ void CTask::sidelineMotionInFitBoardExecutionCommand()
     {
     case EExecutionCommand::eNULL:
     {
-        auto temp_vel = GP::End_Vel_Position;
+        auto temp_vel = GP::End_Vel_Limit;
         temp_vel.at(0) = 0.5;
         temp_vel.at(1) = 0.5;
         temp_vel.at(2) = 0.5;
@@ -704,7 +704,12 @@ void CTask::liftMotionInFitBoardExecutionCommand()
     {
         if (!lift_motion_flag)
         {
-            double velocity = LINK_0_JOINT_MAX_VEL[GP::TOOL_LIFTING] * 0.5;
+            double scaler{ 1 };
+            if (m_motion_index > 3)
+            {
+                scaler = 0.5;
+            }
+            double velocity = RobotConfigMap.at(GP::TOOL_LIFTING).max_velocity * scaler;
             m_Robot->setJointMoveAbs(GP::TOOL_LIFTING, m_lift_tool, velocity);
             SPDLOG_INFO("joint: {}, target position: {}, velocity: {}", GP::TOOL_LIFTING, m_lift_tool, velocity);
             lift_motion_flag = true;
@@ -909,6 +914,7 @@ void CTask::CalculatedAdjustmentOfLift()
     double average_distance = std::accumulate(laserDistance.begin(), laserDistance.end(), 0.0) / laserDistance.size();
     m_lift_tool = average_distance - BOARDING_MOTION_QUE.at(motion_index);
     m_lift_tool += m_JointGroupStatus[GP::TOOL_LIFTING].Position;
+    m_motion_index = motion_index;
 }
 
 void CTask::UpdateLaserDistance()
@@ -1156,19 +1162,11 @@ bool CTask::SingleSideLine()
         }
 
         CalculatedAdjustmentOfSideline();
-        auto temp_vel = GP::End_Vel_Position;
+        auto temp_vel = GP::End_Vel_Limit;
         temp_vel.at(0) = 0.5;
         temp_vel.at(1) = 0.5;
         temp_vel.at(2) = 0.5;
         m_Robot->setLinkMoveAbs(m_fit_board_target_pose.data(), temp_vel.data());
-
-        // QVector<double> tar_position(m_fit_board_target_pose.begin(), m_fit_board_target_pose.end());
-        // if (m_LinkStatus.eLinkActState == eLINK_STANDSTILL &&
-        //     m_Robot->isEndReached(tar_position))
-        // {
-        //     SPDLOG_INFO("板壁距离检测完成");
-        //     return true;
-        // }
 
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
         cnt++;
@@ -1204,11 +1202,6 @@ bool CTask::SingleParallel()
         double* tar_pos = tar_position.data();
 
         std::vector<double> parallel_velocity = GP::End_Vel_Limit;
-        // int scalar{ 1 };
-        // scalar = GP::Working_Scenario == GP::WorkingScenario::Top ? 2 : 3;
-        // parallel_velocity.at(0) = scalar;
-        // parallel_velocity.at(1) = scalar;
-        // parallel_velocity.at(2) = scalar;
 
         int cnt{ 0 };
         m_Robot->setLinkMoveAbs(tar_pos, parallel_velocity.data());
@@ -1218,15 +1211,42 @@ bool CTask::SingleParallel()
 
 void CTask::SecondPush()
 {
-    if (GP::Working_Scenario == GP::WorkingScenario::Top)
-    {
-        m_Robot->setJointMoveAbs(0, 150.93, RobotConfigMap.at(0).max_velocity);
-        m_Robot->setJointMoveAbs(9, 950.0, RobotConfigMap.at(9).max_velocity);  // 工具升降
-    }
-    else
+    if (GP::Working_Scenario != GP::WorkingScenario::Top)
     {
         SPDLOG_WARN("非顶板作业场景，二次举升不执行任何动作");
+        return;
     }
+
+    UpdateLaserDistance();
+
+    std::vector<double> laser_distance(std::begin(m_stMeasuredata.m_LaserDistance), std::end(m_stMeasuredata.m_LaserDistance));
+    auto max_distance = std::max_element(laser_distance.begin(), laser_distance.end());
+    if (*max_distance < 120 || *max_distance > 800)
+    {
+        SPDLOG_WARN("激光距离过小或过大，无需二次举升");
+        return;
+    }
+
+    double offset = *max_distance - GP::Second_Push_Distance;
+
+    std::vector<double> cur_pos(m_LinkStatus.stLinkActKin.LinkPos, m_LinkStatus.stLinkActKin.LinkPos + 6);
+    cur_pos.at(2) += offset;
+
+    m_Robot->setLinkMoveAbs(cur_pos.data(), GP::End_Vel_Limit.data());
+}
+
+void CTask::SecondQuit()
+{
+    if (GP::Working_Scenario == GP::WorkingScenario::Top)
+    {
+        m_Robot->setJointMoveAbs(9, 875.0, RobotConfigMap.at(9).max_velocity);  // 工具升降
+        return;
+    }
+
+    std::vector<double> cur_pos(m_LinkStatus.stLinkActKin.LinkPos, m_LinkStatus.stLinkActKin.LinkPos + 6);
+    cur_pos.at(2) -= GP::Second_Quit_Distance;
+
+    m_Robot->setLinkMoveAbs(cur_pos.data(), GP::End_Vel_Limit.data());
 }
 
 void CTask::TranslateManualTaskIndexNumberToCMD()

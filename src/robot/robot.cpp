@@ -45,7 +45,7 @@ CRobot::CRobot(ComInterface* comm, QObject* parent)
         CTransformation Tool_Mat = CTransformation(90 * M_PI / 180, 0, -90 * M_PI / 180, dt, Prismatic); // 装横板用，末端工具（可伸缩，但是默认不动，不需要刷新）
         m_LinkModel = new CRobotKinectModel(DH_List, Tool_Mat);
     }
-    else 
+    else
     {
         CTransformation Tool_Mat = CTransformation(90 * M_PI / 180, 0, 180 * M_PI / 180, dt, Prismatic); // 装横板用，末端工具（可伸缩，但是默认不动，不需要刷新）
         m_LinkModel = new CRobotKinectModel(DH_List, Tool_Mat);
@@ -966,6 +966,13 @@ bool CRobot::isEndReached(QVector<double> tarpos)
     }
 
     return true;
+}
+
+bool CRobot::isEndReached(std::vector<double> tarpos)
+{
+    QVector<double> tarpos_q(tarpos.begin(), tarpos.end());
+
+    return isEndReached(tarpos_q);
 }
 
 void CRobot::setRobotStop()

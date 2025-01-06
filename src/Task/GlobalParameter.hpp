@@ -61,9 +61,11 @@ namespace GP
 
 	extern double Line_Deviation_Threshold; // 边线调整允许偏差
 
+	extern double Second_Push_Distance; // 第二次举升距离
+	extern double Second_Quit_Distance; // 第二次举升距离
+
 	// 关节末端运动限速
 	extern std::vector<double> End_Vel_Limit;
-	extern std::vector<double> End_Vel_Position;
 
 	extern std::string Robot_IP;
 	extern std::size_t Robot_Port;

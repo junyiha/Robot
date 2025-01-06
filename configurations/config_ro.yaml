@@ -55,6 +55,12 @@ Min_Deviation_In_FitBoard:
 Line_Deviation_Threshold:
   brief: 边线调整允许偏差
   value: 1.0
+Second_Push_Distance:
+  brief: 二次举升目标位置
+  value: 120.0
+Second_Quit_Distance:
+  brief: 二次退出目标位置
+  value: 50.0
 line2: "#############################################################"
 prepare_position:
   brief: 准备位置(装板)

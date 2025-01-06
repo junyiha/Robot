@@ -46,4 +46,6 @@ int TestTcpClient(int argc, char* argv[]);
 
 int TestFitBoard(int argc, char* argv[]);
 
+int TestRobot(int argc, char* argv[]);
+
 #endif  // TEST_HPP__

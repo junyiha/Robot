@@ -251,6 +251,7 @@ public:
      * @return  true:目标位置偏差小于0.1
      */
     bool isEndReached(QVector<double> tarpos);
+    bool isEndReached(std::vector<double> tarpos);
 
     /**
      * @brief 获取LINK状态信息

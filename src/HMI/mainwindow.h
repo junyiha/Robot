@@ -57,7 +57,6 @@ public:
     ~MainWindow();
 
 private:
-    void InitLog();
     void InitUiForm();
     void InitVision();
     void InitSlotUpdateUIAllTimer();

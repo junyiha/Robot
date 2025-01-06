@@ -203,28 +203,12 @@ void CTask::Manual()
     }
     case stManualOperator::SecondPush:
     {
-        if (GP::Working_Scenario == GP::WorkingScenario::Top)
-        {
-            m_Robot->setJointMoveAbs(0, 150.93, RobotConfigMap.at(0).max_velocity);
-            m_Robot->setJointMoveAbs(9, 950.0, RobotConfigMap.at(9).max_velocity);  // 工具升降
-        }
-        else
-        {
-            SPDLOG_WARN("非顶板作业场景，二次举升不执行任何动作");
-        }
+        SecondPush();
         break;
     }
     case stManualOperator::SecondQuit:
     {
-        if (GP::Working_Scenario == GP::WorkingScenario::Top)
-        {
-            m_Robot->setJointMoveAbs(0, 50.0, RobotConfigMap.at(0).max_velocity);  // 底部升降
-            m_Robot->setJointMoveAbs(9, 885.0, RobotConfigMap.at(9).max_velocity);  // 工具升降
-        }
-        else
-        {
-            m_Robot->setJointMoveAbs(9, 875.0, RobotConfigMap.at(9).max_velocity);  // 工具升降
-        }
+        SecondQuit();
         break;
     }
     case stManualOperator::Parallel:
@@ -259,7 +243,7 @@ void CTask::Manual()
     }
     default:
     {
-        log->warn("invalid task index: {}", m_manualOperator.TaskIndex);
+        SPDLOG_WARN("invalid task index: {}", m_manualOperator.TaskIndex);
     }
     }
 
@@ -353,13 +337,13 @@ int CTask::CheckSidelineState()
     if ((m_stMeasuredata.m_bLineDistance[0] == false && m_stMeasuredata.m_bLineDistance[2] == false) &&
         (m_stMeasuredata.m_bLineDistance[1] == false && m_stMeasuredata.m_bLineDistance[3] == false))
     {
-        log->error("检测到的边线数据长边不满足调整需求");
+        SPDLOG_ERROR("检测到的边线数据长边不满足调整需求");
         return -1;
     }
     // 判断短边合法性
     if ((m_stMeasuredata.m_bLineDistance[4] == false && m_stMeasuredata.m_bLineDistance[5] == false))
     {
-        log->error("检测到的边线数据短边不满足调整需求");
+        SPDLOG_ERROR("检测到的边线数据短边不满足调整需求");
         return -1;
     }
 
@@ -375,7 +359,7 @@ int CTask::CheckSidelineState()
     }
     else
     {
-        log->error("边线距离需要继续调整，边线距离为：{},{},{},{},{},{}", m_stMeasuredata.m_LineDistance[0], m_stMeasuredata.m_LineDistance[1], m_stMeasuredata.m_LineDistance[2], m_stMeasuredata.m_LineDistance[3], m_stMeasuredata.m_LineDistance[4], m_stMeasuredata.m_LineDistance[5]);
+        SPDLOG_ERROR("边线距离需要继续调整，边线距离为：{},{},{},{},{},{}", m_stMeasuredata.m_LineDistance[0], m_stMeasuredata.m_LineDistance[1], m_stMeasuredata.m_LineDistance[2], m_stMeasuredata.m_LineDistance[3], m_stMeasuredata.m_LineDistance[4], m_stMeasuredata.m_LineDistance[5]);
         re_line = 0;
     }
 
@@ -407,7 +391,7 @@ EDetectionInPositioningResult CTask::CheckSidelineStateDecorator()
     default:
     {
         result = EDetectionInPositioningResult::eDataIsInvalid;
-        log->error("{} invalid value: {} ", __LINE__, res);
+        SPDLOG_ERROR("invalid value: {} ", res);
     }
     }
 
@@ -440,7 +424,7 @@ EDetectionInFitBoardResult CTask::CheckFitBoardState()
     default:
     {
         result = EDetectionInFitBoardResult::eDataIsInvalid;
-        log->error("{} invalid value: {} ", __LINE__, res);
+        SPDLOG_ERROR("invalid value: {} ", res);
     }
     }
 

@@ -27,8 +27,10 @@ namespace GP
 
 	double Line_Deviation_Threshold{ 0.0 };
 
+	double Second_Push_Distance{ 0.0 };
+	double Second_Quit_Distance{ 0.0 };
+
 	std::vector<double> End_Vel_Limit(6, 0.0);
-	std::vector<double> End_Vel_Position(6, 0.0);
 
 	std::string Robot_IP;
 	std::size_t Robot_Port;
