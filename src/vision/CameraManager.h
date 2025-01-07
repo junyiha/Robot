@@ -4,15 +4,18 @@
 
 #ifndef HK_DEMO2_CAMERAMANAGER_H
 #define HK_DEMO2_CAMERAMANAGER_H
-#include <iostream>
-#include <map>
-#include"HKCameraControls.h"
-#include <spdlog/spdlog.h>
 #include<QDebug>
 #include <QMutex>
-#include "MvCamera.h"
 #include <QThread>
+
+#include <map>
+#include <iostream>
 #include <vector>
+
+#include <spdlog/spdlog.h>
+#include "MvCamera.h"
+
+#include"HKCameraControls.h"
 #include "utils.h"
 
 

@@ -55,6 +55,6 @@ const double LINK_0_JOINT_LIMIT_NEG[MAX_FREEDOM_LINK] = { 0,    // 0 升降
 //------------------------------------------------------------------------------//
 // 最大速度
 //------------------------------------------------------------------------------//
-const double LINK_0_JOINT_MAX_VEL[MAX_FREEDOM_LINK] = { 7, 20, 20, 10, 3, 30, 27, 5, 10, 4, 3, MAX, MAX, MAX, MAX, MAX, MAX, MAX, MAX, MAX };
+const double LINK_0_JOINT_MAX_VEL[MAX_FREEDOM_LINK] = { 7, 20, 20, 10, 3, 30, 27, 5, 10, 6, 3, MAX, MAX, MAX, MAX, MAX, MAX, MAX, MAX, MAX };
 
 #pragma pack(pop)

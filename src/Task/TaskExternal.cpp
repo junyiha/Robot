@@ -487,15 +487,15 @@ void CTask::motionInPositioningExecutionCommand()
             if (std::fabs(m_LinkStatus.stLinkActKin.LinkPos[0] - tar_pos[0]) < 5 ||
                 std::fabs(m_LinkStatus.stLinkActKin.LinkPos[1] - tar_pos[1]) < 5)
             {
-                temp_vel.at(0) *= 0.5;
-                temp_vel.at(1) *= 0.5;
-                temp_vel.at(2) *= 0.5;
+                temp_vel.at(0) = 1;
+                temp_vel.at(1) = 1;
+                temp_vel.at(2) = 1;
             }
             else
             {
-                temp_vel.at(0) *= 2;
-                temp_vel.at(1) *= 2;
-                temp_vel.at(2) *= 2;
+                temp_vel.at(0) = 3;
+                temp_vel.at(1) = 3;
+                temp_vel.at(2) = 3;
             }
 
             m_Robot->setLinkMoveAbs(tar_pos, temp_vel.data());
@@ -516,9 +516,6 @@ void CTask::motionInPositioningExecutionCommand()
         }
         else
         {
-            temp_vel.at(0) = 0.5;
-            temp_vel.at(1) = 0.5;
-            temp_vel.at(2) = 0.5;
             m_Robot->setLinkMoveAbs(tar_pos, temp_vel.data());
         }
 
@@ -705,10 +702,11 @@ void CTask::liftMotionInFitBoardExecutionCommand()
         if (!lift_motion_flag)
         {
             double scaler{ 1 };
-            if (m_motion_index > 3)
+            if (m_motion_index >= 1)
             {
                 scaler = 0.5;
             }
+            SPDLOG_INFO("m_motion_index: {}", m_motion_index);
             double velocity = RobotConfigMap.at(GP::TOOL_LIFTING).max_velocity * scaler;
             m_Robot->setJointMoveAbs(GP::TOOL_LIFTING, m_lift_tool, velocity);
             SPDLOG_INFO("joint: {}, target position: {}, velocity: {}", GP::TOOL_LIFTING, m_lift_tool, velocity);
@@ -929,6 +927,8 @@ void CTask::UpdateLaserDistance()
 }
 
 
+// 5号相机对应的激光雷达禁用，6号相机视觉数据用激光雷达代替
+#define SHORT_REPLACE_VISION
 
 void CTask::UpdateVisionResult(VisionResult& vis_res)
 {
@@ -943,6 +943,13 @@ void CTask::UpdateVisionResult(VisionResult& vis_res)
     for (int i = 0; i < 6; i++)
         vis_res.stData.m_LineDistance[i] *= k;
 
+#ifdef SHORT_REPLACE_VISION
+
+    vis_res.stData.m_bLineDistance[5] = vis_res.stData.m_bLaserProfile[1];
+    vis_res.stData.m_LineDistance[5] = vis_res.stData.m_LaserGapDistance[1] - 15;
+
+
+#else
     int laser2camera[4] = {
             4, 5, 1, 3
     };  // 轮廓激光映射到对应相机
@@ -1040,6 +1047,7 @@ void CTask::UpdateVisionResult(VisionResult& vis_res)
 
         }
     }
+#endif
 
     std::copy(std::begin(vis_res.stData.m_LineDistance), std::end(vis_res.stData.m_LineDistance), m_stMeasuredata.m_LineDistance);
     std::copy(std::begin(vis_res.stData.m_bLineDistance), std::end(vis_res.stData.m_bLineDistance), m_stMeasuredata.m_bLineDistance);
@@ -1211,6 +1219,7 @@ bool CTask::SingleParallel()
 
 void CTask::SecondPush()
 {
+
     if (GP::Working_Scenario != GP::WorkingScenario::Top)
     {
         SPDLOG_WARN("非顶板作业场景，二次举升不执行任何动作");
@@ -1229,15 +1238,61 @@ void CTask::SecondPush()
 
     double offset = *max_distance - GP::Second_Push_Distance;
 
-    std::vector<double> cur_pos(m_LinkStatus.stLinkActKin.LinkPos, m_LinkStatus.stLinkActKin.LinkPos + 6);
-    cur_pos.at(2) += offset;
+    // 动态计算，分配底部升降和工具升降的位移，使两轴同时开始和同时结束，保证举升时两者都以最大速度运动
+    m_Robot->setJointMoveAbs(0, 175.93, RobotConfigMap.at(0).max_velocity);
+    m_Robot->setJointMoveAbs(9, 995.0, RobotConfigMap.at(9).max_velocity);  // 工具升降
 
-    m_Robot->setLinkMoveAbs(cur_pos.data(), GP::End_Vel_Limit.data());
+
+
+    // auto temp_thread = [this](){
+
+    //     if (GP::Working_Scenario != GP::WorkingScenario::Top)
+    //     {
+    //         SPDLOG_WARN("非顶板作业场景，二次举升不执行任何动作");
+    //         return;
+    //     }
+
+    //     UpdateLaserDistance();
+
+    //     std::vector<double> laser_distance(std::begin(m_stMeasuredata.m_LaserDistance), std::end(m_stMeasuredata.m_LaserDistance));
+    //     auto max_distance = std::max_element(laser_distance.begin(), laser_distance.end());
+    //     if (*max_distance < 120 || *max_distance > 800)
+    //     {
+    //         SPDLOG_WARN("激光距离过小或过大，无需二次举升");
+    //         return;
+    //     }
+
+    //     double offset = *max_distance - GP::Second_Push_Distance;
+
+    //     std::vector<double> cur_pos(m_LinkStatus.stLinkActKin.LinkPos, m_LinkStatus.stLinkActKin.LinkPos + 6);
+    //     cur_pos.at(2) += offset;
+
+    //     m_single_job_flag.store(true);
+    //     while (true)
+    //     {
+    //         if (!m_single_job_flag.load())
+    //         {
+    //             SPDLOG_WARN("终止二次举升运动!!!");
+    //             return;
+    //         }
+    //         m_Robot->setLinkMoveAbs(cur_pos.data(), GP::End_Vel_Limit.data());
+    //         if (m_Robot->isEndReached(cur_pos))
+    //         {
+    //             SPDLOG_INFO("二次举升结束!!!");
+    //             break;
+    //         }
+
+    //         std::this_thread::sleep_for(std::chrono::milliseconds(50));
+    //     }
+    // };
+
+    // std::thread* t = new std::thread(temp_thread);
+    // m_thread_pool.push_back(t);
 }
 
 void CTask::SecondQuit()
 {
-    if (GP::Working_Scenario == GP::WorkingScenario::Top)
+    if (GP::Working_Scenario != GP::WorkingScenario::Top)
     {
         m_Robot->setJointMoveAbs(9, 875.0, RobotConfigMap.at(9).max_velocity);  // 工具升降
         return;
@@ -1246,7 +1301,45 @@ void CTask::SecondQuit()
     std::vector<double> cur_pos(m_LinkStatus.stLinkActKin.LinkPos, m_LinkStatus.stLinkActKin.LinkPos + 6);
     cur_pos.at(2) -= GP::Second_Quit_Distance;
 
-    m_Robot->setLinkMoveAbs(cur_pos.data(), GP::End_Vel_Limit.data());
+    m_Robot->setJointMoveAbs(0, 10.0, RobotConfigMap.at(0).max_velocity);
+    m_Robot->setJointMoveAbs(9, 865.0, RobotConfigMap.at(9).max_velocity);  // 工具升降
+
+
+
+
+    // auto temp_thread = [this](){
+
+    //     if (GP::Working_Scenario != GP::WorkingScenario::Top)
+    //     {
+    //         m_Robot->setJointMoveAbs(9, 875.0, RobotConfigMap.at(9).max_velocity);  // 工具升降
+    //         return;
+    //     }
+
+    //     std::vector<double> cur_pos(m_LinkStatus.stLinkActKin.LinkPos, m_LinkStatus.stLinkActKin.LinkPos + 6);
+    //     cur_pos.at(2) -= GP::Second_Quit_Distance;
+
+    //     m_single_job_flag.store(true);
+
+    //     while (true)
+    //     {
+    //         if (!m_single_job_flag.load())
+    //         {
+    //             SPDLOG_WARN("终止二次退出运动!!!");
+    //             return;
+    //         }
+    //         m_Robot->setLinkMoveAbs(cur_pos.data(), GP::End_Vel_Limit.data());
+    //         if (m_Robot->isEndReached(cur_pos))
+    //         {
+    //             SPDLOG_INFO("二次退出结束!!!");
+    //             return;
+    //         }
+
+    //         std::this_thread::sleep_for(std::chrono::milliseconds(50));
+    //     }
+    // };
+
+    // std::thread* t = new std::thread(temp_thread);
+    // m_thread_pool.push_back(t);
 }
 
 void CTask::TranslateManualTaskIndexNumberToCMD()

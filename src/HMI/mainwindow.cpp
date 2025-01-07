@@ -237,6 +237,11 @@ void MainWindow::connectSlotFunctions()
     connect(ui->btn_end_velocity_limit_increase, &QPushButton::clicked, this, &MainWindow::slots_btn_end_velocity_limit_increase_clicked, Qt::UniqueConnection);
     connect(ui->btn_end_velocity_limit_decrease, &QPushButton::clicked, this, &MainWindow::slots_btn_end_velocity_limit_decrease_clicked, Qt::UniqueConnection);
     connect(ui->btn_end_velocity_limit_reset, &QPushButton::clicked, this, &MainWindow::slots_btn_end_velocity_limit_reset_clicked, Qt::UniqueConnection);
+
+    connect(ui->btn_replace_vision_3, &QPushButton::clicked, this, &MainWindow::slots_btn_replace_vision_3_clicked, Qt::UniqueConnection);
+    connect(ui->btn_replace_vision_1, &QPushButton::clicked, this, &MainWindow::slots_btn_replace_vision_1_clicked, Qt::UniqueConnection);
+    connect(ui->btn_replace_vision_4, &QPushButton::clicked, this, &MainWindow::slots_btn_replace_vision_4_clicked, Qt::UniqueConnection);
+    connect(ui->btn_replace_vision_5, &QPushButton::clicked, this, &MainWindow::slots_btn_replace_vision_5_clicked, Qt::UniqueConnection);
 }
 
 MainWindow::~MainWindow()
@@ -635,11 +640,31 @@ void MainWindow::slots_btn_single_parallel_clicked()
     SPDLOG_INFO("单次平行线对齐");
 }
 
+void MainWindow::slots_btn_replace_vision_3_clicked()
+{
+    
+}
+
+void MainWindow::slots_btn_replace_vision_1_clicked()
+{
+    
+}
+
+void MainWindow::slots_btn_replace_vision_4_clicked()
+{
+    
+}
+
+void MainWindow::slots_btn_replace_vision_5_clicked()
+{
+    
+}
+
 void MainWindow::slots_btn_end_velocity_limit_increase_clicked()
 {
-    GP::End_Vel_Limit.at(0) = 8;
-    GP::End_Vel_Limit.at(1) = 8;
-    GP::End_Vel_Limit.at(2) = 8;
+    GP::End_Vel_Limit.at(0) = 10;
+    GP::End_Vel_Limit.at(1) = 10;
+    GP::End_Vel_Limit.at(2) = 10;
 }
 
 void MainWindow::slots_btn_end_velocity_limit_decrease_clicked()

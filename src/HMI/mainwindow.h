@@ -193,6 +193,11 @@ private slots:
 
     void slots_btn_single_parallel_clicked();
 
+    void slots_btn_replace_vision_3_clicked();
+    void slots_btn_replace_vision_1_clicked();
+    void slots_btn_replace_vision_4_clicked();
+    void slots_btn_replace_vision_5_clicked();
+
 private:
     double m_wheelVel{ 30.0 };
     bool m_dragEnabled;

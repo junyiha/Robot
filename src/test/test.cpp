@@ -261,6 +261,8 @@ int TestRobot(int argc, char* argv[])
     auto robot_ptr = std::make_unique<CRobot>(new ComInterface());
     robot_ptr->start();
 
+    std::this_thread::sleep_for(std::chrono::seconds(10));
+
     auto current_link_status = robot_ptr->getLinkSta();
 
     std::vector<double> cur_pos(current_link_status.stLinkActKin.LinkPos, current_link_status.stLinkActKin.LinkPos + 6);
@@ -268,11 +270,11 @@ int TestRobot(int argc, char* argv[])
     cur_pos.at(2) += 50;
 
     std::vector<double> max_vel{ 10, 10, 10, 0.5, 0.5, 0.5 };
-    robot_ptr->setLinkMoveVel(max_vel.data());
-    robot_ptr->setLinkMoveAbs(cur_pos.data(), max_vel.data());
 
     while (true)
     {
+        robot_ptr->setLinkMoveAbs(cur_pos.data(), max_vel.data());
+
         if (robot_ptr->isEndReached(cur_pos))
         {
             SPDLOG_INFO("到达目标位置");

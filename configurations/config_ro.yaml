@@ -8,7 +8,7 @@ velRotate:
   value: 0.05
 end_vel_limit:
   brief: 关节运动限速
-  value: [1, 1, 1, 0.05, 0.05, 0.05]
+  value: [2, 2, 2, 0.05, 0.05, 0.05]
 end_vel_position:
   brief: 末端运动限速
   value: [1, 1, 1, 0.05, 0.05, 0.05]
@@ -57,10 +57,10 @@ Line_Deviation_Threshold:
   value: 1.0
 Second_Push_Distance:
   brief: 二次举升目标位置
-  value: 120.0
+  value: 200.0
 Second_Quit_Distance:
   brief: 二次退出目标位置
-  value: 50.0
+  value: 100.0
 line2: "#############################################################"
 prepare_position:
   brief: 准备位置(装板)

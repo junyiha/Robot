@@ -84,13 +84,15 @@ void CTask::Manual()
         return;
     }
 
-    if (std::fabs(m_manualOperator.VechDirect - m_JointGroupStatus[GP::STEER_LEFT_INDEX].Position) > 3)
-    {
-        const double velocity{ 10.0 };
-        // 当前指令和上一个指令的VechDirect都为零，判断条件始终成立
-        m_Robot->setJointMoveAbs(GP::STEER_LEFT_INDEX, m_manualOperator.VechDirect, velocity);  // 速度需改为参数
-        m_Robot->setJointMoveAbs(GP::STEER_RIGHT_INDEX, m_manualOperator.VechDirect, velocity); // 速度需改为参数
-    }
+    // if (std::fabs(m_manualOperator.VechDirect - m_JointGroupStatus[GP::STEER_LEFT_INDEX].Position) > 3)
+    // {
+    //     const double velocity{ 10.0 };
+    //     // 当前指令和上一个指令的VechDirect都为零，判断条件始终成立
+    //     m_Robot->setJointMoveAbs(GP::STEER_LEFT_INDEX, m_manualOperator.VechDirect, velocity);  // 速度需改为参数
+    //     m_Robot->setJointMoveAbs(GP::STEER_RIGHT_INDEX, m_manualOperator.VechDirect, velocity); // 速度需改为参数
+    // }
+
+    SteerWheelControl();
 
     if (m_manualOperator.bVechFlag || m_manualOperator.bRotateFlag)
     {
@@ -148,7 +150,7 @@ void CTask::Manual()
 #ifdef TEST_TASK_STATEMACHINE_
 #else
         std::vector<double> temp_vel(RobotConfigMap.size(), 0.0);
-        temp_vel = { 3, 3, 3, 1, 0.6, 10, 5, 0.5, 4, 2, 3 };
+        temp_vel = { 3, 3, 3, 1, 1, 15, 10, 0.5, 8, 4, 3 };
         auto temp_vec = GP::Position_Map[std::make_pair(GP::Working_Scenario, GP::PositionType::Lift)].value;
         m_Robot->setJointGroupMoveAbs(temp_vec.data(), temp_vel.data());
 #endif
@@ -438,4 +440,23 @@ void CTask::TaskTerminate()
 
     // 磁铁脱开
     m_Comm->SetMagentAction(0, eMag_Off);
+}
+
+void CTask::SteerWheelControl()
+{
+    double velocity{10.0};
+    double temp_velocity_direction = m_manualOperator.VechDirect;
+
+    if (temp_velocity_direction > 0)
+        temp_velocity_direction = (temp_velocity_direction < 10.0) ? 0 : temp_velocity_direction - 10.0;
+    else
+        temp_velocity_direction = (temp_velocity_direction > -10.0) ? 0 : temp_velocity_direction + 10.0;
+
+    if (std::fabs(temp_velocity_direction - m_JointGroupStatus[GP::STEER_LEFT_INDEX].Position) > 5)
+    {
+        // 当前指令和上一个指令的VechDirect都为零，判断条件始终成立
+        m_Robot->setJointMoveAbs(GP::STEER_LEFT_INDEX, temp_velocity_direction, velocity);  // 速度需改为参数
+        m_Robot->setJointMoveAbs(GP::STEER_RIGHT_INDEX, temp_velocity_direction, velocity); // 速度需改为参数
+        SPDLOG_INFO("m_manualOperator.VechDirect: {}, steer velocity:{}", m_manualOperator.VechDirect, temp_velocity_direction);
+    }
 }
