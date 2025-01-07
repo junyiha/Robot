@@ -64,6 +64,8 @@ namespace GP
 	extern double Second_Push_Distance; // 第二次举升距离
 	extern double Second_Quit_Distance; // 第二次退出距离
 
+	extern std::map<int, double> Vision_Replace_Offset_Map; // 视觉替换偏移量
+
 	// 关节末端运动限速
 	extern std::vector<double> End_Vel_Limit;
 

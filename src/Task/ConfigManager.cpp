@@ -94,6 +94,11 @@ namespace Config
 
 		GP::Second_Push_Distance = m_root_ro["Second_Push_Distance"]["value"].as<double>();
 		GP::Second_Quit_Distance = m_root_ro["Second_Quit_Distance"]["value"].as<double>();
+
+		GP::Vision_Replace_Offset_Map[1] = m_root_ro["Vision_Replace_1_Offset"]["value"].as<double>();
+		GP::Vision_Replace_Offset_Map[3] = m_root_ro["Vision_Replace_3_Offset"]["value"].as<double>();
+		GP::Vision_Replace_Offset_Map[4] = m_root_ro["Vision_Replace_4_Offset"]["value"].as<double>();
+		GP::Vision_Replace_Offset_Map[5] = m_root_ro["Vision_Replace_5_Offset"]["value"].as<double>();
 	}
 
 	bool ConfigManager::WriteToFile()

@@ -61,6 +61,18 @@ Second_Push_Distance:
 Second_Quit_Distance:
   brief: 二次退出目标位置
   value: 100.0
+Vision_Replace_1_Offset:
+  brief: 替换视觉数据1
+  value: 15
+Vision_Replace_3_Offset:
+  brief: 替换视觉数据1
+  value: 15
+Vision_Replace_4_Offset:
+  brief: 替换视觉数据1
+  value: 15
+Vision_Replace_5_Offset:
+  brief: 替换视觉数据1
+  value: 15
 line2: "#############################################################"
 prepare_position:
   brief: 准备位置(装板)

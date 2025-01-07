@@ -197,6 +197,8 @@ private slots:
     void slots_btn_replace_vision_1_clicked();
     void slots_btn_replace_vision_4_clicked();
     void slots_btn_replace_vision_5_clicked();
+    void slots_btn_set_vision_replace_offset_clicked();
+    void slots_btn_get_vision_replace_offset_clicked();
 
 private:
     double m_wheelVel{ 30.0 };

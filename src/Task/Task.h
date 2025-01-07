@@ -67,6 +67,9 @@ public:
     void SecondPush();
     void SecondQuit();
 
+    void SetVisionReplaceFlag(int index, bool flag);
+    bool GetVisionReplaceFlag(int index);
+
 public:
     QAtomicInt ActionIndex; // 半自动、按钮测试用
     QAtomicInt ButtonIndex; // 当前点击按钮索引
@@ -310,6 +313,12 @@ private:
     double m_lift_tool{ 0.0 };
     const std::vector<double> BOARDING_MOTION_QUE = { 75, 70, 60, 55, 50, 45, 35, 5, 0 }; // 贴合运动序列
     std::vector<std::thread*> m_thread_pool;
+    std::map<int, bool> m_vision_replace{
+        { 1, false },
+        { 3, false },
+        { 4, false },
+        { 5, false }
+    };
 
     std::map<ETopState, std::pair<std::string, std::string>> TopStateStringMap{
         {ETopState::eManual, {"手动", "Manual"}},

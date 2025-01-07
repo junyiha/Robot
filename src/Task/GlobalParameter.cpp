@@ -32,6 +32,8 @@ namespace GP
 
 	std::vector<double> End_Vel_Limit(6, 0.0);
 
+	std::map<int, double> Vision_Replace_Offset_Map;
+
 	std::string Robot_IP;
 	std::size_t Robot_Port;
 

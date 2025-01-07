@@ -242,6 +242,9 @@ void MainWindow::connectSlotFunctions()
     connect(ui->btn_replace_vision_1, &QPushButton::clicked, this, &MainWindow::slots_btn_replace_vision_1_clicked, Qt::UniqueConnection);
     connect(ui->btn_replace_vision_4, &QPushButton::clicked, this, &MainWindow::slots_btn_replace_vision_4_clicked, Qt::UniqueConnection);
     connect(ui->btn_replace_vision_5, &QPushButton::clicked, this, &MainWindow::slots_btn_replace_vision_5_clicked, Qt::UniqueConnection);
+
+    connect(ui->btn_set_vision_replace_offset, &QPushButton::clicked, this, &MainWindow::slots_btn_set_vision_replace_offset_clicked, Qt::UniqueConnection);
+    connect(ui->btn_get_vision_replace_offset, &QPushButton::clicked, this, &MainWindow::slots_btn_get_vision_replace_offset_clicked, Qt::UniqueConnection);
 }
 
 MainWindow::~MainWindow()
@@ -642,22 +645,101 @@ void MainWindow::slots_btn_single_parallel_clicked()
 
 void MainWindow::slots_btn_replace_vision_3_clicked()
 {
-    
+    bool cur_flag = m_Task->GetVisionReplaceFlag(3);
+
+    if (cur_flag)
+    {
+        ui->btn_replace_vision_3->setStyleSheet("background-color: rgb(255, 255, 255);"
+                                                "border: 2px solid blue;"
+                                                "border-radius: 10px;"
+        );
+    }
+    else
+    {
+        ui->btn_replace_vision_3->setStyleSheet("background-color: rgb(0, 255, 0);"
+                                                "border: 2px solid blue;"
+                                                "border-radius: 10px;"
+        );
+    }
+    m_Task->SetVisionReplaceFlag(3, !cur_flag);
 }
 
 void MainWindow::slots_btn_replace_vision_1_clicked()
 {
-    
+    bool cur_flag = m_Task->GetVisionReplaceFlag(1);
+
+    if (cur_flag)
+    {
+        ui->btn_replace_vision_1->setStyleSheet("background-color: rgb(255, 255, 255);"
+                                                "border: 2px solid blue;"
+                                                "border-radius: 10px;"
+        );
+    }
+    else
+    {
+        ui->btn_replace_vision_1->setStyleSheet("background-color: rgb(0, 255, 0);"
+                                                "border: 2px solid blue;"
+                                                "border-radius: 10px;"
+        );
+    }
+    m_Task->SetVisionReplaceFlag(1, !cur_flag);
 }
 
 void MainWindow::slots_btn_replace_vision_4_clicked()
 {
-    
+    bool cur_flag = m_Task->GetVisionReplaceFlag(4);
+
+    if (cur_flag)
+    {
+        ui->btn_replace_vision_4->setStyleSheet("background-color: rgb(255, 255, 255);"
+                                                "border: 2px solid blue;"
+                                                "border-radius: 10px;"
+        );
+    }
+    else
+    {
+        ui->btn_replace_vision_4->setStyleSheet("background-color: rgb(0, 255, 0);"
+                                                "border: 2px solid blue;"
+                                                "border-radius: 10px;"
+        );
+    }
+    m_Task->SetVisionReplaceFlag(4, !cur_flag);
 }
 
 void MainWindow::slots_btn_replace_vision_5_clicked()
 {
-    
+    bool cur_flag = m_Task->GetVisionReplaceFlag(5);
+
+    if (cur_flag)
+    {
+        ui->btn_replace_vision_5->setStyleSheet("background-color: rgb(255, 255, 255);"
+                                                "border: 2px solid blue;"
+                                                "border-radius: 10px;"
+        );
+    }
+    else
+    {
+        ui->btn_replace_vision_5->setStyleSheet("background-color: rgb(0, 255, 0);"
+                                                "border: 2px solid blue;"
+                                                "border-radius: 10px;"
+        );
+    }
+    m_Task->SetVisionReplaceFlag(5, !cur_flag);
+}
+
+void MainWindow::slots_btn_set_vision_replace_offset_clicked()
+{
+    int cur_index = ui->spinBoxVisionReplaceIndex->value();
+    int cur_offset = ui->doubleSpinBoxVisionReplaceOffset->value();
+
+    std::map<int, int> laser_to_vision_map{
+    { 1, 4 },
+    { 2, 5 },
+    { 3, 1 },
+    { 4, 3 }
+    };
+
+    GP::Vision_Replace_Offset_Map.at(laser_to_vision_map[cur_index]) = cur_offset;
 }
 
 void MainWindow::slots_btn_end_velocity_limit_increase_clicked()
@@ -1389,6 +1471,20 @@ void MainWindow::updateTaskStateMachineStatus()
 void MainWindow::updateEndVelocityLimit()
 {
     ui->label_end_velocity_limit->setText(QString::fromLocal8Bit("末端速度限制：") + QString::number(GP::End_Vel_Limit[0]) + QString::fromLocal8Bit("mm/s"));
+}
+
+void MainWindow::slots_btn_get_vision_replace_offset_clicked()
+{
+    int cur_index = ui->spinBoxVisionReplaceIndex->value();
+
+    std::map<int, int> laser_to_vision_map{
+        { 1, 4 },
+        { 2, 5 },
+        { 3, 1 },
+        { 4, 3 }
+    };
+
+    ui->doubleSpinBoxVisionReplaceOffset->setValue(GP::Vision_Replace_Offset_Map.at(laser_to_vision_map[cur_index]));
 }
 
 void MainWindow::updateWorkdScenario()

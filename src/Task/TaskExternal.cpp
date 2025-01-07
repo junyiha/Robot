@@ -927,8 +927,8 @@ void CTask::UpdateLaserDistance()
 }
 
 
-// 5号相机对应的激光雷达禁用，6号相机视觉数据用激光雷达代替
-#define SHORT_REPLACE_VISION
+// 轮廓激光直接替换视觉策略
+#define DIRECT_REPLACEMENT_STRATEGY
 
 void CTask::UpdateVisionResult(VisionResult& vis_res)
 {
@@ -943,11 +943,16 @@ void CTask::UpdateVisionResult(VisionResult& vis_res)
     for (int i = 0; i < 6; i++)
         vis_res.stData.m_LineDistance[i] *= k;
 
-#ifdef SHORT_REPLACE_VISION
+#ifdef DIRECT_REPLACEMENT_STRATEGY
 
-    vis_res.stData.m_bLineDistance[5] = vis_res.stData.m_bLaserProfile[1];
-    vis_res.stData.m_LineDistance[5] = vis_res.stData.m_LaserGapDistance[1] - 15;
-
+    for (auto& it : m_vision_replace)
+    {
+        if (it.second)
+        {
+            vis_res.stData.m_bLineDistance[it.first] = vis_res.stData.m_bLaserProfile[it.first];
+            vis_res.stData.m_LineDistance[it.first] = vis_res.stData.m_LaserGapDistance[it.first] - GP::Vision_Replace_Offset_Map.at(it.first);
+        }
+    }
 
 #else
     int laser2camera[4] = {
@@ -1340,6 +1345,16 @@ void CTask::SecondQuit()
 
     // std::thread* t = new std::thread(temp_thread);
     // m_thread_pool.push_back(t);
+}
+
+void CTask::SetVisionReplaceFlag(int index, bool flag)
+{
+    m_vision_replace[index] = flag;
+}
+
+bool CTask::GetVisionReplaceFlag(int index)
+{
+    return m_vision_replace.at(index);
 }
 
 void CTask::TranslateManualTaskIndexNumberToCMD()
