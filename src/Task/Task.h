@@ -311,7 +311,7 @@ private:
     uint m_motion_index{ 0 };
     std::vector<double> m_fit_board_target_pose{ 0, 0, 0, 0, 0, 0 };
     double m_lift_tool{ 0.0 };
-    const std::vector<double> BOARDING_MOTION_QUE = { 75, 70, 60, 55, 50, 45, 35, 5, 0 }; // 贴合运动序列
+    const std::vector<double> BOARDING_MOTION_QUE = { 75, 70, 60, 55, 50, 45, 35, 8, 3, 0 }; // 贴合运动序列
     std::vector<std::thread*> m_thread_pool;
     std::map<int, bool> m_vision_replace{
         { 1, false },

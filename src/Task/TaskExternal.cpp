@@ -945,12 +945,19 @@ void CTask::UpdateVisionResult(VisionResult& vis_res)
 
 #ifdef DIRECT_REPLACEMENT_STRATEGY
 
+    std::map<int, int> laser_vision_map {
+        {1,2},
+        {3,3},
+        {4,0},
+        {5,1}
+    };
+
     for (auto& it : m_vision_replace)
     {
         if (it.second)
         {
-            vis_res.stData.m_bLineDistance[it.first] = vis_res.stData.m_bLaserProfile[it.first];
-            vis_res.stData.m_LineDistance[it.first] = vis_res.stData.m_LaserGapDistance[it.first] - GP::Vision_Replace_Offset_Map.at(it.first);
+            vis_res.stData.m_bLineDistance[it.first] = vis_res.stData.m_bLaserProfile[laser_vision_map.at(it.first)];
+            vis_res.stData.m_LineDistance[it.first] = vis_res.stData.m_LaserGapDistance[laser_vision_map.at(it.first)] - GP::Vision_Replace_Offset_Map.at(it.first);
         }
     }
 
