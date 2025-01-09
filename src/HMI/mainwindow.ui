@@ -526,7 +526,7 @@ QPushButton::pressed{
      <string notr="true"/>
     </property>
     <property name="currentIndex">
-     <number>4</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="page_user">
      <property name="styleSheet">
@@ -1418,7 +1418,7 @@ QPushButton::pressed{
          </property>
          <property name="styleSheet">
           <string notr="true">QPushButton {
-	font: 10pt &quot;黑体&quot;;
+	font: 8pt &quot;黑体&quot;;
     border: 2px solid blue;
     border-radius: 10px;
 }
@@ -1433,7 +1433,7 @@ QPushButton:pressed {
 }</string>
          </property>
          <property name="text">
-          <string>启用轮廓激光2</string>
+          <string>替换线间距6</string>
          </property>
         </widget>
         <widget class="QPushButton" name="btn_replace_vision_4">
@@ -1453,7 +1453,7 @@ QPushButton:pressed {
          </property>
          <property name="styleSheet">
           <string notr="true">QPushButton {
-	font: 10pt &quot;黑体&quot;;
+	font: 8pt &quot;黑体&quot;;
     border: 2px solid blue;
     border-radius: 10px;
 }
@@ -1468,7 +1468,7 @@ QPushButton:pressed {
 }</string>
          </property>
          <property name="text">
-          <string>启用轮廓激光1</string>
+          <string>替换线间距5</string>
          </property>
         </widget>
        </widget>
@@ -1743,7 +1743,7 @@ QPushButton:pressed {
          </property>
          <property name="styleSheet">
           <string notr="true">QPushButton {
-	font: 10pt &quot;黑体&quot;;
+	font: 8pt &quot;黑体&quot;;
     border: 2px solid blue;
     border-radius: 10px;
 }
@@ -1758,7 +1758,7 @@ QPushButton:pressed {
 }</string>
          </property>
          <property name="text">
-          <string>启用轮廓激光3</string>
+          <string>替换线间距2</string>
          </property>
         </widget>
         <widget class="QPushButton" name="btn_replace_vision_3">
@@ -1778,7 +1778,7 @@ QPushButton:pressed {
          </property>
          <property name="styleSheet">
           <string notr="true">QPushButton {
-	font: 10pt &quot;黑体&quot;;
+	font: 8pt &quot;黑体&quot;;
     border: 2px solid blue;
     border-radius: 10px;
 }
@@ -1793,7 +1793,7 @@ QPushButton:pressed {
 }</string>
          </property>
          <property name="text">
-          <string>启用轮廓激光4</string>
+          <string>替换线间距4</string>
          </property>
         </widget>
        </widget>

@@ -961,6 +961,10 @@ void CTask::UpdateVisionResult(VisionResult& vis_res)
         }
     }
 
+    vis_res.stData.m_bLineDistance[4] = false;
+    vis_res.stData.m_LineDistance[4] = 0.0;
+
+
 #else
     int laser2camera[4] = {
             4, 5, 1, 3
