@@ -961,8 +961,8 @@ void CTask::UpdateVisionResult(VisionResult& vis_res)
         }
     }
 
-    vis_res.stData.m_bLineDistance[4] = false;
-    vis_res.stData.m_LineDistance[4] = 0.0;
+    // vis_res.stData.m_bLineDistance[4] = false;
+    // vis_res.stData.m_LineDistance[4] = 0.0;
 
 
 #else

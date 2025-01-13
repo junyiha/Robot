@@ -84,15 +84,20 @@ void CTask::Manual()
         return;
     }
 
-    // if (std::fabs(m_manualOperator.VechDirect - m_JointGroupStatus[GP::STEER_LEFT_INDEX].Position) > 3)
-    // {
-    //     const double velocity{ 10.0 };
-    //     // 当前指令和上一个指令的VechDirect都为零，判断条件始终成立
-    //     m_Robot->setJointMoveAbs(GP::STEER_LEFT_INDEX, m_manualOperator.VechDirect, velocity);  // 速度需改为参数
-    //     m_Robot->setJointMoveAbs(GP::STEER_RIGHT_INDEX, m_manualOperator.VechDirect, velocity); // 速度需改为参数
-    // }
-
-    SteerWheelControl();
+    if (GP::Working_Scenario == GP::WorkingScenario::Top)
+    {
+        SteerWheelControl();
+    }
+    else
+    {
+        if (std::fabs(m_manualOperator.VechDirect - m_JointGroupStatus[GP::STEER_LEFT_INDEX].Position) > 3)
+        {
+            const double velocity{ 10.0 };
+            // 当前指令和上一个指令的VechDirect都为零，判断条件始终成立
+            m_Robot->setJointMoveAbs(GP::STEER_LEFT_INDEX, m_manualOperator.VechDirect, velocity);  // 速度需改为参数
+            m_Robot->setJointMoveAbs(GP::STEER_RIGHT_INDEX, m_manualOperator.VechDirect, velocity); // 速度需改为参数
+        }
+    }
 
     if (m_manualOperator.bVechFlag || m_manualOperator.bRotateFlag)
     {
@@ -150,7 +155,8 @@ void CTask::Manual()
 #ifdef TEST_TASK_STATEMACHINE_
 #else
         std::vector<double> temp_vel(RobotConfigMap.size(), 0.0);
-        temp_vel = { 3, 3, 3, 1, 1, 15, 10, 0.5, 8, 4, 3 };
+        temp_vel = { 3, 3, 3, 1, 1, 15, 10, 0.5, 8, 4, 3 }; // 快速
+        // temp_vel = { 3, 3, 3, 1, 1, 10, 5, 0.5, 2, 4, 3 }; // 慢速
         auto temp_vec = GP::Position_Map[std::make_pair(GP::Working_Scenario, GP::PositionType::Lift)].value;
         m_Robot->setJointGroupMoveAbs(temp_vec.data(), temp_vel.data());
 #endif
