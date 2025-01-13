@@ -286,3 +286,114 @@ int TestRobot(int argc, char* argv[])
 
     return 0;
 }
+
+int TestQtSQL(int argc, char* argv[])
+{
+    QCoreApplication app(argc, argv);
+
+    QStringList drivers = QSqlDatabase::drivers();
+    qDebug() << "Supported database drivers:";
+    for (const QString& driver : drivers)
+    {
+        qDebug() << driver;
+    }
+
+    QString db_path = ROOT_PATH;
+    db_path += "configurations/robot.db";
+
+#ifdef C_TEST
+
+
+    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+
+
+    db.setDatabaseName(db_path);
+
+    if (!db.open())
+    {
+        std::cerr << "Failed to open database: " << db.lastError().text().toStdString() << "\n";
+        return -1;
+    }
+
+    QString createTableSQL = R"(
+        CREATE TABLE IF NOT EXISTS user (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, age INTEGER NOT NULL)
+    )";
+    QSqlQuery query;
+
+    if (!query.exec(createTableSQL))
+    {
+        std::cerr << "Failed to create table: " << db.lastError().text().toStdString() << "\n";
+        return -1;
+    }
+
+    QString insertDataSQL = "INSERT INTO user (name, age) VALUES(:name, :age)";
+    query.prepare(insertDataSQL);
+    query.bindValue(":name", "Alice");
+    query.bindValue(":age", 25);
+    if (!query.exec())
+    {
+        std::cerr << "Failed to create table: " << db.lastError().text().toStdString() << "\n";
+        return -1;
+    }
+
+    QString selectDataSQL = "SELECT id, name, age FROM user";
+    if (!query.exec(selectDataSQL))
+    {
+        std::cerr << "Failed to create table: " << db.lastError().text().toStdString() << "\n";
+        return -1;
+    }
+    while (query.next())
+    {
+        int id = query.value("id").toInt();
+        QString name = query.value("name").toString();
+        int age = query.value("age").toInt();
+        std::cerr << "ID: " << id << ", Name: " << name.toStdString() << ", Age: " << age << "\n";
+    }
+
+    db.close();
+#endif
+
+    bool res{ false };
+    UTILS::Sql sql(db_path);
+
+    QString createTableSQL = R"(
+        CREATE TABLE IF NOT EXISTS user (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, age INTEGER NOT NULL)
+    )";
+
+    res = sql.CreateTable(createTableSQL);
+    if (!res)
+    {
+        return -1;
+    }
+
+    QSqlQuery query;
+    QString insertDataSQL = "INSERT INTO user (name, age) VALUES(:name, :age)";
+    query.prepare(insertDataSQL);
+    query.bindValue(":name", "Ack");
+    query.bindValue(":age", 16);
+    res = sql.InsertData(query);
+    if (!res)
+    {
+        return -1;
+    }
+
+    return 0;
+}
+
+int TestQtJSON(int argc, char* argv[])
+{
+    QCoreApplication a(argc, argv);
+
+    QJsonObject json_obj;
+    json_obj["name"] = "John Doe";
+    json_obj["age"] = 30;
+    json_obj["isStudent"] = false;
+
+    QJsonDocument doc(json_obj);
+
+    QString json_str = doc.toJson(QJsonDocument::Indented);
+
+    SPDLOG_INFO("Json data: {}", json_str.toStdString());
+
+    return 0;
+}

@@ -23,6 +23,8 @@ MainWindow::MainWindow(QWidget* parent)
     m_Task->start();
     m_config_ptr = std::make_unique<Config::ConfigManager>();
 
+    InitSql();
+
     InitSlotUpdateUIAllTimer();
     InitSlotUpdateAllDevicesTimer();
 
@@ -51,6 +53,24 @@ void MainWindow::InitUiForm()
         findChild<QLabel*>(QString("label_position_joint_") + QString::number(i))->setMinimumSize(QSize(150, 30));
     }
     ui->comboBox->setMinimumSize(QSize(150, 30));
+}
+
+void MainWindow::InitSql()
+{
+    QString db_path = ROOT_PATH;
+    db_path += "configurations/robot.db";
+    m_sql = new UTILS::Sql(db_path);
+
+
+    QString create_insulation_panel = R"(
+        CREATE TABLE IF NOT EXISTS insulation_panel (id TEXT PRIMARY KEY, line_distance TEXT NOT NULL, point_laser TEXT NOT NULL, profiler_laser TEXT NOT NULL, time TEXT NOT NULL)
+    )";
+
+    bool res = m_sql->CreateTable(create_insulation_panel);
+    if (!res)
+    {
+        throw std::exception("创建数据库表失败");
+    }
 }
 
 void MainWindow::InitVision()
@@ -245,6 +265,8 @@ void MainWindow::connectSlotFunctions()
 
     connect(ui->btn_set_vision_replace_offset, &QPushButton::clicked, this, &MainWindow::slots_btn_set_vision_replace_offset_clicked, Qt::UniqueConnection);
     connect(ui->btn_get_vision_replace_offset, &QPushButton::clicked, this, &MainWindow::slots_btn_get_vision_replace_offset_clicked, Qt::UniqueConnection);
+
+    connect(ui->btn_save_board_info, &QPushButton::clicked, this, &MainWindow::slots_btn_btn_save_board_info_clicked, Qt::UniqueConnection);
 }
 
 MainWindow::~MainWindow()
@@ -1485,6 +1507,29 @@ void MainWindow::slots_btn_get_vision_replace_offset_clicked()
     };
 
     ui->doubleSpinBoxVisionReplaceOffset->setValue(GP::Vision_Replace_Offset_Map.at(laser_to_vision_map[cur_index]));
+}
+
+void MainWindow::slots_btn_btn_save_board_info_clicked()
+{
+    QString data = ui->line_edit_input_board_info->text();
+
+    QString insert_data = "INSERT INTO insulation_panel (id, line_distance, point_laser, profiler_laser, time) VALUES (:id, :line_distance, :point_laser, :profiler_laser, :time)";
+    QSqlQuery query;
+    query.prepare(insert_data);
+    query.bindValue(":id", data);
+    query.bindValue(":time", QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss"));
+
+    query.bindValue(":line_distance", m_Task->GetLineDistance());
+    query.bindValue(":point_laser", m_Task->GetPointLaser());
+    query.bindValue(":profiler_laser", m_Task->GetProfilerLaser());
+
+    bool res = m_sql->InsertData(query);
+    if (!res)
+    {
+        SPDLOG_ERROR("Failed to insert data: {}", query.lastError().text().toStdString());
+    }
+
+    ui->line_edit_input_board_info->clear();
 }
 
 void MainWindow::updateWorkdScenario()

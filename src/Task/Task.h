@@ -4,6 +4,10 @@
 #include <QAtomicInt>
 #include <QLineEdit>
 
+#include <QJsonObject>
+#include <QJsonArray>
+#include <QJsonDocument>
+
 #include "utils/basic_header.hpp"
 #include "vision/VisionInterface.h"
 #include "task/TaskExternal.h"
@@ -69,6 +73,10 @@ public:
 
     void SetVisionReplaceFlag(int index, bool flag);
     bool GetVisionReplaceFlag(int index);
+
+    QString GetLineDistance();
+    QString GetPointLaser();
+    QString GetProfilerLaser();
 
 public:
     QAtomicInt ActionIndex; // 半自动、按钮测试用

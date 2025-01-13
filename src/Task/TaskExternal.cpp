@@ -945,7 +945,7 @@ void CTask::UpdateVisionResult(VisionResult& vis_res)
 
 #ifdef DIRECT_REPLACEMENT_STRATEGY
 
-    std::map<int, int> laser_vision_map {
+    std::map<int, int> laser_vision_map{
         {1,2},
         {3,3},
         {4,0},
@@ -1257,53 +1257,6 @@ void CTask::SecondPush()
     // 动态计算，分配底部升降和工具升降的位移，使两轴同时开始和同时结束，保证举升时两者都以最大速度运动
     m_Robot->setJointMoveAbs(0, 175.93, RobotConfigMap.at(0).max_velocity);
     m_Robot->setJointMoveAbs(9, 995.0, RobotConfigMap.at(9).max_velocity);  // 工具升降
-
-
-
-    // auto temp_thread = [this](){
-
-    //     if (GP::Working_Scenario != GP::WorkingScenario::Top)
-    //     {
-    //         SPDLOG_WARN("非顶板作业场景，二次举升不执行任何动作");
-    //         return;
-    //     }
-
-    //     UpdateLaserDistance();
-
-    //     std::vector<double> laser_distance(std::begin(m_stMeasuredata.m_LaserDistance), std::end(m_stMeasuredata.m_LaserDistance));
-    //     auto max_distance = std::max_element(laser_distance.begin(), laser_distance.end());
-    //     if (*max_distance < 120 || *max_distance > 800)
-    //     {
-    //         SPDLOG_WARN("激光距离过小或过大，无需二次举升");
-    //         return;
-    //     }
-
-    //     double offset = *max_distance - GP::Second_Push_Distance;
-
-    //     std::vector<double> cur_pos(m_LinkStatus.stLinkActKin.LinkPos, m_LinkStatus.stLinkActKin.LinkPos + 6);
-    //     cur_pos.at(2) += offset;
-
-    //     m_single_job_flag.store(true);
-    //     while (true)
-    //     {
-    //         if (!m_single_job_flag.load())
-    //         {
-    //             SPDLOG_WARN("终止二次举升运动!!!");
-    //             return;
-    //         }
-    //         m_Robot->setLinkMoveAbs(cur_pos.data(), GP::End_Vel_Limit.data());
-    //         if (m_Robot->isEndReached(cur_pos))
-    //         {
-    //             SPDLOG_INFO("二次举升结束!!!");
-    //             break;
-    //         }
-
-    //         std::this_thread::sleep_for(std::chrono::milliseconds(50));
-    //     }
-    // };
-
-    // std::thread* t = new std::thread(temp_thread);
-    // m_thread_pool.push_back(t);
 }
 
 void CTask::SecondQuit()
@@ -1319,43 +1272,6 @@ void CTask::SecondQuit()
 
     m_Robot->setJointMoveAbs(0, 10.0, RobotConfigMap.at(0).max_velocity);
     m_Robot->setJointMoveAbs(9, 865.0, RobotConfigMap.at(9).max_velocity);  // 工具升降
-
-
-
-
-    // auto temp_thread = [this](){
-
-    //     if (GP::Working_Scenario != GP::WorkingScenario::Top)
-    //     {
-    //         m_Robot->setJointMoveAbs(9, 875.0, RobotConfigMap.at(9).max_velocity);  // 工具升降
-    //         return;
-    //     }
-
-    //     std::vector<double> cur_pos(m_LinkStatus.stLinkActKin.LinkPos, m_LinkStatus.stLinkActKin.LinkPos + 6);
-    //     cur_pos.at(2) -= GP::Second_Quit_Distance;
-
-    //     m_single_job_flag.store(true);
-
-    //     while (true)
-    //     {
-    //         if (!m_single_job_flag.load())
-    //         {
-    //             SPDLOG_WARN("终止二次退出运动!!!");
-    //             return;
-    //         }
-    //         m_Robot->setLinkMoveAbs(cur_pos.data(), GP::End_Vel_Limit.data());
-    //         if (m_Robot->isEndReached(cur_pos))
-    //         {
-    //             SPDLOG_INFO("二次退出结束!!!");
-    //             return;
-    //         }
-
-    //         std::this_thread::sleep_for(std::chrono::milliseconds(50));
-    //     }
-    // };
-
-    // std::thread* t = new std::thread(temp_thread);
-    // m_thread_pool.push_back(t);
 }
 
 void CTask::SetVisionReplaceFlag(int index, bool flag)
@@ -1366,6 +1282,102 @@ void CTask::SetVisionReplaceFlag(int index, bool flag)
 bool CTask::GetVisionReplaceFlag(int index)
 {
     return m_vision_replace.at(index);
+}
+
+QString CTask::GetLineDistance()
+{
+    QString data;
+    VisionResult vis_res = m_vision->getVisResult();
+    if (!vis_res.lineStatus && !vis_res.laserStatus)
+    {
+        return data;
+    }
+    UpdateVisionResult(vis_res);
+
+
+    std::vector<double> temp_vec(std::begin(m_stMeasuredata.m_LineDistance), std::end(m_stMeasuredata.m_LineDistance));
+    std::vector<double> temp_flag_vec(std::begin(m_stMeasuredata.m_bLineDistance), std::end(m_stMeasuredata.m_bLineDistance));
+
+    QJsonObject json_obj;
+    QJsonArray value_arr;
+    for (auto i : temp_vec)
+    {
+        value_arr.append(i);
+    }
+    json_obj["value"] = value_arr;
+
+    QJsonArray flag_arr;
+    for (auto i : temp_flag_vec)
+    {
+        flag_arr.append(i);
+    }
+    json_obj["flag"] = flag_arr;
+
+    QJsonDocument doc(json_obj);
+    data = doc.toJson(QJsonDocument::Compact);
+
+    return data;
+}
+
+QString CTask::GetPointLaser()
+{
+    UpdateLaserDistance();
+
+    std::vector<double> temp_vec(std::begin(m_stMeasuredata.m_LaserDistance), std::end(m_stMeasuredata.m_LaserDistance));
+
+    QJsonObject json_obj;
+    QJsonArray value_arr;
+    for (auto i : temp_vec)
+    {
+        value_arr.append(i);
+    }
+    json_obj["value"] = value_arr;
+    QJsonDocument doc(json_obj);
+
+    return doc.toJson(QJsonDocument::Compact);
+}
+
+QString CTask::GetProfilerLaser()
+{
+    QString data;
+    VisionResult vis_res = m_vision->getVisResult();
+    if (!vis_res.lineStatus && !vis_res.laserStatus)
+    {
+        return data;
+    }
+    UpdateVisionResult(vis_res);
+
+
+    std::vector<double> gap_distance_vec(std::begin(m_stMeasuredata.m_LaserGapDistance), std::end(m_stMeasuredata.m_LaserGapDistance));
+    std::vector<double> gap_height_vec(std::begin(m_stMeasuredata.m_LaserGapHeight), std::end(m_stMeasuredata.m_LaserGapHeight));
+    std::vector<double> temp_flag_vec(std::begin(m_stMeasuredata.m_bLaserProfile), std::end(m_stMeasuredata.m_bLaserProfile));
+
+    QJsonObject json_obj;
+    QJsonArray value_arr;
+    for (auto i : gap_distance_vec)
+    {
+        value_arr.append(i);
+    }
+    json_obj["gap_distance_value"] = value_arr;
+
+    QJsonArray gap_height_value_arr;
+    for (auto i : gap_height_vec)
+    {
+        gap_height_value_arr.append(i);
+    }
+    json_obj["gap_height_value"] = gap_height_value_arr;
+
+    QJsonArray flag_arr;
+    for (auto i : temp_flag_vec)
+    {
+        flag_arr.append(i);
+    }
+    json_obj["flag"] = flag_arr;
+
+    QJsonDocument doc(json_obj);
+    data = doc.toJson(QJsonDocument::Compact);
+
+    return data;
 }
 
 void CTask::TranslateManualTaskIndexNumberToCMD()

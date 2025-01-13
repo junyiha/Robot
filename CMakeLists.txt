@@ -138,6 +138,7 @@ find_package(Qt5 COMPONENTS
         Widgets
         Network
         Xml
+        Sql
         REQUIRED)
 
 #  add resources
@@ -170,6 +171,7 @@ target_link_libraries(${PROJECT_NAME}   yaml-cpp::yaml-cpp
                                         Qt5::Widgets
                                         Qt5::Network
                                         Qt5::Xml
+                                        Qt5::Sql
                                         opencv_world455d.lib
                                         opencv_world455.dll
                                         MvCameraControl.lib

@@ -44,6 +44,8 @@
 #include "task/Task.h"
 #include "task/ConfigManager.hpp"
 
+#include "utils/Sql.hpp"
+
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -57,6 +59,7 @@ public:
     ~MainWindow();
 
 private:
+    void InitSql();
     void InitUiForm();
     void InitVision();
     void InitSlotUpdateUIAllTimer();
@@ -199,6 +202,7 @@ private slots:
     void slots_btn_replace_vision_5_clicked();
     void slots_btn_set_vision_replace_offset_clicked();
     void slots_btn_get_vision_replace_offset_clicked();
+    void slots_btn_btn_save_board_info_clicked();
 
 private:
     double m_wheelVel{ 30.0 };
@@ -224,6 +228,7 @@ private:
     QAtomicInt      buttionIndex; // 按钮索引原子变量记录
     QTimer* updateCameraTimer;
 
+    UTILS::Sql* m_sql;
     ComInterface* m_Com;
     CRobot* m_Robot;
     CTask* m_Task;

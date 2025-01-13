@@ -12,16 +12,26 @@
 #ifndef TEST_HPP__
 #define TEST_HPP__
 
-#include <QApplication>
+#include <clocale>
 #include <string>
+
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/sinks/rotating_file_sink.h>
+
+#include <Eigen/Eigen>
+
+#include <QApplication>
 #include <QThread>
 #include <QTextCodec>
-#include <clocale>
-#include <Eigen/Eigen>
+#include <QtSql/QSqlDatabase>
+#include <QtSql/QSqlError>
+#include "QtSql/QSqlQuery"
+#include <QStringList>
+
+#include <QJsonObject>
+#include <QJsonDocument>
 
 #include "cxxopts.hpp"
 
@@ -29,6 +39,7 @@
 #include "vision/VisionInterface.h"
 #include "com/LaserDistanceBojke.h"
 #include "net/tcp_common.hpp"
+#include "utils/Sql.hpp"
 
 int line_detect_demo(int argc, char* argv[]);
 
@@ -47,5 +58,9 @@ int TestTcpClient(int argc, char* argv[]);
 int TestFitBoard(int argc, char* argv[]);
 
 int TestRobot(int argc, char* argv[]);
+
+int TestQtSQL(int argc, char* argv[]);
+
+int TestQtJSON(int argc, char* argv[]);
 
 #endif  // TEST_HPP__
