@@ -9,8 +9,6 @@
  *
  */
 #include "hmi/SceneSelectionWindow.hpp"
-#include "vision/VisionInterface.h"
-#include "com/LaserDistanceBojke.h"
 #include "test/test.hpp"
 
 static void InitLogger()
