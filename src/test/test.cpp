@@ -353,6 +353,7 @@ int TestQtSQL(int argc, char* argv[])
     db.close();
 #endif
 
+#ifdef TEST_SQL_INIT
     bool res{ false };
     UTILS::Sql sql(db_path);
 
@@ -376,6 +377,68 @@ int TestQtSQL(int argc, char* argv[])
     {
         return -1;
     }
+#endif
+    UTILS::Sql sql(db_path);
+
+    QString cmd = "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_&'";
+    QSqlQuery query;
+    if (!query.exec(cmd))
+    {
+        SPDLOG_ERROR("Failed to execute query: {}", query.lastError().text().toStdString());
+        return -1;
+    }
+
+    while (query.next())
+    {
+        QString table_name = query.value(0).toString();
+        SPDLOG_INFO("table name: {}", table_name.toStdString());
+    }
+
+    cmd = "SELECT * FROM insulation_panel";
+    if (!query.exec(cmd))
+    {
+        SPDLOG_ERROR("Failed to execute query: {}", query.lastError().text().toStdString());
+        return -1;
+    }
+    struct Data_t
+    {
+        std::string id;
+        std::string line_distance;
+        std::string point_laser;
+        std::string profiler_laser;
+        std::string time;
+    };
+
+    std::vector<Data_t> data_vec;
+    while (query.next())
+    {
+        Data_t data;
+        data.id = query.value(0).toString().toStdString();
+        data.line_distance = query.value(1).toString().toStdString();
+        data.point_laser = query.value(2).toString().toStdString();
+        data.profiler_laser = query.value(3).toString().toStdString();
+        data.time = query.value(4).toString().toStdString();
+        data_vec.push_back(data);
+    }
+
+    for (auto& data : data_vec)
+    {
+        SPDLOG_INFO("\nid: {}\nline_distance: {}\npoint_laser: {}\nprofiler_laser: {}\ntime: {}\n",
+                    data.id, data.line_distance, data.point_laser, data.profiler_laser, data.time);
+        QJsonDocument json_doc;
+        QJsonParseError json_parse_error;
+
+        json_doc = QJsonDocument::fromJson(QByteArray(data.profiler_laser.c_str()), &json_parse_error);
+        if (json_parse_error.error != QJsonParseError::NoError)
+        {
+            SPDLOG_ERROR("JSON Parse Error: {}", json_parse_error.errorString().toStdString());
+            return -1;
+        }
+
+        SPDLOG_INFO("format json string: {}", json_doc.toJson(QJsonDocument::Indented).toStdString());
+    }
+
+
 
     return 0;
 }
