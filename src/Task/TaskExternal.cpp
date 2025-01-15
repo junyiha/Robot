@@ -1296,7 +1296,7 @@ QString CTask::GetLineDistance()
 
 
     std::vector<double> temp_vec(std::begin(m_stMeasuredata.m_LineDistance), std::end(m_stMeasuredata.m_LineDistance));
-    std::vector<double> temp_flag_vec(std::begin(m_stMeasuredata.m_bLineDistance), std::end(m_stMeasuredata.m_bLineDistance));
+    std::vector<bool> temp_flag_vec(std::begin(m_stMeasuredata.m_bLineDistance), std::end(m_stMeasuredata.m_bLineDistance));
 
     QJsonObject json_obj;
     QJsonArray value_arr;
@@ -1309,7 +1309,7 @@ QString CTask::GetLineDistance()
     QJsonArray flag_arr;
     for (auto i : temp_flag_vec)
     {
-        flag_arr.append(i);
+        flag_arr.append(i ? 1 : 0);
     }
     json_obj["flag"] = flag_arr;
 
@@ -1350,27 +1350,27 @@ QString CTask::GetProfilerLaser()
 
     std::vector<double> gap_distance_vec(std::begin(m_stMeasuredata.m_LaserGapDistance), std::end(m_stMeasuredata.m_LaserGapDistance));
     std::vector<double> gap_height_vec(std::begin(m_stMeasuredata.m_LaserGapHeight), std::end(m_stMeasuredata.m_LaserGapHeight));
-    std::vector<double> temp_flag_vec(std::begin(m_stMeasuredata.m_bLaserProfile), std::end(m_stMeasuredata.m_bLaserProfile));
+    std::vector<bool> temp_flag_vec(std::begin(m_stMeasuredata.m_bLaserProfile), std::end(m_stMeasuredata.m_bLaserProfile));
 
     QJsonObject json_obj;
     QJsonArray value_arr;
     for (auto i : gap_distance_vec)
     {
-        value_arr.append(i);
+        value_arr.append(i < 0 ? 0 : i);
     }
     json_obj["gap_distance_value"] = value_arr;
 
     QJsonArray gap_height_value_arr;
     for (auto i : gap_height_vec)
     {
-        gap_height_value_arr.append(i);
+        gap_height_value_arr.append(i < 0 ? 0 : i);
     }
     json_obj["gap_height_value"] = gap_height_value_arr;
 
     QJsonArray flag_arr;
     for (auto i : temp_flag_vec)
     {
-        flag_arr.append(i);
+        flag_arr.append(i ? 1 : 0);
     }
     json_obj["flag"] = flag_arr;
 
