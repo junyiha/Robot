@@ -139,6 +139,7 @@ find_package(Qt5 COMPONENTS
         Network
         Xml
         Sql
+        SerialPort
         REQUIRED)
 
 #  add resources
@@ -172,6 +173,7 @@ target_link_libraries(${PROJECT_NAME}   yaml-cpp::yaml-cpp
                                         Qt5::Network
                                         Qt5::Xml
                                         Qt5::Sql
+                                        Qt5::SerialPort
                                         opencv_world455d.lib
                                         opencv_world455.dll
                                         MvCameraControl.lib

@@ -6,7 +6,7 @@ int CManual::RecvDataRefactor()
     uint8_t readbuff[100];
 
     DWORD recvlen = 0;
-    uint8_t check_plus{0};
+    uint8_t check_plus{ 0 };
     bool is_Valid = false;
 
     if (!isOpen())
@@ -157,7 +157,7 @@ std::pair<double, bool> CManual::translateToVelocity(quint8 high_byte, quint8 lo
     }
 }
 
-void CManual::getManualCmd(stManualOperator &cmd)
+void CManual::getManualCmd(stManualOperator& cmd)
 {
     mutex_cmd.lock();
 

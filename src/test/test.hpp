@@ -27,11 +27,13 @@
 #include <QTextCodec>
 #include <QtSql/QSqlDatabase>
 #include <QtSql/QSqlError>
-#include "QtSql/QSqlQuery"
+#include <QtSql/QSqlQuery>
 #include <QStringList>
 
 #include <QJsonObject>
 #include <QJsonDocument>
+
+#include <QtSerialPort>
 
 #include "cxxopts.hpp"
 
@@ -62,5 +64,7 @@ int TestRobot(int argc, char* argv[]);
 int TestQtSQL(int argc, char* argv[]);
 
 int TestQtJSON(int argc, char* argv[]);
+
+int TestQtSerialPort(int argc, char* argv[]);
 
 #endif  // TEST_HPP__

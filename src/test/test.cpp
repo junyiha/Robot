@@ -460,3 +460,49 @@ int TestQtJSON(int argc, char* argv[])
 
     return 0;
 }
+
+int TestQtSerialPort(int argc, char* argv[])
+{
+    QCoreApplication app(argc, argv);
+
+    foreach(const QSerialPortInfo & info, QSerialPortInfo::availablePorts())
+    {
+        qDebug() << "Port:" << info.portName();
+        qDebug() << "Description:" << info.description();
+        qDebug() << "Manufacturer:" << info.manufacturer();
+    }
+
+    QString port;
+    QTextStream in(stdin);
+    QTextStream out(stdout);
+
+    out << QString::fromLocal8Bit("输入选择的端口: \n") << flush;
+    port = in.readLine();
+    out << port << flush;
+
+    QSerialPort serial;
+    serial.setPortName(port);
+    serial.setBaudRate(QSerialPort::Baud115200);
+    serial.setDataBits(QSerialPort::Data8);
+    serial.setParity(QSerialPort::NoParity);
+    serial.setStopBits(QSerialPort::OneStop);
+    serial.setFlowControl(QSerialPort::NoFlowControl);
+
+    bool res = serial.open(QIODevice::ReadWrite);
+    if (!res)
+    {
+        qDebug() << "Failed to open port: " << serial.portName() << ", error: " << serial.errorString();
+        return -1;
+    }
+
+    qDebug() << "Success to open port: " << serial.portName() << "\n";
+
+    QObject::connect(&serial, &QSerialPort::readyRead, [&]() {
+        QByteArray data = serial.readAll();
+        qDebug() << "Received data:" << data;
+    });
+
+    serial.write("Hello, Serial Port!");
+
+    return app.exec();
+}

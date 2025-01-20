@@ -25,7 +25,7 @@ public:
     * @param  bool synchronizable：0为异步，1为同步
     * @return 正确返回true，错误返回false
     */
-  bool open(const char *portname, int baudrate = 115200, char parity = 0,
+  bool open(const char* portname, int baudrate = 115200, char parity = 0,
             char databit = 8, char stopbit = 1, bool synchronizeflag = 1);
   /**
    * @brief  关闭串口
@@ -52,7 +52,7 @@ protected:
    * @param DWORD length：待写入的数据长度
    * @return 发送的数据字节数，失败返回0
    */
-  DWORD write(const uint8_t *buffer, DWORD length);
+  DWORD write(const uint8_t* buffer, DWORD length);
 
   /**
    * @brief   串口读取
@@ -60,7 +60,7 @@ protected:
    * @param DWORD length：待读取的数据长度（默认32）
    * @return 读取的数据字节数，失败返回0
    */
-  DWORD read(uint8_t *buffer, DWORD wCount = 32);
+  DWORD read(uint8_t* buffer, DWORD wCount = 32);
   HANDLE hCom;
 
 private:

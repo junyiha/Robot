@@ -9,7 +9,7 @@ CSerialCom::~CSerialCom()
 {
     close();
 }
-bool CSerialCom::open(const char *portname, int baudrate, char parity, char databit, char stopbit, bool synchronizeflag)
+bool CSerialCom::open(const char* portname, int baudrate, char parity, char databit, char stopbit, bool synchronizeflag)
 {
     // DWORD start = 0, stop = 0;
     // start = GetTickCount64();
@@ -144,7 +144,7 @@ bool CSerialCom::isOpen()
     return hCom == NULL ? false : true;
 }
 
-DWORD CSerialCom::write(const uint8_t *buffer, DWORD length)
+DWORD CSerialCom::write(const uint8_t* buffer, DWORD length)
 {
     // DWORD start = 0, stop = 0;
     // start = GetTickCount64();
@@ -203,7 +203,7 @@ DWORD CSerialCom::write(const uint8_t *buffer, DWORD length)
     return length;
 }
 
-DWORD CSerialCom::read(uint8_t *buffer, DWORD wCount)
+DWORD CSerialCom::read(uint8_t* buffer, DWORD wCount)
 {
     //	wCount = 32; //最大读取数据字节数
     if (this->synchronizeflag)

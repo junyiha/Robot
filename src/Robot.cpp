@@ -71,7 +71,8 @@ int main(int argc, char* argv[])
         {"TestFitBoard", TestFitBoard},
         {"TestRobot", TestRobot},
         {"TestQtSQL", TestQtSQL},
-        {"TestQtJSON", TestQtJSON}
+        {"TestQtJSON", TestQtJSON},
+        {"TestQtSerialPort", TestQtSerialPort}
     };
     cxxopts::Options options("Robot", "boarding robot's project");
     options.add_options()("m,mode", "run mode", cxxopts::value<std::string>()->default_value("RunSceneSelect"));
