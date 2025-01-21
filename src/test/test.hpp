@@ -14,6 +14,10 @@
 
 #include <clocale>
 #include <string>
+extern "C"
+{
+#include <conio.h>
+}
 
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/basic_file_sink.h>
@@ -35,6 +39,8 @@
 
 #include <QtSerialPort>
 
+#include <QTcpSocket>
+
 #include "cxxopts.hpp"
 
 #include "hmi/SceneSelectionWindow.hpp"
@@ -43,6 +49,8 @@
 #include "net/tcp_common.hpp"
 #include "utils/Sql.hpp"
 #include "utils/Serial.hpp"
+
+#include "MvCamera.h"
 
 int line_detect_demo(int argc, char* argv[]);
 
@@ -69,5 +77,11 @@ int TestQtJSON(int argc, char* argv[]);
 int TestQtSerialPort(int argc, char* argv[]);
 
 int TestComSerialCom(int argc, char* argv[]);
+
+int TestQTcpSocket(int argc, char* argv[]);
+
+int TestBoardingTool(int argc, char* argv[]);
+
+int TestHKCamera(int argc, char* argv[]);
 
 #endif  // TEST_HPP__

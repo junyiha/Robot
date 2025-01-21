@@ -588,3 +588,426 @@ int TestComSerialCom(int argc, char* argv[])
 
     return 0;
 }
+
+int TestQTcpSocket(int argc, char* argv[])
+{
+    QTcpSocket socket;
+
+    QString ip = "192.168.1.201";
+    int port = 5999;
+
+    socket.connectToHost(ip, port);
+
+    if (socket.waitForConnected(5000))
+    {
+        qDebug() << "Successfully connected to the server!";
+    }
+    else
+    {
+        qDebug() << "Connection failed:" << socket.errorString();
+    }
+
+    auto state = socket.state();
+    switch (state)
+    {
+    case QAbstractSocket::UnconnectedState:
+        qDebug() << "Socket is not connected.";
+        break;
+    case QAbstractSocket::HostLookupState:
+        qDebug() << "Looking up host.";
+        break;
+    case QAbstractSocket::ConnectingState:
+        qDebug() << "Connecting to server.";
+        break;
+    case QAbstractSocket::ConnectedState:
+        qDebug() << "Connected to server.";
+        break;
+    case QAbstractSocket::BoundState:
+        qDebug() << "Socket is bound.";
+        break;
+    case QAbstractSocket::ClosingState:
+        qDebug() << "Socket is closing.";
+        break;
+    case QAbstractSocket::ListeningState:
+        qDebug() << "Socket is listening.";
+        break;
+    }
+
+    QByteArray send_data(SEND_LEN, 0);
+    send_data[0] = SEND_LEN;
+    send_data[1] = 64;
+    send_data[2] = 16;
+    send_data[3] = 0;
+    send_data[4] = 16;
+    send_data[5] = 1;
+    // send_data[14] = 112;
+    int sum_index = SEND_LEN - 1;
+
+    send_data[sum_index] = std::accumulate(send_data.begin(), send_data.begin() + sum_index, 0);
+    qDebug() << "send_data[" << sum_index << "]: " << static_cast<int>(send_data[sum_index]) << "\n";
+
+
+    qint64 send_len = socket.write(send_data);
+    qDebug() << "send length: " << send_len << "\n";
+    if (socket.waitForBytesWritten(3000))
+    {
+        if (socket.waitForReadyRead(3000))
+        {
+            QByteArray data = socket.readAll();
+            qDebug() << "Data received: " << data << ", receive size: " << data.size() << "\n";
+            for (int i = 0; i < data.size(); i++)
+            {
+                qDebug() << "data[" << i << "]: " << static_cast<int>(data[i]) << ", ";
+            }
+        }
+        else
+        {
+            qDebug() << "No data received.";
+        }
+    }
+
+    return 0;
+}
+
+int TestBoardingTool(int argc, char* argv[])
+{
+    BoardingTool boarding_tool;
+
+    std::string ip = "192.168.1.201";
+    int port = 5999;
+
+    boarding_tool.m_cIOA.ConnectToServer(ip.c_str(), port);
+
+    auto data = boarding_tool.getLaserDistance();
+    for (auto& it : data)
+    {
+        SPDLOG_INFO("laser distance: {}", it);
+    }
+
+    system("pause");
+
+    return 0;
+}
+
+
+/*Get Image buffer function, you can get the chunk infomation from frame infomation*/
+void __stdcall ImageCallBackEx(unsigned char* pData, MV_FRAME_OUT_INFO_EX* pFrameInfo, void* pUser)
+{
+    if (pFrameInfo)
+    {
+        // Print parse the timestamp information in the frame
+        printf("ImageCallBack:FrameNum[%d], ExposureTime[%f], SecondCount[%d], CycleCount[%d], CycleOffset[%d]\n",
+            pFrameInfo->nFrameNum, pFrameInfo->fExposureTime, pFrameInfo->nSecondCount, pFrameInfo->nCycleCount, pFrameInfo->nCycleOffset);
+
+        MV_CHUNK_DATA_CONTENT* pUnparsedChunkContent = pFrameInfo->UnparsedChunkList.pUnparsedChunkContent;
+        for (unsigned int i = 0; i < pFrameInfo->nUnparsedChunkNum; i++)
+        {
+            // Only the ID and length are printed, and the content needs to be parsed according to the instruction document
+            printf("ChunkInfo[%d]: ChunkID[0x%x], ChunkLen[%d]\n", i, pUnparsedChunkContent->nChunkID, pUnparsedChunkContent->nChunkLen);
+            pUnparsedChunkContent++;
+        }
+        printf("***********************************\n");
+    }
+}
+
+// Wait for key press
+void WaitForKeyPress(void)
+{
+    while (!_kbhit())
+    {
+        Sleep(10);
+    }
+    _getch();
+}
+
+bool IsColor(MvGvspPixelType enType)
+{
+    switch (enType)
+    {
+    case PixelType_Gvsp_BGR8_Packed:
+    case PixelType_Gvsp_YUV422_Packed:
+    case PixelType_Gvsp_YUV422_YUYV_Packed:
+    case PixelType_Gvsp_BayerGR8:
+    case PixelType_Gvsp_BayerRG8:
+    case PixelType_Gvsp_BayerGB8:
+    case PixelType_Gvsp_BayerBG8:
+    case PixelType_Gvsp_BayerGB10:
+    case PixelType_Gvsp_BayerGB10_Packed:
+    case PixelType_Gvsp_BayerBG10:
+    case PixelType_Gvsp_BayerBG10_Packed:
+    case PixelType_Gvsp_BayerRG10:
+    case PixelType_Gvsp_BayerRG10_Packed:
+    case PixelType_Gvsp_BayerGR10:
+    case PixelType_Gvsp_BayerGR10_Packed:
+    case PixelType_Gvsp_BayerGB12:
+    case PixelType_Gvsp_BayerGB12_Packed:
+    case PixelType_Gvsp_BayerBG12:
+    case PixelType_Gvsp_BayerBG12_Packed:
+    case PixelType_Gvsp_BayerRG12:
+    case PixelType_Gvsp_BayerRG12_Packed:
+    case PixelType_Gvsp_BayerGR12:
+    case PixelType_Gvsp_BayerGR12_Packed:
+        return true;
+    default:
+        return false;
+    }
+}
+
+bool IsMono(MvGvspPixelType enType)
+{
+    switch (enType)
+    {
+    case PixelType_Gvsp_Mono10:
+    case PixelType_Gvsp_Mono10_Packed:
+    case PixelType_Gvsp_Mono12:
+    case PixelType_Gvsp_Mono12_Packed:
+        return true;
+    default:
+        return false;
+    }
+}
+
+cv::Mat Convert2Mat(MV_FRAME_OUT_INFO_EX* pstImageInfo, unsigned char* pData)
+{
+    cv::Mat srcImage;
+    if (pstImageInfo->enPixelType == PixelType_Gvsp_Mono8)
+    {
+        srcImage = cv::Mat(pstImageInfo->nHeight, pstImageInfo->nWidth, CV_8UC1, pData);
+    }
+    else if (pstImageInfo->enPixelType == PixelType_Gvsp_RGB8_Packed)
+    {
+        //        RGB2BGR(pData, pstImageInfo->nWidth, pstImageInfo->nHeight);
+        srcImage = cv::Mat(pstImageInfo->nHeight, pstImageInfo->nWidth, CV_8UC3, pData);
+    }
+    else
+    {
+        printf("unsupported pixel format\n");
+    }
+    return srcImage;
+}
+
+int TestHKCamera(int argc, char* argv[])
+{
+    int res{ 0 };
+    MV_CC_DEVICE_INFO_LIST device_list;
+
+    res = MV_CC_EnumDevices(MV_GIGE_DEVICE | MV_USB_DEVICE, &device_list);
+    if (res != MV_OK)
+    {
+        SPDLOG_ERROR("Failed to enumerate devices, error code: {}", res);
+        return -1;
+    }
+
+    SPDLOG_INFO("find {} device", device_list.nDeviceNum);
+    for (int i = 0; i < device_list.nDeviceNum; i++)
+    {
+        if (device_list.pDeviceInfo[i]->nTLayerType == MV_GIGE_DEVICE)
+        {
+            int nIp1 = ((device_list.pDeviceInfo[i]->SpecialInfo.stGigEInfo.nCurrentIp & 0xff000000) >> 24);
+            int nIp2 = ((device_list.pDeviceInfo[i]->SpecialInfo.stGigEInfo.nCurrentIp & 0x00ff0000) >> 16);
+            int nIp3 = ((device_list.pDeviceInfo[i]->SpecialInfo.stGigEInfo.nCurrentIp & 0x0000ff00) >> 8);
+            int nIp4 = (device_list.pDeviceInfo[i]->SpecialInfo.stGigEInfo.nCurrentIp & 0x000000ff);
+
+            std::cerr << "ip: " << nIp1 << "." << nIp2 << "." << nIp3 << "." << nIp4 << "\n"
+                << "user defined name: " << device_list.pDeviceInfo[i]->SpecialInfo.stGigEInfo.chUserDefinedName << "\n"
+                << "serial number: " << device_list.pDeviceInfo[i]->SpecialInfo.stGigEInfo.chSerialNumber << "\n\n";
+        }
+    }
+
+    int camera_index = 0;
+    std::cerr << "input camera index: \n";
+    std::cin >> camera_index;
+
+    void* handle = nullptr;
+    res = MV_CC_CreateHandle(&handle, device_list.pDeviceInfo[camera_index]);
+    if (res != MV_OK)
+    {
+        SPDLOG_ERROR("Failed to create handle, error code: {}", res);
+        return -1;
+    }
+
+    res = MV_CC_OpenDevice(handle);
+    if (res != MV_OK)
+    {
+        SPDLOG_ERROR("Failed to open device, error code: {}", res);
+        return -1;
+    }
+
+#ifdef CHUNK_DATA
+    res = MV_CC_RegisterImageCallBackEx(handle, ImageCallBackEx, handle);
+    if (res != MV_OK)
+    {
+        SPDLOG_ERROR("Failed to register image callback, error code: {}", res);
+        return -1;
+    }
+
+    // Open Chunk Mode
+    res = MV_CC_SetBoolValue(handle, "ChunkModeActive", true);
+    if (MV_OK != res)
+    {
+        printf("Set Chunk Mode fail! res [0x%x]\n", res);
+        return -1;
+    }
+
+    // Chunk Selector set as Exposure
+    res = MV_CC_SetEnumValueByString(handle, "ChunkSelector", "Exposure");
+    if (MV_OK != res)
+    {
+        printf("Set Exposure Chunk fail! res [0x%x]\n", res);
+        return -1;
+    }
+
+    // Open Chunk Enable
+    res = MV_CC_SetBoolValue(handle, "ChunkEnable", true);
+    if (MV_OK != res)
+    {
+        printf("Set Chunk Enable fail! res [0x%x]\n", res);
+        return -1;
+    }
+
+    // Chunk Selector set as Timestamp
+    res = MV_CC_SetEnumValueByString(handle, "ChunkSelector", "Timestamp");
+    if (MV_OK != res)
+    {
+        printf("Set Timestamp Chunk fail! res [0x%x]\n", res);
+        return -1;
+    }
+
+    // Open Chunk Enable
+    res = MV_CC_SetBoolValue(handle, "ChunkEnable", true);
+    if (MV_OK != res)
+    {
+        printf("Set Chunk Enable fail! res [0x%x]\n", res);
+        return -1;
+    }
+
+    // Chunk Selector set as Timestamp
+    res = MV_CC_SetEnumValueByString(handle, "ChunkSelector", "Timestamp");
+    if (MV_OK != res)
+    {
+        printf("Set Timestamp Chunk fail! res [0x%x]\n", res);
+        return -1;
+    }
+
+    // Open Chunk Enable
+    res = MV_CC_SetBoolValue(handle, "ChunkEnable", true);
+    if (MV_OK != res)
+    {
+        printf("Set Chunk Enable fail! res [0x%x]\n", res);
+        return -1;
+    }
+
+    // Set trigger mode as off
+    res = MV_CC_SetEnumValue(handle, "TriggerMode", MV_TRIGGER_MODE_OFF);
+    if (MV_OK != res)
+    {
+        printf("Set Trigger Mode fail! res [0x%x]\n", res);
+        return -1;
+    }
+
+    // Start grab image
+    res = MV_CC_StartGrabbing(handle);
+    if (MV_OK != res)
+    {
+        printf("Start Grabbing fail! res [0x%x]\n", res);
+        return -1;
+    }
+
+    printf("Press a key to stop grabbing.\n");
+    WaitForKeyPress();
+#else
+
+    unsigned char* pConvertData = NULL;
+    unsigned int nConvertDataSize = 0;
+
+    // Detection network optimal package size(It only works for the GigE camera)
+    if (device_list.pDeviceInfo[0]->nTLayerType == MV_GIGE_DEVICE)
+    {
+        int nPacketSize = MV_CC_GetOptimalPacketSize(handle);
+        if (nPacketSize > 0)
+        {
+            res = MV_CC_SetIntValue(handle, "GevSCPSPacketSize", nPacketSize);
+            if (res != MV_OK)
+            {
+                printf("Warning: Set Packet Size fail res [0x%x]!", res);
+            }
+        }
+        else
+        {
+            printf("Warning: Get Packet Size fail res [0x%x]!", nPacketSize);
+        }
+    }
+
+    res = MV_CC_SetEnumValue(handle, "TriggerMode", MV_TRIGGER_MODE_OFF);
+    if (MV_OK != res)
+    {
+        printf("Set Trigger Mode fail! res [0x%x]\n", res);
+        return -1;
+    }
+
+    // Start grab image
+    res = MV_CC_StartGrabbing(handle);
+    if (MV_OK != res)
+    {
+        printf("Start Grabbing fail! res [0x%x]\n", res);
+        return -1;
+    }
+
+    MV_FRAME_OUT stImageInfo = { 0 };
+
+    res = MV_CC_GetImageBuffer(handle, &stImageInfo, 1000);
+    if (res != MV_OK)
+    {
+        printf("No data[0x%x]\n", res);
+        return -1;
+    }
+
+    printf("Get One Frame: Width[%d], Height[%d], nFrameNum[%d]\n",
+        stImageInfo.stFrameInfo.nWidth, stImageInfo.stFrameInfo.nHeight, stImageInfo.stFrameInfo.nFrameNum);
+
+    cv::Mat src_img = Convert2Mat(&stImageInfo.stFrameInfo, stImageInfo.pBufAddr);
+    cv::imshow("src_image", src_img);
+    cv::waitKey(0);
+
+    MV_CC_FreeImageBuffer(handle, &stImageInfo);
+
+#endif
+
+    // Stop grab image
+    res = MV_CC_StopGrabbing(handle);
+    if (MV_OK != res)
+    {
+        printf("Stop Grabbing fail! res [0x%x]\n", res);
+        return -1;
+    }
+
+    // Close device
+    res = MV_CC_CloseDevice(handle);
+    if (MV_OK != res)
+    {
+        printf("ClosDevice fail! res [0x%x]\n", res);
+        return -1;
+    }
+
+    // Destroy handle
+    res = MV_CC_DestroyHandle(handle);
+    if (MV_OK != res)
+    {
+        printf("Destroy Handle fail! res [0x%x]\n", res);
+        return -1;
+    }
+
+    if (res != MV_OK)
+    {
+        if (handle != NULL)
+        {
+            MV_CC_DestroyHandle(handle);
+            handle = NULL;
+        }
+    }
+
+    printf("Press a key to exit.\n");
+    WaitForKeyPress();
+
+    return 0;
+}
