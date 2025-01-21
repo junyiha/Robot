@@ -11,7 +11,7 @@ CMvCamera::~CMvCamera()
     if (m_hDevHandle)
     {
         MV_CC_DestroyHandle(m_hDevHandle);
-        m_hDevHandle    = MV_NULL;
+        m_hDevHandle = MV_NULL;
     }
 }
 
@@ -46,7 +46,7 @@ int CMvCamera::Open(MV_CC_DEVICE_INFO* pstDeviceInfo)
         return MV_E_CALLORDER;
     }
 
-    int nRet  = MV_CC_CreateHandle(&m_hDevHandle, pstDeviceInfo);
+    int nRet = MV_CC_CreateHandle(&m_hDevHandle, pstDeviceInfo);
     if (MV_OK != nRet)
     {
         return nRet;
@@ -84,7 +84,7 @@ bool CMvCamera::IsDeviceConnected()
 }
 
 // ch:注册图像数据回调 | en:Register Image Data CallBack
-int CMvCamera::RegisterImageCallBack(void(__stdcall* cbOutput)(unsigned char * pData, MV_FRAME_OUT_INFO_EX* pFrameInfo, void* pUser), void* pUser)
+int CMvCamera::RegisterImageCallBack(void(__stdcall* cbOutput)(unsigned char* pData, MV_FRAME_OUT_INFO_EX* pFrameInfo, void* pUser), void* pUser)
 {
     return MV_CC_RegisterImageCallBackEx(m_hDevHandle, cbOutput, pUser);
 }
@@ -139,14 +139,14 @@ int CMvCamera::GetGevAllMatchInfo(MV_MATCH_INFO_NET_DETECT* pMatchInfoNetDetect)
         return MV_E_PARAMETER;
     }
 
-    MV_CC_DEVICE_INFO stDevInfo = {0};
+    MV_CC_DEVICE_INFO stDevInfo = { 0 };
     GetDeviceInfo(&stDevInfo);
     if (stDevInfo.nTLayerType != MV_GIGE_DEVICE)
     {
         return MV_E_SUPPORT;
     }
 
-    MV_ALL_MATCH_INFO struMatchInfo = {0};
+    MV_ALL_MATCH_INFO struMatchInfo = { 0 };
 
     struMatchInfo.nType = MV_MATCH_TYPE_NET_DETECT;
     struMatchInfo.pInfo = pMatchInfoNetDetect;
@@ -164,26 +164,26 @@ int CMvCamera::GetU3VAllMatchInfo(MV_MATCH_INFO_USB_DETECT* pMatchInfoUSBDetect)
         return MV_E_PARAMETER;
     }
 
-    MV_CC_DEVICE_INFO stDevInfo = {0};
+    MV_CC_DEVICE_INFO stDevInfo = { 0 };
     GetDeviceInfo(&stDevInfo);
     if (stDevInfo.nTLayerType != MV_USB_DEVICE)
     {
         return MV_E_SUPPORT;
     }
 
-    MV_ALL_MATCH_INFO struMatchInfo = {0};
+    MV_ALL_MATCH_INFO struMatchInfo = { 0 };
 
     struMatchInfo.nType = MV_MATCH_TYPE_USB_DETECT;
     struMatchInfo.pInfo = pMatchInfoUSBDetect;
     struMatchInfo.nInfoSize = sizeof(MV_MATCH_INFO_USB_DETECT);
     memset(struMatchInfo.pInfo, 0, sizeof(MV_MATCH_INFO_USB_DETECT));
-    
+
     return MV_CC_GetAllMatchInfo(m_hDevHandle, &struMatchInfo);
 }
 
 // ch:获取和设置Int型参数，如 Width和Height，详细内容参考SDK安装目录下的 MvCameraNode.xlsx 文件
 // en:Get Int type parameters, such as Width and Height, for details please refer to MvCameraNode.xlsx file under SDK installation directory
-int CMvCamera::GetIntValue(IN const char* strKey, OUT MVCC_INTVALUE_EX *pIntValue)
+int CMvCamera::GetIntValue(IN const char* strKey, OUT MVCC_INTVALUE_EX* pIntValue)
 {
     return MV_CC_GetIntValueEx(m_hDevHandle, strKey, pIntValue);
 }
@@ -195,7 +195,7 @@ int CMvCamera::SetIntValue(IN const char* strKey, IN int64_t nValue)
 
 // ch:获取和设置Enum型参数，如 PixelFormat，详细内容参考SDK安装目录下的 MvCameraNode.xlsx 文件
 // en:Get Enum type parameters, such as PixelFormat, for details please refer to MvCameraNode.xlsx file under SDK installation directory
-int CMvCamera::GetEnumValue(IN const char* strKey, OUT MVCC_ENUMVALUE *pEnumValue)
+int CMvCamera::GetEnumValue(IN const char* strKey, OUT MVCC_ENUMVALUE* pEnumValue)
 {
     return MV_CC_GetEnumValue(m_hDevHandle, strKey, pEnumValue);
 }
@@ -212,7 +212,7 @@ int CMvCamera::SetEnumValueByString(IN const char* strKey, IN const char* sValue
 
 // ch:获取和设置Float型参数，如 ExposureTime和Gain，详细内容参考SDK安装目录下的 MvCameraNode.xlsx 文件
 // en:Get Float type parameters, such as ExposureTime and Gain, for details please refer to MvCameraNode.xlsx file under SDK installation directory
-int CMvCamera::GetFloatValue(IN const char* strKey, OUT MVCC_FLOATVALUE *pFloatValue)
+int CMvCamera::GetFloatValue(IN const char* strKey, OUT MVCC_FLOATVALUE* pFloatValue)
 {
     return MV_CC_GetFloatValue(m_hDevHandle, strKey, pFloatValue);
 }
@@ -224,7 +224,7 @@ int CMvCamera::SetFloatValue(IN const char* strKey, IN float fValue)
 
 // ch:获取和设置Bool型参数，如 ReverseX，详细内容参考SDK安装目录下的 MvCameraNode.xlsx 文件
 // en:Get Bool type parameters, such as ReverseX, for details please refer to MvCameraNode.xlsx file under SDK installation directory
-int CMvCamera::GetBoolValue(IN const char* strKey, OUT bool *pbValue)
+int CMvCamera::GetBoolValue(IN const char* strKey, OUT bool* pbValue)
 {
     return MV_CC_GetBoolValue(m_hDevHandle, strKey, pbValue);
 }
@@ -236,7 +236,7 @@ int CMvCamera::SetBoolValue(IN const char* strKey, IN bool bValue)
 
 // ch:获取和设置String型参数，如 DeviceUserID，详细内容参考SDK安装目录下的 MvCameraNode.xlsx 文件UserSetSave
 // en:Get String type parameters, such as DeviceUserID, for details please refer to MvCameraNode.xlsx file under SDK installation directory
-int CMvCamera::GetStringValue(IN const char* strKey, MVCC_STRINGVALUE *pStringValue)
+int CMvCamera::GetStringValue(IN const char* strKey, MVCC_STRINGVALUE* pStringValue)
 {
     return MV_CC_GetStringValue(m_hDevHandle, strKey, pStringValue);
 }
@@ -273,13 +273,13 @@ int CMvCamera::GetOptimalPacketSize(unsigned int* pOptimalPacketSize)
 }
 
 // ch:注册消息异常回调 | en:Register Message Exception CallBack
-int CMvCamera::RegisterExceptionCallBack(void(__stdcall* cbException)(unsigned int nMsgType, void* pUser),void* pUser)
+int CMvCamera::RegisterExceptionCallBack(void(__stdcall* cbException)(unsigned int nMsgType, void* pUser), void* pUser)
 {
     return MV_CC_RegisterExceptionCallBack(m_hDevHandle, cbException, pUser);
 }
 
 // ch:注册单个事件回调 | en:Register Event CallBack
-int CMvCamera::RegisterEventCallBack(const char* pEventName, void(__stdcall* cbEvent)(MV_EVENT_OUT_INFO * pEventInfo, void* pUser), void* pUser)
+int CMvCamera::RegisterEventCallBack(const char* pEventName, void(__stdcall* cbEvent)(MV_EVENT_OUT_INFO* pEventInfo, void* pUser), void* pUser)
 {
     return MV_CC_RegisterEventCallBackEx(m_hDevHandle, pEventName, cbEvent, pUser);
 }
@@ -321,21 +321,31 @@ int CMvCamera::SaveImageToFile(MV_SAVE_IMG_TO_FILE_PARAM* pstSaveFileParam)
     return MV_CC_SaveImageToFile(m_hDevHandle, pstSaveFileParam);
 }
 
-int CMvCamera::SetGrabStrategy(unsigned  int nStrategy) {
-    if(nStrategy == 0){
+int CMvCamera::SetGrabStrategy(unsigned  int nStrategy)
+{
+    if (nStrategy == 0)
+    {
         return MV_CC_SetGrabStrategy(m_hDevHandle, MV_GrabStrategy_OneByOne);
     }
-    else if(nStrategy == 1){
+    else if (nStrategy == 1)
+    {
         return MV_CC_SetGrabStrategy(m_hDevHandle, MV_GrabStrategy_LatestImagesOnly);
-    }else if(nStrategy == 2){
+    }
+    else if (nStrategy == 2)
+    {
         return MV_CC_SetGrabStrategy(m_hDevHandle, MV_GrabStrategy_LatestImages);
-    }else if(nStrategy == 3){
+    }
+    else if (nStrategy == 3)
+    {
         return MV_CC_SetGrabStrategy(m_hDevHandle, MV_GrabStrategy_UpcomingImage);
-    }else{
+    }
+    else
+    {
         return -1;
     }
 }
 
-int CMvCamera::SetCommandValue(const char* command) {
-   return  MV_CC_SetCommandValue(m_hDevHandle, command);
+int CMvCamera::SetCommandValue(const char* command)
+{
+    return  MV_CC_SetCommandValue(m_hDevHandle, command);
 }

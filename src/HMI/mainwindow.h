@@ -228,7 +228,7 @@ private:
     QAtomicInt      buttionIndex; // 按钮索引原子变量记录
     QTimer* updateCameraTimer;
 
-    UTILS::Sql* m_sql;
+    Utils::Sql* m_sql;
     ComInterface* m_Com;
     CRobot* m_Robot;
     CTask* m_Task;

@@ -378,7 +378,7 @@ int TestQtSQL(int argc, char* argv[])
         return -1;
     }
 #endif
-    UTILS::Sql sql(db_path);
+    Utils::Sql sql(db_path);
 
     QString cmd = "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_&'";
     QSqlQuery query;
@@ -473,13 +473,15 @@ int TestQtSerialPort(int argc, char* argv[])
     }
 
     QString port;
-    QTextStream in(stdin);
-    QTextStream out(stdout);
+    // QTextStream in(stdin);
+    // QTextStream out(stdout);
 
-    out << QString::fromLocal8Bit("输入选择的端口: \n") << flush;
-    port = in.readLine();
-    out << port << flush;
+    // out << QString::fromLocal8Bit("输入选择的端口: \n") << flush;
+    // port = in.readLine();
+    // out << port << flush;
+    port = "COM1";
 
+#ifdef C_TEST
     QSerialPort serial;
     serial.setPortName(port);
     serial.setBaudRate(QSerialPort::Baud115200);
@@ -497,12 +499,92 @@ int TestQtSerialPort(int argc, char* argv[])
 
     qDebug() << "Success to open port: " << serial.portName() << "\n";
 
-    QObject::connect(&serial, &QSerialPort::readyRead, [&]() {
-        QByteArray data = serial.readAll();
-        qDebug() << "Received data:" << data;
-    });
+    QByteArray buf(7, 0);
 
-    serial.write("Hello, Serial Port!");
+    buf[0] = 0x07;
+    buf[1] = 0x00;
+    buf[2] = 0x0C;
+    buf[3] = 0x00;
+    buf[4] = 0x0A;
+    buf[5] = 0x01;
+    buf[6] = 0X1E;
+
+    while (true)
+    {
+        qint64 bytesWritten = serial.write(buf);
+        if (!serial.waitForBytesWritten(1000))  // 默认为异步，此处目的：改为同步，等待写入完毕，再读数据
+        {
+            qDebug() << "write timeout...";
+            break;
+        }
+        QThread::msleep(30);
+        QByteArray recv_data = serial.read(32);
+        qDebug() << "send data: " << buf.size() << "\n"
+            << "receive data: " << recv_data.size() << "\n";
+    }
+#else
+
+    Utils::Serial serial;
+
+    bool res = serial.Open(port);
+    if (!res)
+    {
+        SPDLOG_ERROR("Failed to open port: {}", port.toStdString());
+        return -1;
+    }
+
+    serial.Loop();
+#endif
+
+    qDebug() << "exit...";
 
     return app.exec();
+}
+
+int TestComSerialCom(int argc, char* argv[])
+{
+    CSerialCom serial;
+    std::string port;
+    // std::cerr << "input port: \n";
+    // std::cin >> port;
+    port = "COM1";
+
+
+    // CManual manual;
+
+    // manual.open(port.c_str());
+    // manual.start();
+
+    // system("pause");
+
+    bool res = serial.open(port.c_str());
+    if (!res)
+    {
+        SPDLOG_ERROR("Failed to open port: {}", port);
+        return 1;
+    }
+
+    std::vector<uint8_t> buf(7, 0);
+
+    buf[0] = 0x07;
+    buf[1] = 0x00;
+    buf[2] = 0x0C;
+    buf[3] = 0x00;
+    buf[4] = 0x0A;
+    buf[5] = 0x01;
+    buf[6] = 0X1E;
+
+    // 0x07 0x00 0x0C 0x00 0x0A 0x01 0X1E
+
+    while (true)
+    {
+        serial.write(buf.data(), buf.size());
+        std::this_thread::sleep_for(std::chrono::milliseconds(30));
+        uint8_t buffData[100];
+        int recvlen = serial.read(buffData);
+        std::cerr << "send data: " << buf.size() << "\n"
+            << "receive data: " << recvlen << "\n";
+    }
+
+    return 0;
 }

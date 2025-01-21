@@ -59,7 +59,7 @@ void MainWindow::InitSql()
 {
     QString db_path = ROOT_PATH;
     db_path += "configurations/robot.db";
-    m_sql = new UTILS::Sql(db_path);
+    m_sql = new Utils::Sql(db_path);
 
 
     QString create_insulation_panel = R"(

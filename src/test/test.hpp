@@ -42,6 +42,7 @@
 #include "com/LaserDistanceBojke.h"
 #include "net/tcp_common.hpp"
 #include "utils/Sql.hpp"
+#include "utils/Serial.hpp"
 
 int line_detect_demo(int argc, char* argv[]);
 
@@ -66,5 +67,7 @@ int TestQtSQL(int argc, char* argv[]);
 int TestQtJSON(int argc, char* argv[]);
 
 int TestQtSerialPort(int argc, char* argv[]);
+
+int TestComSerialCom(int argc, char* argv[]);
 
 #endif  // TEST_HPP__

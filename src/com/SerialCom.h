@@ -45,7 +45,8 @@ signals:
   void sigConnected();
   void sigDisconnected();
 
-protected:
+  // protected:
+public:
   /**
    * @brief   串口写入
    * @param const uint8_t* buffer：待写入的数据
