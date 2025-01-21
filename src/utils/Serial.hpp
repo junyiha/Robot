@@ -11,6 +11,7 @@
 #pragma once
 
 #include <QtSerialPort/QtSerialPort>
+#include <QMap>
 
 namespace Utils
 {
@@ -59,5 +60,4 @@ namespace Utils
     private:
         QSerialPort m_serial;
     };
-
 }  // namespace Utils

@@ -99,6 +99,10 @@ namespace Config
 		GP::Vision_Replace_Offset_Map[3] = m_root_ro["Vision_Replace_3_Offset"]["value"].as<double>();
 		GP::Vision_Replace_Offset_Map[4] = m_root_ro["Vision_Replace_4_Offset"]["value"].as<double>();
 		GP::Vision_Replace_Offset_Map[5] = m_root_ro["Vision_Replace_5_Offset"]["value"].as<double>();
+
+		GP::Manual_Serial_Port = m_root_ro["manual_serial_port"]["value"].as<std::string>();
+		GP::Tool_Serial_Port = m_root_ro["tool_serial_port"]["value"].as<std::string>();
+
 	}
 
 	bool ConfigManager::WriteToFile()

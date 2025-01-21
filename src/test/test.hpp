@@ -49,6 +49,7 @@ extern "C"
 #include "net/tcp_common.hpp"
 #include "utils/Sql.hpp"
 #include "utils/Serial.hpp"
+#include "utils/Manual.hpp"
 
 #include "MvCamera.h"
 
@@ -83,5 +84,7 @@ int TestQTcpSocket(int argc, char* argv[]);
 int TestBoardingTool(int argc, char* argv[]);
 
 int TestHKCamera(int argc, char* argv[]);
+
+int TestManual(int argc, char* argv[]);
 
 #endif  // TEST_HPP__

@@ -74,4 +74,7 @@ namespace GP
 
 	extern std::string IOA_IP;
 	extern std::size_t IOA_Port;
+
+	extern std::string Manual_Serial_Port;
+	extern std::string Tool_Serial_Port;
 }

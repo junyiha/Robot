@@ -123,4 +123,10 @@ IOA_ip:
 IOA_port:
   brief: IOA板端口
   value: 5999
+manual_serial_port:
+  brief: 遥控器串口
+  value: COM1
+tool_serial_port:
+  brief: 工具串口
+  value: COM2
 line4: "#############################################################"

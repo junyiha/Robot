@@ -1011,3 +1011,23 @@ int TestHKCamera(int argc, char* argv[])
 
     return 0;
 }
+
+int TestManual(int argc, char* argv[])
+{
+    Utils::Manual manual;
+    Utils::ManualData_t manual_data;
+
+    while (true)
+    {
+        if (!manual.Check())
+        {
+            SPDLOG_ERROR("manual is invalid\n");
+            continue;
+        }
+
+        manual.GetData(manual_data);
+        SPDLOG_INFO("data: {}", manual_data.bEndMove);
+    }
+
+    return 0;
+}
