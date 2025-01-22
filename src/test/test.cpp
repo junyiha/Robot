@@ -966,3 +966,24 @@ int TestPointLaser(int argc, char* argv[])
 
     return 0;
 }
+
+int TestCamera(int argc, char* argv[])
+{
+    Utils::Camera camera;
+
+    auto camera_map = camera.GetCameraMap();
+
+    for (auto& it : camera_map)
+    {
+        camera.Open(it.first);
+    }
+
+    for (auto& it : camera_map)
+    {
+        camera.StartCapture(it.first);
+    }
+
+    system("pause");
+
+    return 0;
+}

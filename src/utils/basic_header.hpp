@@ -16,6 +16,7 @@
 #include <iostream>
 #include <map>
 #include <mutex>
+#include <thread>
 
 
 #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_INFO

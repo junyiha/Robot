@@ -51,6 +51,7 @@ extern "C"
 #include "utils/Serial.hpp"
 #include "utils/Manual.hpp"
 #include "utils/PointLaser.hpp"
+#include "utils/Camera.hpp"
 
 #include "MvCamera.h"
 
@@ -89,5 +90,7 @@ int TestHKCamera(int argc, char* argv[]);
 int TestManual(int argc, char* argv[]);
 
 int TestPointLaser(int argc, char* argv[]);
+
+int TestCamera(int argc, char* argv[]);
 
 #endif  // TEST_HPP__
