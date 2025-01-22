@@ -58,6 +58,8 @@ file(COPY ${CMAKE_PREFIX_PATH}/bin/Qt5SerialPort.dll DESTINATION ${CMAKE_BINARY_
 file(COPY ${CMAKE_PREFIX_PATH}/bin/Qt5SerialPortd.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/)
 file(COPY ${CMAKE_PREFIX_PATH}/bin/Qt5Sql.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/)
 file(COPY ${CMAKE_PREFIX_PATH}/bin/Qt5Sqld.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/)
+file(COPY ${CMAKE_PREFIX_PATH}/bin/Qt5Network.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/)
+file(COPY ${CMAKE_PREFIX_PATH}/bin/Qt5Networkd.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug/)
 file(COPY ${CMAKE_PREFIX_PATH}/plugins/platforms DESTINATION ${CMAKE_BINARY_DIR}/Debug//plugins/)
 file(COPY ${BaseDIR}/packages/HK_SDK/Libraries/win64/MvCameraControl.lib DESTINATION ${CMAKE_BINARY_DIR}/Debug//)
 file(COPY ${BaseDIR}/packages/BestfitLayserScaner/lib/bin/BestfitLaserScanerSDK.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug//)

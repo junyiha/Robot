@@ -11,9 +11,8 @@
 #pragma once
 
 #include <thread>
+#include <mutex>
 
-#include <QTimer>
-#include <QMutexLocker>
 #include <QtSerialPort/QtSerialPort>
 
 #include "utils/basic_header.hpp"
@@ -75,11 +74,6 @@ namespace Utils
             m_serial.setFlowControl(QSerialPort::NoFlowControl);
             m_serial.open(QIODevice::ReadWrite);
 
-            m_reconnect_timer.setInterval(1000);
-            m_reconnect_timer.setSingleShot(false);
-            QObject::connect(&m_reconnect_timer, &QTimer::timeout, this, &Manual::Reconnection);
-            m_reconnect_timer.start();
-
             m_send_data.resize(7);
             m_send_data[0] = 0x07;
             m_send_data[1] = 0x00;
@@ -90,6 +84,7 @@ namespace Utils
             m_send_data[6] = 0X1E;
 
             Run();
+            Reconnection();
         }
         virtual ~Manual()
         {
@@ -103,7 +98,7 @@ namespace Utils
 
         void GetData(ManualData_t& data)
         {
-            QMutexLocker locker(&m_mutex);
+            std::lock_guard<std::mutex> locker(m_mutex);
             ////////////////////////////////--新协议--//////////////////////////////////////////////
             data.TaskIndex = static_cast<quint8>(m_recv_data[6]);
             data.bEndMove = static_cast<int>(static_cast<quint8>(m_recv_data[7]) & 0b0000'0011) == 2 ? true : false; // 修改1
@@ -150,7 +145,7 @@ namespace Utils
     private:
         void Run()
         {
-            m_thread = new std::thread([this]() {
+            std::thread temp_thread = std::thread([this]() {
                 while (true)
                 {
                     if (!m_serial.isOpen())
@@ -172,10 +167,12 @@ namespace Utils
                         SPDLOG_WARN("receive data is invalid...");
                         continue;
                     }
-                    QMutexLocker locker(&m_mutex);
+                    std::lock_guard<std::mutex> locker(m_mutex);
                     m_recv_data = recv_data;
                 }
             });
+
+            m_thread_pool.push_back(std::move(temp_thread));
         }
 
         bool CheckRecvData(QByteArray& data)
@@ -236,19 +233,28 @@ namespace Utils
 
         void Reconnection()
         {
-            if (!m_serial.isOpen())
-            {
-                m_serial.open(QIODevice::ReadWrite);
-            }
+            std::thread temp_thread = std::thread([this]() {
+                while (true)
+                {
+                    std::this_thread::sleep_for(std::chrono::seconds(1));
+
+                    SPDLOG_INFO("Check serial port status");
+                    if (!m_serial.isOpen())
+                    {
+                        m_serial.open(QIODevice::ReadWrite);
+                    }
+                }
+            });
+
+            m_thread_pool.push_back(std::move(temp_thread));
         }
 
     private:
         QSerialPort m_serial;
         QByteArray m_send_data;
         QByteArray m_recv_data;
-        QMutex m_mutex;
-        QTimer m_reconnect_timer;
-        std::thread* m_thread;
+        std::mutex m_mutex;
+        std::vector<std::thread> m_thread_pool;
     };
 
 }  // namespace Utils

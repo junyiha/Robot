@@ -833,90 +833,6 @@ int TestHKCamera(int argc, char* argv[])
         return -1;
     }
 
-#ifdef CHUNK_DATA
-    res = MV_CC_RegisterImageCallBackEx(handle, ImageCallBackEx, handle);
-    if (res != MV_OK)
-    {
-        SPDLOG_ERROR("Failed to register image callback, error code: {}", res);
-        return -1;
-    }
-
-    // Open Chunk Mode
-    res = MV_CC_SetBoolValue(handle, "ChunkModeActive", true);
-    if (MV_OK != res)
-    {
-        printf("Set Chunk Mode fail! res [0x%x]\n", res);
-        return -1;
-    }
-
-    // Chunk Selector set as Exposure
-    res = MV_CC_SetEnumValueByString(handle, "ChunkSelector", "Exposure");
-    if (MV_OK != res)
-    {
-        printf("Set Exposure Chunk fail! res [0x%x]\n", res);
-        return -1;
-    }
-
-    // Open Chunk Enable
-    res = MV_CC_SetBoolValue(handle, "ChunkEnable", true);
-    if (MV_OK != res)
-    {
-        printf("Set Chunk Enable fail! res [0x%x]\n", res);
-        return -1;
-    }
-
-    // Chunk Selector set as Timestamp
-    res = MV_CC_SetEnumValueByString(handle, "ChunkSelector", "Timestamp");
-    if (MV_OK != res)
-    {
-        printf("Set Timestamp Chunk fail! res [0x%x]\n", res);
-        return -1;
-    }
-
-    // Open Chunk Enable
-    res = MV_CC_SetBoolValue(handle, "ChunkEnable", true);
-    if (MV_OK != res)
-    {
-        printf("Set Chunk Enable fail! res [0x%x]\n", res);
-        return -1;
-    }
-
-    // Chunk Selector set as Timestamp
-    res = MV_CC_SetEnumValueByString(handle, "ChunkSelector", "Timestamp");
-    if (MV_OK != res)
-    {
-        printf("Set Timestamp Chunk fail! res [0x%x]\n", res);
-        return -1;
-    }
-
-    // Open Chunk Enable
-    res = MV_CC_SetBoolValue(handle, "ChunkEnable", true);
-    if (MV_OK != res)
-    {
-        printf("Set Chunk Enable fail! res [0x%x]\n", res);
-        return -1;
-    }
-
-    // Set trigger mode as off
-    res = MV_CC_SetEnumValue(handle, "TriggerMode", MV_TRIGGER_MODE_OFF);
-    if (MV_OK != res)
-    {
-        printf("Set Trigger Mode fail! res [0x%x]\n", res);
-        return -1;
-    }
-
-    // Start grab image
-    res = MV_CC_StartGrabbing(handle);
-    if (MV_OK != res)
-    {
-        printf("Start Grabbing fail! res [0x%x]\n", res);
-        return -1;
-    }
-
-    printf("Press a key to stop grabbing.\n");
-    WaitForKeyPress();
-#else
-
     unsigned char* pConvertData = NULL;
     unsigned int nConvertDataSize = 0;
 
@@ -971,8 +887,6 @@ int TestHKCamera(int argc, char* argv[])
 
     MV_CC_FreeImageBuffer(handle, &stImageInfo);
 
-#endif
-
     // Stop grab image
     res = MV_CC_StopGrabbing(handle);
     if (MV_OK != res)
@@ -1014,6 +928,7 @@ int TestHKCamera(int argc, char* argv[])
 
 int TestManual(int argc, char* argv[])
 {
+    Config::ConfigManager config;
     Utils::Manual manual;
     Utils::ManualData_t manual_data;
 
@@ -1027,6 +942,26 @@ int TestManual(int argc, char* argv[])
 
         manual.GetData(manual_data);
         SPDLOG_INFO("data: {}", manual_data.bEndMove);
+    }
+
+    return 0;
+}
+
+int TestPointLaser(int argc, char* argv[])
+{
+    Config::ConfigManager config;
+    Utils::PointLaser point_laser;
+
+    while (true)
+    {
+        if (!point_laser.Check())
+        {
+            SPDLOG_ERROR("point laser is invalid\n");
+            continue;
+        }
+
+        auto data = point_laser.GetData();
+        SPDLOG_INFO("laser 1: {}, laser 2: {}, laser 3: {},laser 4: {}", data.at(0), data.at(1), data.at(2), data.at(3));
     }
 
     return 0;

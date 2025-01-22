@@ -77,7 +77,8 @@ int main(int argc, char* argv[])
         {"TestQTcpSocket", TestQTcpSocket},
         {"TestBoardingTool", TestBoardingTool},
         {"TestHKCamera", TestHKCamera},
-        {"TestManual", TestManual}
+        {"TestManual", TestManual},
+        {"TestPointLaser", TestPointLaser}
     };
     cxxopts::Options options("Robot", "boarding robot's project");
     options.add_options()("m,mode", "run mode", cxxopts::value<std::string>()->default_value("RunSceneSelect"));

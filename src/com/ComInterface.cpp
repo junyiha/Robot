@@ -94,11 +94,11 @@ void ComInterface::run()
             }
         }
 
-        // 启动遥控器com口 通过isOpen（）判断打开状态
-        if (this->m_cManual.isOpen() == false)
-        {
-            m_cManual.open("COM1");
-        }
+        // // 启动遥控器com口 通过isOpen（）判断打开状态
+        // if (this->m_cManual.isOpen() == false)
+        // {
+        //     m_cManual.open("COM1");
+        // }
 
         if (m_cToolsBoardingLaser.isOpen() == false)
         {
