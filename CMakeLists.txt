@@ -15,6 +15,15 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
+if (CMAKE_GENERATOR MATCHES "Visual Studio")
+    add_compile_options(/MP)  # 正确的选项用于并行编译
+endif()
+add_compile_options(/W0)
+if(MSVC)
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /O2 /GL")
+    set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /O2 /GL")
+endif()
+
 find_program(NVIDIA_SMI nvidia-smi)
 if(NVIDIA_SMI)
     set(BUILD_GPU_FLAG ON)

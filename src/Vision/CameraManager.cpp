@@ -59,7 +59,7 @@ CameraManager::CameraManager()
         {"cam_3", null_dev},
         {"cam_4", null_dev},
         {"cam_5", null_dev},
-        {"cam_6", null_dev}};
+        {"cam_6", null_dev} };
 
     this->camera_info = {
         //            {"cam_1",  "192.168.1.118"},
@@ -80,7 +80,7 @@ CameraManager::CameraManager()
         //        return ;
     }
     // ��ʼ���������
-    for (auto &camera_info : this->cameraInfoMap)
+    for (auto& camera_info : this->cameraInfoMap)
     {
         //        this->cameraList[camera_info.first] = new HKCameraControls(camera_info.first.data(), camera_info.second.data(), this->ethIp);
         this->cameraList[camera_info.first] = new HKCameraControls(camera_info.second, camera_info.first.data());
@@ -122,7 +122,7 @@ void CameraManager::openCameraAll()
 
 CameraManager::~CameraManager()
 {
-    for (auto &camera : this->cameraList)
+    for (auto& camera : this->cameraList)
     {
         this->cameraList[camera.first]->closeCamera();
         delete this->cameraList[camera.first];
@@ -138,7 +138,7 @@ void CameraManager::getImageAll()
         this->cameraImages.clear();
     }
 
-    for (auto &camera : this->cameraList)
+    for (auto& camera : this->cameraList)
     {
         cv::Mat image = this->cameraList[camera.first]->getFrame();
         if (!image.empty())
@@ -157,7 +157,7 @@ void CameraManager::getImageAll()
 
 bool CameraManager::closeCameraAll()
 {
-    for (auto &camera : this->cameraList)
+    for (auto& camera : this->cameraList)
     {
         this->cameraList[camera.first]->closeCamera();
         this->logger->info("close camera {} successed", camera.first);
@@ -192,7 +192,7 @@ void CameraManager::getDeviceList()
     {
         MV_CC_DEVICE_INFO stDevInfo;
         memcpy(&stDevInfo, m_stDevList.pDeviceInfo[i], sizeof(MV_CC_DEVICE_INFO));
-        std::string serial_number = reinterpret_cast<const char *>(m_stDevList.pDeviceInfo[i]->SpecialInfo.stGigEInfo.chSerialNumber);
+        std::string serial_number = reinterpret_cast<const char*>(m_stDevList.pDeviceInfo[i]->SpecialInfo.stGigEInfo.chSerialNumber);
         this->cameraInfoMap[this->serial2names[serial_number]] = stDevInfo;
     }
 }
@@ -202,7 +202,7 @@ void CameraManager::closeAllCameraThread()
 
     if (this->cameraList.size() > 0)
     {
-        for (auto &camera : this->cameraList)
+        for (auto& camera : this->cameraList)
         {
             this->cameraList[camera.first]->closeThread();
         }
@@ -213,7 +213,7 @@ void CameraManager::run()
 {
 
     // �����߳�, ���������
-    for (auto &camera : this->cameraList)
+    for (auto& camera : this->cameraList)
     {
         this->cameraList[camera.first]->openCamera();
         if (!this->cameraList[camera.first]->open_status)
@@ -232,7 +232,7 @@ void CameraManager::run()
 std::vector<bool> CameraManager::checkCameraIsAccessible()
 {
     std::vector<bool> isAccessible;
-    for (const auto &camera : this->cameraList)
+    for (const auto& camera : this->cameraList)
     {
         size_t index = camera.first.find("_");
         int number = camera.first[index + 1] - '0';
@@ -245,7 +245,7 @@ std::vector<bool> CameraManager::checkCameraIsAccessible()
 std::vector<bool> CameraManager::getCameraOpenedInfo()
 {
     std::vector<bool> isOpened(this->cameraList.size());
-    for (const auto &camera : this->cameraList)
+    for (const auto& camera : this->cameraList)
     {
         size_t index = camera.first.find("_");
         int number = camera.first[index + 1] - '0';

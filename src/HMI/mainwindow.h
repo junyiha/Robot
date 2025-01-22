@@ -24,7 +24,7 @@
 #include <QMutex>
 #include <QTextCodec>
 #include <QTextBrowser>
-//--------------机器人部分--------------//
+ //--------------机器人部分--------------//
 #include "ComInterface.h"
 #include "robot.h"
 //--------------视觉部分--------------//
@@ -58,7 +58,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = nullptr);
+    MainWindow(QWidget* parent = nullptr);
     ~MainWindow();
 
 private:
@@ -72,7 +72,7 @@ private:
     void connectSlotFunctions();
     void setButtonIndex(); // 记录当前触发按钮索引
     void setActionIndex(); // 记录当前触发动作索引(工作流程记录)
-    void closeEvent(QCloseEvent *event);
+    void closeEvent(QCloseEvent* event);
 
 private slots:
     // 1.0
@@ -164,8 +164,8 @@ private slots:
     void slots_btn_single_job_clicked();
 
 private:
-    void MessageAlert(const std::string &message);
-    void AddMessageAlert(const std::string &message);
+    void MessageAlert(const std::string& message);
+    void AddMessageAlert(const std::string& message);
     void MessageConsumer();
 
 private:
@@ -173,24 +173,24 @@ private:
     const unsigned int cameraNum = 6;
     const unsigned int jointNum = 10;
     const unsigned int freeJointNum = 6;
-    ComInterface *m_Com;
-    CRobot *m_Robot;
-    CTask *m_Task;
-    VisionInterface *m_VisionInterface;
+    ComInterface* m_Com;
+    CRobot* m_Robot;
+    CTask* m_Task;
+    VisionInterface* m_VisionInterface;
     std::unique_ptr<Config::ConfigManager> m_config_ptr;
     std::mutex m_message_mutex;
     std::queue<std::string> m_message_container;
-    double m_wheelVel{30};
+    double m_wheelVel{ 30 };
     std::shared_ptr<spdlog::logger> logger;
 
-    Ui::MainWindow *ui;
+    Ui::MainWindow* ui;
     QMutex m_mutex;
-    QTimer *updateUiTimer;
+    QTimer* updateUiTimer;
     QTimer m_message_timer;
-    bool lineStatus{false}; // 是否处于直线检测状态
+    bool lineStatus{ false }; // 是否处于直线检测状态
     std::thread m_job_thread;
-    std::vector<std::thread *> m_thread_pool;
-    bool m_thread_exit_flag{false};
+    std::vector<std::thread*> m_thread_pool;
+    bool m_thread_exit_flag{ false };
 
     // 操作按钮索引配置
     std::map<std::string, unsigned int> m_btnIndex = {
@@ -271,7 +271,7 @@ private:
         {"btn_moveRel_end2", 64},
         {"btn_moveRel_end3", 65},
         {"btn_moveRel_end4", 66},
-        {"btn_moveRel_end5", 67}};
+        {"btn_moveRel_end5", 67} };
 
     // 工作作业按钮名称-索引值
     std::map<std::string, unsigned int> m_jobBtnIndex = {

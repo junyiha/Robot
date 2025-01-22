@@ -1,7 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-MainWindow::MainWindow(QWidget *parent)
+MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent), ui(new Ui::MainWindow), m_message_timer(this)
 {
     ui->setupUi(this);
@@ -58,15 +58,15 @@ void MainWindow::initUiWiget()
     }
     QStringList QList;
     QList << tr("eInitAction")
-          << tr("eGrind_MovorOff")
-          << tr("eGrind_OnorDown")
-          << tr("eGrind_Up")
-          << tr("eWeld_MovorDwon")
-          << tr("eWeld_Fix")
-          << tr("eWeld_Up")
-          << tr("eWeld_On")
-          << tr("eWeld_Down")
-          << tr("eNone_Action");
+        << tr("eGrind_MovorOff")
+        << tr("eGrind_OnorDown")
+        << tr("eGrind_Up")
+        << tr("eWeld_MovorDwon")
+        << tr("eWeld_Fix")
+        << tr("eWeld_Up")
+        << tr("eWeld_On")
+        << tr("eWeld_Down")
+        << tr("eNone_Action");
     ui->comboBox_tools_action->addItems(QList);
     QList.clear();
     QList << tr("eNONE_Magent") << tr("eMag_On") << tr("eMag_Off") << tr("eMag_Up") << tr("eMag_Down");
@@ -101,21 +101,21 @@ void MainWindow::connectSlotFunctions()
     for (unsigned int i = 0; i < jointNum; i++)
     {
         // 单轴
-        connect(findChild<QPushButton *>("btn_moveFwd_shaft" + QString::number(i)), &QPushButton::pressed, this, &MainWindow::btn_moveFwd_shaft_pressed, Qt::UniqueConnection);
-        connect(findChild<QPushButton *>("btn_moveFwd_shaft" + QString::number(i)), &QPushButton::released, this, &MainWindow::btn_moveFwd_shaft_released, Qt::UniqueConnection);
-        connect(findChild<QPushButton *>("btn_moveBwd_shaft" + QString::number(i)), &QPushButton::pressed, this, &MainWindow::btn_moveBwd_shaft_pressed, Qt::UniqueConnection);
-        connect(findChild<QPushButton *>("btn_moveBwd_shaft" + QString::number(i)), &QPushButton::released, this, &MainWindow::btn_moveBwd_shaft_released, Qt::UniqueConnection);
-        connect(findChild<QPushButton *>("btn_moveRel_shaft" + QString::number(i)), &QPushButton::clicked, this, &MainWindow::on_moveRel_shaft_clicked, Qt::UniqueConnection);
+        connect(findChild<QPushButton*>("btn_moveFwd_shaft" + QString::number(i)), &QPushButton::pressed, this, &MainWindow::btn_moveFwd_shaft_pressed, Qt::UniqueConnection);
+        connect(findChild<QPushButton*>("btn_moveFwd_shaft" + QString::number(i)), &QPushButton::released, this, &MainWindow::btn_moveFwd_shaft_released, Qt::UniqueConnection);
+        connect(findChild<QPushButton*>("btn_moveBwd_shaft" + QString::number(i)), &QPushButton::pressed, this, &MainWindow::btn_moveBwd_shaft_pressed, Qt::UniqueConnection);
+        connect(findChild<QPushButton*>("btn_moveBwd_shaft" + QString::number(i)), &QPushButton::released, this, &MainWindow::btn_moveBwd_shaft_released, Qt::UniqueConnection);
+        connect(findChild<QPushButton*>("btn_moveRel_shaft" + QString::number(i)), &QPushButton::clicked, this, &MainWindow::on_moveRel_shaft_clicked, Qt::UniqueConnection);
     }
 
     for (unsigned int i = 0; i < freeJointNum; i++)
     {
         // 末端联动
-        connect(findChild<QPushButton *>("btn_moveFwd_end" + QString::number(i)), &QPushButton::pressed, this, &MainWindow::btn_moveFwd_end_pressed, Qt::UniqueConnection);
-        connect(findChild<QPushButton *>("btn_moveFwd_end" + QString::number(i)), &QPushButton::released, this, &MainWindow::btn_moveFwd_end_released, Qt::UniqueConnection);
-        connect(findChild<QPushButton *>("btn_moveBwd_end" + QString::number(i)), &QPushButton::pressed, this, &MainWindow::btn_moveBwd_end_pressed, Qt::UniqueConnection);
-        connect(findChild<QPushButton *>("btn_moveBwd_end" + QString::number(i)), &QPushButton::released, this, &MainWindow::btn_moveBwd_end_released, Qt::UniqueConnection);
-        connect(findChild<QPushButton *>("btn_moveRel_end" + QString::number(i)), &QPushButton::clicked, this, &MainWindow::on_moveRel_end_clicked, Qt::UniqueConnection);
+        connect(findChild<QPushButton*>("btn_moveFwd_end" + QString::number(i)), &QPushButton::pressed, this, &MainWindow::btn_moveFwd_end_pressed, Qt::UniqueConnection);
+        connect(findChild<QPushButton*>("btn_moveFwd_end" + QString::number(i)), &QPushButton::released, this, &MainWindow::btn_moveFwd_end_released, Qt::UniqueConnection);
+        connect(findChild<QPushButton*>("btn_moveBwd_end" + QString::number(i)), &QPushButton::pressed, this, &MainWindow::btn_moveBwd_end_pressed, Qt::UniqueConnection);
+        connect(findChild<QPushButton*>("btn_moveBwd_end" + QString::number(i)), &QPushButton::released, this, &MainWindow::btn_moveBwd_end_released, Qt::UniqueConnection);
+        connect(findChild<QPushButton*>("btn_moveRel_end" + QString::number(i)), &QPushButton::clicked, this, &MainWindow::on_moveRel_end_clicked, Qt::UniqueConnection);
     }
 
     // 4.0 碰钉下拉框按钮绑定
@@ -187,7 +187,7 @@ void MainWindow::initLog()
     auto rotating_sink = std::make_shared<spdlog::sinks::rotating_file_sink_mt>("logs/rotating.txt", 1048576 * 5, 100);
 
     // 同步记录器，
-    std::vector<spdlog::sink_ptr> sinks{console_sink, rotating_sink};
+    std::vector<spdlog::sink_ptr> sinks{ console_sink, rotating_sink };
     auto logger = std::make_shared<spdlog::logger>("logger", sinks.begin(), sinks.end());
 
     spdlog::register_logger(logger);              // 注册为全局日志，通过log_write访问;
@@ -392,11 +392,11 @@ void MainWindow::updataDeviceConnectState()
     {
         if (camera_open_sta[i])
         {
-            findChild<QLabel *>("label_camera_state" + QString::number(i + 1))->setStyleSheet("image: url(:/img/images/icon_greenLight.png);");
+            findChild<QLabel*>("label_camera_state" + QString::number(i + 1))->setStyleSheet("image: url(:/img/images/icon_greenLight.png);");
         }
         else
         {
-            findChild<QLabel *>("label_camera_state" + QString::number(i + 1))->setStyleSheet("image: url(:/img/images/icon_redLight.png);");
+            findChild<QLabel*>("label_camera_state" + QString::number(i + 1))->setStyleSheet("image: url(:/img/images/icon_redLight.png);");
         }
     }
     // 更新io板和机器人连接状态显示
@@ -447,7 +447,7 @@ void MainWindow::updataDeviceConnectState()
 void MainWindow::updateAxisStatus()
 {
 
-    static int old_JointStatus[10] = {-100, -100, -100, -100, -100, -100, -100, -100, -100, -100};
+    static int old_JointStatus[10] = { -100, -100, -100, -100, -100, -100, -100, -100, -100, -100 };
 
     // 更新单轴状态信息
     QVector<st_ReadAxis> stJointstatus = m_Com->getLinkJointStatus(0); // link轴组数据
@@ -457,7 +457,7 @@ void MainWindow::updateAxisStatus()
         for (int i = 0; i < jointNum; i++)
         {
             // 更新单轴坐标
-            findChild<QLabel *>("label_pos_shaft" + QString::number(i))->setText(QString::number(stJointstatus[i].Position, 10, 2));
+            findChild<QLabel*>("label_pos_shaft" + QString::number(i))->setText(QString::number(stJointstatus[i].Position, 10, 2));
 
             // 更新单轴状态
             if (old_JointStatus[i] != stJointstatus[i].eState)
@@ -466,19 +466,19 @@ void MainWindow::updateAxisStatus()
                 switch (stJointstatus[i].eState)
                 {
                 case eAxis_ERRORSTOP:
-                    findChild<QLabel *>("label_device_state" + QString::number(i))->setStyleSheet("image: url(:/img/images/icon_redLight.png);"
+                    findChild<QLabel*>("label_device_state" + QString::number(i))->setStyleSheet("image: url(:/img/images/icon_redLight.png);"
                                                                                                   "border:1px solid black;");
                     break;
                 case eAxis_UNDEFINED:
-                    findChild<QLabel *>("label_device_state" + QString::number(i))->setStyleSheet("image: url(:/img/images/icon_greenLight.png);"
+                    findChild<QLabel*>("label_device_state" + QString::number(i))->setStyleSheet("image: url(:/img/images/icon_greenLight.png);"
                                                                                                   "border:1px solid black;");
                     break;
                 case eAxis_DISABLED:
-                    findChild<QLabel *>("label_device_state" + QString::number(i))->setStyleSheet("image: url(:/img/images/icon_yellowLight.png);"
+                    findChild<QLabel*>("label_device_state" + QString::number(i))->setStyleSheet("image: url(:/img/images/icon_yellowLight.png);"
                                                                                                   "border:1px solid black;");
                     break;
                 default:
-                    findChild<QLabel *>("label_device_state" + QString::number(i))->setStyleSheet("image: url(:/img/images/icon_greenLight.png);"
+                    findChild<QLabel*>("label_device_state" + QString::number(i))->setStyleSheet("image: url(:/img/images/icon_greenLight.png);"
                                                                                                   "border:1px solid black;");
                     break;
                 }
@@ -500,12 +500,12 @@ void MainWindow::updateAxisStatus()
         {
             robotActPose[i] = linkstatus.stLinkActKin.LinkPos[i];
         }
-        findChild<QLabel *>("label_pos_end" + QString::number(i))->setText(QString::number(robotActPose[i]));
+        findChild<QLabel*>("label_pos_end" + QString::number(i))->setText(QString::number(robotActPose[i]));
     }
 
     // 更新舵轮位置
     QVector<st_ReadAxis> jointStatus = m_Com->getJointGroupStatus();
-    findChild<QLabel *>("label_steering_pos")->setText(QString::number(jointStatus[GP::STEER_LEFT_INDEX].Position));
+    findChild<QLabel*>("label_steering_pos")->setText(QString::number(jointStatus[GP::STEER_LEFT_INDEX].Position));
 
     double left_pos = jointStatus[GP::STEER_LEFT_INDEX].Position * 1000 / 1000.0;
     ui->label_left_steer_wheel_pos->setText(QString::number(static_cast<int>(jointStatus[GP::STEER_LEFT_INDEX].Position * 1000) / 1000.0));
@@ -618,7 +618,7 @@ void MainWindow::updateLineDetectResults()
             {
                 float dist = visResult.stData.m_LineDistance[i];
                 dist = std::isinf(dist) ? 0 : dist;
-                findChild<QLabel *>(prefix + QString::number(i))->setText("线间距:" + QString::number(i + 1) + ":" + QString::number(dist));
+                findChild<QLabel*>(prefix + QString::number(i))->setText("线间距:" + QString::number(i + 1) + ":" + QString::number(dist));
             }
         }
     }
@@ -639,7 +639,7 @@ void MainWindow::updateLaserData()
     {
         for (int i = 0; i < larserNum; i++)
         {
-            findChild<QLabel *>("label_laserDist" + QString::number(i))->setText(QString::number(laserdis[i]));
+            findChild<QLabel*>("label_laserDist" + QString::number(i))->setText(QString::number(laserdis[i]));
         }
     }
     else
@@ -685,7 +685,7 @@ void MainWindow::updateCameraData()
         std::map<std::string, cv::Mat> cameraData = m_VisionInterface->camera_controls->getCameraImages();
         if (cameraData.size() > 0)
         {
-            for (const auto &item : cameraData)
+            for (const auto& item : cameraData)
             {
                 if (item.second.empty())
                 {
@@ -716,8 +716,8 @@ void MainWindow::updateCameraData()
                     }
                 }
 
-                QImage img = QImage((uchar *)inputImage.data, inputImage.cols, inputImage.rows, QImage::Format_RGB888);
-                findChild<QLabel *>(prefix + QString::number(number - 1))->setPixmap(QPixmap::fromImage(img));
+                QImage img = QImage((uchar*)inputImage.data, inputImage.cols, inputImage.rows, QImage::Format_RGB888);
+                findChild<QLabel*>(prefix + QString::number(number - 1))->setPixmap(QPixmap::fromImage(img));
                 //                this->logger->info("相机{}数据获取成功**************************************", item.first);
             }
         }
@@ -729,7 +729,7 @@ void MainWindow::updateCameraData()
     }
 }
 
-void MainWindow::closeEvent(QCloseEvent *event)
+void MainWindow::closeEvent(QCloseEvent* event)
 {
 
     // 关闭相机进程
@@ -753,7 +753,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
     disconnect(this->updateUiTimer);
 
     m_thread_exit_flag = true;
-    for (auto &t : m_thread_pool)
+    for (auto& t : m_thread_pool)
     {
         t->join();
     }
@@ -762,7 +762,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 void MainWindow::btn_moveFwd_shaft_pressed()
 {
 
-    QPushButton *pressedButton = qobject_cast<QPushButton *>(sender());
+    QPushButton* pressedButton = qobject_cast<QPushButton*>(sender());
     if (!pressedButton)
     {
         return;
@@ -773,7 +773,7 @@ void MainWindow::btn_moveFwd_shaft_pressed()
     int index = -1;
     for (int i = 0; i < jointNum; i++)
     {
-        if (pressedButton == findChild<QPushButton *>("btn_moveFwd_shaft" + QString::number(i)))
+        if (pressedButton == findChild<QPushButton*>("btn_moveFwd_shaft" + QString::number(i)))
         {
             index = i;
             break;
@@ -870,7 +870,7 @@ void MainWindow::btn_moveFwd_shaft_released()
 void MainWindow::btn_moveBwd_shaft_pressed()
 {
 
-    QPushButton *pressedButton = qobject_cast<QPushButton *>(sender());
+    QPushButton* pressedButton = qobject_cast<QPushButton*>(sender());
     if (!pressedButton)
     {
         return;
@@ -881,7 +881,7 @@ void MainWindow::btn_moveBwd_shaft_pressed()
     int index = -1;
     for (int i = 0; i < jointNum; i++)
     {
-        if (pressedButton == findChild<QPushButton *>("btn_moveBwd_shaft" + QString::number(i)))
+        if (pressedButton == findChild<QPushButton*>("btn_moveBwd_shaft" + QString::number(i)))
         {
             index = i;
             break;
@@ -905,7 +905,7 @@ void MainWindow::btn_moveBwd_shaft_released()
 void MainWindow::on_moveRel_shaft_clicked()
 {
 
-    QPushButton *pressedButton = qobject_cast<QPushButton *>(sender());
+    QPushButton* pressedButton = qobject_cast<QPushButton*>(sender());
     if (!pressedButton)
     {
         return;
@@ -916,7 +916,7 @@ void MainWindow::on_moveRel_shaft_clicked()
     int index = -1;
     for (int i = 0; i < jointNum; i++)
     {
-        if (pressedButton == findChild<QPushButton *>("btn_moveRel_shaft" + QString::number(i)))
+        if (pressedButton == findChild<QPushButton*>("btn_moveRel_shaft" + QString::number(i)))
         {
             index = i;
             break;
@@ -931,20 +931,20 @@ void MainWindow::on_moveRel_shaft_clicked()
 
     if (index >= 0 && index < jointNum)
     {
-        double delta = findChild<QLineEdit *>("lineEdit_setPos_shaft" + QString::number(index))->text().toDouble();
+        double delta = findChild<QLineEdit*>("lineEdit_setPos_shaft" + QString::number(index))->text().toDouble();
         if (delta < 0)
             vel = -vel;
         logger->info(("[ on_moveRel_shaft_clicked ]  index : " + std::to_string(index) + " delta:" + std::to_string(delta) + " vel:" + std::to_string(vel)).c_str());
         m_Robot->setJointMoveAbs(index, stJointstatus[index].Position + delta, vel);
     }
-    findChild<QLineEdit *>("lineEdit_setPos_shaft" + QString::number(index))->setText("0");
+    findChild<QLineEdit*>("lineEdit_setPos_shaft" + QString::number(index))->setText("0");
 }
 
 void MainWindow::btn_moveFwd_end_pressed()
 {
 
-    double vel[6] = {0};
-    QPushButton *pressedButton = qobject_cast<QPushButton *>(sender());
+    double vel[6] = { 0 };
+    QPushButton* pressedButton = qobject_cast<QPushButton*>(sender());
     if (!pressedButton)
     {
         return;
@@ -953,7 +953,7 @@ void MainWindow::btn_moveFwd_end_pressed()
     int index = -1;
     for (int i = 0; i < 6; i++)
     {
-        if (pressedButton == findChild<QPushButton *>("btn_moveFwd_end" + QString::number(i)))
+        if (pressedButton == findChild<QPushButton*>("btn_moveFwd_end" + QString::number(i)))
         {
             index = i;
             break;
@@ -986,8 +986,8 @@ void MainWindow::btn_moveFwd_end_released()
 
 void MainWindow::btn_moveBwd_end_pressed()
 {
-    double vel[6] = {0};
-    QPushButton *pressedButton = qobject_cast<QPushButton *>(sender());
+    double vel[6] = { 0 };
+    QPushButton* pressedButton = qobject_cast<QPushButton*>(sender());
     if (!pressedButton)
     {
         return;
@@ -996,7 +996,7 @@ void MainWindow::btn_moveBwd_end_pressed()
     int index = -1;
     for (int i = 0; i < 6; i++)
     {
-        if (pressedButton == findChild<QPushButton *>("btn_moveBwd_end" + QString::number(i)))
+        if (pressedButton == findChild<QPushButton*>("btn_moveBwd_end" + QString::number(i)))
         {
             index = i;
             break;
@@ -1029,7 +1029,7 @@ void MainWindow::btn_moveBwd_end_released()
 
 void MainWindow::on_moveRel_end_clicked()
 {
-    QPushButton *pressedButton = qobject_cast<QPushButton *>(sender());
+    QPushButton* pressedButton = qobject_cast<QPushButton*>(sender());
     if (!pressedButton)
     {
         return;
@@ -1039,19 +1039,19 @@ void MainWindow::on_moveRel_end_clicked()
     int index = -1;
     for (int i = 0; i < jointNum; i++)
     {
-        if (pressedButton == findChild<QPushButton *>("btn_moveRel_end" + QString::number(i)))
+        if (pressedButton == findChild<QPushButton*>("btn_moveRel_end" + QString::number(i)))
         {
             index = i;
             break;
         }
     }
 
-    double pos[6] = {0};
+    double pos[6] = { 0 };
     for (int i = 0; i < 3; i++)
     {
-        pos[i] = findChild<QLineEdit *>("lineEdit_setPos_end" + QString::number(i))->text().toDouble() + findChild<QLabel *>("label_pos_end" + QString::number(i))->text().toDouble();
+        pos[i] = findChild<QLineEdit*>("lineEdit_setPos_end" + QString::number(i))->text().toDouble() + findChild<QLabel*>("label_pos_end" + QString::number(i))->text().toDouble();
         int j = i + 3;
-        pos[j] = (findChild<QLineEdit *>("lineEdit_setPos_end" + QString::number(j))->text().toDouble() + findChild<QLabel *>("label_pos_end" + QString::number(j))->text().toDouble()) / 57.3;
+        pos[j] = (findChild<QLineEdit*>("lineEdit_setPos_end" + QString::number(j))->text().toDouble() + findChild<QLabel*>("label_pos_end" + QString::number(j))->text().toDouble()) / 57.3;
     }
 
     for (int i = 0; i < 6; i++)
@@ -1064,7 +1064,7 @@ void MainWindow::on_moveRel_end_clicked()
 
     for (int i = 0; i < 6; i++)
     {
-        findChild<QLineEdit *>("lineEdit_setPos_end" + QString::number(i))->setText("0");
+        findChild<QLineEdit*>("lineEdit_setPos_end" + QString::number(i))->setText("0");
     }
 }
 
@@ -1138,22 +1138,22 @@ void MainWindow::on_btn_line_detect_clicked()
     this->setLineStatus(true);
 
     std::map<std::string, LineDetectRes> res = m_VisionInterface->getLineRes();
-    for (const auto &item : res)
+    for (const auto& item : res)
     {
         std::string prefix = item.first;
         size_t index = prefix.find("_");
         int number = prefix[index + 1] - '0';
         float dist = item.second.dist * m_VisionInterface->scales_line[prefix];
         // 更新直线检测结果
-        findChild<QLabel *>("label_line_dist" + QString::number(number - 1))->setText("Dist " + QString::number(number) + ":" + QString::number(dist));
+        findChild<QLabel*>("label_line_dist" + QString::number(number - 1))->setText("Dist " + QString::number(number) + ":" + QString::number(dist));
 
         // 更新摄像头数据
         cv::Mat temp;
         if (!item.second.img_drawed.empty())
         {
             cv::resize(item.second.img_drawed, temp, cv::Size(400, 280));
-            QImage img = QImage((uchar *)temp.data, temp.cols, temp.rows, QImage::Format_RGB888);
-            findChild<QLabel *>("label_camera_dis" + QString::number(number - 1))->setPixmap(QPixmap::fromImage(img));
+            QImage img = QImage((uchar*)temp.data, temp.cols, temp.rows, QImage::Format_RGB888);
+            findChild<QLabel*>("label_camera_dis" + QString::number(number - 1))->setPixmap(QPixmap::fromImage(img));
         }
     }
 }
@@ -1175,7 +1175,7 @@ void MainWindow::on_btn_camera_save_clicked()
     saveRoot += "/out/";
     this->m_VisionInterface->camera_controls->getImageAll();
     std::map<std::string, cv::Mat> cameraData = this->m_VisionInterface->camera_controls->getCameraImages();
-    for (const auto &item : cameraData)
+    for (const auto& item : cameraData)
     {
         std::string timeStr = getCurrentTimestampString();
         std::string img_path = saveRoot + item.first + "_" + timeStr + ".png";
@@ -1205,7 +1205,7 @@ void MainWindow::setLineStatus(bool lineStatus)
 void MainWindow::setButtonIndex()
 {
 
-    QPushButton *button = qobject_cast<QPushButton *>(sender());
+    QPushButton* button = qobject_cast<QPushButton*>(sender());
     QString objectName;
     if (button)
     {
@@ -1229,7 +1229,7 @@ void MainWindow::setButtonIndex()
 
 void MainWindow::setActionIndex()
 {
-    QPushButton *button = qobject_cast<QPushButton *>(sender());
+    QPushButton* button = qobject_cast<QPushButton*>(sender());
     QString objectName;
     if (button)
     {
@@ -1322,7 +1322,7 @@ void MainWindow::on_btn_wheel_right_pressed()
 
 void MainWindow::on_btn_steering_left_pressed()
 {
-    double angle = findChild<QLabel *>("label_steering_pos")->text().toDouble() + 5;
+    double angle = findChild<QLabel*>("label_steering_pos")->text().toDouble() + 5;
     angle = angle > 90 ? 90 : angle;
     m_Robot->setJointMoveAbs(GP::STEER_LEFT_INDEX, angle, 5);
     m_Robot->setJointMoveAbs(GP::STEER_RIGHT_INDEX, angle, 5);
@@ -1334,7 +1334,7 @@ void MainWindow::on_btn_steering_left_released()
 
 void MainWindow::on_btn_steering_right_pressed()
 {
-    double angle = findChild<QLabel *>("label_steering_pos")->text().toDouble() - 5;
+    double angle = findChild<QLabel*>("label_steering_pos")->text().toDouble() - 5;
     angle = angle < -90 ? -90 : angle;
     m_Robot->setJointMoveAbs(GP::STEER_LEFT_INDEX, angle, 5);
     m_Robot->setJointMoveAbs(GP::STEER_RIGHT_INDEX, angle, 5);
@@ -1346,7 +1346,7 @@ void MainWindow::on_btn_steering_right_released()
 
 void MainWindow::on_btn_add_nail_pressed()
 {
-    double vel_Home[10] = {0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1};
+    double vel_Home[10] = { 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1 };
     for (int i = 0; i < 10; i++)
     {
         vel_Home[i] = LINK_0_JOINT_MAX_VEL[i] * 0.1;
@@ -1361,7 +1361,7 @@ void MainWindow::on_btn_add_nail_released()
 
 void MainWindow::on_btn_preparation_pos_pressed()
 {
-    double vel_pre[10] = {0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1};
+    double vel_pre[10] = { 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1 };
     for (int i = 0; i < 10; i++)
     {
         vel_pre[i] = LINK_0_JOINT_MAX_VEL[i] * 0.1;
@@ -1384,7 +1384,7 @@ void MainWindow::on_btn_camera_calib_clicked()
     }
     this->setLineStatus(true);
     std::map<std::string, CalibrationLine> res = m_VisionInterface->getCameraCalibResults();
-    for (const auto &item : res)
+    for (const auto& item : res)
     {
         std::string prefix = item.first;
         size_t index = prefix.find("_");
@@ -1395,8 +1395,8 @@ void MainWindow::on_btn_camera_calib_clicked()
         if (!item.second.imageDrawd.empty())
         {
             cv::resize(item.second.imageDrawd, temp, cv::Size(400, 280));
-            QImage img = QImage((uchar *)temp.data, temp.cols, temp.rows, QImage::Format_RGB888);
-            findChild<QLabel *>("label_camera_dis" + QString::number(number - 1))->setPixmap(QPixmap::fromImage(img));
+            QImage img = QImage((uchar*)temp.data, temp.cols, temp.rows, QImage::Format_RGB888);
+            findChild<QLabel*>("label_camera_dis" + QString::number(number - 1))->setPixmap(QPixmap::fromImage(img));
         }
         // ToDo: 更新测算系数到yaml文件
     }
@@ -1420,10 +1420,10 @@ void MainWindow::slots_btn_load_configuration_clicked()
 
 void MainWindow::slots_btn_save_prepare_position_clicked()
 {
-    bool res{true};
+    bool res{ true };
     auto status = m_Robot->getJointGroupSta();
     std::vector<double> data;
-    for (auto &i : status)
+    for (auto& i : status)
     {
         // if (i.eState != eAxis_STANDSTILL)
         //{
@@ -1458,10 +1458,10 @@ void MainWindow::slots_btn_save_prepare_position_clicked()
 
 void MainWindow::slots_btn_save_lift_position_clicked()
 {
-    bool res{true};
+    bool res{ true };
     auto status = m_Robot->getJointGroupSta();
     std::vector<double> data;
-    for (auto &i : status)
+    for (auto& i : status)
     {
         // if (i.eState != eAxis_STANDSTILL)
         //{
@@ -1496,10 +1496,10 @@ void MainWindow::slots_btn_save_lift_position_clicked()
 
 void MainWindow::slots_btn_save_quit_position_clicked()
 {
-    bool res{true};
+    bool res{ true };
     auto status = m_Robot->getJointGroupSta();
     std::vector<double> data;
-    for (auto &i : status)
+    for (auto& i : status)
     {
         // if (i.eState != eAxis_STANDSTILL)
         //{
@@ -1605,7 +1605,7 @@ void MainWindow::slots_btn_autoMagentOff_clicked()
 void MainWindow::slots_btn_auto_welding_clicked()
 {
     auto temp_ptr = new std::thread([this]()
-                                    {
+    {
         AddMessageAlert("自动碰钉流程开始");
         while (!m_Task->DoWeldActionDecorator(1))
         {
@@ -1629,14 +1629,14 @@ void MainWindow::slots_btn_open_document_clicked()
 {
     ui->stackedWidget_view->setCurrentWidget(ui->page_document);
 
-    std::string help_file{ROOT_PATH};
+    std::string help_file{ ROOT_PATH };
     help_file += "/configuration/help.html";
     auto current_widget_ptr = ui->stackedWidget_view->currentWidget();
 
-    QTextBrowser *text_browser = new QTextBrowser;
+    QTextBrowser* text_browser = new QTextBrowser;
     text_browser->setSource(QUrl::fromLocalFile(QString::fromLocal8Bit(help_file.c_str())));
 
-    QVBoxLayout *layout = new QVBoxLayout;
+    QVBoxLayout* layout = new QVBoxLayout;
     layout->addWidget(text_browser);
     current_widget_ptr->setLayout(layout);
     current_widget_ptr->show();
@@ -1685,7 +1685,7 @@ void MainWindow::slots_btn_single_job_clicked()
 {
     int index = ui->spin_box_for_single_job->value();
     auto temp_ptr = new std::thread([this](int index)
-                                    {
+    {
         int key{ 0 };
         std::string msg;
         msg = "工具: [" + std::to_string(index) + "] 单次作业开始";
@@ -1707,10 +1707,10 @@ void MainWindow::slots_btn_single_job_clicked()
     m_thread_pool.push_back(temp_ptr);
 }
 
-void MainWindow::MessageAlert(const std::string &message)
+void MainWindow::MessageAlert(const std::string& message)
 {
     QString msg = QString::fromLocal8Bit(message.c_str());
-    QLabel *label_ptr = new QLabel(msg, this);
+    QLabel* label_ptr = new QLabel(msg, this);
     label_ptr->setWindowFlags(Qt::Tool | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
     label_ptr->setAttribute(Qt::WA_StyledBackground);
     label_ptr->setStyleSheet("background-color: white; color: red; padding: 15px; border: 2px solid blue; border-radius: 5px;");
@@ -1724,7 +1724,7 @@ void MainWindow::MessageAlert(const std::string &message)
     QTimer::singleShot(3000, label_ptr, &QLabel::deleteLater);
 }
 
-void MainWindow::AddMessageAlert(const std::string &message)
+void MainWindow::AddMessageAlert(const std::string& message)
 {
     std::lock_guard<std::mutex> lock(m_message_mutex);
 
