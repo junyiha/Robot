@@ -235,7 +235,6 @@ namespace Utils
             }
             else if (pstImageInfo->enPixelType == PixelType_Gvsp_RGB8_Packed)
             {
-                //        RGB2BGR(pData, pstImageInfo->nWidth, pstImageInfo->nHeight);
                 srcImage = cv::Mat(pstImageInfo->nHeight, pstImageInfo->nWidth, CV_8UC3, pData);
             }
             else

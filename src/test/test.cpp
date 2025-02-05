@@ -481,7 +481,6 @@ int TestQtSerialPort(int argc, char* argv[])
     // out << port << flush;
     port = "COM1";
 
-#ifdef C_TEST
     QSerialPort serial;
     serial.setPortName(port);
     serial.setBaudRate(QSerialPort::Baud115200);
@@ -522,19 +521,6 @@ int TestQtSerialPort(int argc, char* argv[])
         qDebug() << "send data: " << buf.size() << "\n"
             << "receive data: " << recv_data.size() << "\n";
     }
-#else
-
-    Utils::Serial serial;
-
-    bool res = serial.Open(port);
-    if (!res)
-    {
-        SPDLOG_ERROR("Failed to open port: {}", port.toStdString());
-        return -1;
-    }
-
-    serial.Loop();
-#endif
 
     qDebug() << "exit...";
 
