@@ -136,9 +136,6 @@ namespace Utils
                     cv::Mat src_img = Convert2Mat(&stImageInfo.stFrameInfo, stImageInfo.pBufAddr);  // 0ms
                     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - begin);
                     SPDLOG_INFO("camera[{}] duration: {} ms", camera_data.first, duration.count());
-                    std::string title = "src_image[" + std::to_string(camera_data.first) + "]";
-                    cv::imshow(title, src_img);
-                    cv::waitKey(10);
 
                     MV_CC_FreeImageBuffer(camera_data.second.handle, &stImageInfo);
                 }

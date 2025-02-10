@@ -80,7 +80,7 @@ int TcpCom_IO::Sendbuffer()
         memcpy(sendbuff, m_SendData + datalen, m_SendSize - datalen);
         // sendnum = send(m_SockClient, sendbuff, m_SendSize - datalen, 0);
         sendnum = send(m_SockClient, sendbuff, m_SendSize - datalen, 0);
-        qDebug() << "send length: " << sendnum << "\n";
+        // qDebug() << "send length: " << sendnum << "\n";
         datalen = datalen + sendnum;
         if (-1 == sendnum)
         {

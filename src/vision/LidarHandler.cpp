@@ -44,11 +44,11 @@ void LidarHandler::run()
                 else
                 {
                     MyBestfitLaserScaner* scaner_ = this->laser_controls->scaners[item.first];
-            // auto begin = std::chrono::system_clock::now();
+                    // auto begin = std::chrono::system_clock::now();
 
                     this->lidar_helper->lidarDetecter(item.second, scaner_->isleft, scaner_->revAngle, scaner_->minX, scaner_->minY, this->laser_controls->direct_config[item.first]); //雷达成像检测
-            // auto duration = std::chrono::system_clock::now() - begin;
-            // SPDLOG_INFO("Lidar duration: {}  ms", std::chrono::duration_cast<std::chrono::milliseconds>(duration).count());
+                    // auto duration = std::chrono::system_clock::now() - begin;
+                    // SPDLOG_INFO("Lidar duration: {}  ms", std::chrono::duration_cast<std::chrono::milliseconds>(duration).count());
 
                     this->lidar_helper->shrink();
 

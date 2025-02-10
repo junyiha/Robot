@@ -98,9 +98,10 @@ void MyBestfitLaserScaner::run()
 
             for (int i = 0; i < dataLength; i++)
             {
-                if(m_dScannerBufferX[i]<-110 || m_dScannerBufferX[i]>110  || 
-                   m_dScannerBufferZ[i]<170 || m_dScannerBufferZ[i]>430 ){
-                    continue; 
+                if (m_dScannerBufferX[i] < -110 || m_dScannerBufferX[i]>110 ||
+                   m_dScannerBufferZ[i] < 170 || m_dScannerBufferZ[i]>430)
+                {
+                    continue;
                 }
 
                 m_vecPointClouds.push_back(cv::Point2f(m_dScannerBufferX[i], m_dScannerBufferZ[i]));
@@ -157,7 +158,7 @@ cv::Mat MyBestfitLaserScaner::pointCloud2Image(std::vector<cv::Point2f> pointClo
     }
     this->minX = minX;
     this->minY = minY;
-    
+
     int scale = 2;
 
 
@@ -165,7 +166,8 @@ cv::Mat MyBestfitLaserScaner::pointCloud2Image(std::vector<cv::Point2f> pointClo
         //规定row是z，col是x，且计算时要先减去最小值再乘10（放大）+偏置（为了看出整体形状）
     int rows = (maxY - minY) * scale + 100;
     int cols = (maxX - minX) * scale + 100;
-    if(rows<0 || cols<0){
+    if (rows < 0 || cols < 0)
+    {
         return cv::Mat();
     }
 
@@ -610,7 +612,7 @@ bool MyBestfitLaserScaner::getConnectState()
 void MyBestfitLaserScaner::getPointsMaskOnce()
 {
 
-            // auto begin = std::chrono::system_clock::now();
+    // auto begin = std::chrono::system_clock::now();
 
 
     try
@@ -648,9 +650,10 @@ void MyBestfitLaserScaner::getPointsMaskOnce()
         {
             for (int i = 0; i < dataLength; i++)
             {
-                if(m_dScannerBufferX[i]<-110 || m_dScannerBufferX[i]>110  || 
-                   m_dScannerBufferZ[i]<170 || m_dScannerBufferZ[i]>430 ){
-                    continue; 
+                if (m_dScannerBufferX[i] < -110 || m_dScannerBufferX[i]>110 ||
+                   m_dScannerBufferZ[i] < 170 || m_dScannerBufferZ[i]>430)
+                {
+                    continue;
                 }
                 m_vecPointClouds.push_back(cv::Point2f(m_dScannerBufferX[i], m_dScannerBufferZ[i]));
             }
@@ -675,8 +678,8 @@ void MyBestfitLaserScaner::getPointsMaskOnce()
         throw std::runtime_error(e.what());
     }
 
-            // auto duration = std::chrono::system_clock::now() - begin;
-            // SPDLOG_INFO("getPointsMaskOnce()'s duration: {}  ms", std::chrono::duration_cast<std::chrono::milliseconds>(duration).count());
+    // auto duration = std::chrono::system_clock::now() - begin;
+    // SPDLOG_INFO("getPointsMaskOnce()'s duration: {}  ms", std::chrono::duration_cast<std::chrono::milliseconds>(duration).count());
 
 }
 void MyBestfitLaserScaner::setLaserState(bool state)

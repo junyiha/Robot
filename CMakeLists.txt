@@ -67,6 +67,7 @@ file(COPY ${BaseDIR}/packages/OnnxRuntime/Microsoft.ML.OnnxRuntime.Gpu.1.8.0/run
 file(COPY ${BaseDIR}/packages/OnnxRuntime/Microsoft.ML.OnnxRuntime.Gpu.1.8.0/runtimes/win-x64/native/onnxruntime_providers_cuda.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug//)
 file(COPY ${BaseDIR}/packages/OnnxRuntime/Microsoft.ML.OnnxRuntime.Gpu.1.8.0/runtimes/win-x64/native/onnxruntime_providers_shared.dll DESTINATION ${CMAKE_BINARY_DIR}/Debug//)
 file(COPY ${CMAKE_SOURCE_DIR}/models DESTINATION ${CMAKE_BINARY_DIR}/Debug//)
+file(COPY ${CMAKE_PREFIX_PATH}/plugins/sqldrivers DESTINATION ${CMAKE_BINARY_DIR}/Debug//plugins/)
 
 # for clion
 file(COPY ${CMAKE_PREFIX_PATH}/plugins/platforms DESTINATION ${CMAKE_BINARY_DIR}/plugins/)
@@ -185,7 +186,8 @@ target_link_libraries(${PROJECT_NAME}   yaml-cpp::yaml-cpp
                                         MvCameraControl.lib
                                         # onnxruntime.dll
                                         onnxruntime.lib
-                                        BestfitLaserScanerSDK.lib
+                                        # BestfitLaserScanerSDK.lib
+                                        BestfitLaserScanerSDK.dll
 )
 
 # tensorrt cuda
