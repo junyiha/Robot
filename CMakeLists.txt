@@ -41,7 +41,8 @@ add_definitions(-DROOT_PATH="${CMAKE_SOURCE_DIR}/")
 if(BUILD_GPU_FLAG)
         add_definitions(-DVISION_MODEL_PATH="${CMAKE_SOURCE_DIR}/models/ocrnet_model_wb_20241120.engine")
 else()
-        add_definitions(-DVISION_MODEL_PATH="${CMAKE_SOURCE_DIR}/models/pp_liteseg_stdc1_softmax_20241021.onnx")
+        # add_definitions(-DVISION_MODEL_PATH="${CMAKE_SOURCE_DIR}/models/pp_liteseg_stdc1_softmax_20241021.onnx")
+        add_definitions(-DVISION_MODEL_PATH="${CMAKE_SOURCE_DIR}/models/ocrnet_model_wb_20241120.onnx")
 endif(BUILD_GPU_FLAG)
 
 # for vscode

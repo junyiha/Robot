@@ -12,7 +12,7 @@ VisionInterface::VisionInterface()
     this->line_helper = new LineDetector();       // 边线检测功能类
     this->sharedDataLine = new SharedData();      // 共享数据类
 
-    this->laser_controls = new LaserScanerControls();
+    // this->laser_controls = new LaserScanerControls();
     this->lidar_helper = new LidarHelper();
     this->sharedDataLaser = new SharedData();
 

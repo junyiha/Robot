@@ -244,7 +244,5 @@ namespace Utils
     private:
         MV_CC_DEVICE_INFO_LIST device_list;
         std::map<int, CameraData_t> m_camera_map;
-        // std::map<int, std::
     };
-
 }  // namespace Utils

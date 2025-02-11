@@ -22,6 +22,10 @@ void LidarHandler::run()
 
         if (this->detect_control_flag)
         {
+            if (!laser_controls)
+            {
+                continue;
+            }
             // 获取数据
             this->laser_controls->getDataAll();
 

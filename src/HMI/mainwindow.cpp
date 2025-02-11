@@ -853,6 +853,10 @@ void MainWindow::updataDeviceConnectState()
 
     // 更新轮廓激光的连接状态
     QString laser_label = "label_laser_state_";
+    if (m_VisionInterface->laser_controls == nullptr)
+    {
+        return;
+    }
     std::vector<bool> laser_open_sta = m_VisionInterface->laser_controls->getLaserConnectStates();
     for (int i = 0; i < laser_open_sta.size(); i++)
     {
