@@ -17,6 +17,7 @@
 #include <map>
 #include <mutex>
 #include <thread>
+#include <bitset>
 
 
 #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_INFO
@@ -26,6 +27,8 @@
 #include <spdlog/sinks/rotating_file_sink.h>
 
 #include "cxxopts.hpp"
+
+#include "task/GlobalParameter.hpp"
 
 struct Args_t
 {

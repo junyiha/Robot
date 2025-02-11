@@ -16,7 +16,6 @@
 #include <QtSerialPort/QtSerialPort>
 
 #include "utils/basic_header.hpp"
-#include "task/GlobalParameter.hpp"
 
 namespace Utils
 {

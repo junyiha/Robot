@@ -1235,7 +1235,6 @@ bool CTask::SingleParallel()
 
 void CTask::SecondPush()
 {
-
     if (GP::Working_Scenario != GP::WorkingScenario::Top)
     {
         SPDLOG_WARN("非顶板作业场景，二次举升不执行任何动作");

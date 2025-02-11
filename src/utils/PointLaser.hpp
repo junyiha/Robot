@@ -16,7 +16,6 @@
 #include <QtSerialPort/QtSerialPort>
 
 #include "utils/basic_header.hpp"
-#include "task/GlobalParameter.hpp"
 
 namespace Utils
 {
@@ -34,8 +33,8 @@ namespace Utils
             m_serial.open(QIODevice::ReadWrite);
 
             InitSendData();
-            Reconnection();
             Run();
+            Reconnection();
         }
         virtual ~PointLaser()
         {
@@ -161,6 +160,8 @@ namespace Utils
             std::thread temp_thread = std::thread([this]() {
                 while (true)
                 {
+                    std::this_thread::sleep_for(std::chrono::seconds(1));
+
                     SPDLOG_INFO("Check serial port status");
                     if (!m_serial.isOpen())
                     {

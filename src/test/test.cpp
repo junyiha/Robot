@@ -626,12 +626,10 @@ int TestQTcpSocket(int argc, char* argv[])
     send_data[3] = 0;
     send_data[4] = 16;
     send_data[5] = 1;
-    // send_data[14] = 112;
     int sum_index = SEND_LEN - 1;
 
     send_data[sum_index] = std::accumulate(send_data.begin(), send_data.begin() + sum_index, 0);
     qDebug() << "send_data[" << sum_index << "]: " << static_cast<int>(send_data[sum_index]) << "\n";
-
 
     qint64 send_len = socket.write(send_data);
     qDebug() << "send length: " << send_len << "\n";
@@ -669,6 +667,18 @@ int TestBoardingTool(int argc, char* argv[])
     {
         SPDLOG_INFO("laser distance: {}", it);
     }
+
+    // boarding_tool.SetLaserMarker(true);
+
+    // boarding_tool.SetLight(0, true);
+
+    // boarding_tool.SetCylinder(-1);
+    // std::this_thread::sleep_for(std::chrono::seconds(7));
+    // boarding_tool.SetCylinder(0);
+
+    // boarding_tool.SetCylinder(1);
+    // std::this_thread::sleep_for(std::chrono::seconds(7));
+    // boarding_tool.SetCylinder(0);
 
     system("pause");
 
@@ -953,6 +963,43 @@ int TestPointLaser(int argc, char* argv[])
     return 0;
 }
 
+int TestLaserDistanceBojke(int argc, char* argv[])
+{
+    Config::ConfigManager config;
+
+    LaserDistanceBojke laser_distance_bojke;
+
+    laser_distance_bojke.open("COM2");
+
+    if (!laser_distance_bojke.isOpen())
+    {
+        SPDLOG_ERROR("Failed to open laser distance bojke");
+        return -1;
+    }
+
+    QVector<double> res;
+    LaserMeasureData stData = laser_distance_bojke.getLaserMeasureData();
+    double layserOffset[4] = { 423, 425, 429, 431 };
+
+    for (int i = 0; i < 4; ++i)
+    {
+        res.push_back(stData.m_Laserdistance[i] * 1000.0 - layserOffset[i]);
+    }
+
+    QVector<double> temp{ res };
+    res[0] = temp[2];
+    res[1] = temp[3];
+    res[2] = temp[0];
+    res[3] = temp[1];
+
+    for (auto& i : res)
+    {
+        SPDLOG_INFO("laser distance: {}", i);
+    }
+
+    return 0;
+}
+
 int TestCamera(int argc, char* argv[])
 {
     Utils::Camera camera;
@@ -970,6 +1017,49 @@ int TestCamera(int argc, char* argv[])
     }
 
     system("pause");
+
+    return 0;
+}
+
+int TestBoardTool(int argc, char* argv[])
+{
+    Utils::BoardTool board_tool;
+
+    Config::ConfigManager config;
+
+    board_tool.Connect();
+    board_tool.StartLoop();
+
+    while (true)
+    {
+        int cmd;
+        std::cin >> cmd;
+
+        switch (cmd)
+        {
+        case 1:
+            board_tool.ControlLight(true, true, true);
+            break;
+        case -1:
+            board_tool.ControlLight(false, false, false);
+            break;
+        case 2:
+            board_tool.ControlMarkLaser(true);
+            break;
+        case -2:
+            board_tool.ControlMarkLaser(false);
+            break;
+        case 3:
+            board_tool.ControlCylinder(1);
+            break;
+        case -3:
+            board_tool.ControlCylinder(-1);
+            break;
+        case 0:
+            board_tool.ControlCylinder(0);
+            break;
+        }
+    }
 
     return 0;
 }

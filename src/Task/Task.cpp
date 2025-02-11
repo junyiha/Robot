@@ -443,9 +443,6 @@ void CTask::TaskTerminate()
 {
     // 停止机器人运动
     m_Robot->setLinkHalt();
-
-    // 磁铁脱开
-    m_Comm->SetMagentAction(0, eMag_Off);
 }
 
 void CTask::SteerWheelControl()
