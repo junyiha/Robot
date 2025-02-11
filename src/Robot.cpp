@@ -67,7 +67,6 @@ int main(int argc, char* argv[])
         {"TestTask", TestTask},
         {"TestConfigManager", TestConfigManager},
         {"RunSceneSelect", RunSceneSelect},
-        {"TestTcpClient", TestTcpClient},
         {"TestFitBoard", TestFitBoard},
         {"TestRobot", TestRobot},
         {"TestQtSQL", TestQtSQL},
