@@ -79,4 +79,7 @@ int TestCamera(int argc, char* argv[]);
 
 int TestBoardTool(int argc, char* argv[]);
 
+int TestLaserScaner(int argc, char* argv[]);
+
+
 #endif  // TEST_HPP__

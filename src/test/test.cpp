@@ -1043,3 +1043,69 @@ int TestBoardTool(int argc, char* argv[])
 
     return 0;
 }
+
+int TestLaserScaner(int argc, char* argv[])
+{
+    void* scanner_handler{ nullptr };
+    std::string ip{ "192.168.1.91" };
+    std::string port{ "5566" };
+    int timeout{ 3000 };
+    int status{ 0 };
+
+    scanner_handler = EthernetScanner_Connect(ip.data(), port.data(), timeout);
+    if (!scanner_handler)
+    {
+        SPDLOG_ERROR("Failed to connect to scanner");
+        return -1;
+    }
+
+    EthernetScanner_GetConnectStatus(scanner_handler, &status);
+    if (status != ETHERNETSCANNER_TCPSCANNERCONNECTED)
+    {
+        SPDLOG_ERROR("Failed to connect to scanner");
+        return -1;
+    }
+
+    SPDLOG_INFO("Success to connect to scanner");
+
+    int buffer_size{ ETHERNETSCANNER_SCANXMAX * ETHERNETSCANNER_PEAKSPERCMOSSCANLINEMAX };
+    std::vector<double> x_buffer(buffer_size);
+    std::vector<double> z_buffer(buffer_size);
+    std::vector<int> pi_intensity_buffer(buffer_size);
+    std::vector<int> peak_width_buffer(buffer_size);
+    unsigned int encoder;
+    unsigned char digital_inputs;
+    int pic_cnt{ 0 };
+    int data_length;
+
+    while (true)
+    {
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+        std::string clean_cmd{ "SetClearCloudFifo\r" };
+        EthernetScanner_WriteData(scanner_handler, clean_cmd.data(), clean_cmd.size());
+
+        data_length = EthernetScanner_GetXZIExtended(scanner_handler, x_buffer.data(), z_buffer.data(), pi_intensity_buffer.data(), peak_width_buffer.data(), buffer_size, &encoder, &digital_inputs, 1000, nullptr, 0, &pic_cnt);
+        if (data_length < 0)
+        {
+            SPDLOG_ERROR("Failed to get data from scanner");
+            continue;
+        }
+        std::vector<cv::Point2f> point_cloud;
+        for (int i = 0; i < data_length; i++)
+        {
+            if (x_buffer[i] < -110 || x_buffer[i] > 110 ||
+                z_buffer[i] < 170 || z_buffer[i] > 430)
+            {
+                continue;
+            }
+
+            point_cloud.push_back(cv::Point2f(x_buffer[i], z_buffer[i]));
+        }
+        SPDLOG_INFO("point cloud size: {}", point_cloud.size());
+        break;
+    }
+
+    system("pause");
+
+    return 0;
+}
