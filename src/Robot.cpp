@@ -21,7 +21,7 @@ static void InitLogger()
 
     // 创建文件日志记录器: 滚动记录，最大文件5M，文件数量100个
     std::string log_path = ROOT_PATH;
-    log_path += "logs/rotating.txt";
+    log_path += "logs/rotating.log";
     auto rotating_sink = std::make_shared<spdlog::sinks::rotating_file_sink_mt>(log_path, 1048576 * 5, 100);
 
     //同步记录器，

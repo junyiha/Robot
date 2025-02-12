@@ -484,8 +484,9 @@ void CTask::motionInPositioningExecutionCommand()
                 tar_pos[i] = tar_position[i];
             }
 
-            if (std::fabs(m_LinkStatus.stLinkActKin.LinkPos[0] - tar_pos[0]) < 5 ||
-                std::fabs(m_LinkStatus.stLinkActKin.LinkPos[1] - tar_pos[1]) < 5)
+            if (std::fabs(m_LinkStatus.stLinkActKin.LinkPos[0] - tar_pos[0]) < 5 &&
+                std::fabs(m_LinkStatus.stLinkActKin.LinkPos[1] - tar_pos[1]) < 5 &&
+                std::fabs(m_LinkStatus.stLinkActKin.LinkPos[2] - tar_pos[2]) < 5)
             {
                 temp_vel.at(0) = 1;
                 temp_vel.at(1) = 1;
