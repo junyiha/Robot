@@ -12,13 +12,18 @@
 #ifndef BASIC_HEADER_HPP
 #define BASIC_HEADER_HPP
 
+extern "C"
+{
+#include <conio.h>
+}
+
 #include <clocale>
 #include <iostream>
 #include <map>
 #include <mutex>
 #include <thread>
 #include <bitset>
-
+#include <exception>
 
 #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_INFO
 #include <spdlog/spdlog.h>

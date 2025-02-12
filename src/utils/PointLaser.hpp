@@ -10,16 +10,13 @@
  */
 #pragma once
 
-#include <thread>
-#include <mutex>
-
 #include <QtSerialPort/QtSerialPort>
 
 #include "utils/basic_header.hpp"
 
 namespace Utils
 {
-    class PointLaser : public QObject
+    class PointLaser
     {
     public:
         PointLaser()
@@ -38,6 +35,11 @@ namespace Utils
         }
         virtual ~PointLaser()
         {
+            for (auto& t : m_thread_pool)
+            {
+                if (t.joinable())
+                    t.join();
+            }
 
         }
 
@@ -104,7 +106,7 @@ namespace Utils
                     if (!m_serial.isOpen())
                     {
                         SPDLOG_WARN("serial port is not open...");
-                        QThread::msleep(1000);
+                        std::this_thread::sleep_for(std::chrono::seconds(1));
                         continue;
                     }
                     QVector<QByteArray> temp_recv_data;
@@ -116,7 +118,7 @@ namespace Utils
                             SPDLOG_WARN("write timeout...");
                             continue;
                         }
-                        QThread::msleep(30);
+                        std::this_thread::sleep_for(std::chrono::milliseconds(30));
                         QByteArray recv_data = m_serial.read(32);
                         if (!CheckRecvData(recv_data))
                         {
@@ -162,9 +164,9 @@ namespace Utils
                 {
                     std::this_thread::sleep_for(std::chrono::seconds(1));
 
-                    SPDLOG_INFO("Check serial port status");
                     if (!m_serial.isOpen())
                     {
+                        SPDLOG_WARN("serial port is not open, open it...");
                         m_serial.open(QIODevice::ReadWrite);
                     }
                 }

@@ -12,18 +12,6 @@
 #ifndef TEST_HPP__
 #define TEST_HPP__
 
-#include <clocale>
-#include <string>
-extern "C"
-{
-#include <conio.h>
-}
-
-#include <spdlog/spdlog.h>
-#include <spdlog/sinks/basic_file_sink.h>
-#include <spdlog/sinks/stdout_color_sinks.h>
-#include <spdlog/sinks/rotating_file_sink.h>
-
 #include <Eigen/Eigen>
 
 #include <QApplication>
@@ -33,15 +21,10 @@ extern "C"
 #include <QtSql/QSqlError>
 #include <QtSql/QSqlQuery>
 #include <QStringList>
-
 #include <QJsonObject>
 #include <QJsonDocument>
-
 #include <QtSerialPort>
-
 #include <QTcpSocket>
-
-#include "cxxopts.hpp"
 
 #include "hmi/SceneSelectionWindow.hpp"
 #include "vision/VisionInterface.h"

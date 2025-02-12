@@ -8,21 +8,14 @@
  * @copyright Copyright (c) 2025
  *
  */
-#ifndef SQL_HPP
-#define SQL_HPP
 #pragma once
-
-#include <exception>
 
 #include <QtSql/QSqlDatabase>
 #include <QtSql/QSqlError>
 #include "QtSql/QSqlQuery"
 #include <QStringList>
 
-#include <spdlog/spdlog.h>
-#include <spdlog/sinks/basic_file_sink.h>
-#include <spdlog/sinks/stdout_color_sinks.h>
-#include <spdlog/sinks/rotating_file_sink.h>
+#include "utils/basic_header.hpp"
 
 namespace Utils
 {
@@ -86,5 +79,3 @@ namespace Utils
         QSqlQuery* m_query;
     };
 }  // namespace UTILS
-
-#endif  // SQL_HPP

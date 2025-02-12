@@ -924,6 +924,7 @@ int TestPointLaser(int argc, char* argv[])
 
     while (true)
     {
+        std::this_thread::sleep_for(std::chrono::seconds(1));
         if (!point_laser.Check())
         {
             SPDLOG_ERROR("point laser is invalid\n");
@@ -931,6 +932,11 @@ int TestPointLaser(int argc, char* argv[])
         }
 
         auto data = point_laser.GetData();
+        if (data.empty())
+        {
+            SPDLOG_WARN("data is empty!!!");
+            continue;
+        }
         SPDLOG_INFO("laser 1: {}, laser 2: {}, laser 3: {},laser 4: {}", data.at(0), data.at(1), data.at(2), data.at(3));
     }
 

@@ -10,9 +10,6 @@
  */
 #pragma once
 
-#include <thread>
-#include <mutex>
-
 #include <QtSerialPort/QtSerialPort>
 
 #include "utils/basic_header.hpp"
