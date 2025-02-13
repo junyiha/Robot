@@ -24,6 +24,7 @@ extern "C"
 #include <thread>
 #include <bitset>
 #include <exception>
+#include <fstream>
 
 #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_INFO
 #include <spdlog/spdlog.h>

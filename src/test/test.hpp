@@ -36,6 +36,7 @@
 #include "utils/BoardTool.hpp"
 
 #include "infer/onnxruntime.hpp"
+#include "infer/tensorrt.hpp"
 
 #include "MvCamera.h"
 
@@ -82,5 +83,7 @@ int TestBoardTool(int argc, char* argv[]);
 int TestLaserScaner(int argc, char* argv[]);
 
 int TestOnnxruntime(int argc, char* argv[]);
+
+int TestTensorRT(int argc, char* argv[]);
 
 #endif  // TEST_HPP__

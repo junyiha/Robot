@@ -1126,3 +1126,12 @@ int TestOnnxruntime(int argc, char* argv[])
 
     return 0;
 }
+
+int TestTensorRT(int argc, char* argv[])
+{
+#ifdef GPU_FLAG
+    Infer::Init();
+#endif // GPU_FLAG
+
+    return 0;
+}
