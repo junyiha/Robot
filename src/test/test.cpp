@@ -1112,7 +1112,17 @@ int TestLaserScaner(int argc, char* argv[])
 
 int TestOnnxruntime(int argc, char* argv[])
 {
-    Infer::LoadModel();
+    std::wstring model_path{ L"D:/Robot/models/pp_liteseg_stdc1_softmax_20241021.onnx" };
+    model_path = L"C:/Users/anony/Documents/GitHub/cpp-win/data/ppseg_model_wb_20241120.onnx";
+
+    std::string image_path{ "C:/Users/anony/Documents/GitHub/cpp-win/data/LineCam_6_2024-12-23-15-59-55.png" };
+    // std::string image_path{ "C:/Users/anony/Documents/GitHub/cpp-win/data/LineCam_3_2024-12-23-15-59-54.png" };
+
+    cv::Mat image = cv::imread(image_path);
+
+    Infer::Detector detector;
+
+    detector.InferOnce(model_path, image);
 
     return 0;
 }

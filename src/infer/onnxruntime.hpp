@@ -10,33 +10,30 @@
  */
 #pragma once
 
-#include "utils/basic_header.hpp"
-#include "onnxruntime_cxx_api.h"
+#include "common.hpp"
 
 namespace Infer
 {
-    struct Context_t
-    {
-        Ort::Env* env;
-        Ort::Session* session;
-        std::vector<char*> input_names;
-        std::vector<char*> output_names;
-        std::vector<int64_t> input_shape;
-        std::vector<int64_t> output_shape;
-    };
-
     class Detector
     {
-
     public:
-        bool Create(std::string id, std::wstring path);
+        Detector();
+        ~Detector();
+        void InferOnce(std::wstring model_path, cv::Mat image);
 
     private:
+        void Init(const std::wstring& model_path);
+        void Preprocess(const cv::Mat& img, const std::vector<int64_t>& input_shape, cv::Mat& rgb_img, cv::Mat& gray_img, cv::Mat& blob);
+        bool Infer(cv::Mat blob, std::vector<Ort::Value>& output_tensors);
+        bool ProcessReferMask(cv::Mat referMask, cv::Mat image_gray, std::vector<float>& line_res);
+        bool ProcessInkMask(cv::Mat inkMask, cv::Mat image_gray, const std::vector<float>& refer_line, std::vector<float>& line_res);
+        bool Postprocess(std::vector<Ort::Value>& output_tensors, cv::Mat image_gray, std::vector<float>& refer_line, std::vector<float>& ink_line);
+        std::vector<std::vector<cv::Point2f>> GetPossibleLines(const cv::Mat& mask);
+
+    private:
+        Context_t m_ctx;
+        int m_height{ 0 };
+        int m_width{ 0 };
         std::map<std::string, Context_t> m_detector_map;
     };
-
-    void LoadModel();
-
-    void ShowImage(const std::string& image_path);
-
 }

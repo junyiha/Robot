@@ -2,23 +2,17 @@
 
 namespace Infer
 {
-    std::vector<float> FitLine(std::vector<cv::Point2f> points)
+    Detector::Detector()
     {
-        cv::Vec4f lines;
-        cv::fitLine(points, lines, cv::DIST_L2, 0, 0.01, 0.01);
-        float k = lines[1] / lines[0];
-        float lefty = (-lines[2] * k) + lines[3];
-        float righty = ((768 - 1 - lines[2]) * k) + lines[3];
 
-        return { 0.0, lefty, 768.0, righty, k };
     }
 
-    double CaculateDistance(const cv::Point2f& point1, const cv::Point2f& point2)
+    Detector::~Detector()
     {
-        return std::sqrt(std::pow(point1.x - point2.x, 2) + std::pow(point1.y - point2.y, 2));
+
     }
 
-    std::vector<std::vector<cv::Point2f>> GetPossibleLines(const cv::Mat& mask)
+    std::vector<std::vector<cv::Point2f>> Detector::GetPossibleLines(const cv::Mat& mask)
     {
         std::vector<std::vector<cv::Point2f>> possible_lines;
         cv::GaussianBlur(mask, mask, cv::Size(5, 5), 0);
@@ -70,29 +64,22 @@ namespace Infer
         return possible_lines;
     }
 
-    static int global_height{ 0 };
-    static int global_width{ 0 };
-
-
-    Context_t Init(const std::wstring& model_path)
+    void Detector::Init(const std::wstring& model_path)
     {
         Ort::Env* env = new Ort::Env(ORT_LOGGING_LEVEL_WARNING, "test");
         Ort::SessionOptions session_options;
         Ort::Session* session = new Ort::Session(*env, model_path.c_str(), session_options);
 
-        Context_t context;
-        context.env = env;
-        context.session = session;
-        context.input_shape = session->GetInputTypeInfo(0).GetTensorTypeAndShapeInfo().GetShape();
-        context.output_shape = session->GetOutputTypeInfo(0).GetTensorTypeAndShapeInfo().GetShape();
+        m_ctx.env = env;
+        m_ctx.session = session;
+        m_ctx.input_shape = session->GetInputTypeInfo(0).GetTensorTypeAndShapeInfo().GetShape();
+        m_ctx.output_shape = session->GetOutputTypeInfo(0).GetTensorTypeAndShapeInfo().GetShape();
         Ort::AllocatorWithDefaultOptions allocator;
-        context.input_names.push_back(session->GetInputName(0, allocator));
-        context.output_names.push_back(session->GetOutputName(0, allocator));
-
-        return context;
+        m_ctx.input_names.push_back(session->GetInputName(0, allocator));
+        m_ctx.output_names.push_back(session->GetOutputName(0, allocator));
     }
 
-    void Preprocess(const cv::Mat& img, const std::vector<int64_t>& input_shape, cv::Mat& rgb_img, cv::Mat& gray_img, cv::Mat& blob)
+    void Detector::Preprocess(const cv::Mat& img, const std::vector<int64_t>& input_shape, cv::Mat& rgb_img, cv::Mat& gray_img, cv::Mat& blob)
     {
         if (img.channels() != 3)
         {
@@ -105,24 +92,24 @@ namespace Infer
             cv::cvtColor(img, gray_img, cv::COLOR_BGR2GRAY);
         }
 
-        global_height = input_shape.at(2);
-        global_width = input_shape.at(3);
-        cv::resize(rgb_img, rgb_img, cv::Size(global_width, global_height));
-        cv::resize(gray_img, gray_img, cv::Size(global_width, global_height));
+        m_height = input_shape.at(2);
+        m_width = input_shape.at(3);
+        cv::resize(rgb_img, rgb_img, cv::Size(m_width, m_height));
+        cv::resize(gray_img, gray_img, cv::Size(m_width, m_height));
         rgb_img.convertTo(rgb_img, CV_32F);
         rgb_img = ((rgb_img / 255.0f) - 0.5f) / 0.5f;
 
-        blob = cv::dnn::blobFromImage(rgb_img, 1.0, cv::Size(global_width, global_height), cv::Scalar(0, 0, 0), true, false);
+        blob = cv::dnn::blobFromImage(rgb_img, 1.0, cv::Size(m_width, m_height), cv::Scalar(0, 0, 0), true, false);
     }
 
-    bool Infer(cv::Mat blob, Context_t& ctx, std::vector<Ort::Value>& output_tensors)
+    bool Detector::Infer(cv::Mat blob, std::vector<Ort::Value>& output_tensors)
     {
         std::vector<Ort::Value> input_tensors;
         auto allocator_info = Ort::MemoryInfo::CreateCpu(OrtDeviceAllocator, OrtMemTypeCPU);
-        input_tensors.emplace_back(Ort::Value::CreateTensor<float>(allocator_info, blob.ptr<float>(), blob.total(), ctx.input_shape.data(), ctx.input_shape.size()));
+        input_tensors.emplace_back(Ort::Value::CreateTensor<float>(allocator_info, blob.ptr<float>(), blob.total(), m_ctx.input_shape.data(), m_ctx.input_shape.size()));
 
-        output_tensors = ctx.session->Run(Ort::RunOptions{ nullptr }, &ctx.input_names.at(0), input_tensors.data(), input_tensors.size(), ctx.output_names.data(), ctx.output_names.size());
-        if (output_tensors.size() != ctx.session->GetOutputCount())
+        output_tensors = m_ctx.session->Run(Ort::RunOptions{ nullptr }, &m_ctx.input_names.at(0), input_tensors.data(), input_tensors.size(), m_ctx.output_names.data(), m_ctx.output_names.size());
+        if (output_tensors.size() != m_ctx.session->GetOutputCount())
         {
             std::cerr << "output tensors size not equal to num_output_nodes\n";
             return false;
@@ -136,7 +123,7 @@ namespace Infer
         return true;
     }
 
-    bool ProcessReferMask(cv::Mat referMask, cv::Mat image_gray, std::vector<float>& line_res)
+    bool Detector::ProcessReferMask(cv::Mat referMask, cv::Mat image_gray, std::vector<float>& line_res)
     {
         auto possible_lines = GetPossibleLines(referMask);
 
@@ -165,7 +152,7 @@ namespace Infer
             }
 
             cv::Point2f p1((possible_lines.at(i).at(0).x + possible_lines.at(i).at(1).x) / 2, (possible_lines.at(i).at(0).y + possible_lines.at(i).at(1).y) / 2);
-            if (p1.x + 30 > global_width || p1.y + 30 > global_height)
+            if (p1.x + 30 > m_width || p1.y + 30 > m_height)
             {
                 continue;
             }
@@ -208,7 +195,7 @@ namespace Infer
         return true;
     }
 
-    bool ProcessInkMask(cv::Mat inkMask, cv::Mat image_gray, const std::vector<float>& refer_line, std::vector<float>& line_res)
+    bool Detector::ProcessInkMask(cv::Mat inkMask, cv::Mat image_gray, const std::vector<float>& refer_line, std::vector<float>& line_res)
     {
         auto possible_lines = GetPossibleLines(inkMask);
         double dgree_ref = atan((refer_line.at(3) - refer_line.at(1)) / (refer_line.at(2) - refer_line.at(0))) * 180 / CV_PI;
@@ -278,7 +265,7 @@ namespace Infer
         return true;
     }
 
-    bool Postprocess(std::vector<Ort::Value>& output_tensors, cv::Mat image_gray, std::vector<float>& refer_line, std::vector<float>& ink_line)
+    bool Detector::Postprocess(std::vector<Ort::Value>& output_tensors, cv::Mat image_gray, std::vector<float>& refer_line, std::vector<float>& ink_line)
     {
         auto output_shape = output_tensors.front().GetTensorTypeAndShapeInfo().GetShape();
         std::vector<int> mask_sz(output_shape.begin(), output_shape.end());
@@ -349,30 +336,17 @@ namespace Infer
         return true;
     }
 
-    void LoadModel()
+    void Detector::InferOnce(std::wstring model_path, cv::Mat image)
     {
-        std::wstring model_path{ L"D:/Robot/models/pp_liteseg_stdc1_softmax_20241021.onnx" };
-        model_path = L"C:/Users/anony/Documents/GitHub/cpp-win/data/ppseg_model_wb_20241120.onnx";
-
-        Context_t ctx = Init(model_path);
-
-        std::string image_path{ "C:/Users/anony/Documents/GitHub/cpp-win/data/LineCam_6_2024-12-23-15-59-55.png" };
-        // std::string image_path{ "C:/Users/anony/Documents/GitHub/cpp-win/data/LineCam_3_2024-12-23-15-59-54.png" };
-
-        cv::Mat image = cv::imread(image_path);
-        if (image.empty())
-        {
-            std::cerr << "load image failed\n";
-            return;
-        }
+        Init(model_path);
 
         cv::Mat image_gray, image_rgb, blob;
         auto begin = std::chrono::steady_clock::now();
-        Preprocess(image, ctx.input_shape, image_rgb, image_gray, blob);
+        Preprocess(image, m_ctx.input_shape, image_rgb, image_gray, blob);
         image = image_rgb;
 
         std::vector<Ort::Value> output_tensors;
-        Infer(blob, ctx, output_tensors);
+        Infer(blob, output_tensors);
 
         std::vector<float> ink_line;
         std::vector<float> refer_line;
@@ -389,14 +363,6 @@ namespace Infer
         cv::line(image, cv::Point(ink_line.at(0), ink_line.at(1)), cv::Point(ink_line.at(2), ink_line.at(3)), cv::Scalar(0, 255, 0), 2);
 
         cv::imshow("image", image);
-        cv::waitKey(0);
-    }
-
-    void ShowImage(const std::string& image_path)
-    {
-        cv::Mat image = cv::imread(image_path);
-        cv::imshow("image", image);
-        std::cerr << "rows: " << image.rows << ", cols: " << image.cols << "\n";
         cv::waitKey(0);
     }
 }
