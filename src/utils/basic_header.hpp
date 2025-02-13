@@ -33,6 +33,8 @@ extern "C"
 
 #include "cxxopts.hpp"
 
+#include "opencv2/opencv.hpp"
+
 #include "task/GlobalParameter.hpp"
 
 struct Args_t

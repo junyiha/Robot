@@ -1109,3 +1109,10 @@ int TestLaserScaner(int argc, char* argv[])
 
     return 0;
 }
+
+int TestOnnxruntime(int argc, char* argv[])
+{
+    Infer::LoadModel();
+
+    return 0;
+}

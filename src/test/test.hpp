@@ -35,6 +35,8 @@
 #include "utils/Camera.hpp"
 #include "utils/BoardTool.hpp"
 
+#include "infer/onnxruntime.hpp"
+
 #include "MvCamera.h"
 
 int line_detect_demo(int argc, char* argv[]);
@@ -48,8 +50,6 @@ int TestTask(int argc, char* argv[]);
 int TestInitLog(int argc, char* argv[]);
 
 int TestConfigManager(int argc, char* argv[]);
-
-int TestTcpClient(int argc, char* argv[]);
 
 int TestFitBoard(int argc, char* argv[]);
 
@@ -81,5 +81,6 @@ int TestBoardTool(int argc, char* argv[]);
 
 int TestLaserScaner(int argc, char* argv[]);
 
+int TestOnnxruntime(int argc, char* argv[]);
 
 #endif  // TEST_HPP__
