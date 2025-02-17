@@ -72,10 +72,10 @@ namespace Utils
                     {
                         break;
                     }
-                    m_mutex.lock();
+                    std::unique_lock<std::mutex> locker(m_mutex);
                     int sum_index = send_length - 1;
                     m_send_data[sum_index] = std::accumulate(m_send_data.begin(), m_send_data.begin() + sum_index, 0);
-                    m_mutex.unlock();
+                    locker.unlock();
                     qint64 send_len = m_socket.write(m_send_data);
 
                     std::this_thread::sleep_for(std::chrono::milliseconds(200));
@@ -84,9 +84,8 @@ namespace Utils
                     {
                         if (m_socket.waitForReadyRead(3000))
                         {
-                            m_mutex.lock();
+                            locker.lock();
                             m_recv_data = m_socket.readAll();
-                            m_mutex.unlock();
                         }
                         else
                         {
