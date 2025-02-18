@@ -14,11 +14,11 @@
 
 namespace Infer
 {
-    class Detector
+    class DetectorOnCPU
     {
     public:
-        Detector();
-        ~Detector();
+        DetectorOnCPU();
+        ~DetectorOnCPU();
         void InferOnce(std::wstring model_path, cv::Mat image);
 
     private:

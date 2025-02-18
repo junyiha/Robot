@@ -3,7 +3,7 @@
 #ifdef GPU_FLAG
 namespace Infer
 {
-    // static int DEVICE{ 0 };
+    static int DEVICE{ 0 };
 #define CHECK(status) \
     do\
     {\
@@ -16,14 +16,17 @@ namespace Infer
     } while (0)
 
 
-    static const char* INPUT_BLOB_NAME = "x";
-    static const char* OUTPUT_BLOB_NAME = "save_infer_model/scale_0.tmp_0";
-    static int m_width;
-    static int m_height;
+    DetectorOnGPU::DetectorOnGPU()
+    {
 
-    Logger gLogger;
+    }
 
-    nvinfer1::ICudaEngine* LoadEngine(std::string engine_path)
+    DetectorOnGPU::~DetectorOnGPU()
+    {
+
+    }
+
+    nvinfer1::ICudaEngine* DetectorOnGPU::LoadEngine(std::string engine_path)
     {
         nvinfer1::ICudaEngine* cuda_engine{ nullptr };
 
@@ -47,7 +50,7 @@ namespace Infer
         return cuda_engine;
     }
 
-    std::vector<float> Preprocess(cv::Mat& image, int input_height, int input_width)
+    std::vector<float> DetectorOnGPU::Preprocess(cv::Mat& image, int input_height, int input_width)
     {
         cv::Mat img;
         std::vector<float> blob(image.total() * 3);
@@ -77,7 +80,7 @@ namespace Infer
         return blob;
     }
 
-    cv::Mat Predict(nvinfer1::Dims output_dims, nvinfer1::IExecutionContext* context, std::vector<float>& input, std::vector<float>& blob, cv::Size input_shape, int output_height, int output_width, int output_size)
+    cv::Mat DetectorOnGPU::Predict(nvinfer1::Dims output_dims, nvinfer1::IExecutionContext* context, std::vector<float>& input, std::vector<float>& blob, cv::Size input_shape, int output_height, int output_width, int output_size)
     {
         const nvinfer1::ICudaEngine& engine = context->getEngine();
 
@@ -107,13 +110,13 @@ namespace Infer
         CHECK(cudaFree(buffers[inputIndex]));
         CHECK(cudaFree(buffers[outputIndex]));
 
-        std::vector<int> mask_size{1, 3, output_height, output_width};
+        std::vector<int> mask_size{ 1, 3, output_height, output_width };
         cv::Mat res = cv::Mat(mask_size, CV_32F, blob.data());
 
         return res;
     }
 
-    std::vector<std::vector<cv::Point2f>> GetPossibleLines(const cv::Mat& mask)
+    std::vector<std::vector<cv::Point2f>> DetectorOnGPU::GetPossibleLines(const cv::Mat& mask)
     {
         std::vector<std::vector<cv::Point2f>> possible_lines;
         cv::GaussianBlur(mask, mask, cv::Size(5, 5), 0);
@@ -165,7 +168,7 @@ namespace Infer
         return possible_lines;
     }
 
-    bool ProcessReferMask(cv::Mat referMask, cv::Mat image_gray, std::vector<float>& line_res)
+    bool DetectorOnGPU::ProcessReferMask(cv::Mat referMask, cv::Mat image_gray, std::vector<float>& line_res)
     {
         auto possible_lines = GetPossibleLines(referMask);
 
@@ -237,7 +240,7 @@ namespace Infer
         return true;
     }
 
-    bool ProcessInkMask(cv::Mat inkMask, cv::Mat image_gray, const std::vector<float>& refer_line, std::vector<float>& line_res)
+    bool DetectorOnGPU::ProcessInkMask(cv::Mat inkMask, cv::Mat image_gray, const std::vector<float>& refer_line, std::vector<float>& line_res)
     {
         auto possible_lines = GetPossibleLines(inkMask);
         double dgree_ref = atan((refer_line.at(3) - refer_line.at(1)) / (refer_line.at(2) - refer_line.at(0))) * 180 / CV_PI;
@@ -307,12 +310,12 @@ namespace Infer
         return true;
     }
 
-    bool Postprocess(cv::Mat res, cv::Mat image_gray, std::vector<float>& refer_line, std::vector<float>& ink_line, int output_height, int output_width)
+    bool DetectorOnGPU::Postprocess(cv::Mat res, cv::Mat image_gray, std::vector<float>& refer_line, std::vector<float>& ink_line, int output_height, int output_width)
     {
         cv::Mat argmax;
 
-        res = res.reshape(0, {3, output_height * output_width}).t();
-        res = res.reshape(3, { output_height, output_width});
+        res = res.reshape(0, { 3, output_height * output_width }).t();
+        res = res.reshape(3, { output_height, output_width });
 
         int rows = res.rows;
         int cols = res.cols;
@@ -325,7 +328,7 @@ namespace Infer
             for (int col = 0; col < cols; col++)
             {
                 float* ptr = const_cast<float*>(res.ptr<float>(row, col));
-                int max_idx{0};
+                int max_idx{ 0 };
                 float max_value = ptr[0];
                 for (int channel = 1; channel < channels; channel++)
                 {
@@ -381,11 +384,10 @@ namespace Infer
         return true;
     }
 
-    void Init()
+    void DetectorOnGPU::InferOnce(std::wstring model_path, cv::Mat image)
     {
-        std::string engine_path{ VISION_MODEL_PATH };
         cudaSetDevice(DEVICE);
-        auto cuda_engine = LoadEngine(engine_path);
+        auto cuda_engine = LoadEngine(model_path);
         auto context = cuda_engine->createExecutionContext();
 
         auto input_dimension = cuda_engine->getBindingDimensions(0);
@@ -401,7 +403,6 @@ namespace Infer
         std::cerr << "input_height: " << input_height << ", input width: " << input_width << "\n"
             << "output_height: " << output_height << ", output_width: " << output_width << "\n";
 
-        std::string image_path {"E:/projects/ZBRobot/2025-02-17/robot/Robot/.vscode/LineCam_6_2024-12-23-15-59-55.png"};
         cv::Mat img = cv::imread(image_path);
         if (img.empty())
         {
@@ -410,7 +411,7 @@ namespace Infer
         }
 
         std::vector<float> input_buffer = Preprocess(img, input_height, input_width);
-        cv::Size input_shape{input_height, input_width};
+        cv::Size input_shape{ input_height, input_width };
 
         size_t temp_size{ 1 };
         for (int i = 0; i < output_dimension.nbDims; i++)
@@ -446,32 +447,6 @@ namespace Infer
         cv::imshow("img", img);
         cv::waitKey(0);
     }
-
-    void TestLineSegmenationBaseTensorRT()
-    {
-        LineSegmenationBaseTensorRT detector;
-
-        std::string image_path {"E:/projects/ZBRobot/2025-02-17/robot/Robot/.vscode/LineCam_6_2024-12-23-15-59-55.png"};
-        cv::Mat img = cv::imread(image_path);
-        if (img.empty())
-        {
-            std::cerr << "invalid image path: " << image_path << "\n";
-            return;
-        }
-
-        cv::Mat res = detector.predict(img);
-        if (res.empty())
-        {
-            std::cerr << "failed to predict...";
-            return;
-        }
-
-        cv::imshow("mask res", res);
-        cv::waitKey(0);
-    }
-
-
-
 }  // namespace Infer
 
 #endif // GPU_FLAG

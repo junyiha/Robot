@@ -2,17 +2,17 @@
 
 namespace Infer
 {
-    Detector::Detector()
+    DetectorOnCPU::DetectorOnCPU()
     {
 
     }
 
-    Detector::~Detector()
+    DetectorOnCPU::~DetectorOnCPU()
     {
 
     }
 
-    std::vector<std::vector<cv::Point2f>> Detector::GetPossibleLines(const cv::Mat& mask)
+    std::vector<std::vector<cv::Point2f>> DetectorOnCPU::GetPossibleLines(const cv::Mat& mask)
     {
         std::vector<std::vector<cv::Point2f>> possible_lines;
         cv::GaussianBlur(mask, mask, cv::Size(5, 5), 0);
@@ -64,7 +64,7 @@ namespace Infer
         return possible_lines;
     }
 
-    void Detector::Init(const std::wstring& model_path)
+    void DetectorOnCPU::Init(const std::wstring& model_path)
     {
         Ort::Env* env = new Ort::Env(ORT_LOGGING_LEVEL_WARNING, "test");
         Ort::SessionOptions session_options;
@@ -79,7 +79,7 @@ namespace Infer
         m_ctx.output_names.push_back(session->GetOutputName(0, allocator));
     }
 
-    void Detector::Preprocess(const cv::Mat& img, const std::vector<int64_t>& input_shape, cv::Mat& rgb_img, cv::Mat& gray_img, cv::Mat& blob)
+    void DetectorOnCPU::Preprocess(const cv::Mat& img, const std::vector<int64_t>& input_shape, cv::Mat& rgb_img, cv::Mat& gray_img, cv::Mat& blob)
     {
         if (img.channels() != 3)
         {
@@ -102,7 +102,7 @@ namespace Infer
         blob = cv::dnn::blobFromImage(rgb_img, 1.0, cv::Size(m_width, m_height), cv::Scalar(0, 0, 0), true, false);
     }
 
-    bool Detector::Infer(cv::Mat blob, std::vector<Ort::Value>& output_tensors)
+    bool DetectorOnCPU::Infer(cv::Mat blob, std::vector<Ort::Value>& output_tensors)
     {
         std::vector<Ort::Value> input_tensors;
         auto allocator_info = Ort::MemoryInfo::CreateCpu(OrtDeviceAllocator, OrtMemTypeCPU);
@@ -123,7 +123,7 @@ namespace Infer
         return true;
     }
 
-    bool Detector::ProcessReferMask(cv::Mat referMask, cv::Mat image_gray, std::vector<float>& line_res)
+    bool DetectorOnCPU::ProcessReferMask(cv::Mat referMask, cv::Mat image_gray, std::vector<float>& line_res)
     {
         auto possible_lines = GetPossibleLines(referMask);
 
@@ -195,7 +195,7 @@ namespace Infer
         return true;
     }
 
-    bool Detector::ProcessInkMask(cv::Mat inkMask, cv::Mat image_gray, const std::vector<float>& refer_line, std::vector<float>& line_res)
+    bool DetectorOnCPU::ProcessInkMask(cv::Mat inkMask, cv::Mat image_gray, const std::vector<float>& refer_line, std::vector<float>& line_res)
     {
         auto possible_lines = GetPossibleLines(inkMask);
         double dgree_ref = atan((refer_line.at(3) - refer_line.at(1)) / (refer_line.at(2) - refer_line.at(0))) * 180 / CV_PI;
@@ -265,7 +265,7 @@ namespace Infer
         return true;
     }
 
-    bool Detector::Postprocess(std::vector<Ort::Value>& output_tensors, cv::Mat image_gray, std::vector<float>& refer_line, std::vector<float>& ink_line)
+    bool DetectorOnCPU::Postprocess(std::vector<Ort::Value>& output_tensors, cv::Mat image_gray, std::vector<float>& refer_line, std::vector<float>& ink_line)
     {
         auto output_shape = output_tensors.front().GetTensorTypeAndShapeInfo().GetShape();
         std::vector<int> mask_sz(output_shape.begin(), output_shape.end());
@@ -336,7 +336,7 @@ namespace Infer
         return true;
     }
 
-    void Detector::InferOnce(std::wstring model_path, cv::Mat image)
+    void DetectorOnCPU::InferOnce(std::wstring model_path, cv::Mat image)
     {
         Init(model_path);
 

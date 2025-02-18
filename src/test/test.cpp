@@ -1120,7 +1120,7 @@ int TestOnnxruntime(int argc, char* argv[])
 
     cv::Mat image = cv::imread(image_path);
 
-    Infer::Detector detector;
+    Infer::DetectorOnCPU detector;
 
     detector.InferOnce(model_path, image);
 
@@ -1130,7 +1130,12 @@ int TestOnnxruntime(int argc, char* argv[])
 int TestTensorRT(int argc, char* argv[])
 {
 #ifdef GPU_FLAG
-    Infer::Init();
+    std::string model_path{ VISION_MODEL_PATH };
+    std::string image_path{ "E:/projects/ZBRobot/2025-02-17/robot/Robot/.vscode/LineCam_6_2024-12-23-15-59-55.png" };
+
+    Infer::DetectorOnGPU detector;
+
+    detector.InferOnce(model_path, image_path);
 #endif // GPU_FLAG
 
     return 0;
@@ -1139,10 +1144,25 @@ int TestTensorRT(int argc, char* argv[])
 int TestLineSegmenationBaseTensorRT(int argc, char* argv[])
 {
 #ifdef GPU_FLAG
-    Infer::TestLineSegmenationBaseTensorRT();
+    LineSegmenationBaseTensorRT detector;
+
+    std::string image_path{ "E:/projects/ZBRobot/2025-02-17/robot/Robot/.vscode/LineCam_6_2024-12-23-15-59-55.png" };
+    cv::Mat img = cv::imread(image_path);
+    if (img.empty())
+    {
+        std::cerr << "invalid image path: " << image_path << "\n";
+        return;
+    }
+
+    cv::Mat res = detector.predict(img);
+    if (res.empty())
+    {
+        std::cerr << "failed to predict...";
+        return;
+    }
+
+    cv::imshow("mask res", res);
+    cv::waitKey(0);
 #endif // GPU_FLAG
-
-
-
     return 0;
 }
