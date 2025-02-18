@@ -83,7 +83,8 @@ int main(int argc, char* argv[])
         {"TestLaserDistanceBojke", TestLaserDistanceBojke},
         {"TestLaserScaner", TestLaserScaner},
         {"TestOnnxruntime", TestOnnxruntime},
-        {"TestTensorRT", TestTensorRT}
+        {"TestTensorRT", TestTensorRT},
+        {"TestLineSegmenationBaseTensorRT", TestLineSegmenationBaseTensorRT}
     };
     cxxopts::Options options("Robot", "boarding robot's project");
     options.add_options()("m,mode", "run mode", cxxopts::value<std::string>()->default_value("RunSceneSelect"));

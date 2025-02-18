@@ -86,4 +86,6 @@ int TestOnnxruntime(int argc, char* argv[]);
 
 int TestTensorRT(int argc, char* argv[]);
 
+int TestLineSegmenationBaseTensorRT(int argc, char* argv[]);
+
 #endif  // TEST_HPP__

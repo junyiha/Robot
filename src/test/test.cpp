@@ -1135,3 +1135,14 @@ int TestTensorRT(int argc, char* argv[])
 
     return 0;
 }
+
+int TestLineSegmenationBaseTensorRT(int argc, char* argv[])
+{
+#ifdef GPU_FLAG
+    Infer::TestLineSegmenationBaseTensorRT();
+#endif // GPU_FLAG
+
+
+
+    return 0;
+}

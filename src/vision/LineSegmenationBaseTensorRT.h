@@ -57,7 +57,7 @@ public:
 
 
 
-private:
+// private:
     const std::string engineFilePath{ VISION_MODEL_PATH };
     //    const std::string engineFilePath= VISION_ENGINE_PATH;
     Logger gLogger;

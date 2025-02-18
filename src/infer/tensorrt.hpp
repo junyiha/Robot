@@ -12,11 +12,15 @@
 #include <cuda_runtime_api.h>
 
 #include "vision/logging.h"
+#include "vision/LineSegmenationBaseTensorRT.h"
 
 namespace Infer
 {
 
     void Init();
+
+    void TestLineSegmenationBaseTensorRT();
+
 
 
 
