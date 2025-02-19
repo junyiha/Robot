@@ -20,7 +20,7 @@ namespace Infer
     public:
         DetectorOnGPU();
         ~DetectorOnGPU();
-        void InferOnce(std::wstring model_path, cv::Mat image);
+        void InferOnce(std::string model_path, std::string image_path);
 
     private:
         nvinfer1::ICudaEngine* LoadEngine(std::string engine_path);

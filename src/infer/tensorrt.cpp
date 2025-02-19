@@ -384,7 +384,7 @@ namespace Infer
         return true;
     }
 
-    void DetectorOnGPU::InferOnce(std::wstring model_path, cv::Mat image)
+    void DetectorOnGPU::InferOnce(std::string model_path, std::string image_path)
     {
         cudaSetDevice(DEVICE);
         auto cuda_engine = LoadEngine(model_path);

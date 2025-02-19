@@ -1151,14 +1151,14 @@ int TestLineSegmenationBaseTensorRT(int argc, char* argv[])
     if (img.empty())
     {
         std::cerr << "invalid image path: " << image_path << "\n";
-        return;
+        return 0;
     }
 
     cv::Mat res = detector.predict(img);
     if (res.empty())
     {
         std::cerr << "failed to predict...";
-        return;
+        return 0;
     }
 
     cv::imshow("mask res", res);
